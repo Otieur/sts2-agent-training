@@ -22,6 +22,7 @@ Everything still unverified, ranked by how much it affects play (S6, written 202
 | 9 | Cost upgrades missing from the extract (Barricade, Corruption, Body Slam, Dark Embrace, Armaments text) | Smith priority | Read upgraded card text in the shop or card library |
 | 10 | Upgrade mapping where flagged ambiguous (Offering: energy or cards? Drum of Battle) | Smith priority | Same |
 | 11 | Enemy powers with unclear effects: Slow (Bygone Effigy) multiplier, Vital Spark (Infested Prism), Skittish (Gardeners), Colossus power on you | Elite plans | Observe in fights; record in the enemy notes |
+| 23 | Kaiser Crab facing: does Surrounded make the claw behind you deal ×1.5, and does targeting a claw turn you to face it? Does Crab Rage's 99 Block last one turn? | Laser 31 against 46; the kill-turn plan | First Kaiser Crab fight: target each claw and read the intent numbers |
 | 12 | Boss details: does damaging Lagavulin Matriarch wake it? Does killing the Kin Priest end the fight? Knowledge Demon curse choice mechanics; Insatiable Sandpit timer length; Waterfall Giant explosion vs Weak | Boss plans | First encounters; update `knowledge/bosses/` |
 | 13 | Ascension effects not visible in data: A1 (more elites), A6 (one fewer rest site), A7 (fewer rares), A8 and A9 exact numbers | HP budgets at higher ascension | Read `run.ascension_effects` (STS2-Agent) or the in-game list |
 | 14 | Hypotheses H1–H9 | Core strategy rules | Phase 4 experiments with logging (`playbooks/ironclad.md` §12) |

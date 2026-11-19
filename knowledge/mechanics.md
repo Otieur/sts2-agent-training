@@ -102,3 +102,6 @@ block = floor( (base + Dexterity) × (0.75 if Frail) × (2 if Unmovable active) 
 | 9 | Heal amount at rest | Rest at 40/80 | +24 (30% of max, rounded down) |
 | 10 | Colossus power effect | Play Colossus, then take a hit | Damage halved? |
 | 11 | Ascender's Bane removable? | Try removal at a shop with A5+ | Expect refused (Eternal) |
+
+## Facing (Surrounded)
+- Kaiser Crab applies **Surrounded** to you: a ×1.5 damage multiplier on back attacks, re-evaluated before each card and potion `[GAME-EXTRACT]` (`SURROUNDED_POWER`). Facing rule `[HYPOTHESIS]`: you face the enemy you last targeted. To confirm in the first Kaiser Crab fight.

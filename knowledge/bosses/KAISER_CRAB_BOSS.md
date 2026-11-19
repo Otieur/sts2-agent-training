@@ -41,7 +41,9 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ## Plan
 
 ### Mechanics summary
-- Two claws, Crusher (199 HP) and Rocket (189 HP) `[GAME-EXTRACT]`. The body cannot be damaged `[COMMUNITY]`.
+- Two claws, Crusher (left, 199 HP) and Rocket (right, 189 HP) `[GAME-EXTRACT]`. The body cannot be damaged: it is not a creature in the monster data `[GAME-EXTRACT]` and flees when both claws fall `[COMMUNITY]` (two guides).
+- **Crab Rage** `[GAME-EXTRACT]` + `[COMMUNITY]` (allthings.how, untapped.gg summary): when one claw dies, the other gains **5 Strength and 99 Block**. The block lasts only that turn, per both guides.
+- **Surrounded / Back Attack** `[GAME-EXTRACT]`: you carry Surrounded, a debuff with a ×1.5 damage multiplier, re-evaluated before each card you play and each potion you use. Both claws have Back Attack. Reading `[HYPOTHESIS]`, by analogy with the first game's Surrounded: you face the claw you last targeted, and the claw **behind you deals 50% more**. Rocket's Laser from behind would be 46, not 31. Confirm in the first fight (P0 checklist).
 - **Crusher** `[GAME-EXTRACT]`:
   - Thrash: 12
   - Enlarging Strike: 4
@@ -56,7 +58,9 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Recharge: sleeps
 
 ### Deck checklist
-- **Focus one claw** to halve incoming damage `[HYPOTHESIS]`. Default target: **Rocket**. It has less HP, and its Laser (31, plus Strength) is the biggest hit. Its Recharge turn is a free hit window.
+- **Face the bigger hit** `[HYPOTHESIS]`: make your last targeted card (or potion) of the turn target the claw whose next attack is larger, so that attack is not a back attack. On the Laser turn, end facing Rocket.
+- **Plan the kill turn around Crab Rage:** the surviving claw gets 99 Block for that turn, so damage after the first kill that turn is wasted. Kill the first claw with your last attack of a turn, then switch to the other claw next turn. It keeps the 5 Strength.
+- **Focus one claw** to halve incoming damage `[HYPOTHESIS]`. Default target: **Rocket** (two guides agree). It has less HP, and its Laser (31, plus Strength) is the biggest hit. Its Recharge turn is a free hit window.
 - **Block 31 or more on the Laser turn** (after Targeting Reticle). Impervious or a block potion.
 - Weak from Bug Sting lowers your damage for 2 turns. Plan the burst outside those turns.
 - In the history, fatal decks had *more* hit-all and multi-hit cards (2.0 against 1.0) and fewer energy cards, from only n=5 fatal fights `[PLAYER-DATA, very weak]`. Spread damage seems to lose to focused damage here.
@@ -75,9 +79,11 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### What killed the Player here, and the counter
 - Ironclad: 2 of 6 fatal, median 43.5 (all characters: 5 of 28 fatal). `[PLAYER-DATA]`
-- Counter: single-target focus on Rocket; full block on the Laser.
+- Counter: single-target focus on Rocket; full block on the Laser, ending the turn facing Rocket; kill Rocket with the last attack of a turn (Crab Rage). After Rocket dies, Crusher has +5 Strength: Bug Sting becomes 11×2, Thrash 17.
 
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db`, `reports/phase2/deck-features-by-encounter.md` `[PLAYER-DATA]`
 - Community boss summaries via search (claw cycles, body not targetable), early access `[COMMUNITY]`
+- allthings.how, every boss (updated 2026-03-12): Crab Rage, Rocket first, body flees `[COMMUNITY]`
+- Power data: `SURROUNDED_POWER`, `BACK_ATTACK_LEFT/RIGHT_POWER`, `CRAB_RAGE_POWER` in `powers.json` `[GAME-EXTRACT]`
