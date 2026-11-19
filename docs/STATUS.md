@@ -85,7 +85,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P6.E1 | Verify co-op rules | In progress | Rules file done; in-game verification and HP scaling measurement (S2) in Phase 6 |
-| P6.E2 | Second instance on macOS | Todo | Biggest unknown |
+| P6.E2 | Second instance on macOS | In progress | Patch proposal written (user-data path, app-bundle write, exe fallback) |
 | P6.E3 | Teammate control | Todo | |
 | P6.E4 | Communication protocol | Todo | |
 | P6.E5 | Co-op strategy | Todo | |

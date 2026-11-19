@@ -26,3 +26,4 @@ Block K (morning report) starts no later than 09:52 EST.
 | X1: Boss arrival HP | 00:56 | 00:58 | tools/analyze_boss_arrival.py → reports/phase2/boss-arrival-hp.md; playbook v2.1 (§5, H1) | Steep arrival curve but heal vs smith outcomes equal at the same HP: mixed evidence, rule kept moderate (Act 3: rest under 70%) |
 | X2: Deck strength | 00:58 | 01:00 | tools/deck_metrics.py → reports/phase2/deck-strength.md; playbook v2.2 (§2.1 corner targets, H9) | Raw damage does not predict boss survival (higher raw damage → more deaths); block and scaling do |
 | X3: Phase 3 tools | 01:00 | 01:01 | tools/stsstate.py, watch.py, record.py, reconstruct.py + tests (29 total pass) | Untested live; STS2MCP format |
+| X4: macOS teammate patch proposal | 01:01 | 01:02 | docs/proposals/sts2-agent-macos-teammate.md | Three code changes plus a test plan; not applied |

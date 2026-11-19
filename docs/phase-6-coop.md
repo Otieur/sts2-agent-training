@@ -79,7 +79,7 @@
 > - [ ] Recorded: the main window's `/health` (`dual_launch_outcome`, `dual_status`), whether a second window opens, whether it joins the lobby, and the companion `api_port`.
 > - [ ] Result goes into `docs/api-notes.md`: works, partly works, or fails, with details.
 
-> **P6.E2.S2: Patch the launcher for macOS (if E2.S1 fails)** · Size M · Status: Todo
+> **P6.E2.S2: Patch the launcher for macOS (if E2.S1 fails)** · Size M · Status: In progress (patch proposal in docs/proposals/sts2-agent-macos-teammate.md; not applied)
 > *As the Agent, I want the launcher to start the macOS binary correctly, so that the built-in co-op path works.*
 >
 > **Acceptance criteria**
