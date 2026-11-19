@@ -44,6 +44,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): three segments of 40–46 HP (46–52 at A8+), each cycling Bulk 6 + 2 Strength, Writhe 5×2, Outgas 8 + 1 Weak from a different starting move; **Reattach**: a dead segment revives with 25 HP two turns later while another segment lives. So bring all three down close together (hit-all attacks; finish the last two in the same turn if possible); killing one early buys only two turns.
+
 ### Key mechanics `[GAME-EXTRACT]`
 - Three segments (front, middle, back; 42–48 HP each). Writhe 5×2, Bulk 6 + 2 Strength, Constrict 8 + Weak.
 - A killed segment can **reattach** (it heals).

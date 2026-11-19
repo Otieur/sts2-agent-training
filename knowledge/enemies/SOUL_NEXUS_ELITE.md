@@ -26,6 +26,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 234 (254 at A8+); opens with Soul Burn 29 (31), then picks at random among Soul Burn 29, Maelstrom 6×4 and Drain Life 18 + 2 Vulnerable + 2 Weak, never the same move twice in a row. Block 29 on turn 1; read each intent, since the order is random.
+
 ### Key mechanics `[GAME-EXTRACT]`
 - 234 HP.
   - Soul Burn: 29
