@@ -1,6 +1,8 @@
 # Runbook: End a Run (P4.E1.S6)
 
-1. On `game_over`: read the final state (`tools/sts.py state --raw > runs/<run>/final-state.json`), then `menu_select option=main_menu`.
+1. On `game_over`: read the final state (`tools/sts.py --mod sts2agent state --raw > runs/<run>/final-state.json`).
+   - STS2-Agent: while `game_over.can_continue`, `act continue_game_over` (slow: it waits until the result is written to the save; do not repeat it after one timeout); when `game_over.save_verified` is true and `can_return_to_main_menu`, `act return_to_main_menu`. In co-op, `waiting_for_other_players` means wait.
+   - STS2MCP: `menu_select option=main_menu`.
 2. Copy the game's run file into the run folder. It is the newest file in `~/Library/Application Support/SlayTheSpire2/steam/<id>/modded/profile1/saves/history/` (the modded profile while mods are on):
    ```bash
    cp "$(ls -t "$HOME/Library/Application Support/SlayTheSpire2/steam/"*/modded/profile1/saves/history/*.run | head -1)" runs/<run>/run.run
