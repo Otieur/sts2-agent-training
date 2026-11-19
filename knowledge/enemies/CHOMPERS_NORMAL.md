@@ -33,7 +33,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### Priorities and recommended answers
 - **Two Chompers (60–64 HP each, Artifact):** Clamp 8×2, Screech adds 3 Dazed to your piles `[GAME-EXTRACT]`. Artifact cancels the first debuff on each (`tools/plan_turn.py` reads it), so Bash's Vulnerable is wasted on a fresh Chomper; strip it with a cheap debuff first or just attack.
 - Kill one Chomper fast: each Clamp is 16 before Strength, and the Dazed clog later turns.
-- **The deaths came from low arrival HP:** fatal fights started at a median 18% HP (survived 71%), all characters; Ironclad 1 of 9 fatal (H11).
+- **The deaths came from low arrival HP** `[PLAYER-DATA]`: fatal fights started at a median 18% HP (survived 71%), all characters; Ironclad 1 of 9 fatal (H11).
 
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`

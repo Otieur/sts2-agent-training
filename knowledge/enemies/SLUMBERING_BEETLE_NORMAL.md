@@ -41,7 +41,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Three enemies:** Slumbering Beetle (86 HP, Plating, asleep), Bowlbug Rock (Headbutt 15, then stuns itself: Imbalanced) and Bowlbug Silk (4×2, Weak) `[GAME-EXTRACT]`.
 - **Leave the Beetle asleep and kill the Bowlbugs first.** Slumber counts down when the Beetle takes damage `[GAME-EXTRACT]`, so hitting it wakes it sooner; awake, it rolls out for 16 and gains 2 Strength every time (16, 18, 20...). Avoid hit-all attacks while the Bowlbugs are alive if they would wake it early `[HYPOTHESIS]`.
 - Once it is awake, it is a race against +2 Strength a turn: burst it down, block each Roll Out.
-- **The deaths came from low arrival HP:** fatal fights started at a median 11% HP (survived 70%), all characters; Ironclad 2 of 5 fatal. This is H11 (no hallway fight under 40% HP when there is a choice).
+- **The deaths came from low arrival HP** `[PLAYER-DATA]`: fatal fights started at a median 11% HP (survived 70%), all characters; Ironclad 2 of 5 fatal. This is H11 (no hallway fight under 40% HP when there is a choice).
 
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`

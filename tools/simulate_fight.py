@@ -34,10 +34,10 @@ import plan_turn as pt  # noqa: E402
 from draft import expand_deck  # noqa: E402
 
 def _move(kind="attack", dmg=0, hits=1, status=0, boss_block=0, boss_str=0, p_str=0, p_dex=0, heal=0, ringing=False,
-          status_draw=0, p_vuln=0, p_weak=0, intangible=0):
+          status_draw=0, p_vuln=0, p_weak=0, intangible=0, p_frail=0):
     return {"kind": kind, "dmg": dmg, "hits": hits, "status": status, "boss_block": boss_block, "boss_str": boss_str,
             "p_str": p_str, "p_dex": p_dex, "heal": heal, "ringing": ringing, "status_draw": status_draw, "p_vuln": p_vuln,
-            "p_weak": p_weak, "intangible": intangible}
+            "p_weak": p_weak, "intangible": intangible, "p_frail": p_frail}
 
 
 def vantom_move(b, turn):
@@ -154,6 +154,17 @@ def giant_move(b, turn):
     return dict([_move(dmg=15, p_weak=1), _move(dmg=10), _move("buff", heal=10), None, _move(dmg=13)][i], steam=3)
 
 
+def kin_priest_move(b, turn):
+    """Kin Priest (190 HP): Orb of Frailty 8 + Frail, Orb of Weakness 8 + Weak, Beam 3x3, Ritual +2 Strength, repeating, in
+    the extract's declaration order `[HYPOTHESIS]`."""
+    return [_move(dmg=8, p_frail=1), _move(dmg=8, p_weak=1), _move(dmg=3, hits=3), _move("buff", boss_str=2)][(turn - 1) % 4]
+
+
+def kin_follower_move(a, turn):
+    """Kin Follower (58 HP, Minion): Quick Slash 5, Boomerang 2x2, Power Dance +2 Strength, repeating `[HYPOTHESIS]` order."""
+    return [_move(dmg=5), _move(dmg=2, hits=2), _move("buff", boss_str=2)][(turn - 1) % 3]
+
+
 BOSSES = {
     # validated: the model's win rate relative to Vantom roughly matches the Player's record (see report()).
     "VANTOM": {"hp": 173, "slippery": 9, "move": vantom_move, "status_card": "WOUND", "validated": True},
@@ -173,6 +184,9 @@ BOSSES = {
     # similar share of the boss's HP (about 0.5), well above Vantom (0.26), as the real outcomes suggest.
     "SOUL_FYSH": {"hp": 211, "move": fysh_move, "status_card": "BECKON", "validated": True},
     "WATERFALL_GIANT": {"hp": 250, "move": giant_move, "explodes": True, "validated": False},
+    # The Kin: the Priest with two Minion followers; killing the Priest ends the fight (two guides). Cycles [HYPOTHESIS].
+    "THE_KIN": {"hp": 190, "move": kin_priest_move, "validated": False, "encounter": "THE_KIN_BOSS",
+                "adds": [{"name": "KIN_FOLLOWER", "hp": 58, "move": kin_follower_move, "minion": True}] * 2},
 }
 
 
@@ -220,13 +234,14 @@ TEMPORARY_POTIONS = {"FLEX_POTION", "SPEED_POTION"}  # their Strength or Dexteri
 
 
 def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", max_turns=25, curse=BEST_CURSES, relics=(),
-              potions=()):
+              potions=(), focus_boss=False):
     """relics: relic IDs held; those in SIM_RELICS are applied with their plainest reading of the game data
     [GAME-EXTRACT] + [HYPOTHESIS] (once per fight unless the data says otherwise): Vajra +1 Strength, Oddly Smooth Stone +1
     Dexterity, Anchor 10 Block on turn 1, Bag of Preparation +2 cards on turn 1, Red Mask 1 Weak on the boss at the start,
     Gorget 4 Plating (Block each turn, one less each turn), Blood Vial heal 2 at the start, Festive Popper 9 damage at the
     start, Happy Flower +1 energy every third turn, Lizard Tail revives once at half HP, Red Skull +3 Strength at half HP
-    or less. potions: potion IDs held; the planner may use each once (boss potion cost) [HYPOTHESIS]."""
+    or less. potions: potion IDs held; the planner may use each once (boss potion cost) [HYPOTHESIS]. Bosses with adds
+    (spec "adds"): the planner targets as it likes, or every single-target card goes to the boss when focus_boss."""
     spec = BOSSES[boss]
     pots = [str(x).split(".", 1)[-1].upper() for x in potions or () if x]
     R = {str(r).split(".", 1)[-1].upper() for r in relics or ()}
@@ -247,7 +262,9 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     b = {"hp": spec["hp"], "block": 0, "slippery": spec.get("slippery", 0), "strength": 0, "vuln": 0, "weak": 0,
          "asleep": spec.get("asleep", 0), "plating": spec.get("plating", 0), "curse": curse, "hive": spec.get("hive", 0)}
     sloth = mind_rot = waste = disint = 0
-    p_vuln = p_weak = 0
+    p_vuln = p_weak = p_frail = 0
+    adds = [{"name": a["name"], "hp": a["hp"], "max": a["hp"], "block": 0, "strength": 0, "vuln": 0, "weak": 0,
+             "minion": a.get("minion", False), "move": a["move"], "mv": None} for a in spec.get("adds", [])]
     ringing = False
     if "RED_MASK" in R:
         b["weak"] = 1
@@ -275,6 +292,12 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         raw_intent = intent
         if intent[1] and (b["weak"] > 0 or p_vuln > 0):  # like the game, the shown intent includes Weak and your Vulnerable
             intent = (calc.hit_damage(intent[0], attacker_weak=b["weak"] > 0, target_vulnerable=p_vuln > 0), intent[1])
+        for a in adds:  # each add's move and the intent the game would show
+            a["mv"] = a["move"](a, turn) if a["hp"] > 0 else _move("dead", hits=0)
+            m_ = a["mv"]
+            a["intent"] = ((m_["dmg"] + a["strength"], m_["hits"]) if m_["kind"] == "attack" else (0, 0))
+            if a["intent"][1] and (a["weak"] > 0 or p_vuln > 0):
+                a["intent"] = (calc.hit_damage(a["intent"][0], attacker_weak=a["weak"] > 0, target_vulnerable=p_vuln > 0), a["intent"][1])
         hand_ids = draw_cards(max(1, 5 - mind_rot) + (2 if turn == 1 and "BAG_OF_PREPARATION" in R else 0), draw, discard, rng)
         energy = max(1, 3 + pyre - waste) + (1 if "HAPPY_FLOWER" in R and turn % 3 == 0 else 0)
         block = (10 if turn == 1 and "ANCHOR" in R else 0) + plating_p
@@ -289,8 +312,11 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             enemy = pt.Enemy(0, boss, 999 if exploding else b["hp"], b["block"], intent[0], intent[1], vuln=b["vuln"] > 0,
                              weak=b["weak"] > 0, slippery=b["slippery"], hive=b.get("hive", 0), intangible=b.get("intangible", 0) > 0)
             player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity, weak=p_weak > 0, fnp=fnp,
+                               frail=p_frail > 0,
                                max_cards=(1 - cards_played) if ringing else ((3 - cards_played) if sloth else None), hp=hp, osty_hp=osty)
-            res = pt.plans(hand, player, [enemy])
+            foes = [enemy] + [pt.Enemy(k + 1, a["name"], max(0, a["hp"]), a["block"], a["intent"][0], a["intent"][1], vuln=a["vuln"] > 0,
+                                       weak=a["weak"] > 0, minion=a["minion"]) for k, a in enumerate(adds)]
+            res = pt.plans(hand, player, foes)
             if not res:
                 break
             turn_mode = mode
@@ -304,8 +330,11 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             order = [c for c, _ in seq[:cut]]
             if not order:
                 break
-            targets = [0 if c.target == "AnyEnemy" else None for c in order]
-            out = pt.simulate(order, targets, player, [enemy])
+            if adds and not focus_boss:
+                targets = [t_ for _, t_ in seq[:cut]]  # the planner's own targets
+            else:
+                targets = [0 if c.target == "AnyEnemy" else None for c in order]
+            out = pt.simulate(order, targets, player, foes)
             if out is None:
                 break
             ea = out["enemies_after"][0]
@@ -317,11 +346,17 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             b["hp"], b["block"], b["slippery"] = ea["hp"], ea["block"], ea["slippery"]
             if spec.get("on_damage"):
                 spec["on_damage"](b, lost)
-            for c in order:
-                if c.vuln:
-                    b["vuln"] = max(b["vuln"], c.vuln)
-                if c.weak:
-                    b["weak"] = max(b["weak"], c.weak)
+            for k, a in enumerate(adds):
+                eak = out["enemies_after"][k + 1]
+                a["hp"], a["block"] = eak["hp"], eak["block"]
+            for c, t_ in zip(order, targets):
+                hit_all = c.target == "AllEnemies"
+                for k, st_ in enumerate([b] + adds):
+                    if hit_all or t_ == k:
+                        if c.vuln:
+                            st_["vuln"] = max(st_["vuln"], c.vuln)
+                        if c.weak:
+                            st_["weak"] = max(st_["weak"], c.weak)
             energy, block = out["energy_left"], out["block"]
             osty = out.get("osty_before_enemy", osty)
             cards_played += sum(1 for c in order if not c.potion)
@@ -375,7 +410,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                     if pick:
                         hand_ids.remove(pick)
                         exhausted.append(pick)  # (Feel No Pain's Block for it is already in the planner's result)
-            if b["hp"] <= 0 and not spec.get("explodes"):
+            if b["hp"] <= 0 and not spec.get("explodes") and all(a["minion"] or a["hp"] <= 0 for a in adds):
                 return {"won": True, "hp": hp, "turns": turn, "boss_left": 0.0}
             if b["hp"] <= 0 and not b.get("exploding"):
                 b["exploding"] = 1  # stunned on its next turn, explodes on the one after
@@ -396,10 +431,11 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             b["vuln"] = max(0, b["vuln"] - 1)
             b["weak"] = max(0, b["weak"] - 1)
             continue
-        # boss turn
-        if mv["kind"] == "attack":
-            per = calc.hit_damage(raw_intent[0], attacker_weak=b["weak"] > 0, target_vulnerable=p_vuln > 0)
-            unblocked = max(0, per * intent[1] - block)
+        # boss turn (adds attack with it; one block pool)
+        add_dmg = sum(a["intent"][0] * a["intent"][1] for a in adds if a["hp"] > 0)
+        if mv["kind"] == "attack" or add_dmg:
+            per = calc.hit_damage(raw_intent[0], attacker_weak=b["weak"] > 0, target_vulnerable=p_vuln > 0) if mv["kind"] == "attack" else 0
+            unblocked = max(0, per * (intent[1] if mv["kind"] == "attack" else 0) + add_dmg - block)
             to_osty = min(osty, unblocked)  # Osty takes the unblocked damage first (DIE_FOR_YOU_POWER)
             osty -= to_osty
             hp -= unblocked - to_osty
@@ -412,6 +448,12 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 return {"won": True, "hp": hp, "turns": turn, "boss_left": 0.0}
             return {"won": False, "hp": 0, "turns": turn, "boss_left": 0.0}
         p_vuln, p_weak = max(0, p_vuln - 1) + mv["p_vuln"], max(0, p_weak - 1) + mv["p_weak"]
+        p_frail = max(0, p_frail - 1) + mv["p_frail"]
+        for a in adds:
+            if a["hp"] > 0:
+                a["strength"] += a["mv"]["boss_str"]
+                p_weak += a["mv"]["p_weak"]
+            a["vuln"], a["weak"] = max(0, a["vuln"] - 1), max(0, a["weak"] - 1)
         if mv["intangible"]:
             b["intangible"] = mv["intangible"]
         b["steam"] = b.get("steam", 0) + mv.get("steam", 0)
@@ -442,8 +484,9 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     return {"won": False, "hp": hp, "turns": max_turns, "timeout": True, "boss_left": max(0.0, b["hp"] / spec["hp"])}
 
 
-def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse=BEST_CURSES, relics=(), potions=()):
-    rs = [run_fight(deck, boss, hp, max_hp, seed=s, mode=mode, curse=curse, relics=relics, potions=potions) for s in range(runs)]
+def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse=BEST_CURSES, relics=(), potions=(), focus_boss=False):
+    rs = [run_fight(deck, boss, hp, max_hp, seed=s, mode=mode, curse=curse, relics=relics, potions=potions, focus_boss=focus_boss)
+          for s in range(runs)]
     wins = [r for r in rs if r["won"]]
     return {"win_rate": len(wins) / runs, "hp_lost": statistics.mean(hp - r["hp"] for r in rs),
             "hp_lost_wins": statistics.mean(hp - r["hp"] for r in wins) if wins else float("nan"),
@@ -676,6 +719,28 @@ def report(runs=300):
           md_table(["Deck", "Start HP", "Balanced: win (HP lost)", "Safe below 50%", "Safe"], by), "",
           "Reading: blocking instead of attacking lets the Strength snowball. With a weak deck the safe plan collapses; with a "
           "strong deck it saves a few HP. Against enemies that scale every turn, follow the balanced plan.", ""]
+    # The Kin: race the Priest or let the planner target (it clears followers with hit-all cards)
+    kin = []
+    hitall = expand_deck(EXPERIMENT_BASE + ["THUNDERCLAP", "CONFLAGRATION"], "IRONCLAD")
+    kres = {}
+    for name, d in (("base deck (15 cards)", base_deck), ("+ Thunderclap, Conflagration (hit-all)", hitall)):
+        cells = [name]
+        for focus in (True, False):
+            r = max((evaluate(d, "THE_KIN", 80, 80, runs // 3, m, focus_boss=focus) for m in ("balanced", "safe")),
+                    key=lambda x: x["win_rate"])
+            kres[(name, focus)] = r["win_rate"]
+            cells.append(f"{r['win_rate']:.0%} ({r['hp_lost']:.0f} HP)")
+        kin.append(cells)
+    (n1, n2) = ("base deck (15 cards)", "+ Thunderclap, Conflagration (hit-all)")
+    L += ["## The Kin: race the Priest or clear the followers", "",
+          "Kin Priest (190 HP; Orb of Frailty 8 + Frail, Orb of Weakness 8 + Weak, Beam 3x3, Ritual +2 Strength) with two Minion "
+          "followers (58 HP; Quick Slash 5, Boomerang 2x2, Power Dance +2 Strength); killing the Priest ends the fight. Cycles "
+          "`[HYPOTHESIS]`; the model is far too hard for this boss (the Player survived 8 of 8), so read only the comparison. "
+          "From full HP, the better plan per row.", "",
+          md_table(["Deck", "Every single-target card at the Priest", "The planner's own targets"], kin), "",
+          f"Reading (computed): single-target deck: racing the Priest {kres[(n1, True)]:.0%} against {kres[(n1, False)]:.0%}; "
+          f"with two hit-all cards: the planner's targets (clearing followers) {kres[(n2, False)]:.0%} against racing "
+          f"{kres[(n2, True)]:.0%}.", ""]
     # Knowledge Demon: the Curse of Knowledge choice, all eight combinations of the three offers
     import itertools
     kd, res = [], {}

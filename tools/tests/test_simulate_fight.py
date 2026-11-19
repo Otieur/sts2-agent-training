@@ -69,6 +69,16 @@ class TestSimulateFight(unittest.TestCase):
         con.close()
         self.assertIsInstance(held, list)
 
+    def test_boss_with_adds(self):
+        self.assertEqual([sf.kin_follower_move({}, t)["kind"] for t in (1, 2, 3, 4)], ["attack", "attack", "buff", "attack"])
+        deck = expand_deck(sf.EXPERIMENT_BASE + ["THUNDERCLAP"], "IRONCLAD")
+        for focus in (False, True):
+            r = sf.run_fight(deck, "THE_KIN", 80, 80, seed=4, focus_boss=focus)
+            self.assertTrue(r["won"] or r["hp"] == 0 or r.get("timeout"))
+        # a win can come with followers alive: they are Minions and the Priest's death ends the fight
+        wins = [sf.run_fight(deck, "THE_KIN", 80, 80, seed=s, focus_boss=True) for s in range(8)]
+        self.assertTrue(any(w["won"] for w in wins))
+
     def test_soul_fysh_cycle_and_beckon(self):
         b = {}
         moves = [sf.fysh_move(b, t) for t in range(1, 11)]

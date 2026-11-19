@@ -33,7 +33,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### Priorities and recommended answers
 - **One enemy, 121 HP:** Tenderizing Goop (applies Tender), Bite 17, Puncture 7×3 `[GAME-EXTRACT]`. Tender: each card you play costs 1 Strength and 1 Dexterity until the end of the turn `[GAME-EXTRACT]`, so under Tender play the big attack and the main block card first, and fewer cards; `tools/plan_turn.py` models it.
 - Block Bite and Puncture (21 total before Strength); Weak cuts each Puncture hit.
-- **The deaths came from low arrival HP:** fatal fights started at a median 28% HP (survived 70%), all characters; Ironclad 0 of 9 fatal (H11).
+- **The deaths came from low arrival HP** `[PLAYER-DATA]`: fatal fights started at a median 28% HP (survived 70%), all characters; Ironclad 0 of 9 fatal (H11).
 
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`

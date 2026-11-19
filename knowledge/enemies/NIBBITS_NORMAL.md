@@ -33,7 +33,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### Priorities and recommended answers
 - **Two Nibbits (42–46 HP each):** Butt 12, Slice 6 + 5 Block, Hiss +2 Strength `[GAME-EXTRACT]`. Kill one before it Hisses twice.
 - Ironclad took a median 17 here (p75 27), more than other characters: block the Butt turns.
-- **The deaths came from low arrival HP:** fatal fights started at a median 34% HP (survived 66%), all characters; Ironclad 1 of 9 fatal (H11).
+- **The deaths came from low arrival HP** `[PLAYER-DATA]`: fatal fights started at a median 34% HP (survived 66%), all characters; Ironclad 1 of 9 fatal (H11).
 
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`

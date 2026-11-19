@@ -42,7 +42,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Scream: 11 + 3 Vulnerable on you (extract). **13 (15) since v0.107.1** `[COMMUNITY]` wiki patch notes
 - Beckon cards deal **unblockable** damage `[COMMUNITY]`, corroborated by the game data: Beckon is a 1-cost Status with `HpLossVar(6)` (HP loss ignores block) `[GAME-EXTRACT]`. Two guides say a Beckon still in your hand at the end of your turn costs 6 HP, and that spending its 1 energy (or exhausting it) gets rid of it; exhausting is better, since a played Beckon returns through the discard pile `[COMMUNITY]` (games.gg and clawsomegamer, March 2026, accessed 2026-11-19; version not stated).
 - **Cycle** `[COMMUNITY]`, two guides agree: turn 1 Beckon (a Beckon into your draw pile and one into your discard pile), turn 2 De-Gas 16, turn 3 Gaze 7 plus another Beckon, turn 4 Fade (Intangible), turn 5 Scream (13 + 3 Vulnerable), then repeating from turn 6. Both describe the Intangible as lasting one turn; the game data gives Fade 2 Intangible and a power that ticks down at every turn end, which fits one of your turns `[GAME-EXTRACT]` + `[HYPOTHESIS]` (gap 27).
-- Vulnerable from Scream lands on De-Gas in the next cycle: 16 becomes 24.
+- Vulnerable from Scream lands on De-Gas in the next cycle: 16 becomes 24 `[COMMUNITY]` cycle, ×1.5 arithmetic.
 - While Intangible, every hit is capped (1 damage) `[GAME-EXTRACT]`.
 
 ### Deck checklist

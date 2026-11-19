@@ -50,7 +50,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - **Explode: damage equal to its Steam Eruption, then it dies**
 - **Steam Eruption** `[GAME-EXTRACT]`: killing the Giant does not end the fight. It stays (invulnerable, stunned `[COMMUNITY]`) and explodes on its next turn.
 - **Cycle** `[COMMUNITY]`: turn 1 Pressurize, then Stomp 15 + 1 Weak, Ram 10, Siphon (heal), Pressure Gun 20 (+5 each use), Pressure Up 13, repeating, each move +3 Steam Eruption (selphie1999gaming, 2026-04-05; screenhype, March 2026, gives the first three moves and describes them repeating; both accessed 2026-11-19, no version stated). The guide's heal is 15; patch notes give 10 at lower ascension since v0.107.1. The same guide says Weak on the Giant lowers the explosion.
-- **Timing of the explosion** (guides plus the extract): the turn you bring it to 0 HP, its next turn is a stun; on your following turn it shows the explosion; you have that whole turn to block. Steam grows by 3 for each move it makes, so the explosion is 15 + 3 × (moves made since Pressurize): 42 if it dies on your turn 11 (nine moves after Pressurize).
+- **Timing of the explosion** `[COMMUNITY]` + `[GAME-EXTRACT]`: the turn you bring it to 0 HP, its next turn is a stun; on your following turn it shows the explosion; you have that whole turn to block. Steam grows by 3 for each move it makes, so the explosion is 15 + 3 × (moves made since Pressurize): 42 if it dies on your turn 11 (nine moves after Pressurize).
 
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: block cards at least 6 (bank block for the death explosion (plan; no data signal)).

@@ -43,10 +43,13 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 | Knowledge Demon | Curse offers are Disintegration or one card: take Mind Rot, then Sloth, then Waste Away (close); never stack Disintegration (simulated) |
 | Kaiser Crab | Focus Rocket; end the Laser turn facing Rocket; kill a claw with the turn's last attack (Crab Rage) |
 | Queen | Turn 1 Strong Tackle 26 (v0.111.1): block it; arrive high |
-| The Kin | Killing the Priest ends the fight (followers are Minions; two guides): race it |
+| The Kin | Killing the Priest ends the fight (followers are Minions; two guides): race it with a single-target deck; with hit-all damage clear the followers first (simulated) |
+| The Insatiable | Sandpit kills you at 0: end every turn at 2 or more; Frantic Escape +1, cost rises each play |
+| Test Subject | Phase 1: each Skill gives it 2 Strength, so attack; phases 100/200/300 HP with a one-turn stun between |
+| Aeonglass | Strip its 3 Artifact before debuffs; Withers punish many small plays (guides disagree on the count) |
 
 ## Elites (§4)
 Infested Prisms: few Skills (Tainted). Entomancer: few big hits (Personal Hive). Byrdonis: kill fast. Skulking Colony: about 20 a turn (cap). Bygone Effigy: big attack last (Slow).
 
 ## Before trusting a number
-Gaps 22–26 list the assumptions still unverified in game (live card values, flat potion damage, Kaiser facing, Ceremonial Beast Plow, Entomancer cycle). `docs/runbooks/first-session.md` checks them.
+Gaps 22–29 list the assumptions still unverified in game (live card values, flat potion damage, Kaiser facing, Ceremonial Beast Plow, Entomancer cycle, the simulated boss cycles, Sandpit timing, Aeonglass Withers). `docs/runbooks/first-session.md` checks them.
