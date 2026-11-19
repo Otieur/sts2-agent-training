@@ -24,14 +24,14 @@
 
 ### P5.E1: Rerun the history pipeline
 
-> **P5.E1.S1: Run the Phase 1 pipeline with a character parameter** · Size S · Status: Todo
+> **P5.E1.S1: Run the Phase 1 pipeline with a character parameter** · Size S · Status: Done (2026-11-19, all four characters)
 > *As the Agent, I want every Phase 1 script to take a character argument, so that a new character costs one command, not a rewrite.*
 >
 > **Acceptance criteria**
 > - [ ] Each `tools/*.py` analysis accepts `--character NECROBINDER`. Reports go to `reports/phase5/`.
 > - [ ] The benchmark is frozen as `data/benchmarks/necrobinder-encounters-v0.107.1.csv`.
 
-> **P5.E1.S2: Compare with Ironclad** · Size S · Status: Todo
+> **P5.E1.S2: Compare with Ironclad** · Size S · Status: Done (reports/phase1/cross-character.md)
 > *As the Agent, I want to know which encounters are harder or easier for Necrobinder than for Ironclad, so that pathing adjusts per character.*
 >
 > **Acceptance criteria**
@@ -40,7 +40,7 @@
 
 ### P5.E2: Necrobinder knowledge
 
-> **P5.E2.S1: Card reference** · Size M · Status: Todo
+> **P5.E2.S1: Card reference** · Size M · Status: Done (knowledge/cards/necrobinder.md from the extract)
 > *As the Agent, I want the Necrobinder pool documented the same way as Ironclad's, so that drafting has full information.*
 >
 > **Acceptance criteria**
