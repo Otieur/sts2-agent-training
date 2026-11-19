@@ -38,8 +38,14 @@ FUNCTION_UPGRADES = ["ARMAMENTS", "TRUE_GRIT"]
 REMOVABLE_CURSES_HINT = "Injury, Clumsy and other non-Eternal curses"
 
 
+def _sec(st, key):
+    """st[key] when it is a dict, else {}: live states may carry nulls or wrong types for a whole section."""
+    v = st.get(key)
+    return v if isinstance(v, dict) else {}
+
+
 def _run(st):
-    return st.get("run") or {}
+    return _sec(st, "run")
 
 
 def _act(st):
@@ -84,9 +90,9 @@ def room_of_monster():
 def fight_type(st):
     """boss / elite / hallway / unknown from the STS2-Agent state: an explicit room type if the state has one,
     else the act boss's name, else the room each enemy appeared in during the Player's history."""
-    c = st.get("combat") or {}
+    c = _sec(st, "combat")
     ids = [str(e.get("enemy_id") or "").split(".", 1)[-1].upper() for e in plan_turn._dicts(c.get("enemies"))]
-    room = str((st.get("run") or {}).get("room_type") or st.get("room_type") or "").lower()
+    room = str(_run(st).get("room_type") or st.get("room_type") or "").lower()
     boss = (_run(st).get("boss_id") or "").upper().replace("_BOSS", "").replace("ENCOUNTER.", "")
     if "boss" in room or (boss and any(boss in i for i in ids)):
         return "boss"
@@ -117,11 +123,11 @@ def combat(st, top=2):
                   for e in plan_turn._dicts((st.get("combat") or {}).get("enemies")) for x in plan_turn._dicts(e.get("powers")))
     pc = plan_turn.POTION_COST.get(ft, plan_turn.POTION_COST["hallway"])  # unknown: hold potions
     pv = plan_turn.POWER_VALUE.get(ft, plan_turn.POWER_VALUE["elite"])
-    raw_enemies = (st.get("combat") or {}).get("enemies") or []
+    raw_enemies = plan_turn._dicts(_sec(st, "combat").get("enemies"))
     ids_up = [str(e.get("enemy_id") or e.get("name") or "").upper().replace(" ", "_") for e in raw_enemies]
     giant = any("WATERFALL_GIANT" in i for i in ids_up)
     fysh = any("SOUL_FYSH" in i for i in ids_up)
-    steam = max((int(x.get("amount") or 0) for e in raw_enemies for x in e.get("powers") or []
+    steam = max((int(x.get("amount") or 0) for e in raw_enemies for x in plan_turn._dicts(e.get("powers"))
                  if str(x.get("power_id") or x.get("name") or "").upper().startswith("STEAM_ERUPTION")), default=0)
     party = [x for x in (st.get("combat") or {}).get("players") or [] if isinstance(x, dict)]
     if len(party) > 1:  # co-op: the team's health lines (combat.players[]; target_index is the position in this list)
@@ -133,7 +139,7 @@ def combat(st, top=2):
                          f"HP {hp_}/{mx_} block {x.get('block', 0)}" + (" DOWN" if x.get("is_alive") is False else " LOW" if low else ""))
         out.append("party: " + " | ".join(cells) + " · a Block or heal potion can go to a teammate: use_potion option_index=<slot> "
                    "target_index=<their [n]> (v0.111.1)")
-    if any(str(x.get("power_id") or x.get("name") or "").upper().startswith("WITHERING") for e in raw_enemies for x in e.get("powers") or []):
+    if any(str(x.get("power_id") or x.get("name") or "").upper().startswith("WITHERING") for e in raw_enemies for x in plan_turn._dicts(e.get("powers"))):
         out.append("Withering Presence: every 6th card you play adds a Wither to your hand (3 damage at the end of each turn "
                    "it is held); prefer fewer, bigger plays and exhaust Withers")
     if player.sandpit:
@@ -207,7 +213,7 @@ def card_reward(st):
 
 
 def reward_main(st):
-    rw = plan_turn._dicts((st.get("reward") or {}).get("rewards"))
+    rw = plan_turn._dicts(_sec(st, "reward").get("rewards"))
     pots = plan_turn._dicts(_run(st).get("potions"))
     free_slots = sum(1 for p in pots if not p.get("occupied"))
     out = ["Claim from the highest index down (indexes shift):"]
@@ -297,7 +303,7 @@ def event(st):
         import csv
         events = {(r["event"], r["option"]): r for r in _rows(efile)}
     out = [f"Event {eid}: {ev.get('title', '')}"]
-    for o in ev.get("options") or []:
+    for o in plan_turn._dicts(ev.get("options")):
         key = re.sub(r"^[A-Z_]+\.pages\.", "", o.get("text_key") or "")
         info = table.get((eid, key), {})
         hist = con.execute("""SELECT COUNT(*), AVG(hp_change), AVG(gold_change), AVG(max_hp_change) FROM event_choices
@@ -320,9 +326,9 @@ def event(st):
 
 
 def shop(st):
-    sh, run = st.get("shop") or {}, _run(st)
+    sh, run = _sec(st, "shop"), _run(st)
     deck, out = _deck(st), [f"gold {run.get('gold')}"]
-    cards = [c for c in sh.get("cards") or [] if c.get("is_stocked", True) and c.get("card_id")]
+    cards = [c for c in plan_turn._dicts(sh.get("cards")) if c.get("is_stocked", True) and isinstance(c.get("card_id"), str) and c["card_id"]]
     if cards:
         res = draft.score_offer(deck, ["CARD." + c["card_id"] for c in cards], _character(st), _act(st), run.get("floor"),
                                 run.get("boss_id"))
