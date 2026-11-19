@@ -39,7 +39,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Thrash: 8×2 (twice in the cycle)
   - Lunging Bite: 28
   - Salivate: +2 Strength
-- **Sandpit** `[GAME-EXTRACT]`: decrements each turn, and when removed it kills its target (you). Frantic Escape cards (the added cards) push it back `[COMMUNITY]`.
+- **Sandpit** `[GAME-EXTRACT]`: decrements each turn, and when removed it kills its target (you). Frantic Escape cards (the added cards) push it back `[COMMUNITY]`, corroborated by the game data: Frantic Escape is a 1-cost Status that increases a power already on the target, i.e. adds to the Sandpit counter `[GAME-EXTRACT]`.
 
 ### Deck checklist
 - **A race against the Sandpit timer:** either kill 321 HP before it runs out, or spend energy on Frantic Escape cards to buy turns.
