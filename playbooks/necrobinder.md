@@ -87,6 +87,7 @@ Draft by the consensus tier, but treat † cards as one tier lower when the sour
 
 ## 5. Open questions for Phase 5
 - Osty: does Osty keep its HP between fights, and does block or Strength apply to it? (Summon and the damage redirect are answered by the game data, §1.)
+- The fight simulator models Osty as read from the power data (absorbs all unblocked damage, attacks fizzle while he is dead), and a Necrobinder deck then never beats Lagavulin Matriarch, while the Player survived 15 of 15. So something is missing: Unleash's damage (probably Osty's HP), revival rules, or a narrower redirect. Watch Osty's HP through the first fights.
 - Doom interactions with bosses (Test Subject revives; Knowledge Demon heals).
 - Necrobinder archetypes: drafted in `knowledge/community/archetypes-necrobinder.md` (Doom, Osty, Souls, with commit signals); to test in Phase 5.
 - Whether the corner targets (block per turn, scaling cards) need adjusting for a character whose damage partly comes through Osty. `tools/deck_metrics.py` does not count Osty damage yet.

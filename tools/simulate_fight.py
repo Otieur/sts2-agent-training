@@ -145,11 +145,18 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     rng.shuffle(draw)
     discard, exhausted = [], []
     strength, demon, dexterity = 0, 0, 0
+    # Necrobinder: Bound Phylactery summons 1 at combat start and each turn; Osty absorbs unblocked damage. NOT VALIDATED:
+    # a 14-card Necrobinder deck wins 0% against Lagavulin here while the Player survived 15 of 15, so the Osty rules
+    # are incomplete (Unleash's damage, revival, what the redirect really covers). Do not use Necrobinder results yet.
+    necro = any("NECROBINDER" in c.upper() for c in deck)
+    osty = 0
     b = {"hp": spec["hp"], "block": 0, "slippery": spec.get("slippery", 0), "strength": 0, "vuln": 0, "weak": 0,
          "asleep": spec.get("asleep", 0), "plating": spec.get("plating", 0), "curse": curse, "hive": spec.get("hive", 0)}
     sloth = mind_rot = waste = disint = 0
     for turn in range(1, max_turns + 1):
         strength += demon
+        if necro:
+            osty += 2 if turn == 1 else 1  # combat start + turn start
         if b.get("asleep", 0) > 0 and b.get("plating"):
             b["block"] = b["plating"]
         mv = spec["move"](b, turn)
@@ -162,7 +169,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             enemy = pt.Enemy(0, boss, b["hp"], b["block"], intent[0], intent[1], vuln=b["vuln"] > 0, weak=b["weak"] > 0,
                              slippery=b["slippery"], hive=b.get("hive", 0))
             player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity,
-                               max_cards=(3 - cards_played) if sloth else None, hp=hp)
+                               max_cards=(3 - cards_played) if sloth else None, hp=hp, osty_hp=osty)
             res = pt.plans(hand, player, [enemy])
             if not res:
                 break
@@ -192,6 +199,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 if c.weak:
                     b["weak"] = max(b["weak"], c.weak)
             energy, block = out["energy_left"], out["block"]
+            osty = out.get("osty_before_enemy", osty)
             cards_played += sum(1 for c in order if not c.potion)
             hp -= sum(c.hp_cost for c in order)
             for c in order:
@@ -220,7 +228,10 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         # boss turn
         if mv["kind"] == "attack":
             per = calc.hit_damage(intent[0], attacker_weak=b["weak"] > 0)
-            hp -= max(0, per * intent[1] - block)
+            unblocked = max(0, per * intent[1] - block)
+            to_osty = min(osty, unblocked)  # Osty takes the unblocked damage first (DIE_FOR_YOU_POWER)
+            osty -= to_osty
+            hp -= unblocked - to_osty
             for _ in range(mv["status"]):
                 discard.append(spec.get("status_card", "WOUND"))
         b["strength"] += mv["boss_str"]

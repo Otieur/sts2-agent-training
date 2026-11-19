@@ -331,7 +331,7 @@ def simulate(cards, targets, player, enemies):
     all_dead = all(e.hp <= 0 for e in es)
     dies = player.hp is not None and lost >= player.hp and not all_dead
     return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": lost, "dies": dies,
-            "osty_hp_after": osty - to_osty, "powers": powers,  # energy spent on Powers
+            "osty_hp_after": osty - to_osty, "osty_before_enemy": osty, "powers": powers,  # energy spent on Powers
             "seq": seq,
             "hive_cards": sum(getattr(e, "hive_added", 0) for e in es),
             "enemies_after": [{"hp": max(0, e.hp), "block": e.block, "slippery": e.slippery, "vuln": e.vuln, "weak": e.weak} for e in es],
