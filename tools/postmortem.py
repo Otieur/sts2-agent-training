@@ -102,8 +102,15 @@ def main(argv=None):
     relics = [short(r["id"]) for r in player.get("relics", [])]
 
     decisions = collections.Counter()
+    tool = collections.Counter()
     if folder and (folder / "decisions.jsonl").exists():
         for line in (folder / "decisions.jsonl").read_text().splitlines():
+            try:
+                rec = json.loads(line)
+            except ValueError:
+                continue
+            if rec.get("tool_pick") is not None:
+                tool["followed" if rec.get("followed_tool") else "overridden"] += 1
             try:
                 d = json.loads(line)
             except json.JSONDecodeError:
@@ -133,6 +140,9 @@ def main(argv=None):
          f"Relics ({len(relics)}): " + ", ".join(relics), ""]
     if decisions:
         L += ["## Decisions logged", "", md_table(["Screen or action", "Count"], decisions.most_common()), ""]
+    if tool:
+        L += [f"Tool recommendations: followed {tool['followed']}, overridden {tool['overridden']} (each override should have its "
+              "reason in the decision log; review them in the post-mortem).", ""]
     (out / "facts.md").write_text("\n".join(L))
     print(f"wrote {out / 'facts.md'}: {result}; {len(fights)} fights, {sum(x['over_p75'] for x in fights)} over p75")
 

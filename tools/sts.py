@@ -434,6 +434,7 @@ def main(argv=None, opener=None):
     a.add_argument("action")
     a.add_argument("params", nargs="*")
     a.add_argument("--reason", required=True)
+    a.add_argument("--tool-pick", default=None, help="what tools/advise.py recommended (logged, to measure overrides in Phase 4)")
     w = sub.add_parser("wait")
     w.add_argument("--timeout", type=float, default=20)
     sub.add_parser("party")
@@ -468,6 +469,8 @@ def main(argv=None, opener=None):
                 "instance": args.instance,
                 "screen": adapter.screen(before), "floor": (before.get("run") or {}).get("floor"),
                 "action": args.action, "params": params, "reason": args.reason, "ok": ok,
+                "tool_pick": args.tool_pick, "followed_tool": (None if args.tool_pick is None else
+                                                               args.tool_pick.strip() == " ".join([args.action] + args.params).strip()),
                 "message": resp.get("message") or (resp.get("error") or {}).get("code"),
             })
             print(("OK " if ok else "FAILED ") + json.dumps(resp)[:800])

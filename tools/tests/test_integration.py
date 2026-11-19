@@ -44,7 +44,7 @@ class TestIntegration(unittest.TestCase):
                 sts.main(["--mod", "sts2agent", "--log", str(log), "act", "play_card", "card_index=1", "target_index=0",
                           "--reason", "Bash first for Vulnerable, then Strike is lethal"], opener=op)
                 sts.main(["--mod", "sts2agent", "--log", str(log), "act", "play_card", "card_index=0", "target_index=0",
-                          "--reason", "Strike for lethal"], opener=op)
+                          "--reason", "Strike for lethal", "--tool-pick", "play_card card_index=0 target_index=0"], opener=op)
             recs = [json.loads(x) for x in log.read_text().splitlines()]
             self.assertEqual([r["screen"] for r in recs], ["COMBAT", "COMBAT"])
             self.assertTrue(all(r["reason"] for r in recs))
@@ -67,6 +67,8 @@ class TestIntegration(unittest.TestCase):
             facts = (folder / "facts.md").read_text()
             self.assertIn("Decisions logged", facts)
             self.assertIn("COMBAT", facts)
+            self.assertIn("Tool recommendations: followed 1, overridden 0", facts)
+            self.assertTrue(recs[1]["followed_tool"])
             (folder / "postmortem.md").write_text("done")
             self.assertEqual(journal.active_journals(runs), [])
 

@@ -7,7 +7,7 @@ The same loop for every decision. The interface is `tools/sts.py` (`--mod sts2ag
 2. **Classify** the screen (`state_type`). Resolve overlays first (`hand_select`, `card_select`, `relic_select`, `bundle_select`, `overlay`).
 3. **Load** only the playbook section the screen needs (section numbers in `playbooks/ironclad.md`). Use the current boss plan and the encounter note for fights.
 4. **Advise, then decide.** With STS2-Agent, save the state (`tools/sts.py --mod sts2agent state --raw > runs/<run>/state.json`) and run `python3 -I tools/advise.py --state runs/<run>/state.json`. It routes to the turn planner, path planner, draft scorer, rest rule, event table or shop scoring. Follow it unless you can name a reason it misses (a relic, a synergy, a boss mechanic), and put that reason in the decision log. Big decisions (rare cards, relics, elite paths, boss turns) get explicit reasoning in the journal. Routine ones stay short.
-5. **Act** with a one-sentence reason: `python3 -I tools/sts.py --log runs/<run>/decisions.jsonl act <action> key=value ... --reason "..."`.
+5. **Act** with a one-sentence reason: `python3 -I tools/sts.py --log runs/<run>/decisions.jsonl act <action> key=value ... --reason "..."`. Add `--tool-pick "<action key=value ...>"` with what `advise.py` recommended, so the post-mortem can count overrides; when you override, the reason says why.
 6. **Verify** the state moved as expected (`state`, or `wait` across animations). If not, use the error table below.
 7. **On every new floor:** update the journal (floor log line; HP and budget; plan changes):
    - `python3 -I tools/journal.py status runs/<run> --from-state <saved state.json>` (or `--floor --act --hp --max-hp --gold --potions`)
