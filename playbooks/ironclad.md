@@ -90,6 +90,20 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
    - Exception: the elite is one the deck handles easily (Phantasmal Gardeners, median 12) and the alternative path is worse.
 3. **Elites at 50–70% HP:** take one only if current HP minus its p75 leaves enough to reach the next rest site.
 4. **Re-plan** if HP falls more than 15% of max below the plan, a key card or relic changes the deck's needs, or a detour is forced.
+5. **Room economics** (`reports/phase2/room-values.md`, all characters, mean per visit) `[PLAYER-DATA]`:
+
+   | Room | HP change (Act 1 / 2 / 3) | What it gives |
+   |---|---|---|
+   | Monster | −6% / −10% / −8% | about 0.9 cards, 0.45 potions, 12 gold |
+   | Elite | −23% / −28% / −25% | about 0.9 relics, 0.8 cards, 30 gold |
+   | ? room | −1% / −1% / −2% (a fight about 20% of the time) | 0.5–0.8 cards, 0.2–0.4 relics, 8–22 gold |
+   | Shop | ~0 | about 1 card and 0.6–1 relic bought |
+   | Treasure | 0 | 1 relic, gold |
+
+   **Path heuristics** `[HYPOTHESIS]`:
+   - ? rooms are the cheapest source of value. Prefer them over monsters when HP is below plan.
+   - Take monsters when the deck still needs cards, early in Act 1.
+   - Take an elite only when HP minus the elite's p75 stays above 50%. An elite costs about a quarter of max HP for a relic.
 
 **Elite reference** (Ironclad HP lost per fight, median / p75; notes in `knowledge/enemies/`):
 

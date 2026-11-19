@@ -31,3 +31,4 @@ Block K (morning report) starts no later than 09:52 EST.
 | X6: Necrobinder v0 | 01:02 | 01:04 | playbooks/necrobinder.md v0 | Groundwork only: mechanics from the extract, the Player data, boss priorities, open questions |
 | X7: Band benchmarks | 01:04 | 01:05 | tools/build_band_benchmarks.py → data/benchmarks/{ironclad,allchars}-encounters-by-band-v0.107.1.csv; postmortem.py picks band-matched benchmarks; M4 redefined per band | The pooled benchmark is mostly A7–A10 and would make low-ascension comparisons meaningless |
 | X8: Elite deck metrics | 01:05 | 01:06 | deck-strength report: elite section; playbook §2.1 Act 1 timing rule | Act 1 elites reward raw damage (high tercile 3/62 fatal); bosses reward block and scaling |
+| X9: Room values | 01:06 | 01:07 | tools/analyze_room_values.py → reports/phase2/room-values.md; playbook §4 room economics and path heuristics | ? rooms cost ~1% HP for 0.5+ cards and 0.2–0.4 relics; elites ~25% HP for ~0.9 relic |
