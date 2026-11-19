@@ -18,7 +18,7 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 | `postmortem.py` | Facts sheet for a finished run (works on the Player's `.run` files too) | `postmortem.py runs/<run>/` |
 | `smoke.py` | Phase 0: read-only check of every field the tools use; saves live fixtures | `smoke.py --save --watch` |
 
-## Shadowing (Phase 3, STS2MCP format)
+## Shadowing (Phase 3; both mods, `--mod sts2agent` by default)
 `watch.py` (decision-point watcher), `record.py` (state recorder), `reconstruct.py` (actions from snapshots), `stsstate.py` (shared helpers).
 
 ## Dataset and analyses (Phases 1–2)

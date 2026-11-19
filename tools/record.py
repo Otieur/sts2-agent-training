@@ -2,9 +2,9 @@
 """State recorder for shadowing (P3.E4.S1). Polls the game state and appends a compact snapshot to a gzipped
 JSONL file whenever the state changes (deduplicated by fingerprint). Run in the background for a whole run.
 
-UNTESTED AGAINST THE LIVE GAME (STS2MCP format).
+UNTESTED AGAINST THE LIVE GAME (both mods' formats via stsstate.compact; --mod sts2agent by default).
 
-Usage: python3 -I tools/record.py --out runs/shadow-01/states.jsonl.gz [--port 15526] [--combat-interval 0.5]
+Usage: python3 -I tools/record.py --out runs/shadow-01/states.jsonl.gz [--mod sts2agent|sts2mcp] [--port N] [--combat-interval 0.5]
        [--interval 1.0] [--max-hours 4]
 """
 import argparse
@@ -48,12 +48,14 @@ def record(adapter, out_path, interval=1.0, combat_interval=0.5, max_seconds=4 *
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
-    ap.add_argument("--port", type=int, default=15526)
+    ap.add_argument("--mod", choices=["sts2agent", "sts2mcp"], default="sts2agent")
+    ap.add_argument("--port", type=int, default=None)
     ap.add_argument("--interval", type=float, default=1.0)
     ap.add_argument("--combat-interval", type=float, default=0.5)
     ap.add_argument("--max-hours", type=float, default=4)
     args = ap.parse_args()
-    n = record(sts.Sts2McpAdapter(args.port), args.out, args.interval, args.combat_interval, args.max_hours * 3600)
+    adapter = (sts.Sts2AgentAdapter(args.port or 8080) if args.mod == "sts2agent" else sts.Sts2McpAdapter(args.port or 15526))
+    n = record(adapter, args.out, args.interval, args.combat_interval, args.max_hours * 3600)
     print(f"recorded {n} snapshots to {args.out}")
 
 

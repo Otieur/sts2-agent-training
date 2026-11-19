@@ -6,9 +6,9 @@ of an elite or boss fight, or a turn with incoming damage of at least 30% of cur
 Run it in the background; the Agent is re-invoked when it exits, posts its call, then starts it again.
 It remembers the last fired state (--memo) so it never fires twice for the same screen.
 
-UNTESTED AGAINST THE LIVE GAME (STS2MCP format).
+UNTESTED AGAINST THE LIVE GAME (both mods' formats via stsstate.compact; --mod sts2agent by default).
 
-Usage: python3 -I tools/watch.py [--port 15526] [--interval 1.0] [--timeout 3600] [--memo runs/current/.watch_memo]
+Usage: python3 -I tools/watch.py [--mod sts2agent|sts2mcp] [--port N] [--interval 1.0] [--timeout 3600] [--memo runs/current/.watch_memo]
 """
 import argparse
 import sys
@@ -47,17 +47,19 @@ def watch(adapter, memo_path, interval=1.0, timeout=3600, clock=time.time, sleep
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--port", type=int, default=15526)
+    ap.add_argument("--mod", choices=["sts2agent", "sts2mcp"], default="sts2agent")
+    ap.add_argument("--port", type=int, default=None)
     ap.add_argument("--interval", type=float, default=1.0)
     ap.add_argument("--timeout", type=float, default=3600)
     ap.add_argument("--memo", default=str(PROJECT / "runs/current/.watch_memo"))
     args = ap.parse_args()
-    reason, st = watch(sts.Sts2McpAdapter(args.port), args.memo, args.interval, args.timeout)
+    adapter = (sts.Sts2AgentAdapter(args.port or 8080) if args.mod == "sts2agent" else sts.Sts2McpAdapter(args.port or 15526))
+    reason, st = watch(adapter, args.memo, args.interval, args.timeout)
     if reason is None:
         print("watch: timeout, no decision point")
         sys.exit(3)
     print(f"WAKE: {reason}")
-    print(sts.brief_sts2mcp(st))
+    print(sts.brief_sts2agent(st) if args.mod == "sts2agent" else sts.brief_sts2mcp(st))
 
 
 if __name__ == "__main__":

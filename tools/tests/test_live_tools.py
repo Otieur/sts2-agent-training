@@ -83,5 +83,31 @@ class TestRecordAndReconstruct(unittest.TestCase):
         self.assertEqual((play["card"], play["target"], play["confidence"]), ("BASH", "BYRDONIS_0", "high"))
 
 
+class TestAgentFormat(unittest.TestCase):
+    def test_compact_agent_combat(self):
+        st = {"ok": True, "data": {"screen": "COMBAT", "turn": 1, "available_actions": ["play_card", "end_turn"],
+              "run": {"floor": 17, "act_id": "1", "current_hp": 50, "max_hp": 80, "gold": 99, "boss_id": "VANTOM_BOSS",
+                      "potions": [{"potion_id": "FIRE_POTION", "occupied": True}, {"potion_id": None, "occupied": False}]},
+              "combat": {"player": {"current_hp": 50, "max_hp": 80, "block": 0, "energy": 3,
+                                    "powers": [{"power_id": "STRENGTH_POWER", "amount": 2}]},
+                         "hand": [{"card_id": "STRIKE_IRONCLAD", "name": "Strike", "energy_cost": 1, "upgraded": False}],
+                         "enemies": [{"index": 0, "enemy_id": "VANTOM", "current_hp": 173, "block": 0, "is_alive": True,
+                                      "powers": [{"power_id": "SLIPPERY_POWER", "amount": 9}],
+                                      "intents": [{"intent_type": "Attack", "damage": 6, "hits": 2}]}]}}}
+        c = compact(st)
+        self.assertEqual((c["screen"], c["fight"], c["act"], c["floor"], c["hp"]), ("combat", "boss", 1, 17, 50))
+        self.assertEqual(c["enemies"][0]["intents"], ["6x2"])
+        self.assertEqual(c["potions"], ["FIRE_POTION"])
+        self.assertEqual(parse_intent_damage(c["enemies"][0]["intents"][0]), 12)
+        self.assertIn("turn 1 of boss fight", decision_point(c))
+
+    def test_compact_agent_screens(self):
+        c = compact({"screen": "REWARD", "run": {}, "reward": {"card_options": [{"card_id": "BASH"}]}})
+        self.assertEqual((c["screen"], c["options"]), ("card_reward", ["BASH"]))
+        c = compact({"screen": "MAP", "run": {}, "map": {"available_nodes": [{"node_type": "Elite"}]}})
+        self.assertEqual((c["screen"], c["options"]), ("map", ["Elite"]))
+        self.assertTrue(decision_point(c).startswith("decision screen"))
+
+
 if __name__ == "__main__":
     unittest.main()

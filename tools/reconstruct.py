@@ -19,7 +19,7 @@ import gzip
 import json
 from pathlib import Path
 
-COMBAT = {"monster", "elite", "boss"}
+COMBAT = {"monster", "elite", "boss", "combat"}
 
 
 def _cost(c):
