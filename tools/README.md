@@ -8,7 +8,7 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 | Tool | What it does | Typical call |
 |---|---|---|
 | `sts.py` | Talks to the mod: health, state (brief or raw), act with a mandatory reason (logged to `decisions.jsonl`), wait; co-op `--instance host/teammate` and `party` | `sts.py --mod sts2agent state --raw > runs/<run>/state.json` |
-| `advise.py` | Reads a saved state, detects the screen and runs the right helper below | `advise.py --state runs/<run>/state.json` |
+| `advise.py` | Reads the state (live from the mod, or a saved file), detects the screen and runs the right helper below; never raises on odd states | `advise.py --live --save runs/<run>/state.json` |
 | `plan_turn.py` | Combat: searches the hand (and potions) for the safest and the best damage-for-HP plays, with targets; card-specific rules for the common Ironclad cards whose text the extract leaves incomplete (see its docstring) | `plan_turn.py --state state.json` |
 | `path.py` | Map: ranks every route to the boss by expected loot against fatal risk | `path.py --state state.json` |
 | `draft.py` | Card reward: tier, v0.111.1 changes, boss fit, corner-target needs, engines, skip bar | `draft.py --from-state state.json` |

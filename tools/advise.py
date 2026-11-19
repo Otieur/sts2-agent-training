@@ -463,13 +463,32 @@ def _advise(st, nxt=None, deck_cache=None):
     return sts.brief_sts2agent(st)
 
 
-def main(argv=None):
+def main(argv=None, opener=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--state", required=True)
+    src = ap.add_mutually_exclusive_group(required=True)
+    src.add_argument("--state", help="a saved state file")
+    src.add_argument("--live", action="store_true", help="read the state from the running mod (one command per decision)")
+    ap.add_argument("--save", help="with --live: also write the state here (for example runs/<run>/state.json)")
+    ap.add_argument("--mod", choices=["sts2agent", "sts2mcp"], default="sts2agent")
+    ap.add_argument("--instance", choices=["solo", "teammate", "host"], default="solo")
+    ap.add_argument("--port", type=int)
+    ap.add_argument("--host-port", type=int)
+    ap.add_argument("--mp", action="store_true", help="STS2MCP: multiplayer endpoint")
     ap.add_argument("--next", choices=["boss", "elite", "other"])
     ap.add_argument("--deck-cache", help="STS2MCP only: where the deck seen in the last combat is cached (default runs/current/deck.json)")
     args = ap.parse_args(argv)
-    print(advise(json.loads(Path(args.state).read_text()), args.next, args.deck_cache))
+    if args.live:
+        try:
+            st = sts.make_adapter(args, opener=opener).state()
+        except sts.ModError as ex:
+            print(f"cannot read the state: {ex}")
+            return 1
+        if args.save:
+            Path(args.save).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.save).write_text(json.dumps(st, indent=1))
+    else:
+        st = json.loads(Path(args.state).read_text())
+    print(advise(st, args.next, args.deck_cache))
     return 0
 
 

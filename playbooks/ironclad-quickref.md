@@ -3,8 +3,8 @@
 One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.16); when they differ, the playbook wins. Section numbers point there.
 
 ## Every decision
-1. Save the state: `python3 -I tools/sts.py --mod sts2agent state --raw > runs/<run>/state.json`
-2. Advice: `python3 -I tools/advise.py --state runs/<run>/state.json`
+1. State and advice in one: `python3 -I tools/advise.py --live --save runs/<run>/state.json` (co-op: add `--instance teammate`; STS2MCP: `--mod sts2mcp`)
+2. (Or from a saved file: `python3 -I tools/advise.py --state runs/<run>/state.json`)
 3. Act with a reason and the tool's pick: `python3 -I tools/sts.py --mod sts2agent --log runs/<run>/decisions.jsonl act <action> key=value ... --reason "..." --tool-pick "<advised action>"`
 4. New floor: `python3 -I tools/journal.py floor ...`; after each fight: `python3 -I tools/journal.py fight ...`
 5. Act start and before each boss: `python3 -I tools/deck_check.py --state runs/<run>/state.json`; the route: `python3 -I tools/path.py --state ...`

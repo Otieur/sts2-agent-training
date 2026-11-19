@@ -169,6 +169,20 @@ class TestAdvise(unittest.TestCase):
         out = advise.advise(s)
         self.assertIn("Sandpit 2:", out)
 
+    def test_live_mode_reads_and_saves(self):
+        import io, json, tempfile
+        from contextlib import redirect_stdout
+        from test_sts import RoutingOpener
+        s = st("REST", rest={"options": [{"index": 0, "option_id": "HEAL"}, {"index": 1, "option_id": "SMITH"}]})["data"]
+        op = RoutingOpener({8080: {"health": {"instance_role": "human"}, "state": s}})
+        with tempfile.TemporaryDirectory() as d:
+            out = io.StringIO()
+            with redirect_stdout(out):
+                rc = advise.main(["--live", "--save", f"{d}/state.json"], opener=op)
+            self.assertEqual(rc, 0)
+            self.assertIn("[REST]", out.getvalue())
+            self.assertEqual(json.loads(Path(f"{d}/state.json").read_text())["screen"], "REST")
+
     def test_coop_party_line(self):
         s = st("COMBAT", combat={"player": {"current_hp": 40, "energy": 3, "block": 0, "powers": []},
                                  "players": [{"player_id": "1", "is_local": False, "character_name": "Necrobinder", "current_hp": 12,
