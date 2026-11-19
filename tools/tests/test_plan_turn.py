@@ -317,6 +317,16 @@ class TestPlanTurn(unittest.TestCase):
         self.assertEqual(o["dealt"], 6)                    # Rocket dies; Crusher gets 99 Block, so the second Strike is wasted
         self.assertEqual(o["incoming"], 22)                # Crusher's 6x2 becomes 11x2
 
+    def test_more_potions(self):
+        e = lambda s="A:100:0:20": [pt.parse_enemy(s, 0)]  # noqa: E731
+        h = [pt.card_from_potion(0, "BLOOD_POTION"), pt.card_from_extract(1, "STRIKE_IRONCLAD")]
+        o = pt.rank(pt.plans(h, pt.Player(energy=1, hp=30, max_hp=80), e()), "balanced", pt.POTION_COST["boss"])[0]
+        self.assertEqual(o["hp_lost"], 4)                     # 20 incoming, healed 16 (20% of 80)
+        o = pt.rank(pt.plans(h, pt.Player(energy=1, hp=80, max_hp=80), e()), "balanced", pt.POTION_COST["boss"])[0]
+        self.assertEqual(o["potions"], 0)                     # nothing to heal at full HP
+        self.assertEqual(pt.simulate([pt.card_from_potion(0, "POTION_SHAPED_ROCK")], [0], pt.Player(energy=0),
+                                     e("A:100:0:0:vuln"))["dealt"], 15)  # flat: Vulnerable does not apply
+
     def test_beckon_held_loss(self):
         h = [pt.card_from_extract(0, "BECKON"), pt.card_from_extract(1, "STRIKE_IRONCLAD")]
         self.assertEqual((h[0].held_loss, h[0].cost, h[0].playable), (6, 1, True))

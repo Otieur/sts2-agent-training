@@ -94,6 +94,7 @@ class Card:
     fnp: int = 0                # Feel No Pain gained: Block for each card exhausted later this turn
     held_dmg: int = 0           # damage (blockable) at the end of the turn if still in hand (Toxic 5)
     sandpit_add: int = 0        # adds to the Sandpit counter on you (Frantic Escape +1)
+    heal_pct: int = 0           # heals this percent of max HP, at most the HP missing (Blood Potion 20)
 
 
 @dataclass
@@ -135,6 +136,7 @@ class Player:
     fnp: int = 0                # Feel No Pain already on you: Block for each card exhausted
     sandpit: int = 0            # The Insatiable's Sandpit on you: you die when it runs out (0 = none)
     end_turn_dmg: int = 0       # damage at the end of your turn from a power on you (Disintegration), blockable
+    max_hp: Optional[int] = None
 
 
 def parse_effect(c):
@@ -238,6 +240,12 @@ POTIONS = {
     "DEXTERITY_POTION": dict(target="Self", dex=2),
     "SPEED_POTION": dict(target="Self", dex=5),
     "SWIFT_POTION": dict(target="Self", draw=3),
+    "POTION_SHAPED_ROCK": dict(target="AnyEnemy", dmg=15, flat=True),
+    "POTION_OF_BINDING": dict(target="AllEnemies", vuln=1, weak=1),
+    "CURE_ALL": dict(target="Self", energy=1, draw=2),
+    "RADIANT_TINCTURE": dict(target="Self", energy=1),       # plus 3 Radiance (not modelled)
+    "LIQUID_BRONZE": dict(target="Self", retaliate=3),       # 3 Thorns on you for the fight (counted this turn only)
+    "BLOOD_POTION": dict(target="Self", heal_pct=20),        # heal 20% of max HP, at most the HP missing
 }
 # HP-equivalent cost of spending a potion [HYPOTHESIS]. High in hallways (a Fire Potion's 20 damage should not be
 # spent on a hallway fight unless it kills or prevents a large loss), low in elites and bosses, where the playbook
@@ -256,9 +264,11 @@ def card_from_potion(slot, potion_id):
     name = pid.replace("_", " ").title()
     if not spec:
         return Card(slot, pid, name, 0, "Self", playable=False, potion=True, note="potion not modelled")
-    return Card(slot, pid, name, 0, spec["target"], dmg=spec.get("dmg", 0), block=spec.get("block", 0), vuln=spec.get("vuln", 0),
+    card = Card(slot, pid, name, 0, spec["target"], dmg=spec.get("dmg", 0), block=spec.get("block", 0), vuln=spec.get("vuln", 0),
                 weak=spec.get("weak", 0), strength=spec.get("strength", 0), energy=spec.get("energy", 0), draw=spec.get("draw", 0),
                 potion=True, flat=spec.get("flat", False), dex=spec.get("dex", 0))
+    card.retaliate, card.heal_pct = spec.get("retaliate", 0), spec.get("heal_pct", 0)
+    return card
 
 
 def per_hit(card, player, enemy, strength_gained, played_before=0):
@@ -368,6 +378,8 @@ def simulate(cards, targets, player, enemies):
         # Forgotten Ritual before v0.111.1: energy only after an exhaust this turn [COMMUNITY]; v0.111.1 removed the condition
         energy += 0 if (card.needs_exhaust and not exhausted) else card.energy
         hp_cost += card.hp_cost
+        if card.heal_pct and player.max_hp and player.hp is not None:  # Blood Potion: heal, at most what is missing
+            hp_cost -= min(max(0, player.max_hp - (player.hp - hp_cost)), player.max_hp * card.heal_pct // 100)
         draws += card.draw
         str_before = strength_gained  # an Attack's own Strength gain (Fight Me, Setup Strike) applies after its hits
         strength_gained += card.strength + card.temp_str
@@ -609,7 +621,8 @@ def from_state(st):
                     weak=any(k.startswith("WEAK") for k in powers), frail=any(k.startswith("FRAIL") for k in powers),
                     hp=p.get("current_hp"), fnp=int(powers.get("FEEL_NO_PAIN_POWER", powers.get("FEEL_NO_PAIN", 0)) or 0),
                     sandpit=int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0),
-                    end_turn_dmg=int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0))
+                    end_turn_dmg=int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0),
+                    max_hp=p.get("max_hp"))
     # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
     # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])
     limits = [int(powers[k] or 3) for k in powers if k.startswith("SLOTH")] + [1 for k in powers if k.startswith("RINGING")]

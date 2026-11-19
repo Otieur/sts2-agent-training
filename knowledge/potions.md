@@ -2,6 +2,8 @@
 
 Properties and on-use commands from the extracted game data `[GAME-EXTRACT]` (command names, not card text). The Player's counts come from solo runs on v0.107.1 `[PLAYER-DATA]`.
 
+**Modelled in the turn planner** (`tools/plan_turn.py` `POTIONS`, used as free plays in a turn): Block Potion, Blood Potion, Cure All, Dexterity Potion, Energy Potion, Explosive Ampoule, Fire Potion, Flex Potion, Liquid Bronze, Potion Of Binding, Potion Shaped Rock, Radiant Tincture, Speed Potion, Strength Potion, Swift Potion, Vulnerable Potion, Weak Potion. Potions that make cards (Attack, Skill, Power, Colorless) or act over several turns (Regen, Clarity, Stable Serum) are shown as not modelled; use them by judgment.
+
 | Potion | Rarity | Usage | Target | On use (game commands) | Taken/offered | Bought | Used | Discarded |
 |---|---|---|---|---|---|---|---|---|
 | Attack Potion | Common | CombatOnly | Self | CardSelectCmd.FromChooseACardScreen, CardPileCmd.AddGeneratedCardToCombat | 67/130 | 6 | 60 | 7 |
