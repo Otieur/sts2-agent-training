@@ -59,6 +59,23 @@ class TestSmoke(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertEqual(op.posts, 0)
 
+    def test_mcp_state(self):
+        from test_sts import COMBAT as MCP_COMBAT, MAP as MCP_MAP
+        import copy
+        st = copy.deepcopy(MCP_COMBAT)
+        st["player"]["draw_pile"], st["player"]["discard_pile"] = [], []
+        import tempfile
+        tmp = tempfile.TemporaryDirectory()
+        cache = str(Path(tmp.name) / "deck.json")
+        scr, issues, notes = smoke.check_mcp_state(st, cache)
+        self.assertEqual(scr, "boss")
+        self.assertEqual(issues, [])
+        bad = copy.deepcopy(MCP_MAP)
+        del bad["map"]["next_options"]
+        scr, issues, notes = smoke.check_mcp_state(bad, cache)
+        self.assertTrue(any("next_options" in i for i in issues))
+        tmp.cleanup()
+
 
 if __name__ == "__main__":
     unittest.main()

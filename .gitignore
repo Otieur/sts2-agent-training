@@ -7,3 +7,6 @@ data/tables/
 __pycache__/
 *.pyc
 .DS_Store
+
+# STS2MCP deck cache (rebuilt from combat piles by tools/mcp_adapter.py)
+runs/current/deck.json

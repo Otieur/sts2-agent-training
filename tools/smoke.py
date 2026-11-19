@@ -12,7 +12,7 @@ It never sends an action. For STS2-Agent it:
 With --watch it polls (read-only) and checks each new screen once, so the Player can click through a run.
 
 Usage:
-  python3 -I tools/smoke.py [--port 8080] [--save] [--watch [--minutes 30]]
+  python3 -I tools/smoke.py [--mod sts2agent|sts2mcp] [--port N] [--save] [--watch [--minutes 30]]
   python3 -I tools/smoke.py --file state.json        (check a saved state offline)
 """
 import argparse
@@ -44,6 +44,19 @@ SPEC = {
     "SHOP": ["shop.cards[].card_id", "shop.cards[].price", "shop.cards[].enough_gold", "shop.cards[].index",
              "shop.relics", "shop.potions", "shop.card_removal"],
     "EVENT": ["event.event_id", "event.options[].text_key", "event.options[].index"],
+}
+# STS2MCP: the raw fields tools/mcp_adapter.py reads, per state_type
+MCP_COMMON = ["state_type", "run.act", "run.floor", "run.ascension", "player.hp", "player.max_hp", "player.gold", "player.potions"]
+MCP_SPEC = {
+    "combat": ["battle.round", "battle.is_play_phase", "battle.enemies[].entity_id", "battle.enemies[].hp", "battle.enemies[].block",
+               "battle.enemies[].intents", "player.energy", "player.hand[].id", "player.hand[].cost", "player.hand[].description",
+               "player.draw_pile", "player.discard_pile", "player.status"],
+    "map": ["map.nodes[].col", "map.nodes[].row", "map.nodes[].type", "map.nodes[].children", "map.boss", "map.next_options[].index"],
+    "card_reward": ["card_reward.cards[].id", "card_reward.cards[].index"],
+    "rewards": ["rewards.items[].type", "rewards.items[].index"],
+    "rest_site": ["rest_site.options[].index"],
+    "shop": ["shop.items[].index", "shop.items[].price"],
+    "event": ["event.options[].index"],
 }
 OPTIONAL_PATHS = {"combat.player.powers", "combat.enemies[].powers", "reward.rewards", "reward.card_options",
                   "run.boss_id", "shop.relics", "shop.potions", "shop.card_removal"}
@@ -110,6 +123,27 @@ def check_state(st):
     return scr, issues, notes
 
 
+def check_mcp_state(st, deck_cache=None):
+    """STS2MCP: raw field paths the converter needs, then the same advise.py crash check on the converted state."""
+    t = st.get("state_type", "?")
+    kind = "combat" if t in ("monster", "elite", "boss") else t
+    issues, notes = [], []
+    for path in MCP_COMMON + MCP_SPEC.get(kind, []):
+        ok, _ = get_path(st, path)
+        if not ok:
+            parent = path.split("[]")[0]
+            pok, pvals = get_path(st, parent) if "[]" in path else (False, [])
+            if pok and pvals and isinstance(pvals[0], list) and not pvals[0]:
+                continue
+            (notes if path in ("player.potions", "player.status", "map.boss") else issues).append(f"missing: {path}")
+    try:
+        import advise
+        advise.advise(st, deck_cache=deck_cache)  # default: runs/current/deck.json (mcp_adapter)
+    except Exception as ex:
+        issues.append(f"advise.py raised {type(ex).__name__}: {ex}\n" + traceback.format_exc(limit=3))
+    return t, issues, notes
+
+
 def check_health(h):
     d = h.get("data", h) if isinstance(h, dict) else {}
     out = []
@@ -141,31 +175,38 @@ def report(scr, issues, notes):
 
 def main(argv=None, opener=None, sleep=time.sleep, clock=time.time):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--port", type=int, default=8080)
+    ap.add_argument("--mod", choices=["sts2agent", "sts2mcp"], default="sts2agent")
+    ap.add_argument("--port", type=int, default=None)
     ap.add_argument("--file")
     ap.add_argument("--save", action="store_true")
     ap.add_argument("--watch", action="store_true")
     ap.add_argument("--minutes", type=float, default=30)
     args = ap.parse_args(argv)
     if args.file:
-        scr, issues, notes = check_state(json.loads(Path(args.file).read_text()))
+        st = json.loads(Path(args.file).read_text())
+        scr, issues, notes = (check_mcp_state if "state_type" in st else check_state)(st)
         report(scr, issues, notes)
         return 1 if issues else 0
-    ad = sts.Sts2AgentAdapter(args.port, opener=opener)
+    mcp = args.mod == "sts2mcp"
+    ad = sts.Sts2McpAdapter(args.port or 15526, opener=opener) if mcp else sts.Sts2AgentAdapter(args.port or 8080, opener=opener)
+    hissues = []
     try:
-        d, hissues = check_health(ad.health())
+        if mcp:
+            print(f"health: {json.dumps(ad.health())[:200]}")
+        else:
+            d, hissues = check_health(ad.health())
+            print(f"health: {d.get('service')} {d.get('mod_version')} · game {d.get('game_version')} · {d.get('status')} · "
+                  f"role {d.get('instance_role')} · port {d.get('api_port')}")
     except sts.ModError as e:
         print(f"cannot reach the mod: {e}")
         return 2
-    print(f"health: {d.get('service')} {d.get('mod_version')} · game {d.get('game_version')} · {d.get('status')} · "
-          f"role {d.get('instance_role')} · port {d.get('api_port')}")
     for i in hissues:
         print("  PROBLEM " + i)
     seen, bad = set(), bool(hissues)
     deadline = clock() + args.minutes * 60
     while True:
         st = ad.state()
-        scr, issues, notes = check_state(st)
+        scr, issues, notes = (check_mcp_state if mcp else check_state)(st)
         if scr not in seen:
             seen.add(scr)
             report(scr, issues, notes)
