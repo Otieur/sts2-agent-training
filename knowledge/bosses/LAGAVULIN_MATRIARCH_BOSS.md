@@ -42,10 +42,12 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Disembowel: 9×2
   - **Soul Siphon: −2 Strength and −2 Dexterity on you, +2 Strength for it**
 - Each Soul Siphon makes you permanently weaker and it stronger.
+- **Asleep** `[GAME-EXTRACT]` (`ASLEEP_POWER`): a counter that ticks down at the end of each turn. **The first damage it takes wakes it: Asleep is removed, it is stunned (loses its next move), and one other power is removed** (most likely Plating; to confirm). When the counter runs out it wakes without a stun.
+- **Plating** `[GAME-EXTRACT]`: gives it block at the start of its turn and again before its turn ends, and ticks down each turn. Your first hits while it sleeps go into that block.
 
 ### Deck checklist
 - **Kill before the second or third Soul Siphon.** Every cycle you lose 2 Strength and 2 Dexterity and it gains 2 Strength.
-- **Use the sleep turns for setup** (powers, Strength). Whether damage wakes it early is unconfirmed `[HYPOTHESIS]`.
+- **Use the sleep turns for setup** (powers, Strength), then **hit it on the last sleep turn** (Asleep at 1 in the state): damage wakes it stunned, so you keep every free turn and gain one more `[HYPOTHESIS]` from the power definition. Waking it earlier trades free sleep turns for a single stun turn. If the deck has nothing to set up, hit it at once to strip Plating.
 - **Block about 19 per turn**, rising.
 
 ### HP target on arrival

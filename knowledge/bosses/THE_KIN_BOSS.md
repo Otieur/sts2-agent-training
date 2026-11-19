@@ -44,7 +44,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Deck checklist
 - **Hit-all damage is good here** (unlike against Vantom): Breakthrough, Thunderclap, Whirlwind, Conflagration, Pact's End, Stomp, Howl from Beyond.
-- **Kill order** `[HYPOTHESIS]`: followers first if hit-all damage can clear them in 2–3 turns (they stack Strength). Otherwise race the Priest. Whether killing the Priest ends the fight is unconfirmed.
+- **Kill order** `[HYPOTHESIS]`: followers first if hit-all damage can clear them in 2–3 turns (they stack Strength). Otherwise race the Priest. The followers carry **Minion** (`MINION_POWER`: their deaths are not "fatal" for the encounter) `[GAME-EXTRACT]`, which strongly suggests that **killing the Priest ends the fight**, as with minions in the first game `[HYPOTHESIS]`, to confirm. If it holds, racing the Priest (190 HP) is usually right unless hit-all damage clears all followers within 2 turns.
 - Frail and Weak come every cycle. Expect lower block and damage on those turns.
 
 ### HP target on arrival
