@@ -23,12 +23,26 @@ from stslib import DATA, PROJECT, md_table, pct, short  # noqa: E402
 FIGHT_ROOMS = {"monster", "elite", "boss"}
 
 
-def load_benchmark(character):
-    path = DATA / "benchmarks" / f"{character.lower()}-encounters-v0.107.1.csv"
+def load_benchmark(character, ascension):
+    """Pick, per encounter, the most comparable benchmark: the character's own ascension band (n >= 5), then all
+    characters in that band (n >= 5), then the character's pooled benchmark."""
+    band = "A0-4" if ascension <= 4 else ("A5-9" if ascension <= 9 else "A10")
+    sources = []
+    for path, label, by_band in ((DATA / "benchmarks" / f"{character.lower()}-encounters-by-band-v0.107.1.csv", f"{character.title()} {band}", True),
+                                 (DATA / "benchmarks" / "allchars-encounters-by-band-v0.107.1.csv", f"all chars {band}", True),
+                                 (DATA / "benchmarks" / f"{character.lower()}-encounters-v0.107.1.csv", f"{character.title()} pooled", False)):
+        if path.exists():
+            rows = {}
+            for r in csv.DictReader(open(path)):
+                if by_band and r["band"] != band:
+                    continue
+                if by_band and int(r["n"]) < 5:
+                    continue
+                rows[r["encounter"]] = dict(r, source=label)
+            sources.append(rows)
     bench = {}
-    if path.exists():
-        for r in csv.DictReader(open(path)):
-            bench[r["encounter"]] = r
+    for rows in reversed(sources):  # later (more specific) sources overwrite
+        bench.update(rows)
     return bench
 
 
@@ -50,7 +64,7 @@ def main():
     run_id = f"{run.get('start_time')}-{run.get('seed')}"
     out = args.out or folder or (PROJECT / "runs" / f"postmortem-{run_id}")
     out.mkdir(parents=True, exist_ok=True)
-    bench = load_benchmark(character)
+    bench = load_benchmark(character, run.get("ascension") or 0)
 
     floor = 0
     curve, fights, potions_used, rests, elites_by_act = [], [], [], [], collections.Counter()
@@ -70,7 +84,7 @@ def main():
                 med = float(b["median_dmg"]) if b.get("median_dmg") else None
                 p75 = float(b["p75_dmg"]) if b.get("p75_dmg") else None
                 dmg = s.get("damage_taken", 0)
-                fights.append({"floor": floor, "act": ai, "enc": enc, "type": fight.get("room_type"),
+                fights.append({"src": b.get("source", "-"), "floor": floor, "act": ai, "enc": enc, "type": fight.get("room_type"),
                                "turns": fight.get("turns_taken"), "hp_before": hp_before, "dmg": dmg,
                                "median": med, "p75": p75, "over_p75": p75 is not None and dmg > p75,
                                "potions": s.get("potion_used", [])})
@@ -102,10 +116,11 @@ def main():
          "## HP after each floor", "",
          md_table(["Floor", "Act", "Room", "HP", "HP%"], [[f, a, t, f"{h}/{m}", pct(h / m if m else 0)] for f, a, t, h, m in curve]), "",
          "## Fights against the benchmark", "",
-         f"Benchmark: `data/benchmarks/{character.lower()}-encounters-v0.107.1.csv` (the Player's history). "
-         "**Over p75** marks fights that cost more than three quarters of the Player's fights against the same encounter.", "",
-         md_table(["Floor", "Encounter", "Type", "Turns", "HP before", "Damage", "Benchmark median", "p75", "Flag", "Potions"],
-                  [[x["floor"], short(x["enc"]), x["type"], x["turns"], x["hp_before"], x["dmg"],
+         "Benchmarks from the Player's history, chosen per encounter: the character's own ascension band (5+ fights), else "
+         "all characters in that band, else the character's pooled benchmark (`data/benchmarks/`). "
+         "**Over p75** marks fights that cost more than three quarters of the comparable fights.", "",
+         md_table(["Floor", "Encounter", "Type", "Turns", "HP before", "Damage", "Benchmark", "Median", "p75", "Flag", "Potions"],
+                  [[x["floor"], short(x["enc"]), x["type"], x["turns"], x["hp_before"], x["dmg"], x["src"],
                     x["median"] if x["median"] is not None else "-", x["p75"] if x["p75"] is not None else "-",
                     "**over p75**" if x["over_p75"] else "", ", ".join(short(p) for p in x["potions"]) or "-"] for x in fights]), "",
          f"- Fights: {len(fights)}. Over p75: {sum(x['over_p75'] for x in fights)}. Total damage taken in fights: {sum(x['dmg'] for x in fights)}.",

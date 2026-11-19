@@ -101,7 +101,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | M1 | Clean full run | — | | |
 | M2 | Act 1 boss in 3 of 5 | — | | |
 | M3 | First solo win (A0) | — | | |
-| M4 | Damage at or below the Player's median (Acts 1–2 hallway) | — | | |
+| M4 | Damage at or below the Player's median (Acts 1–2 hallway, same ascension band) | — | | |
 | M5 | Solo win at A5 | — | | |
 | M6 | First co-op win | — | | |
 | M7 | Solo win at A10 (stretch) | — | | |

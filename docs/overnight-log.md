@@ -29,3 +29,4 @@ Block K (morning report) starts no later than 09:52 EST.
 | X4: macOS teammate patch proposal | 01:01 | 01:02 | docs/proposals/sts2-agent-macos-teammate.md | Three code changes plus a test plan; not applied |
 | X5: Relics, potions, events | 01:02 | 01:03 | tools/build_misc_reference.py → knowledge/{events,relics,potions}.md | 68 events with option risk tags and the Player choices; 289 relics with pick/buy counts and final-relic win rates; 64 potions |
 | X6: Necrobinder v0 | 01:02 | 01:04 | playbooks/necrobinder.md v0 | Groundwork only: mechanics from the extract, the Player data, boss priorities, open questions |
+| X7: Band benchmarks | 01:04 | 01:05 | tools/build_band_benchmarks.py → data/benchmarks/{ironclad,allchars}-encounters-by-band-v0.107.1.csv; postmortem.py picks band-matched benchmarks; M4 redefined per band | The pooled benchmark is mostly A7–A10 and would make low-ascension comparisons meaningless |

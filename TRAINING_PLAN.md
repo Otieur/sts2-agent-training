@@ -180,7 +180,7 @@ Repeat Phases 1–4 for Necrobinder, reusing the knowledge base. It should go fa
 | M1 | Full run finished with no mod failures or illegal actions | Scoreboard row, clean decision log |
 | M2 | Beats the Act 1 boss in 3 of 5 runs | Scoreboard |
 | M3 | First solo win at A0 | Scoreboard |
-| M4 | Median damage per Act 1–2 hallway fight at or below the player's median | Phase 1 benchmark versus scoreboard |
+| M4 | Median damage per Act 1–2 hallway fight at or below the player's median **in the same ascension band** | Band benchmarks (`data/benchmarks/*-by-band-*`) versus scoreboard |
 | M5 | Solo win at A5 | Scoreboard |
 | M6 | First co-op win | Scoreboard |
 | M7 | Solo win at A10 (stretch) | Scoreboard |

@@ -179,6 +179,8 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 
 At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for both. `[PLAYER-DATA]`
 
+**Benchmarks in this table are pooled, mostly from the Player's A7–A10 runs.** At lower ascension, use `data/benchmarks/ironclad-encounters-by-band-v0.107.1.csv` (or `allchars-…` where Ironclad has fewer than 5 fights). At A0–4, Vantom's all-character median is 22.5 against 48 pooled. Rest thresholds scale down accordingly.
+
 ## 11. Player baseline (habits to beat or test, not targets)
 - Smiths down to low HP: equally likely to heal or smith at 27% HP overall, 37% before a boss.
 - Takes elites at moderate or low HP "to get strong for later".

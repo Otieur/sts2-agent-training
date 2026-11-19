@@ -7,7 +7,7 @@ Definitions in `TRAINING_PLAN.md` section 4. Update when a milestone is reached 
 | M1 | Clean full run (no mod failures or illegal actions) | — | | | |
 | M2 | Beats the Act 1 boss in 3 of 5 runs | — | | | |
 | M3 | First solo win at A0 | — | | | |
-| M4 | Median damage per Act 1–2 hallway fight at or below the Player's median | — | | | |
+| M4 | Median damage per Act 1–2 hallway fight at or below the Player's median in the same ascension band (band benchmarks; the pooled one is mostly A7–A10) | — | | | |
 | M5 | Solo win at A5 | — | | | |
 | M6 | First co-op win | — | | | |
 | M7 | Solo win at A10 (stretch) | — | | | |
