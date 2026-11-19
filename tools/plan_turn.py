@@ -176,7 +176,10 @@ POTIONS = {
     "SPEED_POTION": dict(target="Self", dex=5),
     "SWIFT_POTION": dict(target="Self", draw=3),
 }
-POTION_COST = {"hallway": 8.0, "elite": 3.0, "boss": 2.0}  # HP-equivalent cost of spending a potion [HYPOTHESIS]
+# HP-equivalent cost of spending a potion [HYPOTHESIS]. High in hallways (a Fire Potion's 20 damage should not be
+# spent on a hallway fight unless it kills or prevents a large loss), low in elites and bosses, where the playbook
+# says use potions freely.
+POTION_COST = {"hallway": 25.0, "elite": 6.0, "boss": 2.0}
 # Value of playing a Power now, per energy it costs, in damage-or-HP equivalents for the turns still to come
 # [HYPOTHESIS]. A Strike deals 6 per energy now; a Power pays back over the rest of the fight: bosses last 6-10 turns
 # (playbook section 1), elites about 4-5, hallway fights about 3, and the fight model finds scaling cards cost HP in

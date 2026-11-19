@@ -183,7 +183,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
   - Weak potions go on the boss's biggest-hit turn.
   - Strength potions never go before Vantom's Slippery is gone.
   - Debuff potions only after Artifact is stripped (Aeonglass, Mecha Knight).
-- `tools/plan_turn.py` includes held potions in its search: it prefers a lethal line with the fewest potions and otherwise charges each potion as HP (hallway 8, elite 3, boss 2), so it suggests potions when they save more HP than that. `[HYPOTHESIS]` weights
+- `tools/plan_turn.py` includes held potions in its search: it prefers a lethal line with the fewest potions and otherwise charges each potion as HP (hallway 25, elite 6, boss 2), so it suggests potions when they save more HP than that. `[HYPOTHESIS]` weights
 
 ## 9. Combat checklist
 1. Read every intent. Total the incoming damage. Note special powers (Slippery, Hardened Shell, Personal Hive, Territorial, Thorns, Flutter).
