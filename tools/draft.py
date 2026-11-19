@@ -25,6 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import deck_metrics as dm  # noqa: E402
+dm.apply_patches("v0.111.1")  # live tools use the target game's card values
 from stslib import PROJECT  # noqa: E402
 
 TIER_SCORE = {"S": 5, "A": 4, "B": 3, "C": 2, "D": 1, "F": 0}

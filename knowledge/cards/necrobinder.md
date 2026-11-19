@@ -1,6 +1,6 @@
 # Necrobinder Cards
 
-Source: `knowledge/data/extract-2026-09-21/cards.json` `[GAME-EXTRACT]` (decompiled game data, build not stated, possibly newer than v0.107.1). Numbers are base values; `?` is computed at play time. Picked/offered and the head-to-head score come from the Player's card reward screens (Phase 1, v0.107.1) `[PLAYER-DATA]` and describe habit, not strength. ▲ = scored above skipping, ▼ = below.
+Source: `knowledge/data/extract-2026-09-21/cards.json` `[GAME-EXTRACT]` (decompiled game data, build not stated; it predates v0.107.1), with the card changes of v0.107.1 and v0.111.1 applied from `knowledge/data/card-patches.json` (marked **[v0.107.1]** or **[v0.111.1]**), so values are for v0.111.1. Numbers are base values; `?` is computed at play time. Picked/offered and the head-to-head score come from the Player's card reward screens (Phase 1, v0.107.1) `[PLAYER-DATA]` and describe habit, not strength. ▲ = scored above skipping, ▼ = below.
 
 Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, aoe, zero-cost, x-cost, draw, energy, block, strength, vulnerable, weak, self-damage, exhaust-other, power, upgrade).
 
@@ -25,7 +25,7 @@ Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, a
 | Graveblast | 1 | Attack | Common | Deal 4 damage; Choose a card from a pile; Put a card into your hand; keywords: Exhaust | damage, draw | 11/56 | 20% | -0.38 ▼ |
 | Poke | 0 | Attack | Common | Your Osty deals 6 damage | zero-cost | 9/56 | 16% | -0.54 ▼ |
 | Reap | 3 | Attack | Common | Deal 27 damage; keywords: Retain | damage | 1/70 | 1% | -2.96 ▼ |
-| Reave | 1 | Attack | Common | Deal 9 damage; if upgraded: Upgrade a card; Add a generated card to your draw pile | damage, upgrade | 2/59 | 3% | -2.29 ▼ |
+| Reave **[v0.111.1]** | 1 | Attack | Common | Deal 10 damage; if upgraded: Upgrade a card; Add a generated card to your draw pile | damage, upgrade | 2/59 | 3% | -2.29 ▼ |
 | Sculpting Strike | 1 | Attack | Common | Deal 8 damage; Choose a card in your hand; Give a card Ethereal | damage | 2/61 | 3% | -2.12 ▼ |
 | Snap | 1 | Attack | Common | Your Osty deals 7 damage; Choose a card in your hand; Give a card Retain | - | 9/53 | 17% | -0.52 ▼ |
 | Sow | 1 | Attack | Common | Deal 8 damage to ALL enemies; keywords: Retain | aoe, damage | 4/50 | 8% | -1.48 ▼ |
@@ -58,10 +58,10 @@ Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, a
 | Countdown | 1 | Power | Uncommon | Gain 6 Countdown | power | 5/18 | 28% | -0.05 ▲ |
 | Danse Macabre | 1 | Power | Uncommon | Gain 3 Danse Macabre | power | 1/22 | 5% | -1.69 ▼ |
 | Friendship | 1 | Power | Uncommon | Gain -2 Strength; Gain 1 Friendship | power, strength | 10/14 | 71% | +1.84 ▲ |
-| Haunt | 1 | Power | Uncommon | Gain 6 Haunt | power | 6/25 | 24% | -0.12 ▲ |
+| Haunt **[v0.111.1]** | 1 | Power | Uncommon | Gain 7 Haunt | power | 6/25 | 24% | -0.12 ▲ |
 | Lethality | 1 | Power | Uncommon | Gain 50 Lethality; keywords: Ethereal | power | 0/24 | 0% | -2.99 ▼ |
 | Pagestorm | 1 | Power | Uncommon | Gain 1 Pagestorm | power | 2/19 | 11% | -0.99 ▼ |
-| Shroud | 1 | Power | Uncommon | Gain 2 Shroud | power | 6/22 | 27% | +0.07 ▲ |
+| Shroud **[v0.111.1]** | 1 | Power | Uncommon | Gain 3 Shroud | power | 6/22 | 27% | +0.07 ▲ |
 | Sleight Of Flesh | 2 | Power | Uncommon | Gain 9 Sleight Of Flesh | power | 6/18 | 33% | +0.02 ▲ |
 | Borrowed Time | 0 | Skill | Uncommon | Gain 3 Doom; Gain 1 Energy | energy, zero-cost | 12/14 | 86% | +2.58 ▲ |
 | Capture Spirit | 1 | Skill | Uncommon | Deal 3 damage to the target; Add a generated card to your draw pile | damage | 8/22 | 36% | +0.49 ▲ |
@@ -72,7 +72,7 @@ Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, a
 | Dirge | 0 | Skill | Uncommon | Summon 3; if upgraded: Upgrade a card; Add a generated card to your draw pile | upgrade, zero-cost | 11/21 | 52% | +1.17 ▲ |
 | Dredge | 1 | Skill | Uncommon | Put a card into your hand; keywords: Exhaust | draw | 3/12 | 25% | -0.03 ▲ |
 | Enfeebling Touch | 1 | Skill | Uncommon | Apply 8 Enfeebling Touch to the target; keywords: Ethereal | - | 17/22 | 77% | +1.97 ▲ |
-| Legion Of Bone | 2 | Skill | Uncommon | Summon 6; keywords: Exhaust | - | - | - | - |
+| Legion Of Bone **[v0.111.1]** | 2 | Skill | Uncommon | Summon 6 | - | - | - | - |
 | Melancholy | 3 | Skill | Uncommon | Gain 13 Block | block | 12/18 | 67% | +1.86 ▲ |
 | No Escape | 1 | Skill | Uncommon | Apply ? Doom to the target | - | 8/14 | 57% | +1.30 ▲ |
 | Parse | 1 | Skill | Uncommon | Draw 3 cards; keywords: Ethereal | draw | 11/27 | 41% | +0.95 ▲ |
@@ -90,7 +90,7 @@ Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, a
 | Soul Storm | 1 | Attack | Rare | Deal ? damage | damage | 4/12 | 33% | +1.44 ▲ |
 | Squeeze | 3 | Attack | Rare | Deal ? damage | damage | 6/15 | 40% | +1.46 ▲ |
 | The Scythe | 2 | Attack | Rare | Deal ? damage; keywords: Exhaust | damage | 2/15 | 13% | -0.25 ▼ |
-| Times Up | 2 | Attack | Rare | Deal ? damage; keywords: Exhaust | damage | 2/7 | 29% | +0.25 ▲ |
+| Times Up **[v0.111.1]** | 2 | Attack | Rare | Deal ? damage | damage | 2/7 | 29% | +0.25 ▲ |
 | Call Of The Void | 1 | Power | Rare | Gain 1 Call Of The Void | power | 3/15 | 20% | +0.29 ▲ |
 | Demesne | 3 | Power | Rare | Gain 1 Demesne; keywords: Ethereal | power | 15/16 | 94% | +3.83 ▲ |
 | Devour Life | 1 | Power | Rare | Gain 1 Devour Life | power | 3/9 | 33% | +0.68 ▲ |
@@ -99,7 +99,7 @@ Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, a
 | Reaper Form | 3 | Power | Rare | Gain 1 Reaper Form | power | 3/9 | 33% | +0.36 ▲ |
 | Sentry Mode | 2 | Power | Rare | Gain 1 Sentry Mode | power | 7/10 | 70% | +1.87 ▲ |
 | Spirit Of Ash | 1 | Power | Rare | Gain 4 Spirit Of Ash | power | 2/11 | 18% | +0.07 ▲ |
-| Eidolon | 2 | Skill | Rare | Exhaust a card; Gain 1 Intangible | exhaust-other | 0/9 | 0% | -1.89 ▼ |
+| Eidolon **[v0.111.1]** | 2 | Skill | Rare | Play all Ethereal cards in your Exhaust pile; keywords: Exhaust | - | 0/9 | 0% | -1.89 ▼ |
 | End Of Days | 3 | Skill | Rare | Apply 29 Doom to the target | aoe | 5/10 | 50% | +1.67 ▲ |
 | Glimpse Beyond | 1 | Skill | Rare | Add a generated card to your draw pile; keywords: Exhaust | - | - | - | - |
 | Oblivion | 0 | Skill | Rare | Apply 3 Oblivion to the target | zero-cost | 4/9 | 44% | +1.01 ▲ |

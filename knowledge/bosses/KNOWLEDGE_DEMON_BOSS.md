@@ -40,7 +40,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Deck checklist
 - **Sustained damage.** 379 HP plus about 30 healed per cycle over a median 7-turn fight means about 60 damage per turn. Ironclad gets this from scaling (Demon Form; Strength with multi-hit) and energy (Pyre, Bloodletting, Offering).
-- In the history, fatal decks had fewer powers (1.8 against 2.7), fewer energy cards (0.8 against 1.6) and less Strength (0.2 against 0.7), n=40. `[PLAYER-DATA, weak]`
+- In the history, fatal decks had fewer powers (1.7 against 2.7), fewer energy cards (0.8 against 1.6) and less Strength (0.2 against 0.7), n=40. `[PLAYER-DATA, weak]`
 - **Block** for Overwhelming (24 base, rising with Strength) and Slap (17).
 
 ### Curse choice `[HYPOTHESIS]`

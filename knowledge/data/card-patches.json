@@ -1,0 +1,31 @@
+{
+  "about": "Card changes after the extract (which predates v0.107.1). Applied in version order by tools/deck_metrics.py apply_patches(upto). 'replace' substitutes text in the effect; 'set' overwrites fields. Sources: knowledge/version-delta-extract-to-v0.107.1.md, knowledge/version-delta-v0.111.1.md (wiki patch notes, accessed 2026-11-19). Base (unupgraded) values only.",
+  "versions": ["v0.107.1", "v0.111.1"],
+  "patches": [
+    {"version": "v0.107.1", "id": "CONFLAGRATION", "set": {"effect": "Deal 2 damage 4 times to ALL enemies", "tags": ["aoe", "damage", "multi-hit"]}},
+    {"version": "v0.107.1", "id": "DRUM_OF_BATTLE", "set": {"cost": 1, "type": "Skill", "effect": "Draw 2 cards; when Exhausted, gain 2 Energy", "tags": ["draw"]}},
+    {"version": "v0.107.1", "id": "UNRELENTING", "replace": [["Deal 12 damage", "Deal 14 damage"]]},
+
+    {"version": "v0.111.1", "id": "EXPECT_A_FIGHT", "set": {"cost": 3, "type": "Skill", "rarity": "Uncommon", "effect": "Gain 15 Block; gain 5 more Block per Strength", "tags": ["block", "strength-payoff"]}},
+    {"version": "v0.111.1", "id": "DEMON_FORM", "replace": [["Gain 2 Demon Form", "Gain 3 Demon Form"]]},
+    {"version": "v0.111.1", "id": "MANGLE", "replace": [["Deal 15 damage", "Deal 20 damage"]]},
+    {"version": "v0.111.1", "id": "PACTS_END", "replace": [["Deal 17 damage", "Deal 18 damage"]]},
+    {"version": "v0.111.1", "id": "HOWL_FROM_BEYOND", "replace": [["Deal 16 damage", "Deal 18 damage"]]},
+    {"version": "v0.111.1", "id": "RAMPAGE", "replace": [["Deal 9 damage", "Deal 10 damage"]]},
+    {"version": "v0.111.1", "id": "SETUP_STRIKE", "replace": [["Gain 2 Setup Strike", "Gain 3 Setup Strike"]]},
+    {"version": "v0.111.1", "id": "FORGOTTEN_RITUAL", "set": {"effect": "Gain 3 Energy (no card needs to be exhausted)"}},
+    {"version": "v0.111.1", "id": "COLOSSUS", "replace": [["Gain 5 Block", "Gain 4 Block"]]},
+    {"version": "v0.111.1", "id": "CRIMSON_MANTLE", "replace": [["Gain 8 Crimson Mantle", "Gain 7 Crimson Mantle"]]},
+    {"version": "v0.111.1", "id": "TAUNT", "replace": [["Gain 7 Block", "Gain 6 Block"]], "set": {"rarity": "Common"}},
+    {"version": "v0.111.1", "id": "BLOODLETTING", "set": {"rarity": "Uncommon"}},
+    {"version": "v0.111.1", "id": "CRUELTY", "set": {"rarity": "Uncommon"}},
+    {"version": "v0.111.1", "id": "DOMINATE", "set": {"rarity": "Rare"}},
+
+    {"version": "v0.111.1", "id": "REAVE", "replace": [["Deal 9 damage", "Deal 10 damage"]]},
+    {"version": "v0.111.1", "id": "SHROUD", "replace": [["Gain 2 Shroud", "Gain 3 Shroud"]]},
+    {"version": "v0.111.1", "id": "HAUNT", "replace": [["Gain 6 Haunt", "Gain 7 Haunt"]]},
+    {"version": "v0.111.1", "id": "TIMES_UP", "replace": [["; keywords: Exhaust", ""]], "set": {"tags": ["damage"]}},
+    {"version": "v0.111.1", "id": "LEGION_OF_BONE", "replace": [["; keywords: Exhaust", ""]], "set": {"tags": []}},
+    {"version": "v0.111.1", "id": "EIDOLON", "set": {"effect": "Play all Ethereal cards in your Exhaust pile; keywords: Exhaust", "tags": ["kw-exhaust"]}}
+  ]
+}

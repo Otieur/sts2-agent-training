@@ -24,7 +24,7 @@ Source: wiki "V0.107.1 – Major Update 2" (https://slaythespire.wiki.gg/wiki/Sl
 ## Consequences
 - **Two patch cycles behind the target.** Extract values are older than the Player's history (v0.107.1), which is older than the game the Agent plays (v0.111.1). Apply this delta, then `knowledge/version-delta-v0.111.1.md`.
 - **Most extract values are still right.** Each update changed a few dozen items, and the rest of the content is unchanged. Treat an extract number as correct unless one of the two delta files lists the item.
-- **Tools:** `tools/deck_metrics.py` applies the card changes from both deltas through `knowledge/data/card-patches.json`. History analyses use the v0.107.1 values; `tools/draft.py` and `tools/plan_turn.py` use v0.111.1.
+- **Tools:** `tools/deck_metrics.py` applies the card changes from both deltas through `knowledge/data/card-patches.json` (`apply_patches(version)`). History analyses (`deck_metrics.py` report, `analyze_deck_features.py`) use v0.107.1 values; `draft.py`, `plan_turn.py` and the card references (`build_card_reference.py`) use v0.111.1. Rerunning the history analyses with v0.107.1 values moved a few figures by about one point (for example the Act 1 raw-damage tercile 29% → 28%, Knowledge Demon fatal-deck powers 1.8 → 1.7); no conclusion changed. Enemy changes are not patched: enemy notes carry warnings instead.
 
 ## Ironclad cards changed on v0.107.1
 | Card | Change | Note |

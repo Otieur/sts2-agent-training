@@ -38,7 +38,10 @@ from typing import List, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import calc  # noqa: E402
+import deck_metrics  # noqa: E402
 from deck_metrics import CARDS  # noqa: E402
+
+deck_metrics.apply_patches("v0.111.1")  # live tools use the target game's card values
 
 MAX_ASSIGNMENTS = 729  # per subset; above this, single-target cards focus the weakest enemy
 

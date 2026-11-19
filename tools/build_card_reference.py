@@ -31,7 +31,9 @@ def main():
     args = ap.parse_args()
     ch = args.character.upper()
     owner = args.owner or ch.title()
-    cards = [c for c in json.loads((EXTRACT / "cards.json").read_text()) if c["owner"] == owner]
+    import deck_metrics  # noqa: E402  (card values brought to the target game version)
+    deck_metrics.apply_patches("v0.111.1")
+    cards = [c for c in deck_metrics.CARDS.values() if c["owner"] == owner]
 
     picks, ranks = {}, {}
     pfile = PROJECT / f"reports/phase1/card-picks-{ch.lower()}.csv"
@@ -49,14 +51,17 @@ def main():
         s, n = ranks.get(c["id"], (None, 0))
         cost = "X" if "x-cost" in c["tags"] else ("—" if c["cost"] is not None and c["cost"] < 0 else c["cost"])
         rank = "-" if s is None or n < 5 else (f"{s:+.2f}" + (" ▲" if skip is not None and s > skip else " ▼"))
-        return [spaced(c["name"]), cost, c["type"], c["rarity"], (c["effect"] or "").replace("|", "/"),
+        mark = f" **[{c['patched']}]**" if c.get("patched") else ""
+        return [spaced(c["name"]) + mark, cost, c["type"], c["rarity"], (c["effect"] or "").replace("|", "/"),
                 ", ".join(t for t in c["tags"] if not t.startswith("kw-")) or "-",
                 f"{pk}/{off}" if off else "-", pct(pk / off) if off else "-", rank]
 
     cards.sort(key=lambda c: (RARITY_ORDER.get(c["rarity"], 9), c["type"] or "", c["name"]))
     L = [f"# {owner} Cards", "",
          "Source: `knowledge/data/extract-2026-09-21/cards.json` `[GAME-EXTRACT]` (decompiled game data, build not "
-         "stated, possibly newer than v0.107.1). Numbers are base values; `?` is computed at play time. "
+         "stated; it predates v0.107.1), with the card changes of v0.107.1 and v0.111.1 applied from "
+         "`knowledge/data/card-patches.json` (marked **[v0.107.1]** or **[v0.111.1]**), so values are for v0.111.1. "
+         "Numbers are base values; `?` is computed at play time. "
          "Picked/offered and the head-to-head score come from the Player's card reward screens (Phase 1, v0.107.1) "
          "`[PLAYER-DATA]` and describe habit, not strength. ▲ = scored above skipping, ▼ = below.", "",
          "Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, aoe, zero-cost, x-cost, "

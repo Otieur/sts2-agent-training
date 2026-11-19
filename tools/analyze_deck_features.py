@@ -18,7 +18,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from stslib import MAIN_BUILD, PROJECT, connect, md_table, mean, median, short, write_csv  # noqa: E402
 
-CARDS = {c["id"]: c for c in json.loads((PROJECT / "knowledge/data/extract-2026-09-21/cards.json").read_text())}
+import deck_metrics  # noqa: E402
+
+deck_metrics.apply_patches("v0.107.1")  # the history's version; the extract predates it
+CARDS = deck_metrics.CARDS
 FEATURES = [
     ("multi_hit", "Multi-hit attacks"), ("aoe", "Hit-all attacks"), ("aoe_single_hit", "Single-hit hit-all attacks"),
     ("cheap_attack", "Attacks costing 0–1"), ("block", "Block cards"), ("draw", "Draw cards"), ("energy", "Energy cards"),

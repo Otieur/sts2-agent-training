@@ -24,6 +24,31 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from stslib import MAIN_BUILD, PROJECT, connect, md_table, mean, median, pct  # noqa: E402
 
 CARDS = {c["id"]: c for c in json.loads((PROJECT / "knowledge/data/extract-2026-09-21/cards.json").read_text())}
+PATCHES = PROJECT / "knowledge" / "data" / "card-patches.json"
+APPLIED = []
+
+
+def apply_patches(upto):
+    """Bring CARDS from the extract (pre-v0.107.1) up to game version `upto` ("v0.107.1" or "v0.111.1"), in place.
+    Idempotent per version; versions are applied in order. See knowledge/data/card-patches.json."""
+    spec = json.loads(PATCHES.read_text())
+    order = spec["versions"]
+    if upto not in order:
+        raise ValueError(f"unknown version {upto}; known: {order}")
+    for v in order[: order.index(upto) + 1]:
+        if v in APPLIED:
+            continue
+        for pt in spec["patches"]:
+            if pt["version"] != v or pt["id"] not in CARDS:
+                continue
+            c = dict(CARDS[pt["id"]])
+            for old, new in pt.get("replace", []):
+                c["effect"] = (c.get("effect") or "").replace(old, new)
+            c.update(pt.get("set", {}))
+            c["patched"] = v
+            CARDS[pt["id"]] = c
+        APPLIED.append(v)
+    return list(APPLIED)
 HAND, ENERGY, SIMS = 5, 3, 300
 
 
@@ -119,7 +144,8 @@ def report():
     L = ["# Deck Strength at the Boss", "",
          f"All characters, solo, {MAIN_BUILD}, finished runs: every boss fight with the deck at the start of the boss floor. "
          "Built by `tools/deck_metrics.py`. Proxies: average damage and block per turn from random 5-card hands with 3 "
-         "energy, using base card numbers `[GAME-EXTRACT]`. They ignore Strength, powers, relics, upgrades and cards whose "
+         "energy, using base card numbers `[GAME-EXTRACT]` brought to v0.107.1 with `knowledge/data/card-patches.json` "
+         "(the extract predates v0.107.1). They ignore Strength, powers, relics, upgrades and cards whose "
          "numbers are computed at play time, so they measure the raw attack and defence corners, not scaling. "
          "`[PLAYER-DATA]`, observational.", ""]
     rows = []
@@ -196,14 +222,29 @@ def report():
                 for lab, p in zip(("low", "middle", "high"), parts)))
     L += ["", "In Act 1, elites go the other way from bosses: the highest raw-damage tercile had the fewest fatal elite "
           "fights. Low block had the most. Act 2 elites show no clear pattern.", ""]
+    def terc(act, key):
+        xs = sorted([f for f in fights if f["act"] == act], key=lambda f: f[key])
+        n = len(xs)
+        return [sum(f["died"] for f in p) / len(p) for p in (xs[: n // 3], xs[n // 3: 2 * n // 3], xs[2 * n // 3:])]
+
+    def rate(act, lo, hi):
+        p = [f for f in fights if f["act"] == act and lo <= f["scaling"] < hi]
+        return sum(f["died"] for f in p) / len(p) if p else float("nan")
+
+    d1, d2, b1, b3 = terc(1, "dmg"), terc(2, "dmg"), terc(1, "blk"), terc(3, "blk")
+    i1 = [f for f in iron if f["act"] == 1]
+    med = lambda xs, k: median([f[k] for f in xs]) if xs else float("nan")  # noqa: E731
     L += ["## Reading", "",
-          "- **Raw damage does not protect you at bosses.** Decks in the highest damage tercile died *more* often (Act 1: "
-          "29% against 18% for the lowest; Act 2: 32% against 18%). High raw damage usually means a deck of attacks with "
-          "few powers and block, which wins hallways and loses long boss fights.",
-          "- **Block and scaling do.** Act 1: highest block tercile 21% fatal against 30% for the lowest; Act 3: 22% "
-          "against 41%. Scaling cards: Act 1 decks with 2–3 had 17% fatal against 28% with 0–1; Act 2 decks with 4+ had "
-          "16% against 35% with 1.",
-          "- **Ironclad:** fatal Act 1 boss decks had more raw damage (16.8 against 14.7 per turn) and less block (8.4 against 9.6).",
+          "Numbers in this section are computed from the tables above.", "",
+          f"- **Raw damage does not protect you at bosses.** Decks in the highest damage tercile died more often than the "
+          f"lowest (Act 1: {pct(d1[2])} against {pct(d1[0])}; Act 2: {pct(d2[2])} against {pct(d2[0])}). High raw damage "
+          "usually means a deck of attacks with few powers and block, which wins hallways and loses long boss fights.",
+          f"- **Block and scaling do.** Act 1: highest block tercile {pct(b1[2])} fatal against {pct(b1[0])} for the lowest; "
+          f"Act 3: {pct(b3[2])} against {pct(b3[0])}. Scaling cards: Act 1 decks with 2–3 had {pct(rate(1, 2, 4))} fatal "
+          f"against {pct(rate(1, 0, 2))} with 0–1; Act 2 decks with 4+ had {pct(rate(2, 4, 99))} against {pct(rate(2, 1, 2))} with 1.",
+          f"- **Ironclad:** fatal Act 1 boss decks had more raw damage ({med([f for f in i1 if f['died']], 'dmg'):.1f} against "
+          f"{med([f for f in i1 if not f['died']], 'dmg'):.1f} per turn) and less block ({med([f for f in i1 if f['died']], 'blk'):.1f} "
+          f"against {med([f for f in i1 if not f['died']], 'blk'):.1f}).",
           "- Proposed corner targets on arrival at the boss `[HYPOTHESIS H9]`:",
           "  - Act 1: block per turn at least 10, and 2 or more scaling cards",
           "  - Act 2: 4 or more scaling cards",
@@ -217,7 +258,10 @@ def report():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--deck", nargs="*")
+    ap.add_argument("--version", default=None, help="card values: v0.107.1 (default for the history report) or v0.111.1 (default for --deck)")
     args = ap.parse_args()
+    args.version = args.version or ("v0.111.1" if args.deck else "v0.107.1")
+    apply_patches(args.version)
     if args.deck:
         ids = [d if d.startswith("CARD.") else "CARD." + d for d in args.deck]
         print(f"damage/turn {simulate(ids, 'damage'):.1f}  block/turn {simulate(ids, 'block'):.1f}  cards {len(ids)}")

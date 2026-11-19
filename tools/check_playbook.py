@@ -80,6 +80,32 @@ def checks(con):
         s = round(100 * statistics.median([h for h, k in xs if not k]))
         f_ = round(100 * statistics.median([h for h, k in xs if k]))
         out.append((f"H8 {label}", f"{label} {s}% / {f_}%"))
+    # Section 2.1 and H9: deck-strength figures, read from the generated report (tools/deck_metrics.py)
+    import re
+    rep = (PROJECT / "reports" / "phase2" / "deck-strength.md").read_text()
+    m = re.search(r"\(Act 1: (\d+%) against (\d+%);", rep)
+    out.append(("raw damage Act 1", f"(Act 1: {m.group(1)} against {m.group(2)})" if m else "<pattern not found in deck-strength.md>"))
+    m = re.search(r"more raw damage \(([\d.]+) against ([\d.]+) per turn\)", rep)
+    out.append(("Ironclad fatal decks", f"more damage ({m.group(1)} against {m.group(2)} per turn)" if m else "<pattern not found in deck-strength.md>"))
+    m = re.search(r"- \*\*Act 1:\*\* low \([^)]*\): \d+/\d+ fatal \((\d+%)\) · middle \([^)]*\): \d+/\d+ fatal \((\d+%)\) · high \([^)]*\): \d+/\d+ fatal \((\d+%)\)", rep)
+    out.append(("H9 terciles", f"Act 1 fatal {m.group(1)} / {m.group(2)} / {m.group(3)} (low to high)" if m else "<pattern not found in deck-strength.md>"))
+    # H2, H3, H7: deck features by encounter (tools/analyze_deck_features.py)
+    feat = (PROJECT / "reports" / "phase2" / "deck-features-by-encounter.md").read_text()
+
+    def feature(enc, row):
+        sec = feat.split(f"## {enc}", 1)[1].split("\n## ", 1)[0]
+        m = re.search(rf"\| {re.escape(row)} \| ([\d.]+) \| ([\d.]+) \|", sec)
+        return (m.group(1), m.group(2)) if m else ("?", "?")
+    s, f = feature("KNOWLEDGE_DEMON_BOSS", "Powers")
+    out.append(("H7 powers", f"powers {f} against {s}"))
+    s, f = feature("KNOWLEDGE_DEMON_BOSS", "Energy cards")
+    out.append(("H7 energy", f"energy {f} against {s}"))
+    s, f = feature("VANTOM_BOSS", "Single-hit hit-all attacks")
+    out.append(("H2 hit-all", f"({f} against {s})"))
+    s, f = feature("VANTOM_BOSS", "Draw cards")
+    out.append(("H2 draw", f"less draw ({f} against {s})"))
+    s, f = feature("ENTOMANCER_ELITE", "Attacks costing 0–1")
+    out.append(("H3 cheap attacks", f"more cheap attacks ({f} against {s})"))
     return out
 
 

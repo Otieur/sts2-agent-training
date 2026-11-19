@@ -20,7 +20,7 @@ Survived 27 (median damage 29.0), fatal 13 (median damage 53.0). Characters: Iro
 | Strength cards | 0.7 | 0.2 | -0.4 |
 | Vulnerable cards | 1.6 | 1.4 | -0.2 |
 | Weak cards | 0.9 | 1.2 | +0.2 |
-| Powers | 2.7 | 1.8 | -0.9 |
+| Powers | 2.7 | 1.7 | -1.0 |
 | Hit instances per card | 0.44 | 0.46 | +0.02 |
 | Deck size | 26.7 | 25.6 | -1.1 |
 
@@ -50,7 +50,7 @@ Survived 18 (median damage 31.0), fatal 10 (median damage 46.0). Characters: Nec
 
 | Feature (cards in deck) | Survived (mean) | Fatal (mean) | Fatal − survived |
 |---|---|---|---|
-| Multi-hit attacks | 1.6 | 0.8 | -0.8 |
+| Multi-hit attacks | 1.7 | 0.8 | -0.9 |
 | Hit-all attacks | 0.8 | 1.5 | +0.7 |
 | Single-hit hit-all attacks | 0.6 | 1.3 | +0.7 |
 | Attacks costing 0–1 | 8.4 | 7.9 | -0.5 |
@@ -60,8 +60,8 @@ Survived 18 (median damage 31.0), fatal 10 (median damage 46.0). Characters: Nec
 | Strength cards | 0.8 | 0.3 | -0.5 |
 | Vulnerable cards | 1.7 | 1.2 | -0.5 |
 | Weak cards | 1.1 | 1.2 | +0.1 |
-| Powers | 4.8 | 4.3 | -0.5 |
-| Hit instances per card | 0.41 | 0.36 | -0.06 |
+| Powers | 4.6 | 4.3 | -0.3 |
+| Hit instances per card | 0.42 | 0.36 | -0.07 |
 | Deck size | 32.6 | 31.0 | -1.6 |
 
 ## BYRDONIS_ELITE
@@ -80,7 +80,7 @@ Survived 25 (median damage 18.0), fatal 9 (median damage 22.0). Characters: Iron
 | Strength cards | 0.2 | 0.2 | -0.0 |
 | Vulnerable cards | 1.0 | 1.0 | +0.0 |
 | Weak cards | 0.7 | 0.4 | -0.2 |
-| Powers | 0.5 | 1.3 | +0.9 |
+| Powers | 0.5 | 1.2 | +0.7 |
 | Hit instances per card | 0.50 | 0.43 | -0.07 |
 | Deck size | 16.9 | 17.8 | +0.9 |
 
@@ -90,9 +90,9 @@ Survived 16 (median damage 28.0), fatal 8 (median damage 53.0). Characters: Iron
 
 | Feature (cards in deck) | Survived (mean) | Fatal (mean) | Fatal − survived |
 |---|---|---|---|
-| Multi-hit attacks | 1.7 | 1.0 | -0.7 |
+| Multi-hit attacks | 1.7 | 1.2 | -0.4 |
 | Hit-all attacks | 1.0 | 1.2 | +0.2 |
-| Single-hit hit-all attacks | 0.9 | 1.1 | +0.2 |
+| Single-hit hit-all attacks | 0.9 | 0.9 | +0.0 |
 | Attacks costing 0–1 | 7.3 | 10.9 | +3.6 |
 | Block cards | 7.0 | 8.8 | +1.8 |
 | Draw cards | 3.9 | 2.2 | -1.6 |
@@ -100,8 +100,8 @@ Survived 16 (median damage 28.0), fatal 8 (median damage 53.0). Characters: Iron
 | Strength cards | 0.6 | 1.2 | +0.6 |
 | Vulnerable cards | 2.1 | 2.2 | +0.2 |
 | Weak cards | 1.3 | 1.4 | +0.1 |
-| Powers | 4.2 | 3.8 | -0.4 |
-| Hit instances per card | 0.37 | 0.45 | +0.08 |
+| Powers | 4.1 | 3.8 | -0.4 |
+| Hit instances per card | 0.37 | 0.48 | +0.11 |
 | Deck size | 32.0 | 35.2 | +3.2 |
 
 ## TEST_SUBJECT_BOSS
@@ -110,9 +110,9 @@ Survived 21 (median damage 36.0), fatal 8 (median damage 67.0). Characters: Sile
 
 | Feature (cards in deck) | Survived (mean) | Fatal (mean) | Fatal − survived |
 |---|---|---|---|
-| Multi-hit attacks | 1.2 | 0.6 | -0.6 |
+| Multi-hit attacks | 1.3 | 0.6 | -0.7 |
 | Hit-all attacks | 1.2 | 0.5 | -0.7 |
-| Single-hit hit-all attacks | 1.0 | 0.5 | -0.5 |
+| Single-hit hit-all attacks | 0.9 | 0.5 | -0.4 |
 | Attacks costing 0–1 | 8.5 | 10.6 | +2.1 |
 | Block cards | 8.6 | 7.2 | -1.3 |
 | Draw cards | 4.7 | 5.0 | +0.3 |
@@ -120,8 +120,8 @@ Survived 21 (median damage 36.0), fatal 8 (median damage 67.0). Characters: Sile
 | Strength cards | 0.6 | 0.5 | -0.1 |
 | Vulnerable cards | 1.7 | 1.2 | -0.5 |
 | Weak cards | 1.4 | 1.8 | +0.3 |
-| Powers | 3.9 | 2.9 | -1.0 |
-| Hit instances per card | 0.39 | 0.42 | +0.03 |
+| Powers | 3.8 | 2.9 | -0.9 |
+| Hit instances per card | 0.40 | 0.42 | +0.02 |
 | Deck size | 33.8 | 33.2 | -0.5 |
 
 ## WATERFALL_GIANT_BOSS
@@ -140,7 +140,7 @@ Survived 22 (median damage 25.0), fatal 8 (median damage 39.0). Characters: Sile
 | Strength cards | 0.3 | 0.0 | -0.3 |
 | Vulnerable cards | 0.7 | 1.2 | +0.5 |
 | Weak cards | 0.9 | 0.8 | -0.2 |
-| Powers | 1.3 | 1.1 | -0.2 |
+| Powers | 1.3 | 1.0 | -0.3 |
 | Hit instances per card | 0.46 | 0.47 | +0.01 |
 | Deck size | 20.3 | 19.9 | -0.4 |
 
@@ -190,9 +190,9 @@ Survived 28 (median damage 23.5), fatal 6 (median damage 33.5). Characters: Necr
 
 | Feature (cards in deck) | Survived (mean) | Fatal (mean) | Fatal − survived |
 |---|---|---|---|
-| Multi-hit attacks | 0.9 | 1.7 | +0.8 |
+| Multi-hit attacks | 0.9 | 1.7 | +0.7 |
 | Hit-all attacks | 0.6 | 1.2 | +0.5 |
-| Single-hit hit-all attacks | 0.5 | 0.8 | +0.3 |
+| Single-hit hit-all attacks | 0.5 | 0.8 | +0.4 |
 | Attacks costing 0–1 | 8.2 | 9.0 | +0.8 |
 | Block cards | 6.9 | 7.7 | +0.8 |
 | Draw cards | 2.7 | 2.5 | -0.2 |
@@ -200,8 +200,8 @@ Survived 28 (median damage 23.5), fatal 6 (median damage 33.5). Characters: Necr
 | Strength cards | 0.4 | 0.7 | +0.2 |
 | Vulnerable cards | 1.1 | 1.2 | +0.0 |
 | Weak cards | 1.2 | 1.0 | -0.2 |
-| Powers | 3.1 | 2.7 | -0.5 |
-| Hit instances per card | 0.43 | 0.49 | +0.05 |
+| Powers | 3.1 | 2.7 | -0.4 |
+| Hit instances per card | 0.44 | 0.49 | +0.05 |
 | Deck size | 26.6 | 28.0 | +1.4 |
 
 ## ENTOMANCER_ELITE
@@ -210,9 +210,9 @@ Survived 30 (median damage 15.0), fatal 6 (median damage 36.0). Characters: Iron
 
 | Feature (cards in deck) | Survived (mean) | Fatal (mean) | Fatal − survived |
 |---|---|---|---|
-| Multi-hit attacks | 1.2 | 1.0 | -0.2 |
+| Multi-hit attacks | 1.3 | 1.2 | -0.1 |
 | Hit-all attacks | 1.2 | 0.8 | -0.4 |
-| Single-hit hit-all attacks | 0.9 | 0.7 | -0.2 |
+| Single-hit hit-all attacks | 0.8 | 0.5 | -0.3 |
 | Attacks costing 0–1 | 8.1 | 9.5 | +1.4 |
 | Block cards | 7.1 | 6.8 | -0.3 |
 | Draw cards | 1.9 | 1.0 | -0.9 |
@@ -221,7 +221,7 @@ Survived 30 (median damage 15.0), fatal 6 (median damage 36.0). Characters: Iron
 | Vulnerable cards | 1.5 | 2.2 | +0.6 |
 | Weak cards | 1.0 | 0.7 | -0.3 |
 | Powers | 2.3 | 2.0 | -0.3 |
-| Hit instances per card | 0.49 | 0.53 | +0.04 |
+| Hit instances per card | 0.49 | 0.55 | +0.06 |
 | Deck size | 25.4 | 25.5 | +0.1 |
 
 ## THE_KIN_BOSS
@@ -232,7 +232,7 @@ Survived 23 (median damage 24.0), fatal 5 (median damage 35.0). Characters: Iron
 |---|---|---|---|
 | Multi-hit attacks | 0.7 | 0.0 | -0.7 |
 | Hit-all attacks | 0.8 | 0.8 | +0.0 |
-| Single-hit hit-all attacks | 0.6 | 0.8 | +0.2 |
+| Single-hit hit-all attacks | 0.5 | 0.8 | +0.3 |
 | Attacks costing 0–1 | 7.3 | 8.6 | +1.3 |
 | Block cards | 6.0 | 6.0 | +0.0 |
 | Draw cards | 0.9 | 2.0 | +1.1 |
@@ -241,7 +241,7 @@ Survived 23 (median damage 24.0), fatal 5 (median damage 35.0). Characters: Iron
 | Vulnerable cards | 1.2 | 0.6 | -0.6 |
 | Weak cards | 0.7 | 0.8 | +0.1 |
 | Powers | 1.0 | 0.4 | -0.6 |
-| Hit instances per card | 0.52 | 0.45 | -0.07 |
+| Hit instances per card | 0.53 | 0.45 | -0.08 |
 | Deck size | 19.2 | 20.2 | +1.0 |
 
 ## KAISER_CRAB_BOSS
@@ -250,7 +250,7 @@ Survived 23 (median damage 36.0), fatal 5 (median damage 47.0). Characters: Sile
 
 | Feature (cards in deck) | Survived (mean) | Fatal (mean) | Fatal − survived |
 |---|---|---|---|
-| Multi-hit attacks | 1.0 | 1.8 | +0.8 |
+| Multi-hit attacks | 1.1 | 1.8 | +0.7 |
 | Hit-all attacks | 1.0 | 2.0 | +1.0 |
 | Single-hit hit-all attacks | 0.7 | 1.4 | +0.7 |
 | Attacks costing 0–1 | 8.3 | 9.0 | +0.7 |
@@ -260,8 +260,8 @@ Survived 23 (median damage 36.0), fatal 5 (median damage 47.0). Characters: Sile
 | Strength cards | 0.3 | 0.2 | -0.1 |
 | Vulnerable cards | 1.5 | 2.2 | +0.7 |
 | Weak cards | 1.3 | 0.8 | -0.5 |
-| Powers | 2.1 | 2.8 | +0.7 |
-| Hit instances per card | 0.46 | 0.50 | +0.04 |
+| Powers | 2.0 | 2.6 | +0.6 |
+| Hit instances per card | 0.47 | 0.50 | +0.04 |
 | Deck size | 26.2 | 27.2 | +1.0 |
 
 ## PHROG_PARASITE_ELITE
@@ -270,7 +270,7 @@ Survived 30 (median damage 13.0), fatal 4 (median damage 45.0). Characters: Sile
 
 | Feature (cards in deck) | Survived (mean) | Fatal (mean) | Fatal − survived |
 |---|---|---|---|
-| Multi-hit attacks | 0.6 | 0.5 | -0.1 |
+| Multi-hit attacks | 0.7 | 0.5 | -0.2 |
 | Hit-all attacks | 0.5 | 0.0 | -0.5 |
 | Single-hit hit-all attacks | 0.4 | 0.0 | -0.4 |
 | Attacks costing 0–1 | 6.8 | 6.2 | -0.6 |
@@ -280,8 +280,8 @@ Survived 30 (median damage 13.0), fatal 4 (median damage 45.0). Characters: Sile
 | Strength cards | 0.1 | 0.2 | +0.2 |
 | Vulnerable cards | 1.0 | 1.2 | +0.3 |
 | Weak cards | 0.5 | 1.8 | +1.3 |
-| Powers | 0.6 | 1.0 | +0.4 |
-| Hit instances per card | 0.51 | 0.45 | -0.07 |
+| Powers | 0.6 | 0.8 | +0.1 |
+| Hit instances per card | 0.52 | 0.45 | -0.07 |
 | Deck size | 17.3 | 17.8 | +0.4 |
 
 ## LAGAVULIN_MATRIARCH_BOSS
@@ -312,7 +312,7 @@ Survived 44 (median damage 23.5), fatal 3 (median damage 35.0). Characters: Rege
 |---|---|---|---|
 | Multi-hit attacks | 0.9 | 0.7 | -0.2 |
 | Hit-all attacks | 0.9 | 1.3 | +0.4 |
-| Single-hit hit-all attacks | 0.6 | 1.3 | +0.7 |
+| Single-hit hit-all attacks | 0.6 | 1.3 | +0.8 |
 | Attacks costing 0–1 | 8.4 | 6.3 | -2.1 |
 | Block cards | 6.6 | 6.7 | +0.0 |
 | Draw cards | 2.1 | 1.3 | -0.8 |
@@ -340,7 +340,7 @@ Survived 21 (median damage 23.0), fatal 3 (median damage 45.0). Characters: Necr
 | Strength cards | 0.8 | 1.3 | +0.5 |
 | Vulnerable cards | 1.6 | 2.7 | +1.0 |
 | Weak cards | 1.3 | 0.7 | -0.7 |
-| Powers | 4.0 | 5.0 | +1.0 |
+| Powers | 3.9 | 5.0 | +1.1 |
 | Hit instances per card | 0.41 | 0.45 | +0.04 |
 | Deck size | 30.5 | 32.0 | +1.5 |
 
@@ -360,7 +360,7 @@ Survived 37 (median damage 26.0), fatal 2 (median damage 57.0). Characters: Sile
 | Strength cards | 0.2 | 0.0 | -0.2 |
 | Vulnerable cards | 1.4 | 0.0 | -1.4 |
 | Weak cards | 1.1 | 1.0 | -0.1 |
-| Powers | 2.0 | 1.0 | -1.0 |
+| Powers | 1.9 | 1.0 | -0.9 |
 | Hit instances per card | 0.47 | 0.59 | +0.12 |
 | Deck size | 25.0 | 25.5 | +0.5 |
 
