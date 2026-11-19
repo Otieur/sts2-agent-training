@@ -87,8 +87,8 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P6.E1 | Verify co-op rules | In progress | Rules file done; in-game verification and HP scaling measurement (S2) in Phase 6 |
 | P6.E2 | Second instance on macOS | In progress | Patch proposal written (user-data path, app-bundle write, exe fallback) |
 | P6.E3 | Teammate control | In progress | S1, S2 tooling written offline (sts.py --instance, party); untested live |
-| P6.E4 | Communication protocol | Todo | |
-| P6.E5 | Co-op strategy | Todo | |
+| P6.E4 | Communication protocol | In progress | Protocol and shorthand drafted in playbooks/coop.md |
+| P6.E5 | Co-op strategy | In progress | playbooks/coop.md v0 (draft, before any co-op play) |
 | P6.E6 | Co-op run ladder | Todo | |
 | P6.E7 | Reliability | Todo | |
 

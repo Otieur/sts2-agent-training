@@ -156,7 +156,7 @@
 >   `Incoming: <total per player> · My plan: <cards/targets> · Need from you: <e.g. "block 12" or "kill the left one">`
 > - [ ] On routine turns, no message unless the Player asks.
 
-> **P6.E4.S2: Player shorthand** · Size XS · Status: Todo
+> **P6.E4.S2: Player shorthand** · Size XS · Status: In progress (glossary in playbooks/coop.md section 2.2)
 > *As the Player, I want short commands the Agent understands, so that I can steer without typing much mid-fight.*
 >
 > **Acceptance criteria**
@@ -198,7 +198,7 @@
 > **Acceptance criteria**
 > - [ ] Based on the pairing decision (P5.E6.S2): who brings front-loaded damage, scaling, AoE, block and support. Written into `playbooks/coop.md`, with the drafting implications for the Agent.
 
-> **P6.E5.S3: Co-op playbook** · Size M · Status: Todo
+> **P6.E5.S3: Co-op playbook** · Size M · Status: In progress (playbooks/coop.md v0 drafted 2026-11-19 before any co-op play)
 > *As the Next Session, I want everything about co-op play in one file, so that every co-op session starts informed.*
 >
 > **Acceptance criteria:** `playbooks/coop.md` covers:
