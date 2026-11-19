@@ -18,6 +18,7 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 | `journal.py` | Run journal: new, active, status, floor, fight (with benchmark), budget, summary | `journal.py fight runs/<run> --floor 7 --encounter vantom --turns 7 --damage 30` |
 | `postmortem.py` | Facts sheet for a finished run (works on the Player's `.run` files too) | `postmortem.py runs/<run>/` |
 | `smoke.py` | Phase 0: read-only check of every field the tools use; saves live fixtures | `smoke.py --save --watch` |
+| `play_turn.py` | Live play: one call per decision (play the chosen combat plan or one action with a reason, wait only as long as the game needs, print the next advice) | `play_turn.py runs/<run> --go safe` |
 | `fuzz_advise.py` | Robustness: advise.py on damaged and wrong-type copies of its fixtures; counts `[ADVICE FAILED]` answers by error site | `fuzz_advise.py --top 25` |
 | `mcp_adapter.py` | Converts STS2MCP states to the STS2-Agent shape, so `advise.py` and every helper work with either mod (deck cached from combat piles) | used by `advise.py` automatically |
 

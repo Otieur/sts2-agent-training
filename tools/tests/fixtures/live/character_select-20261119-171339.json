@@ -1,0 +1,195 @@
+{
+ "state_version": 16,
+ "native_profile_id": 2,
+ "run_id": "run_unknown",
+ "screen": "CHARACTER_SELECT",
+ "session": {
+  "mode": "singleplayer",
+  "phase": "character_select",
+  "control_scope": "local_player"
+ },
+ "in_combat": false,
+ "turn": null,
+ "available_actions": [
+  "close_main_menu_submenu",
+  "select_character",
+  "embark",
+  "decrease_ascension"
+ ],
+ "combat": null,
+ "run": null,
+ "multiplayer": null,
+ "multiplayer_lobby": null,
+ "map": null,
+ "selection": null,
+ "character_select": {
+  "selected_character_id": "IRONCLAD",
+  "is_multiplayer": false,
+  "net_game_type": "Singleplayer",
+  "can_embark": true,
+  "can_unready": false,
+  "can_increase_ascension": false,
+  "can_decrease_ascension": true,
+  "local_ready": false,
+  "is_waiting_for_players": false,
+  "player_count": 1,
+  "max_players": 1,
+  "ascension": 10,
+  "max_ascension": 10,
+  "seed": null,
+  "modifier_ids": [],
+  "players": [
+   {
+    "player_id": "1",
+    "slot_index": 0,
+    "is_local": true,
+    "character_id": "IRONCLAD",
+    "character_name": "The Ironclad",
+    "is_ready": false,
+    "max_multiplayer_ascension_unlocked": 0
+   }
+  ],
+  "characters": [
+   {
+    "index": 0,
+    "character_id": "IRONCLAD",
+    "name": "The Ironclad",
+    "is_locked": false,
+    "is_selected": true,
+    "is_random": false
+   },
+   {
+    "index": 1,
+    "character_id": "SILENT",
+    "name": "The Silent",
+    "is_locked": false,
+    "is_selected": false,
+    "is_random": false
+   },
+   {
+    "index": 2,
+    "character_id": "REGENT",
+    "name": "The Regent",
+    "is_locked": false,
+    "is_selected": false,
+    "is_random": false
+   },
+   {
+    "index": 3,
+    "character_id": "NECROBINDER",
+    "name": "The Necrobinder",
+    "is_locked": false,
+    "is_selected": false,
+    "is_random": false
+   },
+   {
+    "index": 4,
+    "character_id": "DEFECT",
+    "name": "The Defect",
+    "is_locked": false,
+    "is_selected": false,
+    "is_random": false
+   },
+   {
+    "index": 5,
+    "character_id": "RANDOM_CHARACTER",
+    "name": "Random",
+    "is_locked": false,
+    "is_selected": false,
+    "is_random": true
+   }
+  ]
+ },
+ "timeline": null,
+ "unlock": null,
+ "chest": null,
+ "event": null,
+ "crystal_sphere": null,
+ "shop": null,
+ "rest": null,
+ "reward": null,
+ "bundles": null,
+ "capstone": null,
+ "modal": null,
+ "game_over": null,
+ "agent_view": {
+  "version": 11,
+  "screen": "CHARACTER_SELECT",
+  "native_profile_id": 2,
+  "run_id": "run_unknown",
+  "session": {
+   "mode": "singleplayer",
+   "phase": "character_select",
+   "control_scope": "local_player"
+  },
+  "turn": null,
+  "available_actions": [
+   "close_main_menu_submenu",
+   "select_character",
+   "embark",
+   "decrease_ascension"
+  ],
+  "combat": null,
+  "run": null,
+  "multiplayer": null,
+  "multiplayer_lobby": null,
+  "map": null,
+  "selection": null,
+  "character_select": {
+   "selected": "IRONCLAD",
+   "embark": true,
+   "ascension": 10,
+   "characters": [
+    {
+     "i": 0,
+     "line": "The Ironclad",
+     "locked": false,
+     "selected": true
+    },
+    {
+     "i": 1,
+     "line": "The Silent",
+     "locked": false,
+     "selected": false
+    },
+    {
+     "i": 2,
+     "line": "The Regent",
+     "locked": false,
+     "selected": false
+    },
+    {
+     "i": 3,
+     "line": "The Necrobinder",
+     "locked": false,
+     "selected": false
+    },
+    {
+     "i": 4,
+     "line": "The Defect",
+     "locked": false,
+     "selected": false
+    },
+    {
+     "i": 5,
+     "line": "Random (Random)",
+     "locked": false,
+     "selected": false
+    }
+   ]
+  },
+  "timeline": null,
+  "chest": null,
+  "event": null,
+  "crystal_sphere": null,
+  "shop": null,
+  "rest": null,
+  "reward": null,
+  "bundles": null,
+  "capstone": null,
+  "unlock": null,
+  "modal": null,
+  "game_over": null,
+  "glossary": {}
+ }
+}
