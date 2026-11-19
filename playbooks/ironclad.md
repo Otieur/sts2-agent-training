@@ -37,6 +37,7 @@ The goal is strong play, judged by results. Every rule carries a provenance labe
      - Act 2: 4+ scaling cards
      - Act 3: block per turn at least 8
    - **Raw damage is not enough.** Decks with the most raw damage died *more* often at bosses (Act 1: 29% against 18%). Fatal Ironclad Act 1 decks had more damage (16.8 against 14.7 per turn) and less block (8.4 against 9.6). Once raw damage is about the starter deck's (15 per turn), add block and scaling before more attacks.
+   - **Act 1 timing:** elites reward front-loaded damage, bosses reward block and scaling. Act 1 elites: highest raw-damage tercile 3/62 fatal against 7–9/62 for the others; lowest block tercile 10/62 fatal. So draft attacks for the first elites (floors 5–10), then shift to block and scaling before the Act 1 boss. `[PLAYER-DATA, observational]`
    - **Attack:** damage per turn for the next elite and the boss.
    - **Defence:** block for the biggest hit of the next elite and the boss (boss table, section 10).
    - **Operations:** card draw and energy.

@@ -38,6 +38,15 @@ All characters, solo, v0.107.1, finished runs: every boss fight with the deck at
 
 Starter Ironclad deck for reference: 15.0 damage/turn, 9.8 block/turn.
 
+## Elites (Acts 1–2): the same proxies
+
+- **Act 1, damage per turn:** low (5–12): 7/62 fatal, median HP lost 21% · middle (12–15): 9/62 fatal, median HP lost 24% · high (15–21): 3/62 fatal, median HP lost 22%
+- **Act 1, block per turn:** low (5–8): 10/62 fatal, median HP lost 26% · middle (8–10): 5/62 fatal, median HP lost 19% · high (10–17): 4/62 fatal, median HP lost 22%
+- **Act 2, damage per turn:** low (2–11): 2/40 fatal, median HP lost 28% · middle (11–16): 5/41 fatal, median HP lost 36% · high (16–29): 4/41 fatal, median HP lost 30%
+- **Act 2, block per turn:** low (4–7): 3/40 fatal, median HP lost 30% · middle (7–9): 4/41 fatal, median HP lost 32% · high (9–16): 4/41 fatal, median HP lost 36%
+
+In Act 1, elites go the other way from bosses: the highest raw-damage tercile had the fewest fatal elite fights. Low block had the most. Act 2 elites show no clear pattern.
+
 ## Reading
 
 - **Raw damage does not protect you at bosses.** Decks in the highest damage tercile died *more* often (Act 1: 29% against 18% for the lowest; Act 2: 32% against 18%). High raw damage usually means a deck of attacks with few powers and block, which wins hallways and loses long boss fights.

@@ -175,6 +175,27 @@ def report():
                     for a in (1, 2, 3) for xs in [[f for f in iron if f["act"] == a]] if xs]), "",
           "Starter Ironclad deck for reference: " + f"{simulate(['CARD.STRIKE_IRONCLAD'] * 5 + ['CARD.DEFEND_IRONCLAD'] * 4 + ['CARD.BASH'], 'damage'):.1f} damage/turn, "
           f"{simulate(['CARD.STRIKE_IRONCLAD'] * 5 + ['CARD.DEFEND_IRONCLAD'] * 4 + ['CARD.BASH'], 'block'):.1f} block/turn.", ""]
+    elites = [dict(r) for r in con.execute("""
+        SELECT f.run_id, f.floor, f.act, f.damage_taken * 1.0 / f.max_hp AS dmgp,
+               (f.is_last_floor AND NOT r.win AND NOT r.abandoned) AS died
+        FROM floors f JOIN runs r USING(run_id)
+        WHERE r.n_players = 1 AND r.build_id = ? AND f.room_type = 'elite' AND f.act IN (1, 2) AND NOT r.abandoned""", [MAIN_BUILD])]
+    for f in elites:
+        deck = deck_at(con, f["run_id"], f["floor"])
+        f["dmg"] = simulate(deck, "damage", sims=150)
+        f["blk"] = simulate(deck, "block", sims=150)
+    L += ["## Elites (Acts 1–2): the same proxies", ""]
+    for act in (1, 2):
+        for key, name in (("dmg", "damage"), ("blk", "block")):
+            xs = sorted([f for f in elites if f["act"] == act], key=lambda f: f[key])
+            n = len(xs)
+            parts = [xs[: n // 3], xs[n // 3: 2 * n // 3], xs[2 * n // 3:]]
+            L.append(f"- **Act {act}, {name} per turn:** " + " · ".join(
+                f"{lab} ({min(p, key=lambda f: f[key])[key]:.0f}–{max(p, key=lambda f: f[key])[key]:.0f}): "
+                f"{sum(f['died'] for f in p)}/{len(p)} fatal, median HP lost {pct(median([f['dmgp'] for f in p]))}"
+                for lab, p in zip(("low", "middle", "high"), parts)))
+    L += ["", "In Act 1, elites go the other way from bosses: the highest raw-damage tercile had the fewest fatal elite "
+          "fights. Low block had the most. Act 2 elites show no clear pattern.", ""]
     L += ["## Reading", "",
           "- **Raw damage does not protect you at bosses.** Decks in the highest damage tercile died *more* often (Act 1: "
           "29% against 18% for the lowest; Act 2: 32% against 18%). High raw damage usually means a deck of attacks with "
