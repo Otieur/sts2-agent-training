@@ -62,7 +62,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 > - [ ] `knowledge/cards/ironclad.md` and `colorless.md`, plus `curses-status.md`. Each card has: name, ID, cost, type, rarity, base and upgraded text, and role tags (`damage`, `aoe`, `block`, `draw`, `energy`, `scaling`, `exhaust`, `self-damage`, `strength`, `retain`, `X-cost`, `co-op-only`).
 > - [ ] Sorted by rarity, then name. The pick rate and implied rank from Phase 1 sit next to each card.
 
-> **P2.E1.S4: Relics and potions** · Size S · Status: Todo
+> **P2.E1.S4: Relics and potions** · Size S · Status: Done (knowledge/relics.md and knowledge/potions.md from the extract with the Player's counts; also knowledge/events.md)
 > *As the Agent, I want relic and potion references with role tags, so that rewards and shops can be evaluated quickly.*
 >
 > **Acceptance criteria**
