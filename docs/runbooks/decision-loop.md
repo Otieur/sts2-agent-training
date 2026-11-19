@@ -9,7 +9,10 @@ The same loop for every decision. The interface is `tools/sts.py` (STS2MCP by de
 4. **Decide.** Big decisions (rare cards, relics, elite paths, boss turns) get explicit reasoning in the journal. Routine ones stay short.
 5. **Act** with a one-sentence reason: `python3 -I tools/sts.py --log runs/<run>/decisions.jsonl act <action> key=value ... --reason "..."`.
 6. **Verify** the state moved as expected (`state`, or `wait` across animations). If not, use the error table below.
-7. **On every new floor:** update the journal (floor log line; HP and budget; plan changes).
+7. **On every new floor:** update the journal (floor log line; HP and budget; plan changes):
+   - `python3 -I tools/journal.py status runs/<run> --from-state <saved state.json>` (or `--floor --act --hp --max-hp --gold --potions`)
+   - `python3 -I tools/journal.py floor runs/<run> --floor <f> --room <type> --result "..." --hp-change <n> --note "<decision and reason>"`
+   - Plan changes are written by hand in the plan sections.
 
 Use only actions the state offers. Recompute every index from the latest state. **In combat, hand indexes shift after each card played:** play from the highest index down, or re-read state between plays.
 
@@ -44,4 +47,5 @@ Use only actions the state offers. Recompute every index from the latest state. 
 
 ## Logging
 - Every action is logged in `runs/<run>/decisions.jsonl`: time, screen, floor, action, parameters, reason, result.
-- Every fight gets a line in the journal's fight log: encounter, turns, damage taken, benchmark median, potions.
+- Every fight gets a line in the journal's fight log: `python3 -I tools/journal.py fight runs/<run> --floor <f> --encounter <id or name> --turns <t> --damage <d> --potions a,b`. It adds the band-matched benchmark median and warns above the p75 or when the encounter changed on v0.111.1.
+- Before an elite or boss: `python3 -I tools/journal.py budget --encounter <id> --ascension <n>` for the expected HP cost.

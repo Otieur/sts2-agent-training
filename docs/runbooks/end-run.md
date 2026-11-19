@@ -5,7 +5,7 @@
    ```bash
    cp "$(ls -t "$HOME/Library/Application Support/SlayTheSpire2/steam/"*/modded/profile1/saves/history/*.run | head -1)" runs/<run>/run.run
    ```
-3. Generate the facts sheet: `python3 -I tools/postmortem.py runs/<run>/`
+3. Generate the facts sheet: `python3 -I tools/postmortem.py runs/<run>/`. For a quick check of the fight log against the benchmark first: `python3 -I tools/journal.py summary runs/<run>`.
 4. Write `runs/<run>/postmortem.md` from `templates/postmortem.md`: the three costliest decisions, proposed playbook changes (5 at most, each with evidence).
 5. Append a scoreboard row to `metrics/scoreboard.csv` (columns in its header).
 6. Apply accepted playbook changes: bump the version and add a changelog entry. Commit.

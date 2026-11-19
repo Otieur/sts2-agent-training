@@ -6,8 +6,8 @@
    - Character: Ironclad (Phase 4).
    - Ascension: from the ladder in `metrics/milestones.md` (start at A0; up one level after each win; review after 3 losses in a row).
    - Seed: an exam seed from `metrics/exam-seeds.md` when an exam replay is due, otherwise random.
-4. **Create the run folder:** `runs/<YYYY-MM-DD>-<seed or 'random'>/`.
-   - Copy `templates/run-journal.md` to `journal.md`. Fill in the header: character, ascension, seed, **playbook version** (from `playbooks/ironclad.md`).
+4. **Create the run folder:** `runs/<YYYY-MM-DD>-<seed or 'random'>/` (the journal command below creates it).
+   - Create the journal: `python3 -I tools/journal.py new --character IRONCLAD --ascension <n> --seed <seed> [--exam]`. It copies `templates/run-journal.md` and fills in the header, including the **playbook version** read from `playbooks/ironclad.md`.
    - Point the decision log there: every `tools/sts.py act` call uses `--log runs/<run>/decisions.jsonl`. Alternatively, symlink `runs/current` to the run folder.
 5. **Start the run through the menu actions** (STS2MCP: `menu_select` with the options shown by `tools/sts.py state`, plus `seed=` where supported).
 6. **Tell the Player in one line:** "Starting run: Ironclad A<n>, seed <s>, playbook v<x>."
