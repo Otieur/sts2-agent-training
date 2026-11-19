@@ -30,6 +30,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): Turret Operator 41 HP (51 at A8+): Unload! 3×5, Unload! 3×5, Loading +1 Strength; **Living Shield** 55 HP (65): Rampart gives the Operator 25 Block at the start of your turn; Shield Slam 6 while the Operator lives, then Smash 16 + 3 Strength every turn once it dies. Plan: kill the Living Shield first (the Operator's 25 Block a turn soaks most attacks, and killing the Operator first wakes the Shield's Smash), then the Operator; block the 3×5 volleys (Weak cuts each hit).
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - Living Shield (55 HP) gives block every turn (**Rampart**). The Turret Operator (41 HP) Unloads 3×5 (15+).
 - **Kill the Turret Operator first**: it does the damage; the Shield protects it.
