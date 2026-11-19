@@ -164,7 +164,7 @@ def card_reward(st):
         out.append(f"  {r['score']:5.2f}  [{idx.get('CARD.' + r['id'], '?')}] {r['card']}: {'; '.join(r['reasons'])}")
     out.append(f"  {res['skip_bar']:5.2f}  SKIP")
     p = res["pick"]
-    out.append("Recommendation: " + (f"choose_reward_card option_index={idx.get('CARD.' + p['id'], '?')} ({p['card']})" if p else "skip"))
+    out.append("Recommendation: " + (f"choose_reward_card option_index={idx.get('CARD.' + p['id'], '?')} ({p['card']})" if p else "skip_reward_cards"))
     return "\n".join(out)
 
 
@@ -296,7 +296,8 @@ def shop(st):
         strikes = sum(1 for d in deck if "STRIKE" in d)
         why = (f"remove a curse ({', '.join(curses)})" if curses else
                f"remove a Strike ({strikes} in deck; H4: supported at A5+)" if strikes else "no Strike or curse to remove")
-        out.append(f"Removal {rm.get('price')}g, {'affordable' if rm.get('enough_gold') else 'not affordable or used'}: {why}")
+        out.append(f"Removal {rm.get('price')}g, {'affordable' if rm.get('enough_gold') else 'not affordable or used'}: {why}"
+                   + (" → remove_card_at_shop, then select_deck_card on the card selection screen" if rm.get("enough_gold") else ""))
     for r in sh.get("relics") or []:
         if r.get("is_stocked", True):
             out.append(f"  relic buy_relic option_index={r.get('index')} {r.get('name')} {r.get('price')}g{'' if r.get('enough_gold') else ' (cannot afford)'}: {r.get('description') or ''}")

@@ -127,6 +127,22 @@ class TestAdvise(unittest.TestCase):
         self.assertEqual(act_number(None), 1)
         self.assertEqual(advise._act({"run": {"act_id": "1"}}), 2)
 
+    def test_action_names_exist(self):
+        import re
+        actions = set("resolve_rewards end_turn play_card choose_map_node claim_reward choose_reward_card skip_reward_cards "
+                      "select_deck_card confirm_selection proceed open_chest choose_treasure_relic choose_event_option "
+                      "choose_rest_option buy_card buy_relic buy_potion remove_card_at_shop use_potion discard_potion".split())
+        outs = [advise.advise(st("REWARD", reward={"card_options": [{"index": 0, "card_id": "BREAKTHROUGH"}]})),
+                advise.advise(st("REWARD", reward={"rewards": [{"index": 0, "reward_type": "Gold", "description": "g"}]})),
+                advise.advise(st("REST", rest={"options": [{"index": 0, "option_id": "HEAL"}, {"index": 1, "option_id": "SMITH"}]})),
+                advise.advise(st("SHOP", shop={"cards": [{"index": 0, "card_id": "SHRUG_IT_OFF", "price": 50, "enough_gold": True}],
+                                               "relics": [], "potions": [], "card_removal": {"price": 75, "enough_gold": True}}))]
+        for out in outs:
+            for name in re.findall(r"\b([a-z]+(?:_[a-z]+)+)\b(?= option_index|, then|$| \()", out):
+                if name.endswith(("_select", "_tool")):
+                    continue
+                self.assertIn(name, actions, f"unknown action {name} in: {out}")
+
 
 if __name__ == "__main__":
     unittest.main()
