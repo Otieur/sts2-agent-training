@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.1 · Game version: v0.107.1 · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.2 · Game version: v0.107.1 · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -31,7 +31,12 @@ The goal is strong play, judged by results. Every rule carries a provenance labe
 ## 2. Card evaluation
 
 ### 2.1 Procedure (in order)
-1. **Deck needs.** Measure the deck against five needs, not feel. Thresholds `[HYPOTHESIS]` are set from Phase 4 data.
+1. **Deck needs.** Measure the deck against five needs, not feel. Run `python3 -I tools/deck_metrics.py --deck <card ids>` for damage and block per turn (random 5-card hands, 3 energy, base numbers).
+   - **Corner targets on arrival at the boss** `[HYPOTHESIS H9]`, from `reports/phase2/deck-strength.md` (all characters, 356 boss fights):
+     - Act 1: block per turn at least 10, and 2+ scaling cards (Powers or Strength cards)
+     - Act 2: 4+ scaling cards
+     - Act 3: block per turn at least 8
+   - **Raw damage is not enough.** Decks with the most raw damage died *more* often at bosses (Act 1: 29% against 18%). Fatal Ironclad Act 1 decks had more damage (16.8 against 14.7 per turn) and less block (8.4 against 9.6). Once raw damage is about the starter deck's (15 per turn), add block and scaling before more attacks.
    - **Attack:** damage per turn for the next elite and the boss.
    - **Defence:** block for the biggest hit of the next elite and the boss (boss table, section 10).
    - **Operations:** card draw and energy.
@@ -197,6 +202,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 | H6 | Raising cheap and multi-hit attacks when Vantom is the boss fixes the Vantom problem | Mechanics support it; history can't test it (decks held about 0.7 multi-hit cards) | Phase 4 Vantom fights | Open |
 | H7 | Knowledge Demon needs a scaling engine (powers, energy, Strength) by the end of Act 2 | Fatal decks: powers 1.8 against 2.7, energy 0.8 against 1.6 (n=40) `[PLAYER-DATA, weak]` | Track engine presence on arrival | New (v2) |
 | H8 | Arrival HP matters most for Queen and Aeonglass | Survived arrived at 79% / 87%, fatal at 54% / 65% (all characters) | Higher rest thresholds there | New (v2) |
+| H9 | Boss survival depends more on block and scaling than on raw damage: targets in section 2.1 | Raw-damage terciles: Act 1 fatal 18% / 28% / 29% (low to high). Block: 30% / 24% / 21%. Scaling 2–3 cards: 17% against 28% (n=173 Act 1 boss fights) `[PLAYER-DATA, observational]` | Track the deck metrics at every boss arrival in Phase 4 | New (v2.2) |
 
 ## 13. Open questions and conflicts
 - The extract's build version is unverified. Re-check card numbers against live `/data` on v0.107.1 (P2.E1).
@@ -206,6 +212,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Whether killing the Kin Priest ends that fight; whether Lagavulin Matriarch wakes when damaged.
 
 ## 14. Changelog
+- **v2.2 (2026-11-19, overnight):** numeric corner targets for deck needs (section 2.1) from the deck-strength analysis (`reports/phase2/deck-strength.md`, `tools/deck_metrics.py`); H9 added.
 - **v2.1 (2026-11-19, overnight):** pre-boss rest rule split by act (Act 3 and A10: rest under 70%), from the boss arrival-HP analysis (`reports/phase2/boss-arrival-hp.md`). H1 evidence updated as mixed.
 - **v2 (2026-11-19, overnight):** imported decompiled game data (card roles, monster moves, powers).
   - Replaced the provisional Player-habit card order with community consensus tiers plus context overrides.
