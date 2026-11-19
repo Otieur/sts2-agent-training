@@ -243,7 +243,8 @@ def rest_rule(hp, max_hp, act, ascension, boss, character, nxt=None):
 
 
 def upgrade_candidates(st, n=3):
-    deck = [d for d in _run(st).get("deck") or [] if not d.get("upgraded") and d.get("card_id")]
+    deck = [d for d in _run(st).get("deck") or [] if isinstance(d, dict) and not d.get("upgraded")
+            and isinstance(d.get("card_id"), str) and d["card_id"]]
     ids = [d["card_id"] for d in deck]
     tiers = draft.load_tiers(_character(st))
     out = []
@@ -331,9 +332,9 @@ def shop(st):
             i, p, ok = price["CARD." + r["id"]]
             out.append(f"  {r['score']:5.2f}  buy_card option_index={i} {r['card']} {p}g{'' if ok else ' (cannot afford)'}: {'; '.join(r['reasons'][:3])}")
     rm = sh.get("card_removal") or {}
-    if rm:
-        curses = [d["card_id"] for d in run.get("deck") or [] if (draft.dm.CARDS.get(d.get("card_id")) or {}).get("type") == "Curse"
-                  and d.get("card_id") != "ASCENDERS_BANE"]
+    if isinstance(rm, dict) and rm:
+        curses = [c.split(".", 1)[1] for c in deck if (draft.dm.CARDS.get(c.split(".", 1)[1]) or {}).get("type") == "Curse"
+                  and c != "CARD.ASCENDERS_BANE"]
         strikes = sum(1 for d in deck if "STRIKE" in d)
         why = (f"remove a curse ({', '.join(curses)})" if curses else
                f"remove a Strike ({strikes} in deck; H4: supported at A5+)" if strikes else "no Strike or curse to remove")

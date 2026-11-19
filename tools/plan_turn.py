@@ -836,7 +836,7 @@ def from_state(st):
         e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
     run = st.get("run") or {}
     for slot, pot in enumerate(run.get("potions") or []):
-        if pot.get("occupied") and pot.get("potion_id"):
+        if isinstance(pot, dict) and pot.get("occupied") and isinstance(pot.get("potion_id"), str):
             pc = card_from_potion(int(pot.get("index", slot)), pot["potion_id"])
             if pc.playable:
                 hand.append(pc)
