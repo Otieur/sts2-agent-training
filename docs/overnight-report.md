@@ -51,6 +51,7 @@ Planned blocks (A–J) were finished by 01:11; everything after is extra work fr
 | X119–X121 | Final simulation report (Lagavulin order); hallway notes from the wiki (Slumbering Beetle, Hunter Killer, Chompers, Nibbits, Thieving Hopper); planner: Ravenous (a death stuns the Corpse Slugs), Imbalanced (a full block stuns the Bowlbug Rock), Flutter (the Hopper); memory updated with the wiki as a source |
 | X122–X123 | Planner: Burrowed (breaking the Tunneler's Block stuns it) and Shrink (attacks 30% weaker); hallway notes from the wiki for Turret Operator (kill the Living Shield first), Devoted Sculptor (9 Ritual: kill within about 4 turns), Sludge Spinner, Fuzzy Wurm Crawler, Seapunk, Tunneler, Shrinker Beetle |
 | X124–X125 | Wiki notes for Exoskeletons (9 per hit cap), Toadpoles, Scrolls of Biting (Paper Cuts 2), Slimes (no splits) and the lone Nibbit; every enemy note now has the wiki's move table |
+| X126 | Playbook v2.17 (Aeonglass, Test Subject and Queen rows from the wiki); the wiki confirms the Osty rules; Doom kills in the simulator (Necrobinder decks still fail calibration) |
 
 ## 3. Stories whose status changed
 - P0: E8 done; E1 backup done; E5.S1 in progress (smoke test ready); E5 and E6 in progress (smoke test for both mods; sts.py).
@@ -97,5 +98,5 @@ Full record: `docs/overnight-log.md` (one row per block, start and end times fro
 | 03:52–06:46 | X87–X98: new boss models, planner card and power coverage, advisor robustness, sensitivity checks, upgrades and relics in the simulator |
 | 06:46–09:09 | X99–X113: potions in the simulator, drafting speed, bosses with adds (The Kin), one-command advice, the community wiki pass (Entomancer, Byrdonis and Insatiable models), final report runs |
 | 09:09–09:12 | Block K: this report, the status board, the final commit |
-| 09:12–10:22 | Third wiki pass and planner fixes (X114–X125), final report run, final touch-up |
+| 09:12–10:22 | Third wiki pass and planner fixes (X114–X126), final report run, final touch-up |
 
