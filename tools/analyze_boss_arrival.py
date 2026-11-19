@@ -52,9 +52,9 @@ def main():
                        [[label, len(s), sum(x["died"] for x in s), pct(sum(x["died"] for x in s) / len(s))]
                         for lo, hi, label in BUCKETS for s in [[x for x in xs if lo <= x["hp"] < hi]] if s]), "",
               "Logistic fit, P(fatal | arrival HP): " + ", ".join(f"{int(h * 100)}% → {pct(f(h))}" for h in (0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)), ""]
-    # Value of a heal (about +29% of max HP) at each arrival level, by act
+    # Value of a heal at each arrival level, by act. A heal is floor(30% of max HP), about 0.29 of max after rounding.
     L += ["## What a pre-boss heal is worth on the fitted curves", "",
-          "A rest heals about 29% of max HP (median of 297 rests). Reduction in fitted fatal-fight probability from healing at "
+          "A rest heals 30% of max HP rounded down (237 of 297 rests match exactly; about 29% after rounding, used here). Reduction in fitted fatal-fight probability from healing at "
           "each HP level (capped at 100%):", "",
           md_table(["HP at the rest site", "Act 1", "Act 2", "Act 3"],
                    [[f"{int(h * 100)}%"] + [f"−{100 * (curves[a](h) - curves[a](min(1.0, h + 0.29))):.0f} pts" for a in (1, 2, 3)]

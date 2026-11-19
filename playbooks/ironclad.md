@@ -90,7 +90,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 ## 4. Path planning and HP budget
 
 1. **At act start:** read the boss and open its plan. Choose a path by elites, rest sites before elites and the boss, shops, and expected HP cost (sum of benchmark medians; p75 for elites). Write the plan in the run journal.
-2. **Elites under 50% HP: avoid.** `[PLAYER-DATA]` outcome, n=308 elite fights in Acts 1–2, all characters:
+2. **Elites under 50% HP: avoid.** `[PLAYER-DATA]` outcome, n=308 elite fights in Acts 1–2, all characters, abandoned runs excluded:
    - 24% of fights entered under 50% HP ended the run (Ironclad 4/16)
    - 8% at 50–70% (Ironclad 3/32)
    - 3% at 70% or more (Ironclad 2/31)
@@ -101,10 +101,10 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 
    | Room | HP change (Act 1 / 2 / 3) | What it gives |
    |---|---|---|
-   | Monster | −6% / −10% / −8% | about 0.9 cards, 0.45 potions, 12 gold |
-   | Elite | −23% / −28% / −25% | about 0.9 relics, 0.8 cards, 30 gold |
+   | Monster | −6% / −10% / −8% | 0.6–0.9 cards (fewer in Act 3), 0.45–0.55 potions, 12–14 gold |
+   | Elite | −23% / −28% / −25% | about 0.9 relics, 0.7–0.8 cards, 30 gold |
    | ? room | −1% / −1% / −2% (a fight about 20% of the time) | 0.5–0.8 cards, 0.2–0.4 relics, 8–22 gold |
-   | Shop | ~0 | about 1 card and 0.6–1 relic bought |
+   | Shop | +1% to +4% | 0.6–1 card and 0.6–1 relic bought |
    | Treasure | 0 | 1 relic, gold |
 
    **Path heuristics** `[HYPOTHESIS]`:
@@ -127,6 +127,8 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 | 2 | Infested Prisms | 27 / 38.8 | 0/8 | Hits 22–27, Pulsate +4 Strength and 20 block | Block big; don't attack into Pulsate |
 | 3 | Mecha Knight | 34 / 43 | 1/5 | Artifact; Heavy Cleave 35 (40 after Windup) | Block 40; strip Artifact first |
 
+**v0.111.1 changes** (benchmarks above are v0.107.1): Mecha Knight's Flamethrower turn now also deals 8 (12); Entomancer has 165 HP at A8+ (was 155). `knowledge/version-delta-v0.111.1.md`
+
 ## 5. Rest-site policy
 
 - **Before a boss** `[HYPOTHESIS H1]`, tested in Phase 4 against the Player's baseline (equally likely to heal or smith at 37% HP before a boss):
@@ -135,7 +137,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
   - Evidence (`reports/phase2/boss-arrival-hp.md`) is mixed. Boss death rates fall steeply with arrival HP, most of all in Act 3. But the Player's heals and smiths at the same HP were followed by almost the same boss death rate (31% against 30% under 50% HP). Confounding cuts both ways.
 - **Before an elite on the path:** rest if HP minus the elite's p75 would leave less than 50% of max for the next fights. `[HYPOTHESIS]`
 - **Otherwise:** smith at 50% HP or more. Under 35%, rest. In between, decide by the next two fights' benchmark cost.
-- A rest heals about 29% of max HP (about 23 on 80). `[PLAYER-DATA]`
+- A rest heals 30% of max HP, rounded down (24 on 80), capped at max HP. 237 of 297 heals match exactly; larger ones are presumably relic boosts. `[PLAYER-DATA]`
 
 ## 6. Shop policy (including removal)
 
@@ -202,6 +204,10 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 
 At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for both. `[PLAYER-DATA]`
 
+**v0.111.1 changes:** Queen's Torch Head Amalgam opens with a new Strong Tackle, 26 (32): block 26+ on turn 1. Aeonglass's Ebb drops to 22 (26). Soul Fysh's De-Gas at A9 rises to 16 (18). `knowledge/version-delta-v0.111.1.md`
+
+**Arrival HP by boss** (H8): it separated survived from fatal fights for Queen, The Kin and Aeonglass (gaps of 22–25 points), not for Vantom or Waterfall Giant (gap near zero). Their deaths are about the deck: Slippery, the death explosion, long fights.
+
 **Benchmarks in this table are pooled, mostly from the Player's A7–A10 runs.** At lower ascension, use `data/benchmarks/ironclad-encounters-by-band-v0.107.1.csv` (or `allchars-…` where Ironclad has fewer than 5 fights). At A0–4, Vantom's all-character median is 22.5 against 48 pooled. Rest thresholds scale down accordingly.
 
 ## 11. Player baseline (habits to beat or test, not targets)
@@ -226,18 +232,18 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 | H5 | Avoiding elites under 50% HP reduces deaths | n=308; 24% fatal against 3–8%. Holds in every band: A0–4 10% against 3%, A5–9 32% against 6%, A10 29% against 9% | Adopted as a rule | Adopted |
 | H6 | Raising cheap and multi-hit attacks when Vantom is the boss fixes the Vantom problem | Mechanics support it; history can't test it (decks held about 0.7 multi-hit cards) | Phase 4 Vantom fights | Open |
 | H7 | Knowledge Demon needs a scaling engine (powers, energy, Strength) by the end of Act 2 | Fatal decks: powers 1.8 against 2.7, energy 0.8 against 1.6 (n=40) `[PLAYER-DATA, weak]` | Track engine presence on arrival | New (v2) |
-| H8 | Arrival HP matters most for Queen and Aeonglass | Survived arrived at 79% / 87%, fatal at 54% / 65% (all characters) | Higher rest thresholds there | New (v2) |
+| H8 | Arrival HP matters most for Queen, The Kin and Aeonglass, and hardly at all for Vantom and Waterfall Giant | Median arrival HP, survived against fatal (all characters, abandoned runs excluded): Queen 79% / 54%, The Kin 64% / 41%, Aeonglass 87% / 65%; Vantom 57% / 58%, Waterfall Giant 57% / 59%. Fatal n is 5–12 per boss | Higher rest thresholds for the first three; for Vantom and Waterfall Giant, prefer a smith that fixes the deck's answer when HP is above the median damage | Refined (v2.5) |
 | H9 | Boss survival depends more on block and scaling than on raw damage: targets in section 2.1 | Raw-damage terciles: Act 1 fatal 18% / 28% / 29% (low to high). Block: 30% / 24% / 21%. Scaling 2–3 cards: 17% against 28% (n=173 Act 1 boss fights) `[PLAYER-DATA, observational]` | Track the deck metrics at every boss arrival in Phase 4 | New (v2.2) |
 
 ## 13. Open questions and conflicts
 - The extract shows pre-v0.111 values (it matches v0.107.x–v0.110). On v0.111.1, the cards and enemies in `knowledge/version-delta-v0.111.1.md` differ. Re-check numbers against live data (P2.E1).
 - Not Yet (card) and Aeonglass (boss) are missing from the extract.
-- **Cards where sources disagree** (†): Feel No Pain, One-Two Punch, Pyre, Barricade, Juggernaut, Aggression, Dark Embrace, Body Slam and others. Nat 1 Gaming is v0.113 beta. Spire Codex (main) is partial.
+- **Cards where sources disagree** (†, 29 cards): One-Two Punch, Pyre, Tear Asunder, Barricade, Bloodletting, Juggernaut, Shrug It Off, Aggression, Thrash, Bully and others (full list in §2.2). Nat 1 Gaming is v0.113 beta. Spire Codex (main) is partial.
 - Bygone Effigy's Slow multiplier, the Colossus power and Infested Prism's Vital Spark: effects to verify in game.
 - Whether killing the Kin Priest ends that fight; whether Lagavulin Matriarch wakes when damaged.
 
 ## 14. Changelog
-- **v2.5 (2026-11-19, overnight):** fixed the quintile buckets in `tools/build_community_tiers.py` (the top bucket had absorbed the remainder). Consensus moved for four cards: Feel No Pain A→B, Body Slam B→C, Evil Eye C→D, Headbutt C→D. Habit discrepancies 23 → 19. Tier lists in §2.2 and §11 regenerated from the tier file.
+- **v2.5 (2026-11-19, overnight):** consistency pass against the data: rest heal is 30% of max HP rounded down (was "about 29%"); room economics ranges per act; the elite HP-band sample excludes abandoned runs (stated); H8 widened to The Kin and narrowed for Vantom and Waterfall Giant; v0.111.1 elite and boss changes noted under the tables. Also fixed the quintile buckets in `tools/build_community_tiers.py` (the top bucket had absorbed the remainder). Consensus moved for four cards: Feel No Pain A→B, Body Slam B→C, Evil Eye C→D, Headbutt C→D. Habit discrepancies 23 → 19. Tier lists in §2.2 and §11 regenerated from the tier file.
 - **v2.4 (2026-11-19, overnight):** main branch is now v0.111.1. Added the v0.111.1 card changes to §2.2; target version noted in the header.
 - **v2.3 (2026-11-19, overnight):** pre-boss rest threshold uses the ascension-band median; curse removal added to the shop priority. Both from the practice post-mortems in `runs/examples/`.
 - **v2.2 (2026-11-19, overnight):** numeric corner targets for deck needs (section 2.1) from the deck-strength analysis (`reports/phase2/deck-strength.md`, `tools/deck_metrics.py`); H9 added.

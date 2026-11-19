@@ -27,7 +27,7 @@ Each entry records:
   - Ironclad, HP under 35%: HEAL 6/16 (38%), SMITH 2/4 (50%).
   - All characters, HP 35–50%: HEAL 7/33 (21%), SMITH 15/48 (31%).
   - All characters, HP under 35%: HEAL 24/68 (35%), SMITH 3/14 (21%). Likely selection: smithing that low happens only when the deck already looks strong.
-  - A HEAL restores a median 29% of max HP (n=297), about 23 HP on 80.
+  - A HEAL restores 30% of max HP rounded down (237 of 297 exact; median ratio 29% because of rounding), 24 HP on 80.
   - The Vantom benchmark is a median of 48 damage and a p90 of 63.
   - Mixed, small samples.
 - Use: **hypothesis to test** (Phase 4). Before a boss, rest if HP is below that boss's median benchmark damage plus a margin; otherwise smith. The Player's "always get strong" stays as the baseline to compare against.

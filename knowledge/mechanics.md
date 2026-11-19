@@ -86,7 +86,7 @@ block = floor( (base + Dexterity) × (0.75 if Frail) × (2 if Unmovable active) 
 - **The boss is known at the start of the act.** The game's map state contains the boss identity, which STS2MCP exposes (commit `3154670`, "Expose map boss identity"). Plan the act around it. Resolves OQ2.3 (likely; confirm on the live map).
 - Room types: monster, elite, ? (unknown: event, or sometimes a fight), shop, rest site, treasure, Ancient (act start), boss. `[PLAYER-DATA]`
 - The game heals between acts at the Ancient. From A2 the heal is 80% of missing HP (data: 79%) instead of 100%. `[PLAYER-DATA]`
-- Rest-site options seen: Smith (upgrade), Heal (restores about 29% of max HP), and relic-driven options (Dig, Cook, Kindle, Hatch, Lift, Clone). `[PLAYER-DATA]`
+- Rest-site options seen: Smith (upgrade), Heal (restores 30% of max HP, rounded down, capped at max HP; 237 of 297 heals match exactly, 34 were larger, presumably relic boosts), and relic-driven options (Dig, Cook, Kindle, Hatch, Lift, Clone). `[PLAYER-DATA]`
 
 ## Verification checklist (first Phase 4 runs; P2.E2.S2)
 | # | Rule to verify | Test | Expected |
@@ -99,6 +99,6 @@ block = floor( (base + Dexterity) × (0.75 if Frail) × (2 if Unmovable active) 
 | 6 | Slippery cap and stacks | Twin Strike on Vantom on turn 1 | 1 + 1 damage; stacks 9 → 7 |
 | 7 | Block absorbs before HP | 10 damage into 6 block | Lose 4 HP |
 | 8 | Burning Blood heal | After any won fight | +6 HP |
-| 9 | Heal amount at rest | Rest at 40/80 | about +23 (29% of max) |
+| 9 | Heal amount at rest | Rest at 40/80 | +24 (30% of max, rounded down) |
 | 10 | Colossus power effect | Play Colossus, then take a hit | Damage halved? |
 | 11 | Ascender's Bane removable? | Try removal at a shop with A5+ | Expect refused (Eternal) |

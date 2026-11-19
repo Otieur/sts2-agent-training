@@ -46,7 +46,7 @@ Logistic fit, P(fatal | arrival HP): 40% → 64%, 50% → 55%, 60% → 46%, 70% 
 
 ## What a pre-boss heal is worth on the fitted curves
 
-A rest heals about 29% of max HP (median of 297 rests). Reduction in fitted fatal-fight probability from healing at each HP level (capped at 100%):
+A rest heals 30% of max HP rounded down (237 of 297 rests match exactly; about 29% after rounding, used here). Reduction in fitted fatal-fight probability from healing at each HP level (capped at 100%):
 
 | HP at the rest site | Act 1 | Act 2 | Act 3 |
 |---|---|---|---|

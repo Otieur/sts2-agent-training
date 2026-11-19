@@ -46,6 +46,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### HP target on arrival
 - Ironclad benchmark: median 48, p75 57.5, p90 63. **Rest before the boss if HP is below about 58.** `[HYPOTHESIS H1]`
+- Arrival HP did not separate outcomes here (all characters: survived 59%, fatal 58%). Between the median (48) and the threshold, a smith that improves the Slippery answer (a multi-hit or cheap attack) may be worth more than the heal. `[HYPOTHESIS H8]`
 
 ### First three turns
 1. **Turn 1 (incoming 7):** play cheap attacks to strip stacks; keep the count (state shows Slippery stacks). Hold Bash unless it lands the last stack or the Vulnerable will still be up when real damage starts (Vulnerable ticks down at end of turn). Block what's left.
