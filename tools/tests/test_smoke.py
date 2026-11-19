@@ -143,6 +143,42 @@ class TestSmoke(unittest.TestCase):
         self.assertIn("mod reachable again", out.getvalue())
         self.assertEqual(calls["h"], 2)
 
+    def test_combat_trace_records_changes_only(self):
+        import copy
+        import tempfile
+        import sts
+        hit = copy.deepcopy(COMBAT)
+        hit["data"]["combat"]["enemies"][0]["current_hp"] -= 6
+        states = [COMBAT, COMBAT, hit, hit, {"data": {"screen": "MAP", "run": None, "session": {"mode": "singleplayer"}}}]
+        clock = iter(range(0, 10_000, 30))
+
+        class Ad(sts.Sts2AgentAdapter):
+            def __init__(self, *a, **k):
+                self.i = 0
+
+            def health(self):
+                return {"data": {"service": "sts2-ai-agent", "game_version": "v0.111.1", "status": "ready"}}
+
+            def state(self):
+                s = states[min(self.i, len(states) - 1)]
+                self.i += 1
+                return s
+        orig = sts.Sts2AgentAdapter
+        sts.Sts2AgentAdapter = Ad
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                trace = Path(tmp) / "trace.jsonl"
+                with redirect_stdout(io.StringIO()):
+                    smoke.main(["--watch", "--minutes", "3", "--trace", str(trace)], sleep=lambda s: None,
+                               clock=lambda: next(clock))
+                rows = [json.loads(x) for x in trace.read_text().splitlines()]
+        finally:
+            sts.Sts2AgentAdapter = orig
+        self.assertEqual(len(rows), 2)  # the first combat state and the one after the hit; repeats and the map are skipped
+        e0 = COMBAT["data"]["combat"]["enemies"][0]["current_hp"]
+        self.assertEqual([r["enemies"][0]["hp"] for r in rows], [e0, e0 - 6])
+        self.assertIn("hand", rows[0])
+
 
 if __name__ == "__main__":
     unittest.main()

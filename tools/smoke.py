@@ -172,6 +172,36 @@ def save(st, scr):
     return f
 
 
+def _powers(xs):
+    return {str(x.get("power_id") or x.get("id") or "").replace("_POWER", ""): x.get("amount")
+            for x in (xs if isinstance(xs, list) else []) if isinstance(x, dict)}
+
+
+def combat_snapshot(st):
+    """Compact view of an STS2-Agent combat state for the combat trace; None outside combat. Comparing consecutive
+    snapshots shows what each card did (energy, HP, Block and power changes) without stopping the Player."""
+    d = st.get("data", st) if isinstance(st, dict) else {}
+    if str(d.get("screen") or "").upper() != "COMBAT":
+        return None
+    c = d.get("combat") if isinstance(d.get("combat"), dict) else {}
+    p = c.get("player") if isinstance(c.get("player"), dict) else {}
+    hand = []
+    for h in c.get("hand") if isinstance(c.get("hand"), list) else []:
+        if isinstance(h, dict) and isinstance(h.get("card_id"), str):
+            vals = {v.get("name"): v.get("current_value") for v in h.get("dynamic_values") or [] if isinstance(v, dict)}
+            hand.append([h["card_id"] + ("+" if h.get("upgraded") else ""), vals])
+    enemies = [{"i": e.get("index"), "id": e.get("enemy_id"), "hp": e.get("current_hp"), "block": e.get("block"),
+                "powers": _powers(e.get("powers")),
+                "intents": [[i.get("intent_type"), i.get("damage"), i.get("hits")] for i in e.get("intents") or []
+                            if isinstance(i, dict)]}
+               for e in (c.get("enemies") if isinstance(c.get("enemies"), list) else []) if isinstance(e, dict)]
+    run = d.get("run") if isinstance(d.get("run"), dict) else {}
+    return {"run_id": d.get("run_id"), "floor": run.get("floor"), "turn": d.get("turn"),
+            "player": {"hp": p.get("current_hp"), "block": p.get("block"), "energy": p.get("energy"),
+                       "powers": _powers(p.get("powers"))},
+            "hand": hand, "enemies": enemies}
+
+
 def report(scr, issues, notes):
     print(f"[{scr}] " + ("OK" if not issues else f"{len(issues)} problem(s)"))
     for i in issues:
@@ -188,6 +218,7 @@ def main(argv=None, opener=None, sleep=time.sleep, clock=time.time):
     ap.add_argument("--save", action="store_true")
     ap.add_argument("--watch", action="store_true")
     ap.add_argument("--minutes", type=float, default=30)
+    ap.add_argument("--trace", help="with --watch: append each change of a combat state to this JSONL file")
     args = ap.parse_args(argv)
     if args.file:
         st = json.loads(Path(args.file).read_text())
@@ -220,7 +251,7 @@ def main(argv=None, opener=None, sleep=time.sleep, clock=time.time):
     for i in hissues:
         print("  PROBLEM " + i)
     seen, bad = set(), bool(hissues)
-    away = False
+    away, last_snap = False, None
     while True:
         try:
             st = ad.state()
@@ -238,6 +269,19 @@ def main(argv=None, opener=None, sleep=time.sleep, clock=time.time):
         if away:
             print("mod reachable again")
             away = False
+        if args.trace and not mcp:
+            snap = combat_snapshot(st)
+            if snap is not None and snap != last_snap:
+                with open(args.trace, "a", encoding="utf-8") as f:
+                    f.write(json.dumps({"ts": round(clock(), 2), **snap}, ensure_ascii=False) + "\n")
+            last_snap = snap
+        d = st.get("data", st) if isinstance(st, dict) else {}
+        quick = str(d.get("state_type") if mcp else d.get("screen") or "?").upper()
+        if quick in seen:  # each screen is checked once; skip the full check (and its advise.py run) after that
+            if not args.watch or clock() > deadline:
+                break
+            sleep(0.5 if quick == "COMBAT" else 1.0)
+            continue
         scr, issues, notes = (check_mcp_state if mcp else check_state)(st)
         if scr not in seen:
             seen.add(scr)
