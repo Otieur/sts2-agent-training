@@ -289,7 +289,11 @@ class TestPlanTurn(unittest.TestCase):
         hand, player, enemies = pt.from_state(st)
         self.assertEqual((player.max_cards, player.end_turn_dmg, enemies[0].enrage), (1, 6, 2))
         o = pt.rank(pt.plans(hand, player, enemies), "safe")[0]
-        self.assertEqual((o["plays"], o["incoming"], o["hp_lost"]), (["Defend"], 18, 13))  # 10 + 2 Enrage + 6, one card only
+        self.assertEqual((o["plays"], o["incoming"], o["hp_lost"]), (["Defend"], 18, 13))  # 10 + 2 Enrage (a Skill) + 6
+        e = [pt.parse_enemy("TS:100:0:10", 0)]
+        e[0].enrage = 2
+        o = pt.simulate([pt.card_from_extract(0, "STRIKE_IRONCLAD")], [0], pt.Player(energy=1), e)
+        self.assertEqual(o["incoming"], 10)                     # an Attack does not feed Enrage
 
     def test_hardened_shell_thorns_artifact(self):
         ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731

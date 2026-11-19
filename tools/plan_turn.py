@@ -97,6 +97,7 @@ class Card:
     fnp: int = 0                # Feel No Pain gained: Block for each card exhausted later this turn
     held_dmg: int = 0           # damage (blockable) at the end of the turn if still in hand (Toxic 5)
     upgraded: bool = False
+    skill: bool = False         # a Skill card (Test Subject's Enrage counts these)
     sandpit_add: int = 0        # adds to the Sandpit counter on you (Frantic Escape +1)
     heal_pct: int = 0           # heals this percent of max HP, at most the HP missing (Blood Potion 20)
     colossus: bool = False      # Colossus: half damage from Vulnerable enemies this turn
@@ -119,7 +120,7 @@ class Enemy:
     slow: bool = False          # Bygone Effigy: damage taken x (1 + 0.1 x cards played earlier this turn) [HYPOTHESIS unit]
     ref: Optional[int] = None   # the enemy's index in the mod's state (combat.enemies[].index), for target_index
     hive: int = 0               # Entomancer's Personal Hive: each damage instance it takes adds this many cards to your draw pile
-    enrage: int = 0             # Test Subject's Enrage: it gains this much Strength for each card you play
+    enrage: int = 0             # Test Subject's Enrage: it gains this much Strength for each Skill you play
     hp_cap: Optional[int] = None  # Hardened Shell: it loses at most this much HP per turn (damage already taken this turn unknown)
     thorns: int = 0             # Thorns: each hit you deal it costs you this much
     artifact: int = 0           # Artifact: each charge cancels one debuff applied to it
@@ -255,6 +256,7 @@ def _card_from_extract(index, card_id, live=None, cost=None, playable=True):
     card.self_doom = int(m.group(1)) if m else 0
     if cid in OSTY_HP_DAMAGE:  # Unleash: an Osty attack whose damage grows with Osty's HP (set when played)
         card.osty, card.dmg, card.live = True, OSTY_HP_DAMAGE[cid], False
+    card.skill = c["type"] == "Skill"
     card.needs_exhaust = cid in CONDITIONAL_ENERGY and "no card needs to be exhausted" not in (c.get("effect") or "")
     card.exhausts = bool({"kw-exhaust", "exhaust-other"} & set(c.get("tags") or [])) or "Exhaust a card" in (c.get("effect") or "")
     card.changes_hand = ("exhaust-other" in (c.get("tags") or []) or "Exhaust a card" in (c.get("effect") or "")
@@ -430,6 +432,7 @@ def simulate(cards, targets, player, enemies):
     osty = player.osty_hp
     log = []
     played = 0
+    skills = 0  # Skills played this turn (Test Subject's Enrage)
     seq = []
     exhausted = False  # a card exhausted earlier this turn (cards exhausted before the state was read are not known)
     retaliate = 0      # Flame Barrier: damage back per enemy hit
@@ -526,6 +529,7 @@ def simulate(cards, targets, player, enemies):
             osty = 0
         if not card.potion:
             played += 1
+            skills += card.skill
         if player.tender and not card.potion:  # Tender: later cards this turn hit and block for less
             strength_gained -= player.tender
             dex_gained -= player.tender
@@ -540,8 +544,8 @@ def simulate(cards, targets, player, enemies):
     # Intent numbers already include Weak that was on the enemy when the state was read (the game computes them), so
     # only Weak applied during this turn reduces them further.
     pairs = [(e, o) for e, o in zip(es, enemies) if e.hp > 0 and e.intent_hits]
-    # Enrage (Test Subject): Strength for every card played this turn raises each hit (assumed every card; gap note)
-    intents = [(e.intent_per_hit + e.enrage * played, e.intent_hits) for e, o in pairs]
+    # Enrage (Test Subject, phase 1): Strength for every Skill played this turn raises each hit (two guides: Skills only)
+    intents = [(e.intent_per_hit + e.enrage * skills, e.intent_hits) for e, o in pairs]
     if colossus:  # half damage from Vulnerable enemies this turn [GAME-EXTRACT] + [COMMUNITY]
         intents = [(d // 2 if e.vuln else d, h) for (d, h), (e, o) in zip(intents, pairs)]
     weak = [e.weak and not o.weak for e, o in pairs]
