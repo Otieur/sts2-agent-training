@@ -50,7 +50,7 @@ The goal is strong play, judged by results. Every rule carries a provenance labe
 
 `tools/draft.py` applies steps 1–5 mechanically (tier, v0.111.1 adjustments, boss fit, corner-target needs, engines, a skip bar rising 0.1 per card above 15) and prints the reasons. It cannot see relics, upgrades, Strength scaling of multi-hit cards or `?` card values; override it with a stated reason when those matter. `[HYPOTHESIS]` weights
 
-Backtest on the Player's 640 Ironclad card reward screens (`reports/phase2/draft-backtest-ironclad.md`): the tool agreed with the Player on 43%, and the act was survived in 71% of screens where the Player's choice matched the tool against 62% where it did not (p = 0.03; confounded, since easy screens produce both). The tool skips more often than the Player (197 against 141 skips).
+Backtest on the Player's 640 Ironclad card reward screens (`reports/phase2/draft-backtest-ironclad.md`): the tool agreed with the Player on 43%, and the act was survived in 71% of screens where the Player's choice matched the tool against 62% where it did not (p = 0.02; confounded, since easy screens produce both). The tool skips more often than the Player (193 against 141 skips).
 
 ### 2.2 Card tiers (community consensus, v0.107-era weighted)
 From `knowledge/community/ironclad-tiers.md` `[COMMUNITY]`. † marks cards where sources disagree by 2+ tiers. Card roles are `[GAME-EXTRACT]`.
@@ -72,6 +72,7 @@ From `knowledge/community/ironclad-tiers.md` `[COMMUNITY]`. † marks cards wher
 
 **Context overrides** (tier is a default, not a rule):
 - **Vantom is the Act 1 boss:** raise cheap and multi-hit attacks (Anger, Twin Strike, Sword Boomerang, Thrash, Fight Me). They clear Slippery. Lower hit-all single-hit cards (Breakthrough, Thunderclap). `[GAME-EXTRACT]` mechanics, `[HYPOTHESIS]` value
+- **Other act bosses** (data-backed where marked; the same items as `tools/deck_check.py`): Knowledge Demon raises powers, Strength and energy; The Kin raises hit-all damage and powers; Ceremonial Beast raises 10+ damage attacks and Vulnerable (data); Aeonglass raises Strength and multi-hit (data) and lowers 0-cost filler; Queen raises draw (data); Kaiser Crab raises energy (data) and lowers hit-all single hits; Lagavulin Matriarch raises powers (data); Test Subject raises multi-hit (data); Vantom also raises draw (data). `[HYPOTHESIS]`
 - **Strength engine in the deck:** raise multi-hit payoffs one tier. `[COMMUNITY]`
 - **Exhaust engine** (Feel No Pain or Dark Embrace in the deck): raise exhaust outlets one tier.
 - **Second copies:** usually a tier lower, except engine pieces the deck needs twice. `[HYPOTHESIS]`

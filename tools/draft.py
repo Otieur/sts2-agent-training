@@ -119,30 +119,46 @@ def is_single_hit_aoe(c):
 
 
 def boss_fit(c, boss):
-    """Context overrides from the playbook and boss plans. Returns (delta, reason) or None."""
+    """Context overrides from the playbook, the boss plans and the deck-feature data (the same items as
+    tools/deck_check.py BOSS_CHECKS). Returns a list of (delta, reason)."""
     b = (boss or "").upper().replace("ENCOUNTER.", "")
     tags, cost, ctype = c["tags"], c["cost"] if c["cost"] is not None else 9, c["type"]
+    attack, power = ctype == "Attack", ctype == "Power"
+    out = []
+
+    def add(cond, delta, reason):
+        if cond:
+            out.append((delta, reason))
     if "VANTOM" in b:
-        if ctype == "Attack" and ("multi-hit" in tags or 0 <= cost <= 1) and not is_single_hit_aoe(c):
-            return (+1.0, "Vantom: cheap or multi-hit attacks clear Slippery")
-        if is_single_hit_aoe(c):
-            return (-1.0, "Vantom: single-hit hit-all attacks are wasted on Slippery")
-    if "KNOWLEDGE_DEMON" in b and (ctype == "Power" or "strength" in tags or "energy" in tags):
-        return (+0.5, "Knowledge Demon: needs scaling and energy (H7)")
-    if "THE_KIN" in b and "aoe" in tags:
-        return (+0.5, "The Kin: hit-all damage for the followers")
-    if "CEREMONIAL_BEAST" in b and ctype == "Attack" and (dm.card_numbers("CARD." + c["id"]) or {}).get("dmg", 0) >= 10:
-        return (+0.5, "Ceremonial Beast: front-loaded damage breaks Plow")
-    if "SOUL_FYSH" in b and "exhaust-other" in tags:
-        return (+0.5, "Soul Fysh: exhaust the Beckon cards")
-    if "WATERFALL_GIANT" in b and "block" in tags:
-        return (+0.5, "Waterfall Giant: bank block for the death explosion")
-    if "AEONGLASS" in b:
-        if 0 <= cost <= 0 and ctype != "Power":
-            return (-0.5, "Aeonglass: Wither every 6 cards; cheap filler costs card plays")
-    if "QUEEN" in b and "draw" in tags:
-        return (+0.5, "Queen: draw (plan)")
-    return None
+        add(attack and ("multi-hit" in tags or 0 <= cost <= 1) and not is_single_hit_aoe(c), +1.0, "Vantom: cheap or multi-hit attacks clear Slippery")
+        add(attack and is_single_hit_aoe(c), -1.0, "Vantom: single-hit hit-all attacks are wasted on Slippery")
+        add("draw" in tags, +0.5, "Vantom: draw (survived decks 2.1, fatal 1.0)")
+    elif "KNOWLEDGE_DEMON" in b:
+        add(power or "strength" in tags or "energy" in tags, +0.5, "Knowledge Demon: scaling and energy (H7)")
+    elif "THE_KIN" in b:
+        add("aoe" in tags, +0.5, "The Kin: hit-all damage for the followers")
+        add(power, +0.5, "The Kin: powers for the longest Act 1 fight")
+    elif "CEREMONIAL_BEAST" in b:
+        add(attack and (dm.card_numbers("CARD." + c["id"]) or {}).get("dmg", 0) >= 10, +0.5, "Ceremonial Beast: front-loaded damage breaks Plow")
+        add("vulnerable" in tags, +0.5, "Ceremonial Beast: Vulnerable (survived 1.2, fatal 0.5)")
+    elif "SOUL_FYSH" in b:
+        add("exhaust-other" in tags, +0.5, "Soul Fysh: exhaust the Beckon cards")
+    elif "WATERFALL_GIANT" in b:
+        add("block" in tags, +0.5, "Waterfall Giant: bank block for the death explosion")
+    elif "AEONGLASS" in b:
+        add(cost == 0 and not power, -0.5, "Aeonglass: Wither every 6 cards; cheap filler costs card plays")
+        add("strength" in tags, +0.5, "Aeonglass: Strength (survived 0.8, fatal 0.3)")
+        add(attack and "multi-hit" in tags, +0.5, "Aeonglass: damage per card played (multi-hit)")
+    elif "QUEEN" in b:
+        add("draw" in tags, +0.5, "Queen: draw (survived 3.9, fatal 2.2)")
+    elif "KAISER_CRAB" in b:
+        add(attack and is_single_hit_aoe(c), -0.5, "Kaiser Crab: focus one claw, not hit-all")
+        add("energy" in tags, +0.5, "Kaiser Crab: energy (survived 1.2, fatal 0.6)")
+    elif "LAGAVULIN" in b:
+        add(power, +0.5, "Lagavulin Matriarch: powers to set up during sleep")
+    elif "TEST_SUBJECT" in b:
+        add(attack and "multi-hit" in tags, +0.5, "Test Subject: burst on tangible turns (multi-hit)")
+    return out
 
 
 def metrics(deck):
@@ -187,9 +203,8 @@ def score_offer(deck, offer_ids, character, act, floor, boss):
         adj = V0111.get(character, {}).get(c["id"])
         if adj:
             s += adj[0]; reasons.append(f"{adj[1]} ({adj[0]:+g})")
-        fit = boss_fit(c, boss)
-        if fit:
-            s += fit[0]; reasons.append(f"{fit[1]} ({fit[0]:+g})")
+        for delta, why in boss_fit(c, boss):
+            s += delta; reasons.append(f"{why} ({delta:+g})")
         after = metrics(deck + [cid])
         d_dmg, d_block, d_scal = after["dmg"] - base["dmg"], after["block"] - base["block"], after["scaling"] - base["scaling"]
         if "block" in target and base["block"] < target["block"] and d_block >= 0.4:
