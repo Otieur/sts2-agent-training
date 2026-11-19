@@ -58,6 +58,28 @@ Disable mods in the game settings if asked.
 
 ## Option B: STS2-Agent (reviewed commit 5d7c306)
 
+### Installed 2026-11-19 11:56 (what was actually run)
+The Player approved the security review and the .NET 9 SDK install. The game was closed and the saves matched the backup `backups/2026-11-19-pre-phase0/` (rsync dry run, no differences).
+```bash
+brew install dotnet@9                       # 9.0.124, keg-only
+export DOTNET_ROOT=/opt/homebrew/opt/dotnet@9/libexec PATH=/opt/homebrew/opt/dotnet@9/bin:$PATH
+DATA="$GAME_DIR/SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64"
+cd vendor/STS2-Agent && git rev-parse HEAD   # 5d7c3061581bfd4382d6255cb39e18b19a40d3dc
+dotnet build STS2AIAgent/STS2AIAgent.csproj -c Release "/p:Sts2DataDir=$DATA"   # 0 warnings, 0 errors
+mkdir -p "$MODS_DIR"
+cp STS2AIAgent/bin/Release/net9.0/STS2AIAgent.dll "$MODS_DIR/"
+# mod_id.json copied with "has_pck" set to false (see the note below)
+```
+| File in `$MODS_DIR` | SHA-256 |
+|---|---|
+| `STS2AIAgent.dll` | `684e134cf233c1b3bbe0ed149a7060b846cd59f262b7e9927507d80f5d35ff69` |
+| `mod_id.json` | `dfd767bbc7d41a100aeb22a84793bd88fb3c7a23e2f3abaed14b5b433cb40343` |
+
+**Why no PCK.** `scripts/build-mod.sh` packs `mod_manifest.json` into `STS2AIAgent.pck` by running the game's own executable headless. A Godot export can load its own embedded game data even when given another project path, which could start the game's code against the real save folder and Steam. The PCK only repeats the manifest, the game's loader reads manifests from the JSON files in the mods folder, and it loads a mod with only a DLL (STS2MCP ships with `has_pck: false`). So the installed `mod_id.json` sets `has_pck` to false. If the game refuses the mod for the missing PCK, build the PCK with a standalone Godot editor of the game's engine version (a download that needs the Player's approval) and set `has_pck` back to true.
+
+**Uninstall:** with the game closed, `rm "$MODS_DIR/STS2AIAgent.dll" "$MODS_DIR/mod_id.json"`, or start the game with `nomods` (the loader honours it).
+
+
 ### Build
 Needs a .NET 9 SDK: `global.json` pins 9.0.x and only .NET 10.0.101 is installed. Installing one needs the Player's approval.
 ```bash

@@ -111,7 +111,7 @@
 > - [ ] The commit SHA is recorded in `docs/environment.md`.
 > - [ ] The fallback `https://github.com/Gennadiyev/STS2MCP` is cloned to `vendor/STS2MCP` for E7, but not reviewed unless needed.
 
-> **P0.E3.S2: Security review** · Size M · Status: In progress (draft review written overnight; needs the Player's approval)
+> **P0.E3.S2: Security review** · Size M · Status: Done (STS2-Agent verdict approved by the Player 2026-11-19)
 > *As the Player, I want the mod's code read before it runs inside my game, so that I know what it can do on my machine.*
 >
 > **Acceptance criteria:** `docs/reviews/sts2-agent-security-review.md` covers each item below with file and line references.
@@ -123,7 +123,7 @@
 > - [ ] **Debug and console features:** confirm `run_console_command` is gated behind `STS2_ENABLE_DEBUG_ACTIONS=1`.
 > - [ ] **Telemetry or analytics:** present or absent.
 > - [ ] **Verdict:** Go, Go with conditions, or No-Go, with reasons.
-> - [ ] The Player reads the verdict and approves it in chat before P0.E4.S3.
+> - [x] The Player reads the verdict and approves it in chat before P0.E4.S3. (2026-11-19, STS2-Agent)
 
 > **P0.E3.S3: License note** · Size XS · Status: Done (licenses noted in the review)
 > *As the Player, I want to know the license obligations, so that local patches stay compliant.*
@@ -135,30 +135,30 @@
 
 ### P0.E4: Build and install
 
-> **P0.E4.S1: Prepare the toolchain** · Size S · Status: In progress (toolchain checked: only .NET 10 SDK installed; see docs/environment.md)
+> **P0.E4.S1: Prepare the toolchain** · Size S · Status: Done (2026-11-19: .NET 9.0.124 from Homebrew `dotnet@9`, keg-only, installed with the Player's approval)
 > *As the Agent, I want the exact .NET SDK and game assembly references the project expects, so that the build is reproducible.*
 >
 > **Acceptance criteria**
-> - [ ] The SDK version in `vendor/STS2-Agent/global.json` is compared with `dotnet --list-sdks`. If it is missing, the Agent asks the Player before installing it (for example `brew install --cask dotnet-sdk` or a versioned cask).
-> - [ ] The Agent finds how the project references game assemblies (`.csproj` properties or environment variables) and where those assemblies live in the macOS bundle (`find "<install>/SlayTheSpire2.app" -name "*.dll"`).
-> - [ ] The reference path is set through a local, untracked override file or environment variable, not by editing tracked project files where avoidable.
+> - [x] The SDK version in `vendor/STS2-Agent/global.json` is compared with `dotnet --list-sdks`. If it is missing, the Agent asks the Player before installing it (for example `brew install --cask dotnet-sdk` or a versioned cask).
+> - [x] The Agent finds how the project references game assemblies (`.csproj` properties or environment variables) and where those assemblies live in the macOS bundle (`find "<install>/SlayTheSpire2.app" -name "*.dll"`).
+> - [x] The reference path is set through a local, untracked override file or environment variable, not by editing tracked project files where avoidable. (Passed as `/p:Sts2DataDir=...` on the command line.)
 
-> **P0.E4.S2: Build from source** · Size S–M · Status: Todo
+> **P0.E4.S2: Build from source** · Size S–M · Status: Done (2026-11-19, DLL only; see the note in `docs/runbooks/mod-install.md`)
 > *As the Player, I want the mod built from reviewed source rather than downloaded as a binary, so that what runs is what was reviewed.*
 >
 > **Acceptance criteria**
-> - [ ] The game is closed. `./scripts/build-mod.sh --configuration Release` completes with zero errors.
-> - [ ] The outputs are `STS2AIAgent.dll`, `STS2AIAgent.pck` and `mod_id.json`.
-> - [ ] The build log is saved to `logs/build-<date>.txt`.
+> - [x] The game is closed. The build completes with zero errors (0 warnings) against the v0.111.1 assemblies. `dotnet build` was run directly instead of `build-mod.sh`, whose PCK step runs the game's own executable headless.
+> - [x] The outputs are `STS2AIAgent.dll` and `mod_id.json`. No `STS2AIAgent.pck`: it would only repeat the manifest, and the game's loader reads the manifest from the JSON file and accepts a mod without a PCK (`has_pck: false`, as STS2MCP does).
+> - [x] The build log is saved to `logs/build-sts2agent-2026-11-19.txt`.
 > - [ ] **If compilation fails** on game API differences: the errors are listed in `docs/api-notes.md`, with an estimate of the patch effort. More than about 2 hours of patching triggers E7.
 
-> **P0.E4.S3: Install into the macOS mods folder** · Size S · Status: In progress (docs/runbooks/mod-install.md written; install waits for the Player's approval)
+> **P0.E4.S3: Install into the macOS mods folder** · Size S · Status: In progress (installed 2026-11-19 11:56 into the app bundle's `mods/`; the folder is confirmed at first launch)
 > *As the Agent, I want the mod installed where the macOS build actually loads mods, so that it runs on launch.*
 >
 > **Acceptance criteria**
 > - [ ] The correct folder is found: the candidates are `SlayTheSpire2.app/Contents/MacOS/mods/` (documented by STS2MCP for macOS) and `~/Library/Application Support/SlayTheSpire2/mods/` (exists, holds `config/`). Confirm from the log lines on the next launch.
-> - [ ] Only the three built files are copied.
-> - [ ] `docs/runbooks/mod-install.md` records the install manifest (paths and checksums), the uninstall steps, and the reinstall steps after a game update.
+> - [x] Only the built files are copied (`STS2AIAgent.dll`, `mod_id.json`).
+> - [x] `docs/runbooks/mod-install.md` records the install manifest (paths and checksums), the uninstall steps, and the reinstall steps after a game update.
 >
 > **Notes:** a Steam update or "Verify integrity of game files" may remove files inside the app bundle. If that happens, rerun the reinstall steps.
 

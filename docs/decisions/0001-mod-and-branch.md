@@ -1,6 +1,6 @@
 # 0001: Which mod to start with, on which branch
 
-Date: 2026-11-19 · Status: **accepted** (drafted overnight, revised at 01:15 when the main-branch update was found; the Player chose STS2-Agent on 2026-11-19 at about 11:44. The .NET 9 SDK install and the security review approval are still to be confirmed before the build)
+Date: 2026-11-19 · Status: **accepted** (drafted overnight, revised at 01:15 when the main-branch update was found; the Player chose STS2-Agent on 2026-11-19 at about 11:44. The Player approved the security review and the .NET 9 SDK install at 11:51)
 
 ## Context
 The Agent needs a mod that exposes game state and accepts actions on macOS arm64. Two open-source candidates were reviewed read-only (`docs/reviews/sts2-agent-security-review.md`).

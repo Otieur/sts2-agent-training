@@ -9,7 +9,7 @@ Drafted 2026-11-19 (overnight). Items marked "to confirm" need the Player or a g
 | CPU | Apple Silicon (arm64) |
 | Python | 3.13.12 (miniforge). Analysis scripts use the standard library only; run with `python3 -I`. |
 | uv | 0.11.16 (Homebrew) |
-| .NET SDK | **10.0.101 only** (`/usr/local/share/dotnet/sdk`). No .NET 9 SDK installed. |
+| .NET SDK | 10.0.101 (`/usr/local/share/dotnet/sdk`, the default `dotnet`) and **9.0.124** (Homebrew `dotnet@9`, keg-only, installed 2026-11-19 with the Player's approval). Use 9 for STS2-Agent: `export DOTNET_ROOT=/opt/homebrew/opt/dotnet@9/libexec PATH=/opt/homebrew/opt/dotnet@9/bin:$PATH`. |
 | git | 2.54.0 |
 
 ## Game

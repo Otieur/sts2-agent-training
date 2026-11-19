@@ -1,6 +1,6 @@
 # Security Review: STS2-Agent and STS2MCP
 
-**Verdict: DRAFT. Needs the Player's approval before anything is built or installed.**
+**Verdict: APPROVED by the Player on 2026-11-19 at 11:51 for STS2-Agent, with the conditions below** (build from the reviewed commit with the macOS arm64 data folder, no LLM model or API key, no debug actions, saves backed up first). The STS2MCP verdict stays a draft until that mod is needed.
 
 Reviewed 2026-11-19 (overnight, read-only). No code was built, installed or run.
 
