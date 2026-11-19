@@ -313,6 +313,8 @@ POTIONS = {
 # HP-equivalent cost of spending a potion [HYPOTHESIS]. High in hallways (a Fire Potion's 20 damage should not be
 # spent on a hallway fight unless it kills or prevents a large loss), low in elites and bosses, where the playbook
 # says use potions freely.
+# Boss value checked in tools/simulate_fight.py (2026-11-19, Fire, Block and Strength potions, 60 fights per cell): mixed,
+# Vantom better at 8 (95% against 85%), Lagavulin and Soul Fysh slightly better at 0-2; kept at 2.
 POTION_COST = {"hallway": 25.0, "elite": 6.0, "boss": 2.0}
 # Value of playing a Power now, per energy it costs, in damage-or-HP equivalents for the turns still to come
 # [HYPOTHESIS]. A Strike deals 6 per energy now; a Power pays back over the rest of the fight: bosses last 6-10 turns
