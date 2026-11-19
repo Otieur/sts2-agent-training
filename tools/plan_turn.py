@@ -319,7 +319,10 @@ def simulate(cards, targets, player, enemies):
     weak = [e.weak for e in es if e.hp > 0 and e.intent_hits]
     inc = calc.incoming_hp_loss(intents, player_block=block, weak_enemies=weak)
     to_osty = min(osty, inc.hp_lost)  # Osty takes the unblocked damage first while alive [GAME-EXTRACT] DIE_FOR_YOU_POWER
-    return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": inc.hp_lost - to_osty + hp_cost,
+    lost = inc.hp_lost - to_osty + hp_cost
+    all_dead = all(e.hp <= 0 for e in es)
+    dies = player.hp is not None and lost >= player.hp and not all_dead
+    return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": lost, "dies": dies,
             "osty_hp_after": osty - to_osty, "powers": powers,  # energy spent on Powers
             "seq": seq,
             "enemies_after": [{"hp": max(0, e.hp), "block": e.block, "slippery": e.slippery, "vuln": e.vuln, "weak": e.weak} for e in es],
@@ -386,14 +389,15 @@ def commands(o, hand, log="runs/<run>/decisions.jsonl", mode="safe", mod="sts2ag
 
 
 def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALUE["elite"]):
-    """Lethal first (with the fewest potions); then the mode's objective. Each potion spent counts as potion_cost HP
+    """Lethal first (with the fewest potions); then any plan that keeps you alive (needs Player.hp); then the mode's
+    objective. Each potion spent counts as potion_cost HP
     lost; each energy spent on Powers counts as power_value (future damage or HP) in the balanced mode and as a
     tie-break in the safe mode."""
     if mode == "safe":
-        key = lambda o: (not o["all_dead"], o["potions"] if o["all_dead"] else 0,  # noqa: E731
+        key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
                          o["hp_lost"] + potion_cost * o["potions"], -o.get("powers", 0), -o["kills"], -o["dealt"], o["draws"] == 0)
     else:
-        key = lambda o: (not o["all_dead"], o["potions"] if o["all_dead"] else 0,  # noqa: E731
+        key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
                          -(o["dealt"] - o["hp_lost"] - potion_cost * o["potions"] + power_value * o.get("powers", 0)),
                          o["hp_lost"], -o["kills"])
     seen, out = set(), []

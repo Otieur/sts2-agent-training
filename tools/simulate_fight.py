@@ -149,11 +149,14 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             enemy = pt.Enemy(0, boss, b["hp"], b["block"], intent[0], intent[1], vuln=b["vuln"] > 0, weak=b["weak"] > 0,
                              slippery=b["slippery"])
             player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity,
-                               max_cards=(3 - cards_played) if sloth else None)
+                               max_cards=(3 - cards_played) if sloth else None, hp=hp)
             res = pt.plans(hand, player, [enemy])
             if not res:
                 break
-            best = pt.rank(res, mode, pt.POTION_COST["boss"], pt.POWER_VALUE["boss"])[0]
+            turn_mode = mode
+            if mode.startswith("hybrid:"):  # safe below the HP fraction, balanced above
+                turn_mode = "safe" if hp < float(mode.split(":")[1]) * max_hp else "balanced"
+            best = pt.rank(res, turn_mode, pt.POTION_COST["boss"], pt.POWER_VALUE["boss"])[0]
             seq = best["seq"]
             cut = next((i + 1 for i, (c, _) in enumerate(seq) if c.draw), len(seq))
             order = [c for c, _ in seq[:cut]]
@@ -250,33 +253,38 @@ EXPERIMENT_VARIANTS = [("base deck (15 cards)", []), ("+ Twin Strike, Sword Boom
 def report(runs=300):
     """Fixed Vantom experiment (H6, H2) -> reports/phase2/vantom-simulation.md."""
     from stslib import PROJECT, md_table
-    rows = []
+    rows, R = [], {}
     for name, add in EXPERIMENT_VARIANTS:
         deck = expand_deck(EXPERIMENT_BASE + add, "IRONCLAD")
         cells = [name]
         for mode in ("balanced", "safe"):
             r = evaluate(deck, "VANTOM", 80, 80, runs, mode)
+            R[(name.split(" (")[0], mode)] = r["win_rate"]
             cells += [f"{r['win_rate']:.0%}", f"{r['hp_lost']:.1f}"]
         rows.append(cells)
+
+    def w(key, mode):
+        return R[(key, mode)]
+    base, multi, demon = "base deck", "+ Twin Strike, Sword Boomerang", "+ Demon Form, Shrug It Off"
+    ctrl, brk2, thb = "+ Strike x2", "+ Breakthrough x2", "+ Thunderclap, Breakthrough"
+    draw_, block_ = "+ Pommel Strike, Battle Trance", "+ Shrug It Off, Flame Barrier"
+    ranked = sorted(((k, w(k, "balanced") + w(k, "safe")) for (k, m) in R if m == "balanced"), key=lambda x: -x[1])
     L = ["# Boss Simulations (Vantom, Knowledge Demon)", "",
          f"Built by `tools/simulate_fight.py --report` ({runs} simulated fights per row and mode, from 80/80 HP). Each turn's plays "
          "are chosen by `tools/plan_turn.py`; Vantom follows its documented cycle (Ink Blot 7, Inky Lance 6x2, Dismember 27 + 3 "
          "Wounds, Prepare +2 Strength; 173 HP; 9 Slippery). Card values are v0.111.1. No relics, potions or upgrades. "
          "`[HYPOTHESIS]`: a model, useful for comparing additions to the same deck, not for absolute win rates.", "",
-         "Calibration: a typical 16-card floor-17 deck starting at 60/80 HP wins 33–39% of simulated fights; the Player's "
-         "Ironclad decks survived 5 of 11 real Vantom fights, so the model is in range and somewhat pessimistic.", "",
          md_table(["Base deck + two cards", "Win (balanced)", "HP lost (balanced)", "Win (safe)", "HP lost (safe)"], rows), "",
-         "## Reading (from the table above; seeds are fixed, so the run reproduces)", "",
-         "- **Multi-hit attacks and Demon Form are the best additions** in both plans (multi-hit 98% balanced / 92% safe; "
-         "Demon Form with Shrug It Off 99% / 79%). Supports H6 and the playbook's Vantom override for multi-hit attacks.",
-         "- **Breakthrough is worse than a plain Strike here**: two Breakthroughs fall below the two-Strike control in both plans "
-         "(58% against 66% balanced, 32% against 47% safe); its 9 damage is capped to 1 while Slippery lasts, and it costs HP. "
-         "Thunderclap with Breakthrough is level with the control under the balanced plan and below it under the safe plan. "
-         "Consistent with H2 and with Breakthrough's decision-point record.",
-         "- **Draw and block help only under the safe plan** (above the base there, below it under the balanced plan): the "
-         "planner's mode interacts with the deck, so treat those rows as policy-dependent.",
-         "- The balanced plan beats the safe plan from full HP for most decks; from 60 HP the safe plan did better in a separate "
-         "check. This matches the playbook: safe when HP is below plan, balanced when ahead.", ""]
+         "## Reading (computed from the table above; seeds are fixed, so the run reproduces)", "",
+         f"- **Best additions** (both plans together): {ranked[0][0].lstrip('+ ')} and {ranked[1][0].lstrip('+ ')}. Multi-hit: "
+         f"{w(multi, 'balanced'):.0%} balanced / {w(multi, 'safe'):.0%} safe against the base deck's {w(base, 'balanced'):.0%} / "
+         f"{w(base, 'safe'):.0%}; Demon Form with Shrug It Off {w(demon, 'balanced'):.0%} / {w(demon, 'safe'):.0%}.",
+         f"- **Two Breakthroughs against two plain Strikes**: {w(brk2, 'balanced'):.0%} against {w(ctrl, 'balanced'):.0%} balanced, "
+         f"{w(brk2, 'safe'):.0%} against {w(ctrl, 'safe'):.0%} safe (Breakthrough's 9 is capped to 1 while Slippery lasts, and it "
+         f"costs HP). Thunderclap with Breakthrough: {w(thb, 'balanced'):.0%} / {w(thb, 'safe'):.0%}.",
+         f"- **Draw and block**: draw {w(draw_, 'balanced'):.0%} / {w(draw_, 'safe'):.0%}, block {w(block_, 'balanced'):.0%} / "
+         f"{w(block_, 'safe'):.0%}, against the base {w(base, 'balanced'):.0%} / {w(base, 'safe'):.0%}: their value depends on the plan.",
+         "- Plan choice: see the plan-mode section below.", ""]
     kd_deck = expand_deck(["STRIKE_IRONCLAD:2", "DEFEND_IRONCLAD:3", "BASH", "POMMEL_STRIKE", "SHRUG_IT_OFF:2", "UPPERCUT", "ANGER",
                            "INFLAME:2", "TWIN_STRIKE:2", "FLAME_BARRIER", "BATTLE_TRANCE", "BLUDGEON", "DEMON_FORM",
                            "SWORD_BOOMERANG", "IMPERVIOUS", "OFFERING"], "IRONCLAD")
@@ -287,8 +295,7 @@ def report(runs=300):
     cal = []
     for key in BOSSES:
         cal_deck = kd_deck if key == "KNOWLEDGE_DEMON" else expand_deck(EXPERIMENT_BASE, "IRONCLAD")
-        r = max((evaluate(cal_deck, key, 60, 80, runs // 2, m) for m in ("balanced", "safe")),
-                key=lambda x: x["win_rate"])
+        r = max((evaluate(cal_deck, key, 60, 80, runs // 2, m) for m in ("balanced", "safe")), key=lambda x: x["win_rate"])
         s, n = con.execute("""SELECT SUM(NOT (f.is_last_floor AND NOT r.win)), COUNT(*) FROM floors f JOIN runs r USING(run_id)
                               WHERE r.build_id='v0.107.1' AND r.character='IRONCLAD' AND r.n_players=1 AND NOT r.abandoned
                               AND f.model_id = ?""", ["ENCOUNTER." + key + "_BOSS"]).fetchone()
@@ -296,10 +303,24 @@ def report(runs=300):
                     "yes" if BOSSES[key].get("validated") else "**no**"])
     con.close()
     L += ["## Calibration against the Player's record", "",
-          "The 15-card base deck for Act 1 bosses and the 22-card Act 2 deck for Knowledge Demon, at 60/80 HP, the better plan; the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and "
-          "have relics, potions and upgrades, so the model is expected to be pessimistic; what matters is the ratio between "
-          "bosses). A boss marked **no** is not used by `tools/draft.py`.", "",
+          "The 15-card base deck for Act 1 bosses and the 22-card Act 2 deck for Knowledge Demon, at 60/80 HP, the better plan; "
+          "the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and have relics, potions and upgrades, so the "
+          "model is expected to be pessimistic; what matters is the ratio between bosses). A boss marked **no** is not used by "
+          "`tools/draft.py`.", "",
           md_table(["Boss", "Model win", "The Player survived", "Used in drafting"], cal), ""]
+    # Plan mode: balanced, a switch to safe below half HP, or safe, with the survival guard in plan_turn.rank
+    pm = []
+    base_deck = expand_deck(EXPERIMENT_BASE, "IRONCLAD")
+    plus2 = expand_deck(EXPERIMENT_BASE + ["TWIN_STRIKE", "SHRUG_IT_OFF"], "IRONCLAD")
+    for key, d, name in (("VANTOM", base_deck, "Vantom, base deck"), ("VANTOM", plus2, "Vantom, base + Twin Strike + Shrug It Off"),
+                         ("LAGAVULIN_MATRIARCH", base_deck, "Lagavulin Matriarch, base deck")):
+        for start in (80, 60):
+            pm.append([name, f"{start}/80"] + [f"{evaluate(d, key, start, 80, runs // 2, m)['win_rate']:.0%}" for m in ("balanced", "hybrid:0.5", "safe")])
+    L += ["## Which plan to follow in a boss fight", "",
+          "Win rate when every turn follows the balanced plan, the safe plan below half HP and balanced above, or the safe plan. "
+          "Plans that would leave you at 0 HP are ranked last in every mode (survival guard).", "",
+          md_table(["Fight", "Start HP", "Balanced", "Safe below 50%", "Safe"], pm), "",
+          "Reading: in these boss fights the balanced plan was best or level in every row; switching to safe at low HP did not help.", ""]
     # Knowledge Demon: the Curse of Knowledge choice, as four pure strategies
     kd = []
     for curse in ("SLOTH", "MIND_ROT", "WASTE_AWAY", "DISINTEGRATION"):

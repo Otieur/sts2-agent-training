@@ -106,7 +106,9 @@ def combat(st, top=2):
             out.append(f"note: {c.name}: {c.note}")
     pc = plan_turn.POTION_COST.get(ft, plan_turn.POTION_COST["hallway"])  # unknown: hold potions
     pv = plan_turn.POWER_VALUE.get(ft, plan_turn.POWER_VALUE["elite"])
-    out.append(f"fight type: {ft} (potion cost {pc:g} HP, Powers {pv:g} per energy)")
+    out.append(f"fight type: {ft} (potion cost {pc:g} HP, Powers {pv:g} per energy)"
+               + (" · recommended: the balanced plan (boss fights, simulation)" if ft == "boss" else
+                  " · choose safe if HP is below the act plan, balanced if ahead"))
     best = {}
     for mode in ("safe", "balanced"):
         out.append(f"{mode}:")

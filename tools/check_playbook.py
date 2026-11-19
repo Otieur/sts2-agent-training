@@ -136,6 +136,14 @@ def checks(con):
         return (mm.group(1), mm.group(2)) if mm else ("?", "?")
     out.append(("death review H1", "(H1) in {} of fatal against {} of survived".format(*base("H1"))))
     out.append(("death review H9", "(H9) in {} against {}".format(*base("H9"))))
+    # H6: Vantom simulation (tools/simulate_fight.py --report)
+    vs = (PROJECT / "reports" / "phase2" / "vantom-simulation.md").read_text()
+    m = re.search(r"Multi-hit: (\d+)% balanced / (\d+)% safe against the base deck's (\d+)% / (\d+)%", vs)
+    out.append(("H6 simulation", f"raised simulated wins from {m.group(3)}% to {m.group(1)}% (balanced plan) and from {m.group(4)}% to "
+                                 f"{m.group(2)}% (safe plan)" if m else "<pattern not found in vantom-simulation.md>"))
+    m = re.search(r"Sloth \| (\d+%) \|.*?\n\| Mind Rot \| (\d+%) \|.*?\n\| Waste Away \| (\d+%) \|.*?\n\| Disintegration \| (\d+%) \|", vs)
+    out.append(("Knowledge Demon curses", "(simulated: Sloth {} wins, Mind Rot {}, Waste Away {}, Disintegration {})".format(*m.groups())
+                if m else "<pattern not found in vantom-simulation.md>"))
     return out
 
 

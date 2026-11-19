@@ -174,6 +174,14 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.simulate([p], [0], pt.Player(energy=3), e)
         self.assertIn("use_potion option_index=1 target_index=3", pt.commands(o, h)[0])
 
+    def test_survival_guard(self):
+        # 5 HP left, enemy hits for 10: Strike + Defend would leave 0 HP, so balanced must play both Defends
+        e = [pt.parse_enemy("A:100:0:10", 0)]
+        res = pt.plans(hand("Strike", "Strike", "Defend", "Defend"), pt.Player(energy=2, hp=5), e)
+        o = pt.rank(res, "balanced")[0]
+        self.assertFalse(o["dies"])
+        self.assertEqual(o["block"], 10)
+
 
 if __name__ == "__main__":
     unittest.main()
