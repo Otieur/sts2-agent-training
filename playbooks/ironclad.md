@@ -50,6 +50,8 @@ The goal is strong play, judged by results. Every rule carries a provenance labe
 
 `tools/draft.py` applies steps 1–5 mechanically (tier, v0.111.1 adjustments, boss fit, corner-target needs, engines, a skip bar rising 0.1 per card above 15) and prints the reasons. It cannot see relics, upgrades, Strength scaling of multi-hit cards or `?` card values; override it with a stated reason when those matter. `[HYPOTHESIS]` weights
 
+When the act boss is Vantom, `--simulate` (on by default in `tools/advise.py` for Act 1 card rewards) adds each card's simulated win-rate change against Vantom (`tools/simulate_fight.py`, the better of the two plans, about 6 seconds), worth up to ±1 tier. `[HYPOTHESIS]` model.
+
 Backtest on the Player's 640 Ironclad card reward screens (`reports/phase2/draft-backtest-ironclad.md`): the tool agreed with the Player on 43%, and the act was survived in 71% of screens where the Player's choice matched the tool against 62% where it did not (p = 0.02; confounded, since easy screens produce both). The tool skips more often than the Player (193 against 141 skips).
 
 ### 2.2 Card tiers (community consensus, v0.107-era weighted)

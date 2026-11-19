@@ -178,7 +178,26 @@ def skip_bar(deck_size):
     return 2.0 + 0.1 * max(0, deck_size - 15)
 
 
-def score_offer(deck, offer_ids, character, act, floor, boss):
+SIM_RUNS = 80
+
+
+def simulated_boss_value(deck, offer_ids, boss, hp=None, max_hp=80, runs=SIM_RUNS):
+    """For bosses tools/simulate_fight.py models (Vantom): simulated win rate of the deck and of the deck plus each
+    offered card, each deck scored with the better of the planner's two plans (the choice of plan changes results).
+    Returns (base rate, {card_id: delta_win}) or None. [HYPOTHESIS] model."""
+    import simulate_fight as sf
+    key = next((k for k in sf.BOSSES if boss and k in boss.upper()), None)
+    if not key:
+        return None
+    start = hp or max_hp
+
+    def rate(d):
+        return max(sf.evaluate(d, key, start, max_hp, runs, mode)["win_rate"] for mode in ("balanced", "safe"))
+    base = rate(deck)
+    return base, {cid: rate(deck + [cid]) - base for cid in offer_ids}
+
+
+def score_offer(deck, offer_ids, character, act, floor, boss, simulate=False, hp=None, max_hp=80):
     tiers = load_tiers(character)
     base = metrics(deck)
     eng = engines(deck)
@@ -222,6 +241,14 @@ def score_offer(deck, offer_ids, character, act, floor, boss):
             s += 1.0; reasons.append("exhaust engine: exhaust outlet (+1)")
         rows.append({"card": display(c), "id": c["id"], "score": round(s, 2), "reasons": reasons,
                      "d_dmg": d_dmg, "d_block": d_block, "d_scaling": d_scal})
+    sim = simulated_boss_value(deck, offer_ids, boss, hp, max_hp) if simulate else None
+    if sim:
+        base_rate, deltas = sim
+        for r in rows:
+            d = deltas.get("CARD." + r["id"], 0.0)
+            adj = max(-1.0, min(1.0, 5 * d))  # +/-0.1 win rate -> +/-0.5, capped at 1
+            r["score"] = round(r["score"] + adj, 2)
+            r["reasons"].append(f"{boss} simulation: win {base_rate:.0%} -> {base_rate + d:.0%} ({adj:+.1f})")
     rows.sort(key=lambda r: -r["score"])
     bar = skip_bar(len(deck))
     pick = rows[0] if rows and rows[0]["score"] > bar else None
@@ -265,6 +292,8 @@ def main(argv=None):
     ap.add_argument("--boss")
     ap.add_argument("--from-state")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--simulate", action="store_true", help="for a simulated boss (Vantom): add each card's simulated win-rate change")
+    ap.add_argument("--hp", type=int)
     args = ap.parse_args(argv)
     if args.from_state:
         deck, offer, act, floor, boss = from_state(args.from_state)
@@ -282,7 +311,7 @@ def main(argv=None):
         act, floor, boss = args.act or 1, args.floor, args.boss
     if not offer:
         raise SystemExit("no offered cards")
-    res = score_offer(deck, offer, character, act or 1, floor, boss)
+    res = score_offer(deck, offer, character, act or 1, floor, boss, simulate=args.simulate, hp=args.hp)
     if args.json:
         print(json.dumps(res, indent=1, default=float))
         return 0

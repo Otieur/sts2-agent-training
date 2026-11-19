@@ -144,7 +144,9 @@ def map_screen(st, top=3):
 
 def card_reward(st):
     deck, offer, act, floor, boss = draft.from_state_obj(st)
-    res = draft.score_offer(deck, offer, _character(st), act or 1, floor, boss)
+    run = _run(st)
+    res = draft.score_offer(deck, offer, _character(st), act or 1, floor, boss, simulate=(act or 1) == 1,
+                            hp=run.get("current_hp"), max_hp=run.get("max_hp") or 80)
     idx = {"CARD." + c.get("card_id"): c.get("index") for c in (st.get("reward") or {}).get("card_options") or []}
     out = [f"deck {res['base']['size']} cards, damage/turn {res['base']['dmg']:.1f}, block/turn {res['base']['block']:.1f}, "
            f"scaling {res['base']['scaling']}"]

@@ -68,6 +68,13 @@ class TestDraft(unittest.TestCase):
         self.assertEqual((len(deck), off, act, floor, boss), (6, ["CARD.TWIN_STRIKE", "CARD.INFLAME"], 1, 7, "VANTOM_BOSS"))
         self.assertEqual(draft.guess_character(deck), "IRONCLAD")
 
+    def test_simulated_boss_value(self):
+        deck = draft.expand_deck(["STRIKE_IRONCLAD:4", "DEFEND_IRONCLAD:4", "BASH", "POMMEL_STRIKE", "SHRUG_IT_OFF", "ANGER", "INFLAME"], "IRONCLAD")
+        base, deltas = draft.simulated_boss_value(deck, ["CARD.TWIN_STRIKE", "CARD.BREAKTHROUGH"], "VANTOM_BOSS", runs=20)
+        self.assertTrue(0 <= base <= 1)
+        self.assertGreater(deltas["CARD.TWIN_STRIKE"], deltas["CARD.BREAKTHROUGH"])
+        self.assertIsNone(draft.simulated_boss_value(deck, ["CARD.TWIN_STRIKE"], "KNOWLEDGE_DEMON_BOSS"))
+
 
 if __name__ == "__main__":
     unittest.main()
