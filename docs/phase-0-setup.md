@@ -93,7 +93,7 @@
 >
 > **Notes:** the beta wrote `SerializableProgress v24`. Older builds may not read newer save schemas. This is the main reason for the backup.
 
-> **P0.E2.S4: Record the environment** · Size XS · Status: Todo
+> **P0.E2.S4: Record the environment** · Size XS · Status: In progress (drafted overnight; game version to confirm)
 > *As the Next Session, I want a single file describing the environment, so that I do not re-discover paths and versions.*
 >
 > **Acceptance criteria**
@@ -103,7 +103,7 @@
 
 ### P0.E3: Mod acquisition and security review
 
-> **P0.E3.S1: Clone the mod source at a pinned commit** · Size XS · Status: Todo
+> **P0.E3.S1: Clone the mod source at a pinned commit** · Size XS · Status: Done (2026-11-19: both repos cloned to vendor/, SHAs in docs/environment.md)
 > *As the Agent, I want the mod source at a known commit, so that the review, the build and any later patches refer to the same code.*
 >
 > **Acceptance criteria**
@@ -111,7 +111,7 @@
 > - [ ] The commit SHA is recorded in `docs/environment.md`.
 > - [ ] The fallback `https://github.com/Gennadiyev/STS2MCP` is cloned to `vendor/STS2MCP` for E7, but not reviewed unless needed.
 
-> **P0.E3.S2: Security review** · Size M · Status: Todo
+> **P0.E3.S2: Security review** · Size M · Status: In progress (draft review written overnight; needs the Player's approval)
 > *As the Player, I want the mod's code read before it runs inside my game, so that I know what it can do on my machine.*
 >
 > **Acceptance criteria:** `docs/reviews/sts2-agent-security-review.md` covers each item below with file and line references.
@@ -125,7 +125,7 @@
 > - [ ] **Verdict:** Go, Go with conditions, or No-Go, with reasons.
 > - [ ] The Player reads the verdict and approves it in chat before P0.E4.S3.
 
-> **P0.E3.S3: License note** · Size XS · Status: Todo
+> **P0.E3.S3: License note** · Size XS · Status: Done (licenses noted in the review)
 > *As the Player, I want to know the license obligations, so that local patches stay compliant.*
 >
 > **Acceptance criteria**
@@ -135,7 +135,7 @@
 
 ### P0.E4: Build and install
 
-> **P0.E4.S1: Prepare the toolchain** · Size S · Status: Todo
+> **P0.E4.S1: Prepare the toolchain** · Size S · Status: In progress (toolchain checked: only .NET 10 SDK installed; see docs/environment.md)
 > *As the Agent, I want the exact .NET SDK and game assembly references the project expects, so that the build is reproducible.*
 >
 > **Acceptance criteria**
@@ -283,7 +283,7 @@
 > **Acceptance criteria**
 > - [ ] With the Player's agreement, switch to the beta, rebuild and run the smoke tests. Record the result.
 
-> **P0.E7.S3: Decision record** · Size XS · Status: Todo
+> **P0.E7.S3: Decision record** · Size XS · Status: In progress (decision record 0001 proposed)
 > *As the Next Session, I want to know which mod and branch were chosen and why.*
 >
 > **Acceptance criteria**

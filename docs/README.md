@@ -86,10 +86,11 @@ Every rule in a playbook or knowledge file carries one label, so its strength is
 | `[OBS]` | Observed repeatedly in the Agent's own runs (cite run IDs) | High |
 | `[PLAYER-DATA]` | From the Player's run history (cite the report and n). **Outcome statistics** (deaths, damage taken, survival by situation) are evidence. **Pick rates and habits** are a baseline only. | Medium for outcomes; none for habits |
 | `[PLAYER-SAID]` | The Player's stated reasoning from an interview or retro | Context and hypotheses; a rule only once outcomes support it |
+| `[GAME-EXTRACT]` | Game data decompiled by a third party (for example the STS2-Agent `docs/game-knowledge` index, generated 2026-09-21), possibly from a different game build than ours | High for mechanics, but the version is unverified until checked against our build |
 | `[COMMUNITY]` | From guides, tier lists or wikis (cite source and game version) | Medium-low until verified |
 | `[HYPOTHESIS]` | An untested idea | Lowest; must be tested or dropped |
 
-**When labels conflict:** `[GAME]` > `[OBS]` > `[COMMUNITY]` consensus across several sources > `[PLAYER-DATA]` outcome evidence > a single `[COMMUNITY]` source > `[PLAYER-SAID]` and Player habits > `[HYPOTHESIS]`. Record the conflict in the playbook's "Open questions" section rather than deleting the losing view.
+**When labels conflict:** `[GAME]` > `[OBS]` > `[GAME-EXTRACT]` > `[COMMUNITY]` consensus across several sources > `[PLAYER-DATA]` outcome evidence > a single `[COMMUNITY]` source > `[PLAYER-SAID]` and Player habits > `[HYPOTHESIS]`. Record the conflict in the playbook's "Open questions" section rather than deleting the losing view.
 
 **Guiding principle:** the goal is to play well, judged by results. Matching the Player's choices is never a goal in itself. The Player's history is a danger map, a benchmark to beat and a source of hypotheses, especially where it loses.
 

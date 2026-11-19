@@ -12,12 +12,12 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P0.E1 | Save safety | Todo | |
-| P0.E2 | Game version | Todo | Player switches branch |
-| P0.E3 | Mod acquisition and security review | Todo | Player approves verdict |
-| P0.E4 | Build and install | Todo | |
+| P0.E2 | Game version | In progress | environment.md drafted; Player switches branch |
+| P0.E3 | Mod acquisition and security review | In progress | Draft review done (both mods); Player approves verdict |
+| P0.E4 | Build and install | In progress | Toolchain checked; nothing built |
 | P0.E5 | API smoke test | Todo | |
 | P0.E6 | The agent harness integration | Todo | |
-| P0.E7 | Fallback path | Todo | Only if E4/E5 fail |
+| P0.E7 | Fallback path | In progress | Decision 0001 proposes STS2MCP first (v0.107 fix, macOS build support) |
 | P0.E8 | Project scaffolding | Done | Folders, the project instructions, git (local), templates (2026-11-19 overnight) |
 
 ## Phase 1: History analysis ([doc](phase-1-history-analysis.md))
