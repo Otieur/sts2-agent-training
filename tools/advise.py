@@ -12,6 +12,7 @@ playbook's advice for it (P4.E2). The Agent still decides; this keeps the arithm
   anything else      the compact brief from tools/sts.py
 
 Usage: python3 -I tools/advise.py --state state.json [--next boss|elite|other]
+STS2MCP states are detected and converted by tools/mcp_adapter.py (the deck comes from the last combat's piles).
 """
 import argparse
 import json
@@ -115,7 +116,7 @@ def combat(st, top=2):
     for mode, o in best.items():
         if o:
             out.append(f"commands for the top {mode} plan (indexes already adjusted):")
-            out += ["  " + c for c in plan_turn.commands(o, hand, mode=mode)]
+            out += ["  " + c for c in plan_turn.commands(o, hand, mode=mode, mod="sts2mcp" if st.get("_source") == "sts2mcp" else "sts2agent")]
     c = st.get("combat") or {}
     if c.get("end_turn_will_kill_player"):
         out.append("WARNING: ending the turn now is lethal (mod's lethal check)")
@@ -346,7 +347,10 @@ def selection(st):
     return "\n".join(out)
 
 
-def advise(st, nxt=None):
+def advise(st, nxt=None, deck_cache=None):
+    import mcp_adapter
+    if mcp_adapter.is_mcp(st):
+        st = mcp_adapter.mcp_to_agent(st, **({"deck_cache": deck_cache} if deck_cache else {}))
     st = st.get("data", st)
     scr = (st.get("screen") or "").upper()
     if scr == "COMBAT" or st.get("combat"):
@@ -373,8 +377,9 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--state", required=True)
     ap.add_argument("--next", choices=["boss", "elite", "other"])
+    ap.add_argument("--deck-cache", help="STS2MCP only: where the deck seen in the last combat is cached (default runs/current/deck.json)")
     args = ap.parse_args(argv)
-    print(advise(json.loads(Path(args.state).read_text()), args.next))
+    print(advise(json.loads(Path(args.state).read_text()), args.next, args.deck_cache))
     return 0
 
 

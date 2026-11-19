@@ -17,6 +17,7 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 | `journal.py` | Run journal: new, active, status, floor, fight (with benchmark), budget, summary | `journal.py fight runs/<run> --floor 7 --encounter vantom --turns 7 --damage 30` |
 | `postmortem.py` | Facts sheet for a finished run (works on the Player's `.run` files too) | `postmortem.py runs/<run>/` |
 | `smoke.py` | Phase 0: read-only check of every field the tools use; saves live fixtures | `smoke.py --save --watch` |
+| `mcp_adapter.py` | Converts STS2MCP states to the STS2-Agent shape, so `advise.py` and every helper work with either mod (deck cached from combat piles) | used by `advise.py` automatically |
 
 ## Shadowing (Phase 3; both mods, `--mod sts2agent` by default)
 `watch.py` (decision-point watcher), `record.py` (state recorder), `reconstruct.py` (actions from snapshots), `stsstate.py` (shared helpers).

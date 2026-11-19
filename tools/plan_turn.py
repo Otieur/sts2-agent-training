@@ -353,26 +353,31 @@ def plans(hand, player, enemies):
     return results
 
 
-def commands(o, hand, log="runs/<run>/decisions.jsonl", mode="safe"):
+def commands(o, hand, log="runs/<run>/decisions.jsonl", mode="safe", mod="sts2agent"):
     """sts.py commands (STS2-Agent) for a plan, with hand indexes adjusted as cards leave the hand. Commands after a
     draw card are marked: re-read the state and re-plan after the draw."""
     remaining = [c.index for c in hand if not c.potion]
     out, drawn = [], False
     for card, target in o.get("seq", []):
-        tgt = f" target_index={target}" if target is not None else ""
+        if target is None:
+            tgt = ""
+        elif mod == "sts2mcp":
+            tgt = f" target={target}"  # STS2MCP targets by entity_id
+        else:
+            tgt = f" target_index={target}"
         reason = f"Turn plan ({mode}): {card.name}" + (f" on enemy {target}" if target is not None else "")
         if card.potion:
-            cmd = f"act use_potion option_index={card.index}{tgt}"
+            cmd = f"act use_potion {'slot' if mod == 'sts2mcp' else 'option_index'}={card.index}{tgt}"
         else:
             pos = remaining.index(card.index)
             remaining.pop(pos)
             cmd = f"act play_card card_index={pos}{tgt}"
         prefix = "# after re-planning: " if drawn else ""
-        out.append(f'{prefix}python3 -I tools/sts.py --mod sts2agent --log {log} {cmd} --reason "{reason}"')
+        out.append(f'{prefix}python3 -I tools/sts.py --mod {mod} --log {log} {cmd} --reason "{reason}"')
         if card.draw:
             drawn = True
     if not drawn:
-        out.append(f'python3 -I tools/sts.py --mod sts2agent --log {log} act end_turn --reason "Turn plan ({mode}) complete"')
+        out.append(f'python3 -I tools/sts.py --mod {mod} --log {log} act end_turn --reason "Turn plan ({mode}) complete"')
     return out
 
 
@@ -426,14 +431,15 @@ def from_state(st):
         att = [i for i in e.get("intents") or [] if i.get("damage") is not None]
         dmg = sum(int(i["damage"]) for i in att[:1])
         hits = sum(int(i.get("hits") or 1) for i in att[:1])
-        enemies.append(Enemy(int(e.get("index", len(enemies))), e.get("name") or e.get("enemy_id"), int(e.get("current_hp") or 0),
+        raw = e.get("index", len(enemies))  # an int (STS2-Agent) or an entity_id string (STS2MCP via mcp_adapter)
+        enemies.append(Enemy(len(enemies), e.get("name") or e.get("enemy_id"), int(e.get("current_hp") or 0),
                              int(e.get("block") or 0), dmg, hits,
                              vuln=any(k.startswith("VULNERABLE") for k in pw), weak=any(k.startswith("WEAK") for k in pw),
                              slippery=int(next((v for k, v in pw.items() if k.startswith("SLIPPERY")), 0) or 0),
-                             intangible=any(k.startswith("INTANGIBLE") for k in pw), slow=any(k.startswith("SLOW") for k in pw)))
+                             intangible=any(k.startswith("INTANGIBLE") for k in pw), slow=any(k.startswith("SLOW") for k in pw),
+                             ref=raw))
     for i, e in enumerate(enemies):
-        e.ref = e.index  # keep the mod's index for target_index
-        e.index = i
+        e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
     run = st.get("run") or {}
     for slot, pot in enumerate(run.get("potions") or []):
         if pot.get("occupied") and pot.get("potion_id"):
