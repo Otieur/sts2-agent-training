@@ -40,9 +40,15 @@ Drafted 2026-11-19 (overnight). Items marked "to confirm" need the Player or a g
 - 8080 (and up): STS2-Agent HTTP API
 - 33771: the game's local direct-connect port for multiplayer (`-fastmp`)
 
+## Save versions and profiles on v0.111.1 (log of 2026-11-19 12:07)
+- `Current save versions: PrefsSave v2; ProfileSave v2; SerializableProgress v24; RunHistory v10; SerializableRun v20; SettingsSave v8`.
+- With a mod loaded the game uses a separate profile, `steam/<id>/modded/profile1` (its run history mirrors the normal profile's). Modded play never writes to the normal `profile1`.
+- The first modded launch rewrote the modded profile's progress, prefs and 129 of its run history files, and the shared `settings.save`. The normal profile was not touched. The backup `backups/2026-11-19-pre-phase0/` holds the earlier copies.
+- The normal profile still holds an unfinished run saved by the beta (`current_run.save`); leave it until back on the beta.
+
 ## To confirm
 - [x] Game version after the branch switch: v0.111.1 from `release_info.json` (the log line `release=` comes at first launch)
-- [ ] Which mods folder the game scans
+- [x] Which mods folder the game scans: `SlayTheSpire2.app/Contents/MacOS/mods/` (log, 2026-11-19). A mod with only a DLL and a JSON manifest loads.
 - [ ] Whether the .NET 10 SDK builds STS2MCP's `net9.0` target
 - [ ] Whether the game throttles when unfocused (OQ0.5)
 - [x] Steam Cloud setting for this game (OQ0.4): on

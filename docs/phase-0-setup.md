@@ -76,15 +76,15 @@
 >
 > **Expect:** the Fool and the v0.113.x content disappear until the Player opts back into the beta.
 
-> **P0.E2.S2: Verify the version and save compatibility** · Size XS · Status: Todo
+> **P0.E2.S2: Verify the version and save compatibility** · Size XS · Status: Done (2026-11-19 12:07 launch)
 > *As the Agent, I want to confirm the running version from the game's own logs, so that every later note is tagged with the right version.*
 >
 > **Acceptance criteria**
-> - [ ] After one launch, the newest `~/Library/Application Support/SlayTheSpire2/logs/godot*.log` contains `release=v0.111.1`. (Before launch, `release_info.json` in the app already reads v0.111.1.)
-> - [ ] The "Current save versions" log line is recorded in `docs/environment.md`.
-> - [ ] The log shows no save-load errors.
+> - [x] After one launch, the newest `~/Library/Application Support/SlayTheSpire2/logs/godot*.log` contains `release=v0.111.1`. (Before launch, `release_info.json` in the app already reads v0.111.1.)
+> - [x] The "Current save versions" log line is recorded in `docs/environment.md`.
+> - [x] The log shows no save-load errors. Only non-fatal "Progress parse" warnings for beta-only IDs (the Fool, its cards, some relics, potions, epochs and one encounter), which v0.111.1 does not know.
 
-> **P0.E2.S3: First-launch profile check** · Size XS · Status: Todo
+> **P0.E2.S3: First-launch profile check** · Size XS · Status: In progress (main menu loads; the Player says the profile looks right; character select and ascension levels to check at the first run start)
 > *As the Player, I want to confirm my profile survived the downgrade, so that we stop early if it did not.*
 >
 > **Acceptance criteria**
@@ -152,7 +152,7 @@
 > - [x] The build log is saved to `logs/build-sts2agent-2026-11-19.txt`.
 > - [ ] **If compilation fails** on game API differences: the errors are listed in `docs/api-notes.md`, with an estimate of the patch effort. More than about 2 hours of patching triggers E7.
 
-> **P0.E4.S3: Install into the macOS mods folder** · Size S · Status: In progress (installed 2026-11-19 11:56 into the app bundle's `mods/`; the folder is confirmed at first launch)
+> **P0.E4.S3: Install into the macOS mods folder** · Size S · Status: Done (installed 2026-11-19 11:56; the game loads mods from `SlayTheSpire2.app/Contents/MacOS/mods/`, log line "Found mod manifest file"; DLL only, no PCK needed)
 > *As the Agent, I want the mod installed where the macOS build actually loads mods, so that it runs on launch.*
 >
 > **Acceptance criteria**
@@ -162,20 +162,20 @@
 >
 > **Notes:** a Steam update or "Verify integrity of game files" may remove files inside the app bundle. If that happens, rerun the reinstall steps.
 
-> **P0.E4.S4: Enable mods in game** · Size XS · Player-only · Status: Todo
+> **P0.E4.S4: Enable mods in game** · Size XS · Player-only · Status: Done (2026-11-19)
 > *As the Player, I want to enable the mod myself, so that I control what runs in my game.*
 >
 > **Acceptance criteria**
-> - [ ] The Player launches the game, accepts the untrusted-code consent dialog, enables the mod in settings, quits fully and relaunches. This follows the mod's README sequence.
-> - [ ] The game opens on the modded profile.
+> - [x] The Player launches the game, accepts the untrusted-code consent dialog, enables the mod in settings, quits fully and relaunches. This follows the mod's README sequence. (Launch at 12:05 without mods, 12:07 with the mod loaded: "RUNNING MODDED! --- Loaded 1 mods".)
+> - [x] The game opens on the modded profile (`user://steam/<id>/modded/profile1`).
 
-> **P0.E4.S5: Verify the API** · Size XS · Status: Todo
+> **P0.E4.S5: Verify the API** · Size XS · Status: Done (2026-11-19)
 > *As the Agent, I want proof the mod is serving requests, so that later stories can rely on it.*
 >
 > **Acceptance criteria**
-> - [ ] The port is found (the F8 overlay, the mod config, or the logs). The documented default is 8080, but it is not guaranteed.
-> - [ ] `curl -s http://127.0.0.1:<port>/health` returns JSON with the game version `v0.111.1` and the mod version.
-> - [ ] The Godot log shows no exceptions from the mod during startup.
+> - [x] The port is found (the F8 overlay, the mod config, or the logs). The documented default is 8080, but it is not guaranteed. (8080, from the log and the overlay.)
+> - [x] `curl -s http://127.0.0.1:<port>/health` returns JSON with the game version `v0.111.1` and the mod version (0.16.2, status ready, 28 of 28 reflected game members resolved).
+> - [x] The Godot log shows no exceptions from the mod during startup.
 
 ---
 

@@ -2,7 +2,7 @@
 
 Update this file whenever a story changes status. Story-level status lives in each phase document; this board tracks epics.
 
-**Active phase:** Phase 0 (branch switched to main v0.111.1 and STS2-Agent chosen on 2026-11-19; security verdict and .NET 9 SDK install approved the same day; STS2-Agent built and installed; next: the Player launches the game, enables the mod, then `docs/runbooks/first-session.md`). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md` (Needs-the-Player checklist in section 5).
+**Active phase:** Phase 0 (branch switched to main v0.111.1 and STS2-Agent chosen on 2026-11-19; security verdict and .NET 9 SDK install approved the same day; STS2-Agent built, installed and answering on port 8080; next: `docs/runbooks/first-session.md` step 1, the smoke test). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md` (Needs-the-Player checklist in section 5).
 **Last updated:** 2026-11-19
 
 ---
@@ -12,9 +12,9 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P0.E1 | Save safety | In progress | Backup taken and verified overnight, still matching after the branch switch; Steam Cloud is on (choose local files on a cloud conflict after a restore) |
-| P0.E2 | Game version | In progress | Switched to main v0.111.1 on 2026-11-19 (S1 done); log check and profile check at first launch (S2, S3) |
+| P0.E2 | Game version | In progress | Main v0.111.1 running (S1, S2 done); the modded profile loads; character select check at the first run (S3) |
 | P0.E3 | Mod acquisition and security review | In progress | Draft review done (both mods); the Player chose STS2-Agent (decision 0001 accepted) and approved the verdict and the .NET 9 SDK install (2026-11-19) |
-| P0.E4 | Build and install | In progress | .NET 9 installed; STS2-Agent built (0 warnings against v0.111.1) and installed DLL-only in the app bundle's `mods/` (2026-11-19); the Player enables it at first launch (S4) |
+| P0.E4 | Build and install | Done | STS2-Agent 0.16.2 built (0 warnings against v0.111.1), installed DLL-only, loaded by the game; `/health` ready, 28 of 28 game members resolved (2026-11-19) |
 | P0.E5 | API smoke test | In progress | tools/smoke.py (read-only) and docs/runbooks/first-session.md ready; needs the live mod |
 | P0.E6 | The agent harness integration | In progress | tools/sts.py CLI (both mods, co-op instances) written and tested offline |
 | P0.E7 | Fallback path | In progress | Decision 0001 (revised) proposes STS2-Agent first on v0.111.1; STS2MCP is the fallback |
