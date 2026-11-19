@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.7 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.8 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -52,6 +52,8 @@ The goal is strong play, judged by results. Every rule carries a provenance labe
 
 ### 2.2 Card tiers (community consensus, v0.107-era weighted)
 From `knowledge/community/ironclad-tiers.md` `[COMMUNITY]`. † marks cards where sources disagree by 2+ tiers. Card roles are `[GAME-EXTRACT]`.
+
+**Checked against the Player's outcomes** (`reports/phase2/card-choices-ironclad.md`, act survival when a card was picked against when it was passed on the same kind of screen, 37 cards): A-tier picks +17 points, B −0 points, C −16, D −13 (weighted by offers) `[PLAYER-DATA, weak]`. The consensus carries real signal for Ironclad, which supports ranking it above the Player's habit. Strongest single result: **Breakthrough** (D), picked 21 times, survived the act 48% against 78% when passed (p = 0.02).
 
 - **S:** Offering, Cascade, Conflagration, Corruption, Demon Form, Feed, Stoke, Unmovable
 - **A:** Crimson Mantle, Impervious, Fiend Fire, Battle Trance, Brand, Colossus, Dominate, Hellraiser, One-Two Punch†, Pyre†, Tear Asunder†
@@ -233,6 +235,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Judges deck needs by feel.
 - Rarely removes cards (34 of 57 runs ever remove one).
 - Rarely takes second copies.
+- Picks Breakthrough often (21 of 62 offers) although picking it went with worse act survival (48% against 78%, p = 0.02).
 - **Card habit against consensus** (`knowledge/community/discrepancies.md`, 19 cards with a gap of 2+ tiers):
   - Rates higher than consensus: Evil Eye, Fight Me, Tremble, Cruelty, Aggression, Thrash, Dark Embrace, Second Wind, Ashen Strike, Drum of Battle, Vicious
   - Rates lower: Cascade, Demon Form, Battle Trance, Shrug It Off, Bully, Expect a Fight, Pommel Strike, Rupture
@@ -262,6 +265,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.8 (2026-11-19, overnight):** card tiers checked against the Player's outcomes at the decision point (`tools/analyze_card_choices.py`): the consensus predicts act survival for Ironclad; Breakthrough flagged.
 - **v2.7 (2026-11-19, overnight):** Ancient choices from `tools/analyze_ancients.py` (picked against passed at the same decision point): avoid Hefty Tablet (H10), prefer Fishing Rod; warning against raw relic win rates.
 - **v2.6 (2026-11-19, overnight):** coherence pass. Section 2.1 points to `tools/deck_check.py`; section 5 adds the H8 exception for Vantom and Waterfall Giant; section 8 describes potion search in `tools/plan_turn.py`; boss rows for Lagavulin Matriarch and The Kin use the power data; section 13 updated.
 - **v2.5 (2026-11-19, overnight):** consistency pass against the data: rest heal is 30% of max HP rounded down (was "about 29%"); room economics ranges per act; the elite HP-band sample excludes abandoned runs (stated); H8 widened to The Kin and narrowed for Vantom and Waterfall Giant; v0.111.1 elite and boss changes noted under the tables. Deck-strength figures recomputed with v0.107.1 card values (the extract predates v0.107.1): Act 1 raw-damage tercile 28% (was 29%), Ironclad fatal decks 16.8 against 15.1 (was 14.7); corner targets unchanged. Also fixed the quintile buckets in `tools/build_community_tiers.py` (the top bucket had absorbed the remainder). Consensus moved for four cards: Feel No Pain A→B, Body Slam B→C, Evil Eye C→D, Headbutt C→D. Habit discrepancies 23 → 19. Tier lists in §2.2 and §11 regenerated from the tier file.

@@ -1,6 +1,6 @@
 # Necrobinder Playbook
 
-Version: v0.1 (draft) · Knowledge base: v0.107.1 · Target game: v0.111.1 · Last updated: 2026-11-19 · Status: groundwork for Phase 5, written overnight before any Necrobinder study. Not ready to play from.
+Version: v0.2 (draft) · Knowledge base: v0.107.1 · Target game: v0.111.1 · Last updated: 2026-11-19 · Status: groundwork for Phase 5, written overnight before any Necrobinder study. Not ready to play from.
 
 Same rules and labels as `playbooks/ironclad.md`. Everything general there (path planning, the elite HP rule, pre-boss rest rule, corner targets, potion policy, combat checklist, boss plans) applies here too, unless this file says otherwise.
 
@@ -67,6 +67,11 @@ Version note: none of the three sources is v0.111.1. v0.111.1 changed ten Necrob
 - **The Player skips cards the consensus rates highly:** Eradicate (S, picked 0/10), Banshee's Cry, Debilitate, Pagestorm, Undeath, Misery (all A), Lethality and Necro Mastery (B, 0/24 and 0/15). Not enough runs with these cards to judge outcomes. `[HYPOTHESIS]` Eradicate and Banshee's Cry are the first to test, since they are multi-hit and AoE damage, which the Player's Vantom and hallway deaths suggest the deck lacks.
 - **The Player rates higher:** Sentry Mode, Soul Storm, Sacrifice, Sic 'Em, End of Days, Capture Spirit, Devour Life (no outcome data).
 
+### 3.2b Decision-point check (`reports/phase2/card-choices-necrobinder.md`)
+Act survival when a card was picked against when it was passed on the same kind of screen (44 cards) `[PLAYER-DATA, weak]`:
+- **The consensus tiers do not predict outcomes for Necrobinder** (weighted effect: A +6, B −9, C −9, D +8 points), unlike Ironclad, where A-tier picks were +17 and C/D −13 to −16. Together with the version mismatch and the sources' disagreement, this argues for treating Necrobinder tiers as weak until Phase 5 data exists.
+- Signals near p = 0.05: Death March (C; 13/17 against 4/11, p = 0.05), Cleanse (D; 8/8 against 11/18, p = 0.06), Drain Power (D; 15/19 against 24/46, p = 0.06, but won less often when picked), Haunt (C; 1/6 against 12/18, p = 0.06). Death March supports the Player's S rating.
+
 ### 3.3 Starting rule (until Phase 5 study)
 Draft by the consensus tier, but treat † cards as one tier lower when the source that rates them highly is MetaBot alone (its sample sizes are unknown). Melancholy and Wisp stay in the pick pool against the consensus, because the Player's outcomes favour them; they are Phase 5 test cards. `[HYPOTHESIS]`
 
@@ -81,5 +86,6 @@ Draft by the consensus tier, but treat † cards as one tier lower when the sour
 - Whether the corner targets (block per turn, scaling cards) need adjusting for a character whose damage partly comes through Osty. `tools/deck_metrics.py` does not count Osty damage yet.
 
 ## 6. Changelog
+- **v0.2 (2026-11-19, overnight):** decision-point check of the tiers (§3.2b): they do not predict the Player's Necrobinder outcomes.
 - **v0.1 (2026-11-19, overnight):** community tiers from three sources (§3.1), habit discrepancies with the Player's outcomes (§3.2), a starting draft rule (§3.3).
 - **v0 (2026-11-19):** groundwork from the extracted game data and the Player's history.

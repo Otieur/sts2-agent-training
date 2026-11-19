@@ -106,6 +106,13 @@ def checks(con):
     out.append(("H2 draw", f"less draw ({f} against {s})"))
     s, f = feature("ENTOMANCER_ELITE", "Attacks costing 0–1")
     out.append(("H3 cheap attacks", f"more cheap attacks ({f} against {s})"))
+    # Section 2.2: tier check against decision-point outcomes (tools/analyze_card_choices.py)
+    cc = (PROJECT / "reports" / "phase2" / "card-choices-ironclad.md").read_text()
+    m = re.search(r"\| A \| \d+ \| ([+-][\d.]+) pts", cc)
+    out.append(("A-tier pick effect", f"A-tier picks {float(m.group(1)):+.0f} points" if m else "<pattern not found in card-choices-ironclad.md>"))
+    m = re.search(r"\| Breakthrough \| \w \| (\d+) \| \d+ \| (\d+)% \(\d+/\d+\) \| (\d+)% \(\d+/\d+\) \| [+-]\d+ pts \| ([\d.]+)", cc)
+    out.append(("Breakthrough", f"picked {m.group(1)} times, survived the act {m.group(2)}% against {m.group(3)}% when passed (p = {m.group(4)})"
+                if m else "<pattern not found in card-choices-ironclad.md>"))
     return out
 
 

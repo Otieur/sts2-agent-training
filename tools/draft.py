@@ -89,6 +89,27 @@ def load_tiers(character):
     return tiers
 
 
+_DP = {}
+
+
+def decision_point(character):
+    """Strong decision-point signals from tools/analyze_card_choices.py: |effect| >= 20 points, p < 0.05, 10+ picks.
+    Returns {card_id: (score delta, reason)}. [PLAYER-DATA, weak]"""
+    if character in _DP:
+        return _DP[character]
+    out = {}
+    f = PROJECT / "data" / "tables" / f"card_choices_{character.lower()}.csv"
+    if f.exists():
+        import csv
+        for r in csv.DictReader(open(f)):
+            d, p, n = float(r["survive_diff"]), float(r["p"]), int(r["picked"])
+            if abs(d) >= 0.20 and p < 0.05 and n >= 10:
+                out[r["card"]] = (0.5 if d > 0 else -0.5,
+                                  f"the Player's picks: act survival {d * 100:+.0f} pts vs passing (p={p:.2f}) ({'+' if d > 0 else '-'}0.5)")
+    _DP[character] = out
+    return out
+
+
 def display(c):
     return re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", c["name"])
 
@@ -160,6 +181,9 @@ def score_offer(deck, offer_ids, character, act, floor, boss):
         else:
             s = UNKNOWN_TIER
             reasons.append("no tier data")
+        dp = decision_point(character).get(c["id"])
+        if dp:
+            s += dp[0]; reasons.append(dp[1])
         adj = V0111.get(character, {}).get(c["id"])
         if adj:
             s += adj[0]; reasons.append(f"{adj[1]} ({adj[0]:+g})")
