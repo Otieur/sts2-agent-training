@@ -313,9 +313,17 @@ class TestPlanTurn(unittest.TestCase):
         e.hit_cap = 5
         self.assertEqual(pt.simulate(ids("BASH", "TWIN_STRIKE"), [0, 0], pt.Player(energy=3), [e])["dealt"], 15)  # three hits of 5
         e = pt.parse_enemy("Eel:80:0:20", 0)
-        e.shriek = True
+        e.shriek = 70
         o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=3), [e])
-        self.assertEqual(o["incoming"], 0)                                 # the first damage stuns it
+        self.assertEqual(o["incoming"], 20)                                # 74 HP left: above the threshold
+        e = pt.parse_enemy("Eel:80:0:20", 0)
+        e.shriek = 70
+        o = pt.simulate(ids("STRIKE_IRONCLAD", "STRIKE_IRONCLAD"), [0, 0], pt.Player(energy=3), [e])
+        self.assertEqual(o["incoming"], 0)                                 # 68 HP: stunned
+        e = pt.parse_enemy("Prism:160:0:15", 0)
+        e.taint = 2
+        o = pt.simulate(ids("DEFEND_IRONCLAD", "DEFEND_IRONCLAD"), [None, None], pt.Player(energy=2), [e])
+        self.assertEqual(o["incoming"], 19)                                # two Skills Tainted 2: 15 + 4
 
     def test_crab_rage(self):
         ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731

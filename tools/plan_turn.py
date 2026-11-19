@@ -19,7 +19,7 @@ Barrier (damage back per enemy hit), Body Slam (damage = Block, played after blo
 Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); boosters are played first. Slippery stacks
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
-Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (first damage stuns), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
+Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
 non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Doom (fatal at the end of your turn if HP is at or below it).
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
@@ -126,7 +126,8 @@ class Enemy:
     artifact: int = 0           # Artifact: each charge cancels one debuff applied to it
     lost_turn: int = 0          # HP it lost this turn (for Hardened Shell)
     hit_cap: Optional[int] = None  # Hard to Kill (Exoskeletons): each hit deals at most this much
-    shriek: bool = False        # Shriek (Terror Eel): the first damage it takes stuns it (its attack this turn is cancelled)
+    shriek: int = 0             # Shriek (Terror Eel): stunned the first time its HP drops to this or below (70; the wiki)
+    taint: int = 0              # Vital Spark (Infested Prism): each Skill you play makes its attacks deal this much more per hit
     crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
     minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
     doom: int = 0               # Doom on it: it dies at the end of its own turn (after attacking) if its HP is at or below it
@@ -398,8 +399,8 @@ def hit(enemy, dmg):
         dealt = max(0, min(dealt, enemy.hp_cap - enemy.lost_turn))
     enemy.hp -= dealt
     enemy.lost_turn += dealt
-    if enemy.shriek and dealt > 0:  # stunned by its first damage [GAME-EXTRACT]; assumed to cancel this turn's attack
-        enemy.shriek = False
+    if enemy.shriek and enemy.hp <= enemy.shriek:  # Shriek: stunned at the threshold (the wiki); its attack this turn is
+        enemy.shriek = 0                           # assumed cancelled, and Terror (99 Vulnerable on you) follows next turn
         enemy.intent_hits = 0
     return dealt
 
@@ -555,7 +556,7 @@ def simulate(cards, targets, player, enemies):
     # only Weak applied during this turn reduces them further.
     pairs = [(e, o) for e, o in zip(es, enemies) if e.hp > 0 and e.intent_hits]
     # Enrage (Test Subject, phase 1): Strength for every Skill played this turn raises each hit (two guides: Skills only)
-    intents = [(e.intent_per_hit + e.enrage * skills, e.intent_hits) for e, o in pairs]
+    intents = [(e.intent_per_hit + (e.enrage + e.taint) * skills, e.intent_hits) for e, o in pairs]  # Vital Spark: Tainted Skills
     if colossus:  # half damage from Vulnerable enemies this turn [GAME-EXTRACT] + [COMMUNITY]
         intents = [(d // 2 if e.vuln else d, h) for (d, h), (e, o) in zip(intents, pairs)]
     weak = [e.weak and not o.weak for e, o in pairs]
@@ -772,7 +773,9 @@ def from_state(st):
                              thorns=int(next((v for k, v in pw.items() if k.startswith("THORNS")), 0) or 0),
                              artifact=int(next((v for k, v in pw.items() if k.startswith("ARTIFACT")), 0) or 0),
                              hit_cap=next((int(v) for k, v in pw.items() if k.startswith("HARD_TO_KILL") and v is not None), None),
-                             shriek=any(k.startswith("SHRIEK") for k in pw), crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
+                             shriek=int(next((v for k, v in pw.items() if k.startswith("SHRIEK")), 0) or 0),
+                             taint=int(next((v for k, v in pw.items() if k.startswith("VITAL_SPARK")), 0) or 0),
+                             crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
                              minion=any(k.startswith("MINION") for k in pw),
                              doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0),
                              paper_cuts=int(next((v for k, v in pw.items() if k.startswith("PAPER_CUTS")), 0) or 0)))

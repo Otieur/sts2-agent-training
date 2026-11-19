@@ -33,7 +33,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ## Plan
 
 ### Key mechanics `[GAME-EXTRACT]`
-- **Shriek:** the first damage it takes **stuns it** (the power then goes away). `tools/plan_turn.py` assumes the stun cancels its attack this turn, so any damage first is worth a whole intent (to confirm in the first fight).
+- **Shriek (corrected by the wiki)** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): the first time its HP drops to **70 or below** (75 at A8+) it is stunned, then uses **Terror: 99 Vulnerable on you** for the rest of the fight, then resumes Crash 16 (18) / Thrash 3×3 + 6 Vigor. HP 140 (150). Plan: have the block and the damage to finish it soon after the threshold, since every later hit is ×1.5. `tools/plan_turn.py` reads the threshold from the state and treats the stun as cancelling that turn's attack.
 - **Terror:** 99 Vulnerable on you, which lasts the whole fight.
 - Crash: 17. Thrash: 3×3 + 7 Vigor (the next attack hits harder).
 

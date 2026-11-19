@@ -34,6 +34,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ## Plan
 
 ### Mechanics summary
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 222 (233 at A8+); asleep 3 turns behind 12 Plating or until it loses HP; on waking it loses its Plating; then Slash 19 (21), **Disembowel 9×2 (10×2), Slash 2 12 + 12 Block (14 + 14)**, Soul Siphon (−2 Strength and −2 Dexterity on you, +2 Strength for it), repeating. The simulator had Disembowel and Slash 2 swapped until 2026-11-19 (calibration unchanged: 32% against 36% from 60/80).
 - 222 HP `[GAME-EXTRACT]`.
 - Moves `[GAME-EXTRACT]`:
   - Sleep

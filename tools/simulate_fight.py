@@ -46,9 +46,9 @@ def vantom_move(b, turn):
 
 
 def lagavulin_move(b, turn):
-    """Asleep 3 turns behind 12 Plating unless damaged (then it wakes stunned); then Slash 19, Slash 2 12 + 12 block,
-    Disembowel 9x2, Soul Siphon (-2 Strength and -2 Dexterity on you, +2 Strength for it). [COMMUNITY] cycle,
-    declaration order in the extract."""
+    """Asleep 3 turns behind 12 Plating unless it loses HP (then it wakes, stunned per the power data); then Slash 19,
+    Disembowel 9x2, Slash 2 12 + 12 Block, Soul Siphon (-2 Strength and -2 Dexterity on you, +2 Strength for it),
+    repeating (slaythespire.wiki.gg page; the first model swapped Disembowel and Slash 2) `[COMMUNITY]`."""
     if b.get("stunned"):
         b["stunned"] = False
         return _move("stun")
@@ -57,7 +57,7 @@ def lagavulin_move(b, turn):
         return _move("sleep")
     i = b.get("cycle", 0)
     b["cycle"] = i + 1
-    return [_move(dmg=19), _move(dmg=12, boss_block=12), _move(dmg=9, hits=2), _move("debuff", boss_str=2, p_str=-2, p_dex=-2)][i % 4]
+    return [_move(dmg=19), _move(dmg=9, hits=2), _move(dmg=12, boss_block=12), _move("debuff", boss_str=2, p_str=-2, p_dex=-2)][i % 4]
 
 
 def lagavulin_damaged(b, lost):

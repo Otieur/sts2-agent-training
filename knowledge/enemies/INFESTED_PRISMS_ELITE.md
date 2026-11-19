@@ -45,7 +45,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Radiate: 16 + 16 block
   - Whirlwind: 9×3
   - Pulsate: 20 block + 4 Strength
-- **Vital Spark:** gains energy when damaged (the effect on you is unconfirmed; to verify).
+- **Vital Spark (the wiki, beta page)** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): "All Skills are Tainted X" (X = 2, 3 at A9+): each Skill you play makes attacks deal X more to you that turn (an older version gave energy). Cycle: Jab 15, Jab 15, Whirlwind 5×3, Pulsate 8 + 1 Vulnerable + Vital Spark 2; HP 161 (171). `tools/plan_turn.py` adds X per hit for each Skill a plan plays.
 
 ### Priorities and recommended answers
 - Pre-rework advice (may be outdated): big damage and big block; it hit for 22–27 most turns and gained 4 Strength per Pulsate. Don't attack into Pulsate's 20 block.

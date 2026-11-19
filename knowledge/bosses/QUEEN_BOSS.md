@@ -51,6 +51,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Enrage: +2 Strength
 - **Amalgam** `[GAME-EXTRACT]`: Tackle 18, 18, Beam 8×3, Tackle 14, 14.
 - Artifact blocks You're Mine's debuffs `[COMMUNITY]`.
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): Queen 400 HP (419 at A8+); she opens with Puppet Strings (3 Chains of Binding: the first cards drawn each turn are Bound, only one Bound card can be played a turn) and You're Mine (99 Frail, 99 Weak, 99 Vulnerable on every player), then repeats Burn Bright for Me (+1 Strength to the Amalgam, 20 Block for her) while the Amalgam lives; once it dies she loops Off With Your Head 3×5 (4×5), Execution 15 (18), Enrage +2 Strength. Torch Head Amalgam 199 HP (211), Minion: Strong Tackle 26 (32), Tackle 18 (22), then Beam 8×3, Weak Tackle 14 (16), Weak Tackle 14, looping from Beam. So the damage comes from the Amalgam first and from the Queen only after it dies; with 99 Vulnerable on you every hit counts ×1.5 (Artifact can block You're Mine).
 - **Order** `[COMMUNITY]`, one boss database (slay-the-spire-2.pages.dev, early access data, accessed 2026-11-19): Puppet Strings, You're Mine, Burn Bright, Off With Your Head; another guide describes a buff, a multi-hit and a heavy hit without names. Chains of Binding afflicts cards in hand at the start of each turn; cards drawn later are free. Not simulated.
 
 ### Deck checklist

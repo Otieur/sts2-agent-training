@@ -34,6 +34,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   1. Ebb: 22 + 33 block
   2. Eye Lasers: 11×2
   3. Increasing Intensity: adds and upgrades Withers, gains Strength; no attack
+- **Settled by the wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19, history through v0.111.1): HP 512 (535 at A8+), Artifact 3; a Wither every **6** cards played (Withering Presence does not stack); Wither is Unplayable and deals 3 (6 upgraded) at the end of your turn if held; Ebb 22 (26) + 33 Block, no debuff since v0.107.0; Eye Lasers 11×2 (12×2); Increasing Intensity shuffles 1+X Withers into your discard pile, gains 2+X Strength and upgrades all Withers (X = times used). The guide below describes the pre-v0.107.0 version.
 - **A second source disagrees** `[COMMUNITY]` (sts2-calculator.pages.dev boss guide, accessed 2026-11-19; latest patch listed on the site: V110): Ebb applies Ebb 3 (−3 Strength and Dexterity for your turn) with no damage; Eye Lasers 11×2 (12×2); Increasing Intensity gains 33 Block and 3 Strength (4), growing; a Wither comes with every **4th** non-Status card played, has Retain and Exhaust, and deals **2** at end of turn if held. The v0.111.1 patch notes give Ebb damage (22, 26 at higher ascension), which matches the first source, so that one is kept; the Wither numbers stay open (gap 29). `tools/plan_turn.py` counts 3 per held Wither and follows the game's playable flag for it.
 
 ### Deck checklist
