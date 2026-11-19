@@ -20,7 +20,7 @@ Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); booste
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
 Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Infested (its death is not the end), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
-non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Doom (fatal at the end of your turn if HP is at or below it).
+non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Hex (held cards are lost), Doom (fatal at the end of your turn if HP is at or below it).
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
 until the arithmetic is confirmed in game (knowledge/mechanics.md checklist).
@@ -154,6 +154,7 @@ class Player:
     tender: int = 0             # Tender (Hunter Killer): each card played costs 1 Strength and 1 Dexterity for the turn
     colossus: bool = False      # Colossus already played this turn
     doom: int = 0               # Doom on you: you die at the end of your turn if your HP is at or below it
+    hexed: bool = False         # Hex (Spectral Knight): every card is Ethereal, so cards left in hand are exhausted
 
 
 def parse_effect(c):
@@ -380,6 +381,8 @@ HIVE_COST = 5.0
 # so Frantic Escapes are played while cheap instead of at the last moment. Tuned in tools/simulate_fight.py (22-card Act 2
 # deck, 40 fights): eaten 30 times with 0, 21 with 10, 18 with 20, 16 with 40 [HYPOTHESIS].
 SANDPIT_VALUE, SANDPIT_BUFFER = 20.0, 4
+# Hex (Spectral Knight): a playable card left in hand is exhausted; losing it for the fight is counted as this much [HYPOTHESIS]
+HEX_CARD_COST = 2.0
 # Slippery (Vantom): every hit while Slippery deals 1 but removes a stack, and each stack removed lets a later hit deal
 # full damage, so the balanced plan credits each stack stripped with this many damage-equivalents (tuned in
 # tools/simulate_fight.py against Vantom; see reports/phase2/vantom-simulation.md) [HYPOTHESIS].
@@ -662,6 +665,8 @@ def plans(hand, player, enemies):
                 out = simulate(ordered, targets, player, enemies)
                 if out:
                     left = [c for c in hand if id(c) not in ids] if not ff else []  # Fiend Fire exhausts them
+                    if player.hexed:  # Hex: each playable card left in hand is lost for the fight
+                        out["hex_loss"] = HEX_CARD_COST * sum(1 for c in left if c.playable and not c.potion)
                     held = sum(c.held_loss for c in left)
                     # Toxic: blockable, taken at the end of your turn before the enemies attack, so it uses up block first
                     held += max(0, sum(c.held_dmg for c in left) - max(0, out["block"] - out["incoming"]))
@@ -714,12 +719,12 @@ def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALU
     tie-break in the safe mode."""
     if mode == "safe":
         key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         o["hp_lost"] + potion_cost * o["potions"] - o.get("sandpit_bonus", 0), o.get("hive_cards", 0),
+                         o["hp_lost"] + potion_cost * o["potions"] - o.get("sandpit_bonus", 0) + o.get("hex_loss", 0), o.get("hive_cards", 0),
                          -o.get("powers", 0), -o["kills"],
                          -o["dealt"], o["draws"] == 0)
     else:
         key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         -(o["dealt"] + o.get("doom_dealt", 0) + o.get("sandpit_bonus", 0) - o["hp_lost"] - potion_cost * o["potions"]
+                         -(o["dealt"] + o.get("doom_dealt", 0) + o.get("sandpit_bonus", 0) - o.get("hex_loss", 0) - o["hp_lost"] - potion_cost * o["potions"]
                            + power_value * o.get("powers", 0) - HIVE_COST * o.get("hive_cards", 0)
                            + SLIPPERY_VALUE * o.get("slippery_stripped", 0)),
                          o["hp_lost"], -o["kills"])
@@ -748,7 +753,7 @@ def from_state(st):
                     sandpit=int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0),
                     end_turn_dmg=int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0),
                     max_hp=p.get("max_hp"), tender=1 if any(k.startswith("TENDER") for k in powers) else 0,
-                    colossus=any(k.startswith("COLOSSUS") for k in powers),
+                    colossus=any(k.startswith("COLOSSUS") for k in powers), hexed=any(k.startswith("HEX") for k in powers),
                     doom=int(powers.get("DOOM_POWER", powers.get("DOOM", 0)) or 0))
     # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
     # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])

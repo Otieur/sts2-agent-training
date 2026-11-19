@@ -333,6 +333,9 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1), [e])
         self.assertFalse(o["all_dead"])                                    # Wrigglers come next
         self.assertEqual((ids("BURN")[0].held_dmg, ids("INFECTION")[0].held_dmg, ids("TOXIC")[0].held_dmg), (2, 3, 5))
+        h = ids("DEFEND_IRONCLAD", "STRIKE_IRONCLAD")
+        o = pt.rank(pt.plans(h, pt.Player(energy=2, hp=50, hexed=True), [pt.parse_enemy("A:100:0:0", 0)]), "balanced")[0]
+        self.assertEqual(len(o["plays"]), 2)        # Hex: play the Defend too rather than lose it
 
     def test_crab_rage(self):
         ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731

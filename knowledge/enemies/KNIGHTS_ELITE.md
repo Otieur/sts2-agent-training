@@ -40,6 +40,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg pages, accessed 2026-11-19): **Spectral Knight** (93 HP): Hex (while it lives, all your cards are Ethereal: cards left in hand are exhausted), Soul Slash 15, then Soul Flame 3×3 and Soul Slash alternating. **Magi Knight** (82 HP): Power Shield 6 + 5 Block, Dampen (while it lives, your cards are Downgraded), then Ram 10, Prep +5 Block, Magic Bomb 35, repeating. **Flail Knight** (101 HP): Ram 15 first, then at random Breaker (+3 Strength, not twice in a row), Flail 9×2, Ram 15. Plan: kill the Spectral Knight first (Hex wastes every card you hold; the planner counts that), then the Magi Knight before its Magic Bomb 35 (block it if it comes first); play cards rather than hold them while Hex lasts.
+
 ### Key mechanics `[GAME-EXTRACT]`
 - **Flail Knight** (101 HP): War Chant +3 Strength, Flail 9×2, Ram 15.
 - **Spectral Knight** (93 HP): Hex, Soul Slash 15, Soul Flame 3×3.
