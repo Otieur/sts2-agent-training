@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2 · Game version: v0.107.1 · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.1 · Game version: v0.107.1 · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -102,7 +102,10 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 
 ## 5. Rest-site policy
 
-- **Before a boss:** rest if HP is below the boss's threshold in section 10 (median + 10; higher for Queen and Aeonglass, where arrival HP mattered most). Otherwise smith. `[HYPOTHESIS H1]`, tested in Phase 4 against the Player's baseline (equally likely to heal or smith at 37% HP before a boss).
+- **Before a boss** `[HYPOTHESIS H1]`, tested in Phase 4 against the Player's baseline (equally likely to heal or smith at 37% HP before a boss):
+  - Acts 1–2: rest if HP is below the boss's threshold in section 10 (median + 10). Otherwise smith.
+  - **Act 3 and the A10 double boss: rest if HP is below 70%.**
+  - Evidence (`reports/phase2/boss-arrival-hp.md`) is mixed. Boss death rates fall steeply with arrival HP, most of all in Act 3. But the Player's heals and smiths at the same HP were followed by almost the same boss death rate (31% against 30% under 50% HP). Confounding cuts both ways.
 - **Before an elite on the path:** rest if HP minus the elite's p75 would leave less than 50% of max for the next fights. `[HYPOTHESIS]`
 - **Otherwise:** smith at 50% HP or more. Under 35%, rest. In between, decide by the next two fights' benchmark cost.
 - A rest heals about 29% of max HP (about 23 on 80). `[PLAYER-DATA]`
@@ -186,7 +189,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 
 | ID | Hypothesis | Evidence so far | Test | Status |
 |---|---|---|---|---|
-| H1 | Resting before a boss when HP is below the threshold (section 10) reduces boss deaths | Small samples lean toward resting at 35–50% HP | Rule against baseline over 10+ runs | Open |
+| H1 | Resting before a boss when HP is below the threshold (section 10; 70% in Act 3) reduces boss deaths | Arrival HP curve is steep (Act 3: fitted 64% fatal at 40% HP against 29% at 80%). The Player's heal and smith outcomes at equal HP are nearly identical. Mixed. | Rule against baseline over 10+ runs; log arrival HP and choice | Open |
 | H2 | Vantom losses come from Slippery: big hits and hit-all single hits are wasted; the fight runs into cycle 2 | Multi-hit *count* does not separate outcomes (n=28). Fatal decks had more hit-all single-hit cards (0.8 against 0.3) and less draw (1.0 against 2.1) `[PLAYER-DATA, weak]` | Play the Vantom plan; log stack-clear turn and damage | Refined (v2) |
 | H3 | ~~Entomancer punishes a lack of multi-target damage~~ **Replaced:** Entomancer punishes hit count (Personal Hive adds a card per damage instance) | `[GAME-EXTRACT]` power definition; fatal decks had more cheap attacks (9.5 against 8.1) | Few big hits against it | Replaced (v2) |
 | H4 | Removing a Strike at the first Act 1 shop improves Act 1 survival | 79% against 50%, confounded | Runs with and without | Open |
@@ -203,6 +206,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Whether killing the Kin Priest ends that fight; whether Lagavulin Matriarch wakes when damaged.
 
 ## 14. Changelog
+- **v2.1 (2026-11-19, overnight):** pre-boss rest rule split by act (Act 3 and A10: rest under 70%), from the boss arrival-HP analysis (`reports/phase2/boss-arrival-hp.md`). H1 evidence updated as mixed.
 - **v2 (2026-11-19, overnight):** imported decompiled game data (card roles, monster moves, powers).
   - Replaced the provisional Player-habit card order with community consensus tiers plus context overrides.
   - Added boss plans for all 12 bosses and notes for 12 elites and 15 hallway fights.
