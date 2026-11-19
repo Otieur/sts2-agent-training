@@ -43,13 +43,15 @@ Planned blocks (A–J) were finished by 01:11; everything after is extra work fr
 | X93 | Live-safety pass on the planner: commands stop after a card that changes the hand (True Grit's random exhaust), Minion semantics (killing The Kin's Priest or the Queen counts as lethal), Tender; notes for the four rare-but-deadly hallway fights (Slumbering Beetle killed 2 of 5 Ironclad runs that met it; in all four the fatal fights started at low HP, H11); quick reference and decision-loop runbook updated |
 | X94–X97 | Colossus; Necrobinder card audit (Unleash read as 0 offline, now Osty 6 + his HP; Invoke's next-turn energy no longer counted this turn); smoke test now catches advisor failures; Doom on enemies and on you in the planner; the full dataset rebuild reproduces every report unchanged; plan choice against the uncalibrated bosses is mostly level |
 | X98–X99 | The simulator plays the run's real deck: upgrades and common combat relics in calibration, live drafting and replays, potions held in calibration and replays (left out of live drafting for speed: 6 s of CPU per card reward); replaying the Player's own decks, the short Byrdonis fight now matches the record (65% against 70%) while boss fights stay far too hard (missing scaling Powers and relics, one-turn planner); co-op party line in combat advice |
+| X100–X103 | Drafting speed (a parsed-card cache: 6 s of CPU per Act 1 card reward); Test Subject's Enrage counts Skills only (several guides); The Kin: killing the Priest ends the fight (two guides); verification pass on Vantom (still single-source) and the Ceremonial Beast's Ringing |
+| X104–X108 | The simulator handles bosses with adds: in The Kin, racing the Priest pays with single-target decks (38% against 31%) and clearing the followers with hit-all decks (77% against 63%); quick reference gains The Insatiable, Test Subject and Aeonglass; Paper Cuts in the planner; the boss Power value (10) and potion cost (2) checked in the simulator; lasting Strength and Dexterity potions valued like Powers; playbook v2.16 |
 
 ## 3. Stories whose status changed
 - P0: E8 done; E1 backup done; E5.S1 in progress (smoke test ready); E5 and E6 in progress (smoke test for both mods; sts.py).
 - P2: knowledge base stories largely done (see `docs/STATUS.md`); E4.S4 discrepancies updated; boss plans gained simulation sections.
-- P4: E1.S1–S4, S6 done (runbooks); E2.S1, S3, S4 done; E3.S1–S4 done (tooling); E4.S1 done; E5.S1, S3 done; E6.S1 done.
-- P5: E2.S1 done; E2.S2 and E2.S3 in progress.
-- P6: E1.S1 done; E2.S2, E3.S1, E3.S2, E4.S2, E5.S3 in progress.
+- P4: E1.S1–S4, S6 done (runbooks); E2.S1, S3, S4 done (after 03:52: card-specific rules, playable statuses, potions, boss and elite powers, Minion and Crab Rage targeting); E3.S1–S4 done (tooling; advisor never raises); E4.S1 done; E5.S1, S3 done; E6.S1 done.
+- P5: E2.S1 done; E2.S2 in progress (Unleash and Doom in the planner; the Necrobinder simulation still fails calibration); E2.S3 in progress.
+- P6: E1.S1 done; E2.S2, E3.S1, E3.S2 (party line in combat advice), E4.S2, E5.S3 in progress; co-op rules gained two more sources.
 
 ## 4. Decisions taken without you
 Sixteen, each with its reason and how to reverse it: `docs/overnight-decisions.md`. The ones that matter most: the target version is now v0.111.1 (6); decision record 0001 now proposes STS2-Agent first (6, proposal only); the extract's version was corrected (8); the Knowledge Demon curse rule was replaced (12); the planner's card, status and power handling (13, 14), its Doom timing (15), and how simulated drafting treats unmodelled cards, upgrades, relics and potions (16).
