@@ -4,20 +4,20 @@ Built by `tools/simulate_fight.py --report` (300 simulated fights per row and mo
 
 | Base deck + two cards | Win (balanced) | HP lost (balanced) | Win (safe) | HP lost (safe) |
 |---|---|---|---|---|
-| base deck (15 cards) | 79% | 68.6 | 59% | 71.3 |
-| + Twin Strike, Sword Boomerang (multi-hit) | 99% | 62.8 | 92% | 59.7 |
-| + Pommel Strike, Battle Trance (draw) | 73% | 71.1 | 84% | 63.8 |
-| + Shrug It Off, Flame Barrier (block) | 68% | 71.6 | 81% | 67.2 |
-| + Demon Form, Shrug It Off (scaling) | 99% | 56.2 | 79% | 62.0 |
-| + Strike x2 (control) | 70% | 72.8 | 47% | 75.0 |
-| + Thunderclap, Breakthrough (single-hit hit-all) | 72% | 72.1 | 44% | 75.8 |
-| + Breakthrough x2 (single-hit hit-all) | 64% | 73.8 | 32% | 77.5 |
+| base deck (15 cards) | 84% | 67.1 | 59% | 71.3 |
+| + Twin Strike, Sword Boomerang (multi-hit) | 98% | 65.2 | 92% | 59.7 |
+| + Pommel Strike, Battle Trance (draw) | 78% | 70.9 | 84% | 63.8 |
+| + Shrug It Off, Flame Barrier (block) | 76% | 68.6 | 90% | 64.6 |
+| + Demon Form, Shrug It Off (scaling) | 100% | 57.0 | 79% | 62.0 |
+| + Strike x2 (control) | 73% | 72.3 | 47% | 75.0 |
+| + Thunderclap, Breakthrough (single-hit hit-all) | 85% | 70.8 | 44% | 75.8 |
+| + Breakthrough x2 (single-hit hit-all) | 77% | 72.4 | 32% | 77.5 |
 
 ## Reading (computed from the table above; seeds are fixed, so the run reproduces)
 
-- **Best additions** (both plans together): Twin Strike, Sword Boomerang and Demon Form, Shrug It Off. Multi-hit: 99% balanced / 92% safe against the base deck's 79% / 59%; Demon Form with Shrug It Off 99% / 79%.
-- **Two Breakthroughs against two plain Strikes**: 64% against 70% balanced, 32% against 47% safe (Breakthrough's 9 is capped to 1 while Slippery lasts, and it costs HP). Thunderclap with Breakthrough: 72% / 44%.
-- **Draw and block**: draw 73% / 84%, block 68% / 81%, against the base 79% / 59%: their value depends on the plan.
+- **Best additions** (both plans together): Twin Strike, Sword Boomerang and Demon Form, Shrug It Off. Multi-hit: 98% balanced / 92% safe against the base deck's 84% / 59%; Demon Form with Shrug It Off 100% / 79%.
+- **Two Breakthroughs against two plain Strikes**: 77% against 73% balanced, 32% against 47% safe (Breakthrough's 9 is capped to 1 while Slippery lasts, and it costs HP). Thunderclap with Breakthrough: 85% / 44%.
+- **Draw and block**: draw 78% / 84%, block 76% / 90%, against the base 84% / 59%: their value depends on the plan.
 - Plan choice: see the plan-mode section below.
 
 ## Calibration against the Player's record
@@ -26,12 +26,31 @@ The 15-card base deck for Act 1 bosses and the 22-card Act 2 deck for Knowledge 
 
 | Boss | Model win | The Player survived | Used in drafting |
 |---|---|---|---|
-| Vantom | 24% | 4/10 (40%) | yes |
+| Vantom | 31% | 4/10 (40%) | yes |
 | Lagavulin Matriarch | 36% | 6/8 (75%) | yes |
-| Ceremonial Beast | 2% | 5/6 (83%) | **no** |
-| Knowledge Demon | 31% | 8/12 (67%) | **no** |
+| Ceremonial Beast | 9% | 5/6 (83%) | **no** |
+| Knowledge Demon | 33% | 8/12 (67%) | **no** |
 | Entomancer | 0% | 10/13 (77%) | **no** |
 | Byrdonis | 100% | 7/10 (70%) | yes |
+| Soul Fysh | 50% | 4/7 (57%) | yes |
+| Waterfall Giant | 14% | 3/5 (60%) | **no** |
+
+## Calibration with the Player's own decks
+
+Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1, solo, finished runs), replayed with the deck the run had on arrival and its arrival HP, the better of the two plans. The model has no relics, potions or upgrades and models only the card effects `tools/plan_turn.py` reads (Powers other than Strength, Dexterity, Demon Form, Pyre and Feel No Pain do nothing), so its win rates for real decks are far too low; the share of the boss's HP removed is the more useful comparison between bosses.
+
+| Fight | Fights | Model win | Boss HP removed (model) | The Player survived |
+|---|---|---|---|---|
+| Vantom | 10 | 0% | 0.28 | 4/10 (40%) |
+| Lagavulin Matriarch | 8 | 0% | 0.57 | 6/8 (75%) |
+| Ceremonial Beast | 6 | 0% | 0.31 | 5/6 (83%) |
+| Knowledge Demon | 12 | 1% | 0.26 | 8/12 (67%) |
+| Entomancer | 13 | 0% | 0.11 | 10/13 (77%) |
+| Byrdonis | 10 | 51% | 0.88 | 7/10 (70%) |
+| Soul Fysh | 7 | 0% | 0.49 | 4/7 (57%) |
+| Waterfall Giant | 5 | 0% | 0.53 | 3/5 (60%) |
+
+Reading: absolute win rates from the simulator mean nothing for real decks; use it only to compare additions to the same deck. A boss whose share removed is low while the Player usually survived (Ceremonial Beast, Entomancer) is modelled too hard.
 
 ## Which plan to follow in a boss fight
 
@@ -39,14 +58,35 @@ Win rate when every turn follows the balanced plan, the safe plan below half HP 
 
 | Fight | Start HP | Balanced | Safe below 50% | Safe |
 |---|---|---|---|---|
-| Vantom, base deck | 80/80 | 76% | 75% | 57% |
-| Vantom, base deck | 60/80 | 24% | 20% | 17% |
-| Vantom, base + Twin Strike + Shrug It Off | 80/80 | 89% | 82% | 83% |
-| Vantom, base + Twin Strike + Shrug It Off | 60/80 | 43% | 33% | 37% |
+| Vantom, base deck | 80/80 | 83% | 81% | 57% |
+| Vantom, base deck | 60/80 | 31% | 23% | 17% |
+| Vantom, base + Twin Strike + Shrug It Off | 80/80 | 94% | 91% | 83% |
+| Vantom, base + Twin Strike + Shrug It Off | 60/80 | 50% | 43% | 37% |
 | Lagavulin Matriarch, base deck | 80/80 | 93% | 90% | 60% |
 | Lagavulin Matriarch, base deck | 60/80 | 36% | 29% | 27% |
+| Soul Fysh, base deck | 80/80 | 91% | 88% | 94% |
+| Soul Fysh, base deck | 60/80 | 27% | 47% | 50% |
+| Waterfall Giant, base deck | 80/80 | 51% | 69% | 69% |
+| Waterfall Giant, base deck | 60/80 | 1% | 8% | 14% |
 
-Reading: in these boss fights the balanced plan was best or level in every row; switching to safe at low HP did not help.
+Reading (computed): the safe plan beat the balanced plan by 10 points or more in 3 rows (Soul Fysh, Waterfall Giant); in the other 7 rows the balanced plan was better, level, or within 10 points.
+
+## Soul Fysh and Waterfall Giant: which additions help
+
+From 60/80 HP, the better of the balanced and safe plans per row. Soul Fysh: Beckon (a 6 HP Beckon into the draw and discard piles), De-Gas 16, Gaze 7 + Beckon, Fade (Intangible for your next turn), Scream 13 + 3 Vulnerable on you; a held Beckon costs 6 HP at the end of your turn and can be played for 1 energy. Waterfall Giant: Pressurize (+15 Steam Eruption), then Stomp 15 + Weak, Ram 10, Siphon (heal 10), Pressure Gun 20 (+5 a use), Pressure Up 13, each +3 Steam; at 0 HP a stun turn, then an explosion for its Steam Eruption. Cycles `[COMMUNITY]` (Waterfall Giant: one guide for the full cycle). Exhaust cards remove a held Beckon (or another status or curse) first.
+
+| Base deck + two cards | Soul Fysh win | HP lost | Waterfall Giant win | HP lost |
+|---|---|---|---|---|
+| base deck (15 cards) | 51% | 53.4 | 14% | 59.1 |
+| + Twin Strike, Sword Boomerang (multi-hit) | 57% | 52.8 | 11% | 59.3 |
+| + Pommel Strike, Battle Trance (draw) | 47% | 53.8 | 22% | 58.2 |
+| + Shrug It Off, Flame Barrier (block) | 47% | 54.5 | 25% | 58.7 |
+| + Demon Form, Shrug It Off (scaling) | 87% | 47.9 | 51% | 49.7 |
+| + Strike x2 (control) | 28% | 57.0 | 0% | 60.0 |
+| + Thunderclap, Breakthrough (single-hit hit-all) | 24% | 57.8 | 1% | 60.0 |
+| + Breakthrough x2 (single-hit hit-all) | 22% | 59.4 | 0% | 60.0 |
+| + True Grit, Burning Pact (exhaust) | 33% | 58.0 | 7% | 59.6 |
+| + Pyre, Feel No Pain (powers) | 63% | 50.3 | 31% | 57.0 |
 
 ## Byrdonis: which plan against an elite that scales
 
@@ -63,13 +103,17 @@ Reading: blocking instead of attacking lets the Strength snowball. With a weak d
 
 ## Knowledge Demon: which curse to take
 
-A 22-card end-of-Act-2 deck (two Inflames, Demon Form, two Twin Strikes, Impervious, Offering and others) at 80/80 HP; each row always takes the same curse when offered (the real choice is one of two each time). Cycle: Curse of Knowledge, Slap 17, Knowledge Overwhelming 8x3, Ponder 11 + heal 30 + 2 Strength (heal single-source); curses stack for the rest of the fight; Disintegration modelled as 6, then 7, then 8 at the end of each turn (not summed).
+A 22-card end-of-Act-2 deck (two Inflames, Demon Form, two Twin Strikes, Impervious, Offering and others) at 80/80 HP. Each Curse of Knowledge offers Disintegration or one other card: Mind Rot, then Sloth, then Waste Away (one guide); the table tries all eight combinations. Disintegration deals 6, 7 or 8 at the end of each turn depending on the offer, and the amounts add up if taken more than once. Cycle (two guides): Curse of Knowledge, Slap 17, Knowledge Overwhelming 8x3, Ponder 11 + heal 30 + 2 Strength, three times, then the last three repeating.
 
-| Curse always taken | Win | HP lost | Median turns |
+| Offer 1 / offer 2 / offer 3 | Win | HP lost | Median turns |
 |---|---|---|---|
-| Sloth | 46% | 67.3 | 11.0 |
-| Mind Rot | 30% | 73.7 | 11.0 |
-| Waste Away | 14% | 78.5 | 10.0 |
-| Disintegration | 10% | 79.3 | 7.0 |
+| Mind Rot / Sloth / Waste Away | 35% | 71.9 | 11.0 |
+| Mind Rot / Sloth / Disintegration | 31% | 73.4 | 10.0 |
+| Mind Rot / Disintegration / Waste Away | 16% | 78.4 | 9.0 |
+| Mind Rot / Disintegration / Disintegration | 15% | 78.7 | 9.0 |
+| Disintegration / Sloth / Waste Away | 5% | 79.8 | 7.0 |
+| Disintegration / Sloth / Disintegration | 5% | 79.8 | 7.0 |
+| Disintegration / Disintegration / Waste Away | 2% | 79.8 | 7.0 |
+| Disintegration / Disintegration / Disintegration | 2% | 79.8 | 7.0 |
 
-Reading: the order matches the playbook's choice rule (Sloth first, Disintegration last).
+Reading (computed): best combination Mind Rot / Sloth / Waste Away; offer 1: Mind Rot (35%) over Disintegration (5%); offer 2: Sloth (35%) over Disintegration (16%); offer 3: Waste Away (35%) over Disintegration (31%).

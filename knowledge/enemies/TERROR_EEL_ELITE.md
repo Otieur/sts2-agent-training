@@ -33,7 +33,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ## Plan
 
 ### Key mechanics `[GAME-EXTRACT]`
-- **Shriek:** the first damage it takes **stuns it** (the power then goes away).
+- **Shriek:** the first damage it takes **stuns it** (the power then goes away). `tools/plan_turn.py` assumes the stun cancels its attack this turn, so any damage first is worth a whole intent (to confirm in the first fight).
 - **Terror:** 99 Vulnerable on you, which lasts the whole fight.
 - Crash: 17. Thrash: 3×3 + 7 Vigor (the next attack hits harder).
 

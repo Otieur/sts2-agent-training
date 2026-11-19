@@ -1,6 +1,6 @@
 # Ironclad Quick Reference (for live play)
 
-One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.13); when they differ, the playbook wins. Section numbers point there.
+One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.15); when they differ, the playbook wins. Section numbers point there.
 
 ## Every decision
 1. Save the state: `python3 -I tools/sts.py --mod sts2agent state --raw > runs/<run>/state.json`
@@ -26,7 +26,8 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 
 ## Combat (§9)
 - Read intents; lethal first; never end a turn the planner marks as fatal.
-- **Boss fights and enemies that scale every turn (Byrdonis): follow the balanced plan** (simulation: the safe plan collapsed against Byrdonis with a weak deck). Other hallways and elites: safe when HP is below the act plan.
+- **Boss fights and enemies that scale every turn (Byrdonis): follow the balanced plan** (simulation: the safe plan collapsed against Byrdonis with a weak deck). **Exceptions: Waterfall Giant and Soul Fysh, safe plan** (simulated). Other hallways and elites: safe when HP is below the act plan.
+- Against Slippery (Vantom), each stack stripped counts about 3 damage in the balanced plan: strip early.
 - Potions: hold them in hallways unless they decide the fight; use freely in elites and bosses.
 
 ## Bosses (§10, notes in `knowledge/bosses/`)
@@ -35,7 +36,9 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 | Vantom | 9 Slippery stacks: cheap and multi-hit attacks; block 27 on turn 3 |
 | Lagavulin Matriarch | Set up while asleep; first damage on the last sleep turn (wakes stunned) |
 | Ceremonial Beast | Plow: stunned at 150 HP left (community); Ringing after Beast Cry: one card next turn |
-| Knowledge Demon | Curse choice: Sloth > Mind Rot > Waste Away > Disintegration (simulated) |
+| Soul Fysh | Get rid of Beckons (6 HP each if held at end of turn; 1 energy to play, exhaust is better); burst outside Fade's Intangible; block De-Gas after Scream (24); safe plan |
+| Waterfall Giant | **Safe plan** (simulated): the death explosion = its Steam Eruption; the turn after the kill is a stun, then block the explosion |
+| Knowledge Demon | Curse offers are Disintegration or one card: take Mind Rot, then Sloth, then Waste Away (close); never stack Disintegration (simulated) |
 | Kaiser Crab | Focus Rocket; end the Laser turn facing Rocket; kill a claw with the turn's last attack (Crab Rage) |
 | Queen | Turn 1 Strong Tackle 26 (v0.111.1): block it; arrive high |
 | The Kin | Racing the Priest probably ends the fight (followers are Minions) |

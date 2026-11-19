@@ -40,6 +40,9 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Lunging Bite: 28
   - Salivate: +2 Strength
 - **Sandpit** `[GAME-EXTRACT]`: decrements each turn, and when removed it kills its target (you). Frantic Escape cards (the added cards) push it back `[COMMUNITY]`, corroborated by the game data: Frantic Escape is a 1-cost Status that increases a power already on the target, i.e. adds to the Sandpit counter `[GAME-EXTRACT]`.
+- **Numbers** `[COMMUNITY]` (search summaries of selphie1999gaming, neonlightsmedia and gamerblurb guides, accessed 2026-11-19): Sandpit starts at 4; each Frantic Escape adds 1 and costs 1 more energy each time one is played; Liquify Ground adds 6 Frantic Escapes. Sandpit ticks down at the start of a turn and kills you when removed `[GAME-EXTRACT]`, so **end every turn with Sandpit at 2 or more**.
+- **Cycle: sources disagree.** The game data lists Liquify Ground, Thrash 8×2 twice, Lunging Bite 28 and Salivate (+2 Strength) `[GAME-EXTRACT]`; one guide (neonlightsmedia, March 2026) describes a repeating Strength buff, hit, heavier hit, Strength buff, and says Sandpit drops at the end of every turn `[COMMUNITY]`. Not simulated until the first fight shows the order.
+- `tools/plan_turn.py` reads `SANDPIT_POWER` from the state and marks any plan that ends the turn at 1 or less as fatal; `tools/advise.py` prints the counter. Before the planner fix (2026-11-19) every Status was treated as unplayable, so the Agent would never have played Frantic Escape.
 
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: energy or draw cards at least 2 (play the Frantic Escape cards and still fight (plan; no data signal)).

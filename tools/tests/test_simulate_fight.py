@@ -38,6 +38,39 @@ class TestSimulateFight(unittest.TestCase):
         self.assertGreaterEqual(sloth["win_rate"], disint["win_rate"])
         self.assertLess(disint["hp_lost"] - 1e-9, 80.0 + 1e-9)
 
+    def test_curse_offers_and_stacking(self):
+        b = {}
+        kinds = [sf.demon_move(b, t)["kind"] for t in range(1, 17)]
+        self.assertEqual([i + 1 for i, k in enumerate(kinds) if k == "curse"], [1, 5, 9])  # three offers, then no more
+        self.assertEqual([sf.demon_move(b, t)["dmg"] for t in (13, 14, 15, 16)], [17, 8, 11, 17])  # three-move loop
+        deck = expand_deck(["STRIKE_IRONCLAD:5", "DEFEND_IRONCLAD:5"], "IRONCLAD")
+        # Disintegration twice: 6 then 6 + 7 at the end of each turn, so the fight is shorter and costlier than Mind Rot + Sloth
+        dd = sf.evaluate(deck, "KNOWLEDGE_DEMON", 80, 80, 10, "safe", ("DISINTEGRATION", "DISINTEGRATION", "WASTE_AWAY"))
+        ms = sf.evaluate(deck, "KNOWLEDGE_DEMON", 80, 80, 10, "safe", ("MIND_ROT", "SLOTH", "WASTE_AWAY"))
+        self.assertLessEqual(dd["turns"], ms["turns"])
+
+    def test_soul_fysh_cycle_and_beckon(self):
+        b = {}
+        moves = [sf.fysh_move(b, t) for t in range(1, 11)]
+        self.assertEqual([m["kind"] for m in moves[:5]], ["status", "attack", "attack", "buff", "attack"])
+        self.assertEqual((moves[0]["status"], moves[0]["status_draw"]), (1, 1))
+        self.assertEqual((moves[3]["intangible"], moves[4]["p_vuln"], moves[4]["dmg"]), (1, 3, 13))
+        self.assertEqual(moves[5], moves[0])
+        r = sf.run_fight(expand_deck(sf.EXPERIMENT_BASE, "IRONCLAD"), "SOUL_FYSH", 60, 80, seed=2)
+        self.assertTrue(r["won"] or r["hp"] == 0 or r.get("timeout"))
+
+    def test_waterfall_giant_explosion(self):
+        b = {}
+        self.assertEqual(sf.giant_move(b, 1)["steam"], 15)
+        self.assertEqual([sf.giant_move(b, t)["dmg"] for t in range(2, 13)], [15, 10, 0, 20, 13, 15, 10, 0, 25, 13, 15])
+        b["exploding"], b["steam"] = 2, 42
+        self.assertEqual(sf.giant_move(b, 9)["dmg"], 42)
+        # a win needs surviving the explosion: every recorded win ends after a stun turn and the explosion turn
+        deck = expand_deck(sf.EXPERIMENT_BASE, "IRONCLAD")
+        rs = [sf.run_fight(deck, "WATERFALL_GIANT", 80, 80, seed=s, mode="safe") for s in range(6)]
+        self.assertTrue(all(r["won"] or r["hp"] == 0 for r in rs))
+        self.assertTrue(all(r["turns"] >= 3 for r in rs))
+
 
 if __name__ == "__main__":
     unittest.main()

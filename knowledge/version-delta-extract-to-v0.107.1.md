@@ -57,3 +57,17 @@ Source: wiki "V0.107.1 – Major Update 2" (https://slaythespire.wiki.gg/wiki/Sl
 ## Other changes on v0.107.1
 - Colorless: Fasten block 5 (7) → 4 (6); Gold Axe counts all players' cards in multiplayer; Neow's Fury lets you choose the returned cards.
 - Mechanics: cost effects that make the next card free now take precedence over cost increases. The PRNG changed, so seeds from earlier versions give different runs.
+
+## Conditions the extract's effect text leaves out
+
+The extract summarises each card's commands without their conditions, so some cards read stronger than they are. Known cases, handled in `tools/plan_turn.py` (2026-11-19):
+
+| Card | Extract text | Actual effect `[COMMUNITY]` | Planner |
+|---|---|---|---|
+| Forgotten Ritual | Gain 3 Energy | Up to v0.107.1: energy only if you exhausted a card earlier this turn (metabot.gg card page and a tier-list guide, accessed 2026-11-19; one beta patch also gave the card Exhaust). **v0.111.1 removed the condition** (`knowledge/version-delta-v0.111.1.md`) | Follows the card text after patching: unconditional on v0.111.1; with the older text, energy counts only after an exhausting card in the same plan |
+| Dismantle | Deal 8 damage ? times | 8 damage, a second hit if the target is Vulnerable (spire-genius and gamewith card pages, accessed 2026-11-19) | Two hits against a Vulnerable target |
+| Frantic Escape (The Insatiable) | Increase a power already on the target | Sandpit +1; its cost rises by 1 each play (guides) | Playable; a plan that ends with Sandpit at 1 or less is fatal |
+| Toxic (status) | no OnPlay effect; DamageVar(5, Unpowered); Exhaust | 5 damage at the end of your turn if held; playing it exhausts it (metabot, dood.gg) | 5 blockable damage if held |
+| Beckon (Soul Fysh status) | no OnPlay effect; HpLossVar(6) | 6 unblockable HP lost at the end of your turn if held; 1 energy to get rid of it (two boss guides) | Held Beckons add 6 HP each to the plan's HP lost |
+
+Other cards whose text shows `?` are counted as 0 damage by the planner (it prints a note). Check card text in game when a plan looks wrong (gap 3).

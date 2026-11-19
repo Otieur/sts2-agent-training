@@ -28,7 +28,7 @@ Status: Plan v1, 2026-11-19.
 ## Plan
 
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
-- **Hard to Kill:** damage per hit is capped at its amount. Many small hits beat one big hit.
+- **Hard to Kill:** damage per hit is capped at its amount. Many small hits beat one big hit. `tools/plan_turn.py` applies the cap from the state.
 - Skitter 1×3, Mandible 8, Enrage +2 Strength.
 
 ## Sources

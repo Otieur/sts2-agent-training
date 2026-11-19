@@ -201,6 +201,136 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.simulate(hand("Uppercut"), [0], pt.Player(energy=3), [pt.parse_enemy("A:50:0:12", 0)])
         self.assertEqual(o["incoming"], 9)
 
+    def test_slippery_stacks_credited(self):
+        # Against 9 Slippery and a 3-damage intent: Strike + Strike (2 dealt, 3 lost, 2 stacks) against Strike + Defend
+        # (1 dealt, 0 lost, 1 stack); without the stack credit Strike + Defend wins (1 > -1), with 3 per stack 5 > 4
+        e = [pt.parse_enemy("Vantom:173:0:3:slippery=9", 0)]
+        res = pt.plans(hand("Strike", "Strike", "Defend"), pt.Player(energy=2, hp=60), e)
+        o = pt.rank(res, "balanced")[0]
+        self.assertEqual(o["slippery_stripped"], 2)
+        self.assertGreater(pt.SLIPPERY_VALUE, 0)
+
+    def test_forgotten_ritual_condition(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        e = [pt.parse_enemy("A:100:0:10", 0)]
+        # v0.111.1 (the card data is patched to it): no exhaust needed
+        self.assertFalse(ids("FORGOTTEN_RITUAL")[0].needs_exhaust)
+        four = ids("FORGOTTEN_RITUAL", "STRIKE_IRONCLAD", "STRIKE_IRONCLAD", "STRIKE_IRONCLAD")
+        self.assertIsNotNone(pt.simulate(four, [None, 0, 0, 0], pt.Player(energy=3), e))
+        # the older card: energy only after an exhaust this turn
+        four[0].needs_exhaust = True
+        self.assertIsNone(pt.simulate(four, [None, 0, 0, 0], pt.Player(energy=3), e))
+        h = ids("FORGOTTEN_RITUAL", "TRUE_GRIT", "STRIKE_IRONCLAD", "STRIKE_IRONCLAD", "STRIKE_IRONCLAD")
+        h[0].needs_exhaust = True
+        o = pt.rank(pt.plans(h, pt.Player(energy=3, hp=50), e), "balanced")[0]
+        self.assertEqual([p.split(" →")[0] for p in o["plays"]][:2], ["True Grit", "Forgotten Ritual"])
+        self.assertEqual((o["dealt"], o["block"]), (18, 7))
+
+    def test_dismantle_twice_on_vulnerable(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        self.assertEqual(pt.simulate(ids("DISMANTLE"), [0], pt.Player(energy=3), [pt.parse_enemy("A:100:0:0", 0)])["dealt"], 8)
+        self.assertEqual(pt.simulate(ids("DISMANTLE"), [0], pt.Player(energy=3), [pt.parse_enemy("A:100:0:0:vuln", 0)])["dealt"], 24)
+
+    def test_mangle_flame_barrier_body_slam_fiend_fire(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        o = pt.simulate(ids("MANGLE"), [0], pt.Player(energy=3), [pt.parse_enemy("A:100:0:14", 0)])
+        self.assertEqual(o["incoming"], 4)                     # 10 Strength lost this turn: 14 -> 4
+        o = pt.simulate(ids("FLAME_BARRIER"), [None], pt.Player(energy=3), [pt.parse_enemy("A:100:0:3x3", 0)])
+        self.assertEqual((o["block"], o["dealt"]), (12, 12))  # 4 back on each of 3 hits
+        o = pt.rank(pt.plans(ids("BODY_SLAM", "DEFEND_IRONCLAD", "DEFEND_IRONCLAD"), pt.Player(energy=3, hp=50),
+                             [pt.parse_enemy("A:100:0:0", 0)]), "balanced")[0]
+        self.assertEqual((o["plays"][-1].split(" →")[0], o["dealt"]), ("Body Slam", 10))  # after both Defends
+        res = pt.plans(ids("FIEND_FIRE", "STRIKE_IRONCLAD", "WOUND", "DEFEND_IRONCLAD", "BECKON"), pt.Player(energy=3, hp=50),
+                       [pt.parse_enemy("A:100:0:0", 0)])
+        o = pt.rank(res, "balanced")[0]
+        self.assertEqual((o["plays"], o["dealt"], o["hp_lost"]), (["Fiend Fire → A[0]"], 28, 0))  # 4 cards exhausted, Beckon too
+
+    def test_strength_timing_and_setup_cards(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        e = lambda s="A:100:0:0": [pt.parse_enemy(s, 0)]  # noqa: E731
+        self.assertEqual(pt.simulate(ids("FIGHT_ME"), [0], pt.Player(energy=3), e())["dealt"], 10)  # its +2 comes after its hits
+        o = pt.rank(pt.plans(ids("STRIKE_IRONCLAD", "SETUP_STRIKE", "STRIKE_IRONCLAD"), pt.Player(energy=3, hp=50), e()), "balanced")[0]
+        self.assertEqual((o["plays"][0].split(" →")[0], o["dealt"]), ("Setup Strike", 25))  # 7, then 9 + 9
+        o = pt.rank(pt.plans(ids("RAGE", "STRIKE_IRONCLAD", "STRIKE_IRONCLAD", "STRIKE_IRONCLAD"), pt.Player(energy=3, hp=50),
+                             e("A:100:0:9")), "safe")[0]
+        self.assertEqual(o["block"], 9)                                  # 3 per Attack after Rage
+        o = pt.rank(pt.plans(ids("UNRELENTING", "BASH", "STRIKE_IRONCLAD"), pt.Player(energy=3, hp=50), e()), "balanced")[0]
+        self.assertEqual(o["dealt"], 31)                                 # Bash free after Unrelenting: 14 + 8 + 9
+        self.assertEqual(pt.simulate(ids("FEEL_NO_PAIN", "TRUE_GRIT"), [None, None], pt.Player(energy=3), e())["block"], 10)
+        self.assertEqual(pt.simulate(ids("TRUE_GRIT"), [None], pt.Player(energy=3, fnp=4), e())["block"], 11)
+
+    def test_playable_statuses_sandpit_and_toxic(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        self.assertTrue(all(c.playable for c in ids("FRANTIC_ESCAPE", "TOXIC", "SLIMED", "DEBRIS")))
+        self.assertFalse(ids("WOUND")[0].playable)
+        h = ids("FRANTIC_ESCAPE", "STRIKE_IRONCLAD", "STRIKE_IRONCLAD")
+        o = pt.rank(pt.plans(h, pt.Player(energy=2, hp=50, sandpit=1), [pt.parse_enemy("A:300:0:5", 0)]), "balanced")[0]
+        self.assertIn("Frantic Escape", o["plays"])                 # Sandpit 1 at the end of the turn would kill you
+        self.assertFalse(o["dies"])
+        o = pt.rank(pt.plans(h, pt.Player(energy=2, hp=50, sandpit=3), [pt.parse_enemy("A:300:0:5", 0)]), "balanced")[0]
+        self.assertNotIn("Frantic Escape", o["plays"])
+        h = ids("TOXIC", "DEFEND_IRONCLAD", "STRIKE_IRONCLAD")
+        o = pt.rank(pt.plans(h, pt.Player(energy=2, hp=50), [pt.parse_enemy("A:300:0:8", 0)]), "safe")[0]
+        self.assertEqual((sorted(o["plays"]), o["hp_lost"]), (["Defend", "Toxic"], 3))  # Toxic held would cost 5 more
+        h = [pt.card_from_extract(0, "WITHER"), pt.card_from_extract(1, "DEFEND_IRONCLAD")]  # newer than the extract
+        o = pt.rank(pt.plans(h, pt.Player(energy=1, hp=30), [pt.parse_enemy("Aeon:500:0:4", 0)]), "safe")[0]
+        self.assertEqual((h[0].playable, o["hp_lost"]), (False, 2))      # Wither 3 + intent 4 - Defend 5
+
+    def test_powers_from_state_limits_enrage_disintegration(self):
+        st = {"combat": {"player": {"current_hp": 40, "energy": 3, "block": 0,
+                                    "powers": [{"power_id": "DISINTEGRATION_POWER", "amount": 6}, {"power_id": "RINGING_POWER", "amount": 1}]},
+                         "hand": [{"index": 0, "card_id": "DEFEND_IRONCLAD", "energy_cost": 1, "playable": True},
+                                  {"index": 1, "card_id": "STRIKE_IRONCLAD", "energy_cost": 1, "playable": True}],
+                         "enemies": [{"index": 0, "enemy_id": "TEST_SUBJECT", "current_hp": 100, "block": 0, "is_alive": True,
+                                      "powers": [{"power_id": "ENRAGE_POWER", "amount": 2}], "intents": [{"damage": 10, "hits": 1}]}]}}
+        hand, player, enemies = pt.from_state(st)
+        self.assertEqual((player.max_cards, player.end_turn_dmg, enemies[0].enrage), (1, 6, 2))
+        o = pt.rank(pt.plans(hand, player, enemies), "safe")[0]
+        self.assertEqual((o["plays"], o["incoming"], o["hp_lost"]), (["Defend"], 18, 13))  # 10 + 2 Enrage + 6, one card only
+
+    def test_hardened_shell_thorns_artifact(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        e = pt.parse_enemy("Colony:60:0:10", 0)
+        e.hp_cap = 20
+        o = pt.simulate(ids(*["STRIKE_IRONCLAD"] * 4), [0] * 4, pt.Player(energy=4), [e])
+        self.assertEqual(o["dealt"], 20)                                   # 24 capped at 20 for the turn
+        e = pt.parse_enemy("T:60:0:0", 0)
+        e.thorns = 3
+        self.assertEqual(pt.simulate(ids("TWIN_STRIKE"), [0], pt.Player(energy=3), [e])["hp_lost"], 6)  # 3 per hit
+        e = pt.parse_enemy("A:100:0:10", 0)
+        e.artifact = 1
+        self.assertEqual(pt.simulate(ids("BASH", "STRIKE_IRONCLAD"), [0, 0], pt.Player(energy=3), [e])["dealt"], 14)  # no Vulnerable
+        e = pt.parse_enemy("Exo:40:0:0", 0)
+        e.hit_cap = 5
+        self.assertEqual(pt.simulate(ids("BASH", "TWIN_STRIKE"), [0, 0], pt.Player(energy=3), [e])["dealt"], 15)  # three hits of 5
+        e = pt.parse_enemy("Eel:80:0:20", 0)
+        e.shriek = True
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=3), [e])
+        self.assertEqual(o["incoming"], 0)                                 # the first damage stuns it
+
+    def test_crab_rage(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        es = [pt.parse_enemy("Rocket:6:0:10", 0), pt.parse_enemy("Crusher:60:0:6x2", 1)]
+        for e in es:
+            e.crab_rage = True
+        o = pt.simulate(ids("STRIKE_IRONCLAD", "STRIKE_IRONCLAD"), [0, 1], pt.Player(energy=3), es)
+        self.assertEqual(o["dealt"], 6)                    # Rocket dies; Crusher gets 99 Block, so the second Strike is wasted
+        self.assertEqual(o["incoming"], 22)                # Crusher's 6x2 becomes 11x2
+
+    def test_beckon_held_loss(self):
+        h = [pt.card_from_extract(0, "BECKON"), pt.card_from_extract(1, "STRIKE_IRONCLAD")]
+        self.assertEqual((h[0].held_loss, h[0].cost, h[0].playable), (6, 1, True))
+        e = [pt.parse_enemy("Fysh:211:0:0", 0)]
+        res = pt.plans(h, pt.Player(energy=1, hp=50), e)
+        o = pt.rank(res, "safe")[0]
+        self.assertEqual(o["plays"], ["Beckon"])     # 1 energy: getting rid of Beckon saves 6 HP; Strike saves nothing
+        self.assertEqual(o["hp_lost"], 0)
+        strike_only = next(x for x in res if x["plays"] and x["plays"][0].startswith("Strike"))
+        self.assertEqual(strike_only["hp_lost"], 6)  # Beckon still held at the end of the turn
+        # held loss counts toward the survival guard
+        res = pt.plans(h, pt.Player(energy=1, hp=6), e)
+        self.assertTrue(strike_only and next(x for x in res if x["plays"] and x["plays"][0].startswith("Strike"))["dies"])
+
 
 if __name__ == "__main__":
     unittest.main()

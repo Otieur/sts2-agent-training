@@ -49,12 +49,19 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - About to Blow: stun
   - **Explode: damage equal to its Steam Eruption, then it dies**
 - **Steam Eruption** `[GAME-EXTRACT]`: killing the Giant does not end the fight. It stays (invulnerable, stunned `[COMMUNITY]`) and explodes on its next turn.
+- **Cycle** `[COMMUNITY]`: turn 1 Pressurize, then Stomp 15 + 1 Weak, Ram 10, Siphon (heal), Pressure Gun 20 (+5 each use), Pressure Up 13, repeating, each move +3 Steam Eruption (selphie1999gaming, 2026-04-05; screenhype, March 2026, gives the first three moves and describes them repeating; both accessed 2026-11-19, no version stated). The guide's heal is 15; patch notes give 10 at lower ascension since v0.107.1. The same guide says Weak on the Giant lowers the explosion.
+- **Timing of the explosion** (guides plus the extract): the turn you bring it to 0 HP, its next turn is a stun; on your following turn it shows the explosion; you have that whole turn to block. Steam grows by 3 for each move it makes, so the explosion is 15 + 3 × (moves made since Pressurize): 42 if it dies on your turn 11 (nine moves after Pressurize).
 
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: block cards at least 6 (bank block for the death explosion (plan; no data signal)).
 - **Kill fast:** each turn adds 3 Steam (the explosion grows by 3 per turn).
 - **Keep a big block for the explosion turn** (15 + 3 per turn alive). Impervious or a block potion. Weak on the Giant should reduce the explosion, since it is an attack `[HYPOTHESIS]`.
 - Count the stacks every turn (shown as a power on the Giant).
+
+### Simulation `[HYPOTHESIS]` model (`reports/phase2/vantom-simulation.md`)
+- With the five-move cycle the model is far too hard (base deck 14% from 60/80 against the Player's 3/5), so it is not used in drafting.
+- **Plan:** the safe plan led under both cycles tried: 14% against 1% from 60/80 and 69% against 51% from full HP (five moves); 54% against 11% and 99% against 78% (three moves). Spending HP to kill faster loses to the explosion.
+- `tools/advise.py` recommends the safe plan here and prints the Steam Eruption amount.
 
 ### HP target on arrival
 - Ironclad benchmark: median 38, p75 41. **Rest if HP is below about 48.**

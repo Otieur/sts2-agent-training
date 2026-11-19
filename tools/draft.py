@@ -190,7 +190,8 @@ SIM_RUNS = 80
 
 
 def simulated_boss_value(deck, offer_ids, boss, hp=None, max_hp=80, runs=SIM_RUNS):
-    """For bosses tools/simulate_fight.py models (Vantom): simulated win rate of the deck and of the deck plus each
+    """For bosses tools/simulate_fight.py models and marks validated (Vantom, Lagavulin Matriarch, Soul Fysh,
+    Byrdonis): simulated win rate of the deck and of the deck plus each
     offered card, each deck scored with the better of the planner's two plans (the choice of plan changes results).
     Returns (base rate, {card_id: delta_win}) or None. [HYPOTHESIS] model."""
     import simulate_fight as sf

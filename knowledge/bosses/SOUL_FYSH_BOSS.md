@@ -40,7 +40,9 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Gaze: 7 + a status card
   - Fade: +2 Intangible
   - Scream: 11 + 3 Vulnerable on you (extract). **13 (15) since v0.107.1** `[COMMUNITY]` wiki patch notes
-- Beckon cards deal **unblockable** damage `[COMMUNITY]`, corroborated by the game data: Beckon is a 1-cost Status with `HpLossVar(6)` (HP loss ignores block) `[GAME-EXTRACT]`. A 5-turn pattern, with the second rotation from turn 6 `[COMMUNITY]`.
+- Beckon cards deal **unblockable** damage `[COMMUNITY]`, corroborated by the game data: Beckon is a 1-cost Status with `HpLossVar(6)` (HP loss ignores block) `[GAME-EXTRACT]`. Two guides say a Beckon still in your hand at the end of your turn costs 6 HP, and that spending its 1 energy (or exhausting it) gets rid of it; exhausting is better, since a played Beckon returns through the discard pile `[COMMUNITY]` (games.gg and clawsomegamer, March 2026, accessed 2026-11-19; version not stated).
+- **Cycle** `[COMMUNITY]`, two guides agree: turn 1 Beckon (a Beckon into your draw pile and one into your discard pile), turn 2 De-Gas 16, turn 3 Gaze 7 plus another Beckon, turn 4 Fade (Intangible), turn 5 Scream (13 + 3 Vulnerable), then repeating from turn 6. Both describe the Intangible as lasting one turn; the game data gives Fade 2 Intangible and a power that ticks down at every turn end, which fits one of your turns `[GAME-EXTRACT]` + `[HYPOTHESIS]` (gap 27).
+- Vulnerable from Scream lands on De-Gas in the next cycle: 16 becomes 24.
 - While Intangible, every hit is capped (1 damage) `[GAME-EXTRACT]`.
 
 ### Deck checklist
@@ -49,6 +51,11 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Burst outside Intangible turns.** Big hits on tangible turns. On Fade turns, spend energy on block and setup instead of attacks.
 - **Block for Scream and De-Gas.** After Scream you are Vulnerable (×1.5 damage taken), so De-Gas 16 becomes 24.
 - In the history, fatal decks had fewer multi-hit cards (0.2 against 0.6) and no Strength cards, n=27 `[PLAYER-DATA, weak]`.
+
+### Simulation `[HYPOTHESIS]` model (`reports/phase2/vantom-simulation.md`)
+- The model's win rate with the 15-card base deck (50% from 60/80) is close to the Player's 4/7, so it is used in drafting.
+- **Plan:** the safe plan beat the balanced plan from 60/80 (50% against 27%); level from full HP (94% against 91%).
+- **Additions** (from 60/80): Demon Form with Shrug It Off 87%, Pyre with Feel No Pain 63%, multi-hit 57%, against 51% for the base deck; single-hit hit-all cards 22–24%; True Grit with Burning Pact 33% (better than two extra Strikes at 28%, but below the base deck: an exhaust outlet is a filler-level card here, not a must-have).
 
 ### HP target on arrival
 - Ironclad benchmark: median 33, p75 41. **Rest before the boss if HP is below about 43.**

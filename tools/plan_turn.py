@@ -10,9 +10,18 @@ attacks, block), and scores the result:
 Modelled: damage and hit counts, block, Strength gained this turn, Vulnerable and Weak applied (Weak reduces that
 enemy's intent), hit-all and random-target attacks (random hits spread round-robin, an approximation), energy
 gain, HP-loss costs (Offering, Bloodletting), enemy block, Slippery (each hit deals 1 and removes a stack),
-Intangible (each hit deals 1), killing an enemy removes its intent.
-Not modelled: draw (plans with draw say "re-plan after drawing"), exhaust synergies, powers that trigger later,
-Thorns, Hardened Shell's per-turn cap, relics, potions, card-specific conditions. Treat results as [HYPOTHESIS]
+Intangible (each hit deals 1), killing an enemy removes its intent, status cards that cost HP at the end of the
+turn while held (Soul Fysh's Beckon: 6 HP, playable for 1 energy to get rid of it) [GAME-EXTRACT] + [COMMUNITY].
+Card-specific rules: an Attack's own Strength gain comes after its hits (Fight Me); Setup Strike (Strength this turn),
+Rage (Block per later Attack), Unrelenting (next Attack free), Mangle (target's attack lowered this turn), Flame
+Barrier (damage back per enemy hit), Body Slam (damage = Block, played after block cards), Fiend Fire (played last,
+7 per card left in hand), Dismantle (two hits on a Vulnerable target), Feel No Pain (Block per exhaust), Forgotten
+Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); boosters are played first. Slippery stacks
+stripped earn SLIPPERY_VALUE in the balanced plan.
+Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
+Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (first damage stuns), Crab Rage (a claw's death: +5 Strength, 99 Block); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing.
+Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
+relics, other card-specific conditions. Treat results as [HYPOTHESIS]
 until the arithmetic is confirmed in game (knowledge/mechanics.md checklist).
 
 Card numbers: live values from the mod when given (STS2-Agent dynamic_values current_value, assumed to include
@@ -74,6 +83,17 @@ class Card:
     summon: int = 0             # Necrobinder: Summon N (adds N to Osty's HP)
     kills_osty: bool = False    # "Kill your own Osty" (Bone Shards, Sacrifice)
     power: bool = False         # a Power card: its value comes in later turns (POWER_VALUE)
+    held_loss: int = 0          # HP lost at the end of the turn if still in hand (Beckon 6; unblockable)
+    exhausts: bool = False      # playing it exhausts a card (itself or another): enables Forgotten Ritual
+    needs_exhaust: bool = False # its energy needs an exhaust earlier this turn (Forgotten Ritual before v0.111.1)
+    str_down: int = 0           # the target loses this much Strength this turn (Mangle): its attack drops per hit
+    retaliate: int = 0          # damage dealt back to each enemy hit this turn (Flame Barrier)
+    temp_str: int = 0           # Strength for the rest of this turn only (Setup Strike)
+    rage: int = 0               # Block for each Attack played later this turn (Rage)
+    free_attacks: int = 0       # the next Attack costs 0 (Unrelenting's Free Attack)
+    fnp: int = 0                # Feel No Pain gained: Block for each card exhausted later this turn
+    held_dmg: int = 0           # damage (blockable) at the end of the turn if still in hand (Toxic 5)
+    sandpit_add: int = 0        # adds to the Sandpit counter on you (Frantic Escape +1)
 
 
 @dataclass
@@ -91,6 +111,14 @@ class Enemy:
     slow: bool = False          # Bygone Effigy: damage taken x (1 + 0.1 x cards played earlier this turn) [HYPOTHESIS unit]
     ref: Optional[int] = None   # the enemy's index in the mod's state (combat.enemies[].index), for target_index
     hive: int = 0               # Entomancer's Personal Hive: each damage instance it takes adds this many cards to your draw pile
+    enrage: int = 0             # Test Subject's Enrage: it gains this much Strength for each card you play
+    hp_cap: Optional[int] = None  # Hardened Shell: it loses at most this much HP per turn (damage already taken this turn unknown)
+    thorns: int = 0             # Thorns: each hit you deal it costs you this much
+    artifact: int = 0           # Artifact: each charge cancels one debuff applied to it
+    lost_turn: int = 0          # HP it lost this turn (for Hardened Shell)
+    hit_cap: Optional[int] = None  # Hard to Kill (Exoskeletons): each hit deals at most this much
+    shriek: bool = False        # Shriek (Terror Eel): the first damage it takes stuns it (its attack this turn is cancelled)
+    crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
 
 
 @dataclass
@@ -104,6 +132,9 @@ class Player:
     hp: Optional[int] = None
     osty_hp: int = 0            # Necrobinder's Osty: takes the unblocked damage aimed at you (DIE_FOR_YOU_POWER)
     max_cards: Optional[int] = None  # Sloth (Knowledge Demon's curse): at most this many cards per turn
+    fnp: int = 0                # Feel No Pain already on you: Block for each card exhausted
+    sandpit: int = 0            # The Insatiable's Sandpit on you: you die when it runs out (0 = none)
+    end_turn_dmg: int = 0       # damage at the end of your turn from a power on you (Disintegration), blockable
 
 
 def parse_effect(c):
@@ -139,6 +170,10 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
     cid = card_id.split(".", 1)[-1]
     c = CARDS.get(cid)
     if not c:
+        if cid in EXTRA_STATUSES:  # statuses newer than the extract (Aeonglass's Wither) [COMMUNITY]
+            card = Card(index, cid, cid.replace("_", " ").title(), 0, "Self", playable=False, note=EXTRA_STATUSES[cid]["note"])
+            card.held_dmg = int((live or {}).get("Damage") or EXTRA_STATUSES[cid]["held_dmg"])
+            return card
         return Card(index, cid, cid, cost if cost is not None else 9, "Self", playable=False, note="not in the extract")
     p = parse_effect(c)
     base_cost = c["cost"] if c["cost"] is not None and c["cost"] >= 0 else 0
@@ -151,6 +186,31 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
                 kills_osty=p["kills_osty"], power=is_power)
     if c["type"] in ("Status", "Curse") or "Unplayable" in (c.get("effect") or ""):
         card.playable = False
+    m = re.search(r'"StrengthLoss", (\d+)', c.get("vars") or "")
+    card.str_down = int(m.group(1)) if m else 0
+    m = re.search(r"Gain (\d+) Flame Barrier", c.get("effect") or "")
+    card.retaliate = int(m.group(1)) if m else 0
+    eff = c.get("effect") or ""
+    for attr, pat in (("temp_str", r"Gain (\d+) Setup Strike"), ("rage", r"Gain (\d+) Rage"),
+                      ("free_attacks", r"Gain (\d+) Free Attack"), ("fnp", r"Gain (\d+) Feel No Pain")):
+        m = re.search(pat, eff)
+        setattr(card, attr, int(m.group(1)) if m else 0)
+    card.needs_exhaust = cid in CONDITIONAL_ENERGY and "no card needs to be exhausted" not in (c.get("effect") or "")
+    card.exhausts = bool({"kw-exhaust", "exhaust-other"} & set(c.get("tags") or [])) or "Exhaust a card" in (c.get("effect") or "")
+    unplayable = "Unplayable" in (c.get("effect") or "") or "unplayable" in (c.get("tags") or [])
+    if c["type"] == "Status" and c.get("cost") is not None and c["cost"] >= 0 and not unplayable:
+        # Playable statuses (game data: Beckon, Debris, Frantic Escape, Slimed, Toxic) follow the game's playable flag
+        card.playable = playable
+        m = re.search(r"HpLossVar\((\d+)", c.get("vars") or "")
+        if m:  # Beckon: 6 HP lost (unblockable) at the end of the turn if held [GAME-EXTRACT] + [COMMUNITY]
+            card.held_loss = int(m.group(1))
+            card.note = f"loses {card.held_loss} HP at end of turn if held"
+        if cid == "TOXIC":  # 5 damage at the end of the turn if held; playing it exhausts it [COMMUNITY]
+            card.held_dmg = 5
+            card.note = "5 damage at end of turn if held"
+        if cid == "FRANTIC_ESCAPE":  # +1 Sandpit per play; its cost rises by 1 each play [COMMUNITY]
+            card.sandpit_add = 1
+            card.note = "Sandpit +1 (you die when Sandpit runs out)"
     if live:
         card.live = True
         for k in ("CalculatedDamage", "Damage"):
@@ -222,12 +282,18 @@ def per_hit(card, player, enemy, strength_gained, played_before=0):
                             extra_mult=slow)
     if enemy.slippery > 0 or enemy.intangible:
         d = min(d, 1)
+    if enemy.hit_cap is not None:
+        d = min(d, enemy.hit_cap)
     return max(0, d)
 
 
 # Damage-equivalent cost of each card Personal Hive adds to your draw pile [HYPOTHESIS]: an added dead card is likely
 # drawn about once in the rest of the fight and replaces a real card play (about a Strike's 6), slightly discounted.
 HIVE_COST = 5.0
+# Slippery (Vantom): every hit while Slippery deals 1 but removes a stack, and each stack removed lets a later hit deal
+# full damage, so the balanced plan credits each stack stripped with this many damage-equivalents (tuned in
+# tools/simulate_fight.py against Vantom; see reports/phase2/vantom-simulation.md) [HYPOTHESIS].
+SLIPPERY_VALUE = 3.0
 
 
 def hit(enemy, dmg):
@@ -240,18 +306,36 @@ def hit(enemy, dmg):
     absorbed = min(enemy.block, dmg)
     enemy.block -= absorbed
     dealt = min(enemy.hp, dmg - absorbed)
+    if enemy.hp_cap is not None:  # Hardened Shell: HP lost per turn capped [GAME-EXTRACT]
+        dealt = max(0, min(dealt, enemy.hp_cap - enemy.lost_turn))
     enemy.hp -= dealt
+    enemy.lost_turn += dealt
+    if enemy.shriek and dealt > 0:  # stunned by its first damage [GAME-EXTRACT]; assumed to cancel this turn's attack
+        enemy.shriek = False
+        enemy.intent_hits = 0
     return dealt
 
 
-ORDER = {"energy": 0, "strength": 1, "debuff": 2, "attack": 3, "block": 4, "other": 5}
+ORDER = {"energy": 0, "strength": 1, "debuff": 2, "attack": 3, "block": 4, "after_block": 4.5, "other": 5, "last": 6}
+
+
+EXTRA_STATUSES = {  # not in the extract: unplayable, damage at the end of the turn while held (whisperofthehouse, 2026-11-16)
+    "WITHER": {"held_dmg": 3, "note": "Wither: unplayable, 3 damage at end of turn while held (more if upgraded)"},
+}
+CONDITIONAL_ENERGY = {"FORGOTTEN_RITUAL"}       # energy only after an exhaust this turn, unless the card text (patched
+                                                # to v0.111.1 in deck_metrics) says no exhaust is needed
+HITS_TWICE_IF_VULNERABLE = {"DISMANTLE"}
+BLOCK_DAMAGE = {"BODY_SLAM"}                    # deals damage equal to your current Block [GAME-EXTRACT] CalculatedDamage
+EXHAUST_HAND = {"FIEND_FIRE"}                   # exhausts the rest of the hand: 7 damage per card exhausted [GAME-EXTRACT]
 
 
 def phase(card):
+    if card.card_id in BLOCK_DAMAGE:
+        return "after_block"  # Body Slam: its damage is your Block when played
     if card.energy and not card.dmg:
         return "energy"
-    if (card.strength or card.dex or card.summon) and not card.dmg:
-        return "strength"  # setup before attacks (Summon must come before Osty attacks)
+    if (card.strength or card.dex or card.summon or card.rage or card.fnp) and not card.dmg:
+        return "strength"  # setup before attacks (Summon before Osty attacks, Rage before Attacks, Feel No Pain before exhausts)
     if (card.vuln or card.weak) and card.target in ("AnyEnemy", "AllEnemies"):
         return "debuff"
     if card.dmg:
@@ -270,19 +354,29 @@ def simulate(cards, targets, player, enemies):
     log = []
     played = 0
     seq = []
+    exhausted = False  # a card exhausted earlier this turn (cards exhausted before the state was read are not known)
+    retaliate = 0      # Flame Barrier: damage back per enemy hit
+    rage, free, fnp = 0, 0, player.fnp  # Rage block per Attack, free Attacks, Feel No Pain block per exhaust
     for card, tgt in zip(cards, targets):
         cost = energy if card.x_cost else card.cost
+        is_attack = bool(card.dmg) or card.card_id in BLOCK_DAMAGE
+        if free and is_attack and cost > 0 and not card.x_cost:
+            cost, free = 0, free - 1  # Unrelenting: the next Attack costs 0
         if cost > energy:
             return None
         energy -= cost
-        energy += card.energy
+        # Forgotten Ritual before v0.111.1: energy only after an exhaust this turn [COMMUNITY]; v0.111.1 removed the condition
+        energy += 0 if (card.needs_exhaust and not exhausted) else card.energy
         hp_cost += card.hp_cost
         draws += card.draw
-        strength_gained += card.strength
+        str_before = strength_gained  # an Attack's own Strength gain (Fight Me, Setup Strike) applies after its hits
+        strength_gained += card.strength + card.temp_str
         dex_gained += card.dex
         potions += card.potion
         powers += max(1, cost) if card.power else 0  # energy spent on Powers
         alive = [e for e in es if e.hp > 0]
+        if card.card_id in BLOCK_DAMAGE:  # damage = Block now (Strength, Vulnerable and Weak still apply)
+            card = Card(**{**vars(card), "dmg": block, "live": False})
         hits = card.hits * (cost if card.x_cost else 1)
         if card.osty and osty <= 0:
             hits = 0  # Osty is dead: its attacks do nothing
@@ -299,16 +393,40 @@ def simulate(cards, targets, player, enemies):
                     live_now = [e for e in es if e.hp > 0]
                     if live_now:
                         e = live_now[h % len(live_now)]
-                        dealt += hit(e, per_hit(card, player, e, strength_gained, played))
+                        hp_cost += e.thorns
+                        dealt += hit(e, per_hit(card, player, e, str_before, played))
             else:
                 for e in victims:
-                    for _ in range(hits):
-                        dealt += hit(e, per_hit(card, player, e, strength_gained, played))
+                    # Dismantle: hits twice if the target is Vulnerable [COMMUNITY] (the extract shows "? times")
+                    for _ in range(hits * (2 if card.card_id in HITS_TWICE_IF_VULNERABLE and e.vuln else 1)):
+                        if e.hp > 0 and e.thorns and not card.osty:
+                            hp_cost += e.thorns  # Thorns hit back on each hit (counted as HP lost; block may absorb it)
+                        dealt += hit(e, per_hit(card, player, e, str_before, played))
+        for e in es:  # Crab Rage: a claw that died this card gives the others 5 Strength and 99 Block (this turn)
+            if e.crab_rage and e.hp <= 0:
+                e.crab_rage = False
+                for o in es:
+                    if o is not e and o.hp > 0:
+                        o.block += 99
+                        if o.intent_hits:
+                            o.intent_per_hit += 5
         for e in victims:
-            if card.vuln:
-                e.vuln = True
-            if card.weak:
-                e.weak = True
+            for debuff in ("vuln", "weak", "str_down"):
+                if not getattr(card, debuff):
+                    continue
+                if e.artifact > 0:  # Artifact cancels the debuff and loses a charge
+                    e.artifact -= 1
+                elif debuff == "vuln":
+                    e.vuln = True
+                elif debuff == "weak":
+                    e.weak = True
+                elif e.intent_hits:  # Mangle: Strength lost this turn lowers each hit of its attack
+                    e.intent_per_hit = max(0, e.intent_per_hit - card.str_down)
+        retaliate += card.retaliate
+        if is_attack and rage:
+            block += rage  # Rage: flat Block for each Attack after it (assumed unaffected by Dexterity) [HYPOTHESIS]
+        rage += card.rage
+        free += card.free_attacks
         if card.block:
             if card.flat:
                 block += card.block
@@ -320,6 +438,10 @@ def simulate(cards, targets, player, enemies):
             osty = 0
         if not card.potion:
             played += 1
+        if card.exhausts:
+            exhausted = True
+            block += fnp * ((card.hits + 1) if card.card_id in EXHAUST_HAND else 1)  # Feel No Pain, flat
+        fnp += card.fnp
         seq.append((card, es[tgt].ref if (card.target == "AnyEnemy" and tgt is not None and es[tgt].ref is not None)
                     else (tgt if card.target == "AnyEnemy" else None)))
         label = (f"potion {card.name} (use_potion slot={card.index})" if card.potion else card.name)
@@ -327,27 +449,52 @@ def simulate(cards, targets, player, enemies):
     # Intent numbers already include Weak that was on the enemy when the state was read (the game computes them), so
     # only Weak applied during this turn reduces them further.
     pairs = [(e, o) for e, o in zip(es, enemies) if e.hp > 0 and e.intent_hits]
-    intents = [(e.intent_per_hit, e.intent_hits) for e, o in pairs]
+    # Enrage (Test Subject): Strength for every card played this turn raises each hit (assumed every card; gap note)
+    intents = [(e.intent_per_hit + e.enrage * played, e.intent_hits) for e, o in pairs]
     weak = [e.weak and not o.weak for e, o in pairs]
+    if player.end_turn_dmg:  # Disintegration hits at the end of your turn, before the enemies, and uses up block first
+        intents.append((player.end_turn_dmg, 1))
+        weak.append(False)
     inc = calc.incoming_hp_loss(intents, player_block=block, weak_enemies=weak)
     to_osty = min(osty, inc.hp_lost)  # Osty takes the unblocked damage first while alive [GAME-EXTRACT] DIE_FOR_YOU_POWER
     lost = inc.hp_lost - to_osty + hp_cost
     all_dead = all(e.hp <= 0 for e in es)
     dies = player.hp is not None and lost >= player.hp and not all_dead
+    if retaliate:  # Flame Barrier hits back on every enemy hit (assumed even when blocked) [HYPOTHESIS]
+        for e in es:
+            if e.hp > 0 and e.intent_hits:
+                back = min(e.hp, retaliate * e.intent_hits)
+                e.hp -= back
+                dealt += back
     return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": lost, "dies": dies,
             "osty_hp_after": osty - to_osty, "osty_before_enemy": osty, "powers": powers,  # energy spent on Powers
             "seq": seq,
             "hive_cards": sum(getattr(e, "hive_added", 0) for e in es),
+            "slippery_stripped": sum(o.slippery - e.slippery for e, o in zip(es, enemies) if e.hp > 0),
             "enemies_after": [{"hp": max(0, e.hp), "block": e.block, "slippery": e.slippery, "vuln": e.vuln, "weak": e.weak} for e in es],
             "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all(e.hp <= 0 for e in es),
             "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
+
+
+def _exhaust_before_ritual(ordered):
+    """Forgotten Ritual pays only after an exhaust: move a non-attack exhauster to the front, or Ritual after the first."""
+    rit = [c for c in ordered if c.needs_exhaust]
+    ex = [c for c in ordered if c.exhausts and not c.needs_exhaust]
+    if not rit or not ex:
+        return ordered
+    first = next((c for c in ex if not c.dmg), None)
+    if first is not None:
+        return [first] + [c for c in ordered if c is not first]
+    rest = [c for c in ordered if all(c is not r for r in rit)]
+    i = next(k for k, c in enumerate(rest) if c is ex[0])
+    return rest[:i + 1] + rit + rest[i + 1:]
 
 
 def plans(hand, player, enemies):
     playable = [c for c in hand if c.playable]
     alive_idx = [e.index for e in enemies if e.hp > 0]
     results = []
-    max_gain = sum(c.energy for c in playable)
+    max_gain = sum(c.energy for c in playable) + (3 if any(c.free_attacks for c in playable) else 0)
     for r in range(len(playable) + 1):
         for subset in itertools.combinations(playable, r):
             if player.max_cards is not None and sum(1 for c in subset if not c.potion) > player.max_cards:
@@ -355,7 +502,19 @@ def plans(hand, player, enemies):
             if sum(0 if c.x_cost else c.cost for c in subset) > player.energy + max_gain:
                 continue
             slow = any(e.slow for e in enemies)  # against Slow, small attacks first and the big one last
-            ordered = sorted(subset, key=lambda c: (ORDER[phase(c)], (c.dmg * c.hits) if slow else -c.dmg * c.hits))
+            ordered = sorted(subset, key=lambda c: (ORDER[phase(c)], -(c.strength + c.temp_str + 3 * c.free_attacks),  # boosters first
+                                                    (c.dmg * c.hits) if slow else -c.dmg * c.hits))
+            ordered = _exhaust_before_ritual(ordered)
+            fa = next((c for c in ordered if c.free_attacks), None)
+            if fa is not None:  # Unrelenting first, so its Free Attack makes the next Attack (even Bash) cost 0
+                ordered = [fa] + [c for c in ordered if c is not fa]
+            ids = {id(s) for s in subset}
+            ff = [c for c in ordered if c.card_id in EXHAUST_HAND]
+            if len(ff) > 1:
+                continue  # the first Fiend Fire exhausts the second
+            if ff:  # Fiend Fire last: it exhausts every card left in hand, 7 damage for each
+                n_ex = sum(1 for c in hand if not c.potion and id(c) not in ids)
+                ordered = [c for c in ordered if c is not ff[0]] + [Card(**{**vars(ff[0]), "hits": n_ex})]
             single = [i for i, c in enumerate(ordered) if c.target == "AnyEnemy"]
             n_assign = len(alive_idx) ** len(single) if single else 1
             if n_assign <= MAX_ASSIGNMENTS:
@@ -369,6 +528,18 @@ def plans(hand, player, enemies):
                     targets[pos] = t
                 out = simulate(ordered, targets, player, enemies)
                 if out:
+                    left = [c for c in hand if id(c) not in ids] if not ff else []  # Fiend Fire exhausts them
+                    held = sum(c.held_loss for c in left)
+                    # Toxic: blockable, taken at the end of your turn before the enemies attack, so it uses up block first
+                    held += max(0, sum(c.held_dmg for c in left) - max(0, out["block"] - out["incoming"]))
+                    if held:
+                        out["hp_lost"] += held
+                        out["held_loss"] = held
+                        out["dies"] = player.hp is not None and out["hp_lost"] >= player.hp and not out["all_dead"]
+                    if player.sandpit:  # Sandpit ticks down before your next turn; at 0 it kills you
+                        out["sandpit_after"] = player.sandpit + sum(c.sandpit_add for c in subset)
+                        if out["sandpit_after"] <= 1 and not out["all_dead"]:
+                            out["dies"] = True
                     results.append(out)
     return results
 
@@ -413,7 +584,7 @@ def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALU
     else:
         key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
                          -(o["dealt"] - o["hp_lost"] - potion_cost * o["potions"] + power_value * o.get("powers", 0)
-                           - HIVE_COST * o.get("hive_cards", 0)),
+                           - HIVE_COST * o.get("hive_cards", 0) + SLIPPERY_VALUE * o.get("slippery_stripped", 0)),
                          o["hp_lost"], -o["kills"])
     seen, out = set(), []
     for o in sorted(results, key=key):
@@ -436,7 +607,14 @@ def from_state(st):
                     strength=int(powers.get("STRENGTH_POWER", powers.get("STRENGTH", 0)) or 0),
                     dexterity=int(powers.get("DEXTERITY_POWER", powers.get("DEXTERITY", 0)) or 0),
                     weak=any(k.startswith("WEAK") for k in powers), frail=any(k.startswith("FRAIL") for k in powers),
-                    hp=p.get("current_hp"))
+                    hp=p.get("current_hp"), fnp=int(powers.get("FEEL_NO_PAIN_POWER", powers.get("FEEL_NO_PAIN", 0)) or 0),
+                    sandpit=int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0),
+                    end_turn_dmg=int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0))
+    # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
+    # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])
+    limits = [int(powers[k] or 3) for k in powers if k.startswith("SLOTH")] + [1 for k in powers if k.startswith("RINGING")]
+    if limits:
+        player.max_cards = min(limits)
     hand = []
     for h in c.get("hand") or []:
         live = {d["name"]: d.get("current_value") for d in h.get("dynamic_values") or [] if d.get("current_value") is not None}
@@ -460,7 +638,13 @@ def from_state(st):
                              vuln=any(k.startswith("VULNERABLE") for k in pw), weak=any(k.startswith("WEAK") for k in pw),
                              slippery=int(next((v for k, v in pw.items() if k.startswith("SLIPPERY")), 0) or 0),
                              intangible=any(k.startswith("INTANGIBLE") for k in pw), slow=any(k.startswith("SLOW") for k in pw),
-                             ref=raw, hive=int(next((v for k, v in pw.items() if k.startswith("PERSONAL_HIVE")), 0) or 0)))
+                             ref=raw, hive=int(next((v for k, v in pw.items() if k.startswith("PERSONAL_HIVE")), 0) or 0),
+                             enrage=int(next((v for k, v in pw.items() if k.startswith("ENRAGE")), 0) or 0),
+                             hp_cap=next((int(v) for k, v in pw.items() if k.startswith("HARDENED_SHELL") and v is not None), None),
+                             thorns=int(next((v for k, v in pw.items() if k.startswith("THORNS")), 0) or 0),
+                             artifact=int(next((v for k, v in pw.items() if k.startswith("ARTIFACT")), 0) or 0),
+                             hit_cap=next((int(v) for k, v in pw.items() if k.startswith("HARD_TO_KILL") and v is not None), None),
+                             shriek=any(k.startswith("SHRIEK") for k in pw), crab_rage=any(k.startswith("CRAB_RAGE") for k in pw)))
     for i, e in enumerate(enemies):
         e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
     run = st.get("run") or {}

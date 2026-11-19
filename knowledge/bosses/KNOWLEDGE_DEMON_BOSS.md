@@ -33,13 +33,13 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Mechanics summary
 - 379 HP `[GAME-EXTRACT]`. Opening cycle: Curse of Knowledge → Slap 17 → Knowledge Overwhelming 8×3 → Ponder (11 damage, heals, +2 Strength) `[GAME-EXTRACT]`.
-- **Curse of Knowledge** `[COMMUNITY]`, one guide: choose one of two status cards each time, for three cycles. The four cards exist in the game data with these effects `[GAME-EXTRACT]` (corroborates the guide; Sloth corrected):
-  - **Disintegration:** a power that deals 6 damage to you at the end of each turn (the guide: 6, 7, then 8 in later cycles)
+- **Curse of Knowledge** `[COMMUNITY]`: choose one of two status cards each time, for three cycles. A second guide (selphie1999gaming, 2026-03-24, accessed 2026-11-19) gives the pairs: **Disintegration or Mind Rot, then Disintegration or Sloth, then Disintegration or Waste Away**. The four cards exist in the game data with these effects `[GAME-EXTRACT]` (corroborates the guides; Sloth corrected):
+  - **Disintegration:** a power that deals 6 damage to you at the end of each turn (the guides: 6, 7, then 8 in later offers). It is a Counter power, so taking it twice adds the amounts (6 + 7 = 13 a turn) `[GAME-EXTRACT]`
   - **Mind Rot:** draw 1 fewer card each turn
   - **Sloth:** you can play **at most 3 cards per turn** (the guide said "draw at most 3"; the power checks cards played)
   - **Waste Away:** 1 less max energy
-  - **Choice rule** `[HYPOTHESIS]`, for a 7-turn fight: Disintegration costs about 6 HP per remaining turn (36+ from the first cycle). Waste Away costs about one card per turn; Mind Rot one draw per turn. Sloth costs only the cards beyond the third, so a typical 3-energy deck of 1-cost cards loses almost nothing. Order of preference: Sloth unless the deck relies on 0-cost cards or extra energy, then Mind Rot if the deck has draw, Waste Away next, Disintegration last unless the fight will end within 2–3 turns. A simulation (`reports/phase2/vantom-simulation.md`, 22-card deck from full HP) gives the same order: always Sloth 46% wins, Mind Rot 30%, Waste Away 14%, Disintegration 10% `[HYPOTHESIS]` model.
-- After three cycles, a plain Slap / Overwhelming / Ponder loop. Ponder heals 30 per player `[COMMUNITY]`, one guide; the game data shows the heal as computed (`Heal ? HP`), so the amount is unverified.
+  - **Choice rule** `[HYPOTHESIS]` model: **offer 1 Mind Rot, offer 2 Sloth; offer 3 is close** (Waste Away slightly ahead; Disintegration is fine when the fight ends within about 2 turns). A simulation of all eight combinations (`reports/phase2/vantom-simulation.md`, 22-card deck from full HP) puts Disintegration at offer 1 or 2 far behind, because its damage stacks for the rest of the fight: offer 1 Mind Rot 35% against Disintegration 5%, offer 2 Sloth 35% against 16%, offer 3 Waste Away 35% against 31% (the model is pessimistic in absolute terms; it fails calibration for this boss). The earlier ranking (always Sloth > Mind Rot > Waste Away > Disintegration) assumed any card could be taken at any offer, which the guides contradict.
+- After three cycles, a plain Slap / Overwhelming / Ponder loop. Ponder heals 30 per player `[COMMUNITY]`, two guides; the game data shows the heal as computed (`Heal ? HP`).
 
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: Strength cards at least 1 (survived 0.7, fatal 0.2 (H7)); energy cards at least 1 (survived 1.6, fatal 0.8 (H7)).
@@ -48,10 +48,10 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Block** for Overwhelming (24 base, rising with Strength) and Slap (17).
 
 ### Curse choice `[HYPOTHESIS]`
-- Default: **Disintegration**, if the deck reliably blocks 15 or more per turn. Fixed damage is the easiest cost to plan around.
-- Avoid **Waste Away** unless the deck has Pyre or two or more energy cards.
-- Avoid **Sloth** with a deck full of 0-cost cards.
-- Take **Mind Rot** when the deck has strong draw (Battle Trance, Offering, Burning Pact).
+- Offer 1 (Disintegration or Mind Rot): **Mind Rot**.
+- Offer 2 (Disintegration or Sloth): **Sloth**, unless the deck plays many 0-cost cards (Sloth caps cards played at 3).
+- Offer 3 (Disintegration or Waste Away): close. **Waste Away** by default; **Disintegration** when the fight will end within about 2 turns or the deck needs every energy (X-cost cards, 3-cost cards).
+- Never stack Disintegration: the second one makes it 13 a turn.
 
 ### HP target on arrival
 - Ironclad benchmark: median 45, p75 59.8. **Rest before the boss if HP is below about 55.**

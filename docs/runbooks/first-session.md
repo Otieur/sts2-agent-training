@@ -53,6 +53,11 @@ Check: the card is played, `runs/smoke/decisions.jsonl` has the line, and `GET /
 | 12 | Lagavulin Matriarch wakes stunned when hit; which power goes with Asleep. Kin Priest's death ends the fight? | boss notes |
 | 13 | `run.ascension_effects` lists the ascension rules | `knowledge/ascension.md` |
 | 23 | Kaiser Crab facing: target each claw and read the intent numbers (×1.5 from behind?) | `knowledge/bosses/KAISER_CRAB_BOSS.md` |
+| 25 | Ceremonial Beast: Plow amount after each hit, and whether it Plows every turn until the stun | `knowledge/bosses/CEREMONIAL_BEAST_BOSS.md`, simulator |
+| 26 | Entomancer: intents each turn and the card Personal Hive adds | `knowledge/enemies/ENTOMANCER_ELITE.md`, simulator |
+| 27 | Soul Fysh: Beckon card text (6 HP if held? discard when played?), Intangible counter after Fade, the card Gaze adds. Waterfall Giant: intents each turn (five-move cycle?), Steam Eruption amount before the explosion, Weak lowering it. Knowledge Demon: the curse pairs (Disintegration or Mind Rot, then Sloth, then Waste Away?) | boss notes, `tools/simulate_fight.py` |
+| 28 | The Insatiable: `SANDPIT_POWER` at each turn start, Frantic Escape's cost after each play | `knowledge/bosses/THE_INSATIABLE_BOSS.md` |
+| — | Forgotten Ritual on v0.111.1: energy without an exhaust? Dismantle: two hits on a Vulnerable target? | `knowledge/version-delta-extract-to-v0.107.1.md`, `tools/plan_turn.py` |
 | — | Infested Prism's current moves and Tainted duration (reworked after the extract) | `knowledge/enemies/INFESTED_PRISMS_ELITE.md` |
 | — | Test Subject's Enrage: every card or only Skills? | `knowledge/bosses/TEST_SUBJECT_BOSS.md` |
 | — | Does the combat state say whether the fight is a hallway, elite or boss room? (`tools/advise.py` `fight_type` guesses from the boss name, else assumes elite) | `tools/advise.py` |

@@ -151,6 +151,34 @@ class TestAdvise(unittest.TestCase):
                                               "intents": [{"damage": 16, "hits": 1}]}]})
         self.assertIn("recommended: the balanced plan (an enemy gains Strength", advise.advise(s))
 
+    def test_curse_of_knowledge_choice(self):
+        s = st("CARD_SELECTION", selection={"kind": "combat_card_select", "prompt": "Choose a card",
+                                            "cards": [{"index": 0, "card_id": "DISINTEGRATION"}, {"index": 1, "card_id": "MIND_ROT"}]})
+        out = advise.advise(s)
+        self.assertIn("Curse of Knowledge: offer 1: take Mind Rot", out)
+        picks = [l.strip() for l in out.splitlines() if l.strip().startswith("select_deck_card")]
+        self.assertEqual(picks[0], "select_deck_card option_index=1: MIND_ROT")
+
+    def test_sandpit_warning(self):
+        s = st("COMBAT", combat={"player": {"current_hp": 40, "energy": 3, "block": 0,
+                                            "powers": [{"power_id": "SANDPIT_POWER", "amount": 2}]},
+                                 "hand": [{"index": 0, "card_id": "FRANTIC_ESCAPE", "energy_cost": 1, "playable": True},
+                                          {"index": 1, "card_id": "STRIKE_IRONCLAD", "energy_cost": 1, "playable": True}],
+                                 "enemies": [{"index": 0, "enemy_id": "THE_INSATIABLE", "name": "The Insatiable", "current_hp": 300,
+                                              "block": 0, "is_alive": True, "powers": [], "intents": [{"damage": 8, "hits": 2}]}]})
+        out = advise.advise(s)
+        self.assertIn("Sandpit 2:", out)
+
+    def test_waterfall_giant_safe_and_steam(self):
+        s = st("COMBAT", combat={"player": {"current_hp": 40, "energy": 3, "block": 0, "powers": []},
+                                 "hand": [{"index": 0, "card_id": "DEFEND_IRONCLAD", "energy_cost": 1, "playable": True}],
+                                 "enemies": [{"index": 0, "enemy_id": "WATERFALL_GIANT", "name": "Waterfall Giant", "current_hp": 30,
+                                              "block": 0, "is_alive": True, "powers": [{"power_id": "STEAM_ERUPTION_POWER", "amount": 33}],
+                                              "intents": [{"damage": 10, "hits": 1}]}]})
+        out = advise.advise(s)
+        self.assertIn("recommended: the safe plan (Waterfall Giant", out)
+        self.assertIn("Steam Eruption 33", out)
+
 
 if __name__ == "__main__":
     unittest.main()

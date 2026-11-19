@@ -117,8 +117,26 @@ def combat(st, top=2):
                   for e in (st.get("combat") or {}).get("enemies") or [] for x in e.get("powers") or [])
     pc = plan_turn.POTION_COST.get(ft, plan_turn.POTION_COST["hallway"])  # unknown: hold potions
     pv = plan_turn.POWER_VALUE.get(ft, plan_turn.POWER_VALUE["elite"])
+    raw_enemies = (st.get("combat") or {}).get("enemies") or []
+    ids_up = [str(e.get("enemy_id") or e.get("name") or "").upper().replace(" ", "_") for e in raw_enemies]
+    giant = any("WATERFALL_GIANT" in i for i in ids_up)
+    fysh = any("SOUL_FYSH" in i for i in ids_up)
+    steam = max((int(x.get("amount") or 0) for e in raw_enemies for x in e.get("powers") or []
+                 if str(x.get("power_id") or x.get("name") or "").upper().startswith("STEAM_ERUPTION")), default=0)
+    if any(str(x.get("power_id") or x.get("name") or "").upper().startswith("WITHERING") for e in raw_enemies for x in e.get("powers") or []):
+        out.append("Withering Presence: every 6th card you play adds a Wither to your hand (3 damage at the end of each turn "
+                   "it is held); prefer fewer, bigger plays and exhaust Withers")
+    if player.sandpit:
+        out.append(f"Sandpit {player.sandpit}: it ticks down before your next turn and kills you when it runs out; end every "
+                   f"turn at 2 or more (plans below that are marked fatal). Each Frantic Escape adds 1 and costs 1 more each play, "
+                   f"so play them while cheap if the fight will outlast the counter")
+    if steam:
+        out.append(f"Steam Eruption {steam}: after its HP reaches 0 the Giant is stunned for a turn, then hits for {steam} "
+                   f"(+3 for each move it makes before then); your HP plus the next turn's block must exceed it")
     out.append(f"fight type: {ft} (potion cost {pc:g} HP, Powers {pv:g} per energy)"
-               + (" · recommended: the balanced plan (boss fights, simulation)" if ft == "boss" else
+               + (" · recommended: the safe plan (Waterfall Giant: the death explosion punishes HP spent; simulated)" if giant else
+                  " · recommended: the safe plan (Soul Fysh: simulated, clearly better below full HP)" if fysh else
+                  " · recommended: the balanced plan (boss fights, simulation)" if ft == "boss" else
                   " · recommended: the balanced plan (an enemy gains Strength every turn; simulated Byrdonis)" if scaling else
                   " · choose safe if HP is below the act plan, balanced if ahead"))
     best = {}
@@ -339,7 +357,18 @@ def selection(st):
             return 40
         return 10 - 2 * _tier_score(cid, tiers) - (3 if c.get("upgraded") else 0)
 
-    if "upgrade" in kind or "upgrade" in prompt:
+    ids = {c["card_id"].split(".", 1)[-1].upper() for c in cards}
+    if "DISINTEGRATION" in ids and ids & {"MIND_ROT", "SLOTH", "WASTE_AWAY"}:
+        # Knowledge Demon's Curse of Knowledge: Disintegration or one other card (playbook section 10; simulated)
+        other = next(iter(ids & {"MIND_ROT", "SLOTH", "WASTE_AWAY"}))
+        pick = {"MIND_ROT": "MIND_ROT", "SLOTH": "SLOTH", "WASTE_AWAY": "WASTE_AWAY"}[other]
+        note = {"MIND_ROT": "offer 1: take Mind Rot (Disintegration stacks for the rest of the fight)",
+                "SLOTH": "offer 2: take Sloth unless the deck plays many 0-cost cards (at most 3 cards a turn)",
+                "WASTE_AWAY": "offer 3 is close: Waste Away by default; Disintegration if the fight ends within about 2 turns "
+                              "or the deck needs every energy; never if Disintegration is already on you"}[other]
+        ranked = sorted(cards, key=lambda c: c["card_id"].split(".", 1)[-1].upper() != pick)
+        why = "Curse of Knowledge: " + note
+    elif "upgrade" in kind or "upgrade" in prompt:
         def up_score(c):
             cid = c["card_id"]
             s = 3 * _tier_score(cid, tiers)

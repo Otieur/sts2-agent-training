@@ -148,9 +148,8 @@ def checks(con):
     m = re.search(r"Multi-hit: (\d+)% balanced / (\d+)% safe against the base deck's (\d+)% / (\d+)%", vs)
     out.append(("H6 simulation", f"raised simulated wins from {m.group(3)}% to {m.group(1)}% (balanced plan) and from {m.group(4)}% to "
                                  f"{m.group(2)}% (safe plan)" if m else "<pattern not found in vantom-simulation.md>"))
-    m = re.search(r"Sloth \| (\d+%) \|.*?\n\| Mind Rot \| (\d+%) \|.*?\n\| Waste Away \| (\d+%) \|.*?\n\| Disintegration \| (\d+%) \|", vs)
-    out.append(("Knowledge Demon curses", "(simulated: Sloth {} wins, Mind Rot {}, Waste Away {}, Disintegration {})".format(*m.groups())
-                if m else "<pattern not found in vantom-simulation.md>"))
+    m = re.search(r"best combination [^;]+; (offer 1: [^;]+); (offer 2: [^;]+); (offer 3: [^.]+)\.", vs)
+    out.append(("Knowledge Demon curses", "simulated: {}; {}; {}".format(*m.groups()) if m else "<pattern not found in vantom-simulation.md>"))
     # H11: hallway fatality by entry HP
     hb = q("""SELECT CASE WHEN 1.0*f.hp_before/f.max_hp < 0.3 THEN 'a' WHEN 1.0*f.hp_before/f.max_hp < 0.4 THEN 'b'
                           WHEN 1.0*f.hp_before/f.max_hp < 0.5 THEN 'c' ELSE 'd' END, SUM(f.is_last_floor AND NOT r.win), COUNT(*)
@@ -186,6 +185,8 @@ def quickref_checks(con):
     out.append(("quickref tiers", f"A-tier picks {float(m.group(1)):+.0f} points" if m else "<pattern not found>"))
     m = _re.search(r"\| Breakthrough \| \w \| \d+ \| \d+ \| (\d+)% \(\d+/\d+\) \| (\d+)% ", cc)
     out.append(("quickref Breakthrough", f"{m.group(1)}% against {m.group(2)}% act survival" if m else "<pattern not found>"))
+    m = _re.search(r"^Version: (v[\d.]+)", PLAYBOOK.read_text(), _re.M)
+    out.append(("quickref version", f"`playbooks/ironclad.md` ({m.group(1)})" if m else "<pattern not found>"))
     return out
 
 
