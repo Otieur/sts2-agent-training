@@ -50,7 +50,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Painful Stabs: unblocked damage adds Wounds
   - Nemesis: gains Intangible at turn end
   - Adaptable: revive
-- Phase 1 punishes Skills, granting Strength per Skill played `[COMMUNITY]`.
+- Phase 1 punishes Skills, granting Strength per Skill played `[COMMUNITY]`. The game data gives it **Enrage** from the start (`AfterCardPlayed: Gain Amount Strength`) `[GAME-EXTRACT]`; the summary does not show a card-type filter, so it may count every card played. Until the first fight shows which, assume each card played adds Strength and play fewer, bigger cards in phase 1 `[HYPOTHESIS]`.
+- Nemesis (phase 2 onward) gives it 1 Intangible at the end of its turns `[GAME-EXTRACT]`, which makes alternate turns the damage windows; Painful Stabs adds a Wound when its attacks deal damage `[GAME-EXTRACT]`.
 
 ### Deck checklist
 - **Sustained damage** over the longest fight in the game (median 10 turns).

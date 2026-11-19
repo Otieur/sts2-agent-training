@@ -33,10 +33,13 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Mechanics summary
 - 379 HP `[GAME-EXTRACT]`. Opening cycle: Curse of Knowledge → Slap 17 → Knowledge Overwhelming 8×3 → Ponder (11 damage, heals, +2 Strength) `[GAME-EXTRACT]`.
-- **Curse of Knowledge** `[COMMUNITY]`, one guide: choose one of two status cards each time, for three cycles:
-  - Disintegration (6, 7, then 8 damage per turn)
-  - or Mind Rot (draw fewer), Sloth (draw at most 3), Waste Away (one less energy)
-- After three cycles, a plain Slap / Overwhelming / Ponder loop. Ponder heals 30 per player `[COMMUNITY]`.
+- **Curse of Knowledge** `[COMMUNITY]`, one guide: choose one of two status cards each time, for three cycles. The four cards exist in the game data with these effects `[GAME-EXTRACT]` (corroborates the guide; Sloth corrected):
+  - **Disintegration:** a power that deals 6 damage to you at the end of each turn (the guide: 6, 7, then 8 in later cycles)
+  - **Mind Rot:** draw 1 fewer card each turn
+  - **Sloth:** you can play **at most 3 cards per turn** (the guide said "draw at most 3"; the power checks cards played)
+  - **Waste Away:** 1 less max energy
+  - **Choice rule** `[HYPOTHESIS]`, for a 7-turn fight: Disintegration costs about 6 HP per remaining turn (36+ from the first cycle). Waste Away costs about one card per turn; Mind Rot one draw per turn. Sloth costs only the cards beyond the third, so a typical 3-energy deck of 1-cost cards loses almost nothing. Order of preference: Sloth unless the deck relies on 0-cost cards or extra energy, then Mind Rot if the deck has draw, Waste Away next, Disintegration last unless the fight will end within 2–3 turns.
+- After three cycles, a plain Slap / Overwhelming / Ponder loop. Ponder heals 30 per player `[COMMUNITY]`, one guide; the game data shows the heal as computed (`Heal ? HP`), so the amount is unverified.
 
 ### Deck checklist
 - **Sustained damage.** 379 HP plus about 30 healed per cycle over a median 7-turn fight means about 60 damage per turn. Ironclad gets this from scaling (Demon Form; Strength with multi-hit) and energy (Pyre, Bloodletting, Offering).
