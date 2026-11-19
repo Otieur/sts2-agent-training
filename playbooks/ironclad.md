@@ -91,7 +91,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 
 ## 4. Path planning and HP budget
 
-1. **At act start:** read the boss and open its plan. Choose a path by elites, rest sites before elites and the boss, shops, and expected HP cost (sum of benchmark medians; p75 for elites). Write the plan in the run journal.
+1. **At act start:** read the boss and open its plan. Choose a path by elites, rest sites before elites and the boss, shops, and expected HP cost (sum of benchmark medians; p75 for elites). Write the plan in the run journal. `tools/path.py` enumerates every route with these rules (room economics below, the H5 elite bands, the boss arrival curve, the section 5 rest rule) and ranks them. Its risk weight (12 / 16 / 25 by act) comes from the history: an Act 1 elite went with about +3.5 points of final win rate among Act 1 survivors (confounded). `[HYPOTHESIS]`
 2. **Elites under 50% HP: avoid.** `[PLAYER-DATA]` outcome, n=308 elite fights in Acts 1–2, all characters, abandoned runs excluded:
    - 24% of fights entered under 50% HP ended the run (Ironclad 4/16)
    - 8% at 50–70% (Ironclad 3/32)

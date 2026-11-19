@@ -19,7 +19,7 @@ Use only actions the state offers. Recompute every index from the latest state. 
 ## Screen handlers (STS2MCP state types)
 | Screen | Steps | Playbook |
 |---|---|---|
-| `map` | At act start: read `map.boss`, plan the path (journal). Then `choose_map_node index=<next_options index>` | §4, §10 |
+| `map` | At act start: read `map.boss`, plan the path (journal): `python3 -I tools/path.py --state <state.json>` ranks every route by expected loot against fatal risk; re-run after any big HP change. Then `choose_map_node index=<next_options index>` | §4, §10 |
 | `monster` / `elite` / `boss` | Combat checklist (§9). At the start of each turn (and after any draw), save the state and run `python3 -I tools/plan_turn.py --state <state.json>`; compare the safe and balanced plans with the HP budget and the encounter note before playing. `play_card card_index=<i> target=<entity_id>`, `use_potion slot=<n> target=...`, `end_turn`. After `end_turn`, read state again; it may need two reads to reach your next turn. | §9, encounter note |
 | `hand_select` | `combat_select_card card_index=<i>` (repeat), then `combat_confirm_selection` | §9 |
 | `rewards` | Claim from the highest index down: `claim_reward index=<i>`. A card reward opens `card_reward`. `proceed` when done | §2, §8 |
