@@ -1,4 +1,4 @@
-# Vantom Simulation
+# Boss Simulations (Vantom, Knowledge Demon)
 
 Built by `tools/simulate_fight.py --report` (300 simulated fights per row and mode, from 80/80 HP). Each turn's plays are chosen by `tools/plan_turn.py`; Vantom follows its documented cycle (Ink Blot 7, Inky Lance 6x2, Dismember 27 + 3 Wounds, Prepare +2 Strength; 173 HP; 9 Slippery). Card values are v0.111.1. No relics, potions or upgrades. `[HYPOTHESIS]`: a model, useful for comparing additions to the same deck, not for absolute win rates.
 
@@ -24,10 +24,24 @@ Calibration: a typical 16-card floor-17 deck starting at 60/80 HP wins 33–39% 
 
 ## Calibration against the Player's record
 
-Base deck at 60/80 HP, the better plan; the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and have relics, potions and upgrades, so the model is expected to be pessimistic; what matters is the ratio between bosses). A boss marked **no** is not used by `tools/draft.py`.
+The 15-card base deck for Act 1 bosses and the 22-card Act 2 deck for Knowledge Demon, at 60/80 HP, the better plan; the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and have relics, potions and upgrades, so the model is expected to be pessimistic; what matters is the ratio between bosses). A boss marked **no** is not used by `tools/draft.py`.
 
 | Boss | Model win | The Player survived | Used in drafting |
 |---|---|---|---|
 | Vantom | 20% | 4/10 (40%) | yes |
 | Lagavulin Matriarch | 35% | 6/8 (75%) | yes |
 | Ceremonial Beast | 2% | 5/6 (83%) | **no** |
+| Knowledge Demon | 31% | 8/12 (67%) | **no** |
+
+## Knowledge Demon: which curse to take
+
+A 22-card end-of-Act-2 deck (two Inflames, Demon Form, two Twin Strikes, Impervious, Offering and others) at 80/80 HP; each row always takes the same curse when offered (the real choice is one of two each time). Cycle: Curse of Knowledge, Slap 17, Knowledge Overwhelming 8x3, Ponder 11 + heal 30 + 2 Strength (heal single-source); curses stack for the rest of the fight; Disintegration modelled as 6, then 7, then 8 at the end of each turn (not summed).
+
+| Curse always taken | Win | HP lost | Median turns |
+|---|---|---|---|
+| Sloth | 46% | 67.3 | 11.0 |
+| Mind Rot | 30% | 73.7 | 11.0 |
+| Waste Away | 14% | 78.5 | 10.0 |
+| Disintegration | 10% | 79.3 | 7.0 |
+
+Reading: the order matches the playbook's choice rule (Sloth first, Disintegration last).

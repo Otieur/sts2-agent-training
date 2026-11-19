@@ -38,7 +38,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - **Mind Rot:** draw 1 fewer card each turn
   - **Sloth:** you can play **at most 3 cards per turn** (the guide said "draw at most 3"; the power checks cards played)
   - **Waste Away:** 1 less max energy
-  - **Choice rule** `[HYPOTHESIS]`, for a 7-turn fight: Disintegration costs about 6 HP per remaining turn (36+ from the first cycle). Waste Away costs about one card per turn; Mind Rot one draw per turn. Sloth costs only the cards beyond the third, so a typical 3-energy deck of 1-cost cards loses almost nothing. Order of preference: Sloth unless the deck relies on 0-cost cards or extra energy, then Mind Rot if the deck has draw, Waste Away next, Disintegration last unless the fight will end within 2–3 turns.
+  - **Choice rule** `[HYPOTHESIS]`, for a 7-turn fight: Disintegration costs about 6 HP per remaining turn (36+ from the first cycle). Waste Away costs about one card per turn; Mind Rot one draw per turn. Sloth costs only the cards beyond the third, so a typical 3-energy deck of 1-cost cards loses almost nothing. Order of preference: Sloth unless the deck relies on 0-cost cards or extra energy, then Mind Rot if the deck has draw, Waste Away next, Disintegration last unless the fight will end within 2–3 turns. A simulation (`reports/phase2/vantom-simulation.md`, 22-card deck from full HP) gives the same order: always Sloth 46% wins, Mind Rot 30%, Waste Away 14%, Disintegration 10% `[HYPOTHESIS]` model.
 - After three cycles, a plain Slap / Overwhelming / Ponder loop. Ponder heals 30 per player `[COMMUNITY]`, one guide; the game data shows the heal as computed (`Heal ? HP`), so the amount is unverified.
 
 ### Deck checklist

@@ -29,6 +29,15 @@ class TestSimulateFight(unittest.TestCase):
         out = sf.draw_cards(3, draw, discard, random.Random(0))
         self.assertEqual(sorted(out), ["A", "B"])  # reshuffles the discard, stops when empty
 
+    def test_knowledge_demon_curses(self):
+        deck = expand_deck(["STRIKE_IRONCLAD:2", "DEFEND_IRONCLAD:3", "BASH", "POMMEL_STRIKE", "SHRUG_IT_OFF:2", "UPPERCUT", "ANGER",
+                            "INFLAME:2", "TWIN_STRIKE:2", "FLAME_BARRIER", "BATTLE_TRANCE", "BLUDGEON", "DEMON_FORM",
+                            "SWORD_BOOMERANG", "IMPERVIOUS", "OFFERING"], "IRONCLAD")
+        sloth = sf.evaluate(deck, "KNOWLEDGE_DEMON", 80, 80, 20, "safe", "SLOTH")
+        disint = sf.evaluate(deck, "KNOWLEDGE_DEMON", 80, 80, 20, "safe", "DISINTEGRATION")
+        self.assertGreaterEqual(sloth["win_rate"], disint["win_rate"])
+        self.assertLess(disint["hp_lost"] - 1e-9, 80.0 + 1e-9)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -101,6 +101,7 @@ class Player:
     frail: bool = False
     hp: Optional[int] = None
     osty_hp: int = 0            # Necrobinder's Osty: takes the unblocked damage aimed at you (DIE_FOR_YOU_POWER)
+    max_cards: Optional[int] = None  # Sloth (Knowledge Demon's curse): at most this many cards per turn
 
 
 def parse_effect(c):
@@ -333,6 +334,8 @@ def plans(hand, player, enemies):
     max_gain = sum(c.energy for c in playable)
     for r in range(len(playable) + 1):
         for subset in itertools.combinations(playable, r):
+            if player.max_cards is not None and sum(1 for c in subset if not c.potion) > player.max_cards:
+                continue
             if sum(0 if c.x_cost else c.cost for c in subset) > player.energy + max_gain:
                 continue
             slow = any(e.slow for e in enemies)  # against Slow, small attacks first and the big one last

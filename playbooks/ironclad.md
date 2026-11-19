@@ -221,7 +221,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 | 1 Underdocks | [Waterfall Giant](../knowledge/bosses/WATERFALL_GIANT_BOSS.md) | 38 / 41 | 2/5 | ~48 | Fast kill; bank block for the death explosion |
 | 1 Underdocks | [Soul Fysh](../knowledge/bosses/SOUL_FYSH_BOSS.md) | 33 / 41 | 3/7 | ~43 | Exhaust Beckon cards; burst outside Intangible |
 | 1 Underdocks | [Lagavulin Matriarch](../knowledge/bosses/LAGAVULIN_MATRIARCH_BOSS.md) | 28 / 40.5 | 2/8 | ~38 | Set up while it sleeps, first damage on the last sleep turn (it wakes stunned); kill before repeated Soul Siphons |
-| 2 Hive | [Knowledge Demon](../knowledge/bosses/KNOWLEDGE_DEMON_BOSS.md) | 45 / 59.8 | 4/12 | ~55 | Scaling and energy (about 60 damage per turn over 7 turns); curse choice: usually Sloth (at most 3 cards per turn), Disintegration last |
+| 2 Hive | [Knowledge Demon](../knowledge/bosses/KNOWLEDGE_DEMON_BOSS.md) | 45 / 59.8 | 4/12 | ~55 | Scaling and energy (about 60 damage per turn over 7 turns); curse choice: usually Sloth (at most 3 cards per turn), Disintegration last (simulated: Sloth 46% wins, Mind Rot 30%, Waste Away 14%, Disintegration 10%) |
 | 2 Hive | [Kaiser Crab](../knowledge/bosses/KAISER_CRAB_BOSS.md) | 43.5 / 48.5 | 2/6 | ~54 | Focus Rocket; block 31+ on the Laser and end that turn facing Rocket (back attacks ×1.5); kill a claw with the turn's last attack (Crab Rage: the other gets 99 Block and 5 Strength) |
 | 2 Hive | [The Insatiable](../knowledge/bosses/THE_INSATIABLE_BOSS.md) | 31.5 / 45.8 | 2/6 | ~42 | Watch the Sandpit timer; energy for Frantic Escape |
 | 3 Glory | [Aeonglass](../knowledge/bosses/AEONGLASS_BOSS.md) | 48 / 70 | 0/5 | ~58 (arrive high) | Fewer, bigger cards (Wither every 6 cards); strip 3 Artifact |

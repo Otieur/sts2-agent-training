@@ -31,9 +31,9 @@ import calc  # noqa: E402
 import plan_turn as pt  # noqa: E402
 from draft import expand_deck  # noqa: E402
 
-def _move(kind="attack", dmg=0, hits=1, status=0, boss_block=0, boss_str=0, p_str=0, p_dex=0):
+def _move(kind="attack", dmg=0, hits=1, status=0, boss_block=0, boss_str=0, p_str=0, p_dex=0, heal=0):
     return {"kind": kind, "dmg": dmg, "hits": hits, "status": status, "boss_block": boss_block, "boss_str": boss_str,
-            "p_str": p_str, "p_dex": p_dex}
+            "p_str": p_str, "p_dex": p_dex, "heal": heal}
 
 
 def vantom_move(b, turn):
@@ -89,12 +89,26 @@ def beast_damaged(b, lost):
             b["strength"] = 0
 
 
+def demon_move(b, turn):
+    """Knowledge Demon (379 HP): Curse of Knowledge, Slap 17, Knowledge Overwhelming 8x3, Ponder 11 + heal 30 + 2 Strength,
+    repeating; the curse is chosen three times (cycles 1-3). Order: the extract's declaration order and one guide;
+    heal 30 is single-source. The curse strategy is b['curse'] (SLOTH, MIND_ROT, WASTE_AWAY, DISINTEGRATION)."""
+    i = (turn - 1) % 4
+    if i == 0:
+        if b.get("curses", 0) < 3:
+            b["curses"] = b.get("curses", 0) + 1
+            return _move("curse")
+        return _move(dmg=17)  # after three curses: a plain Slap / Overwhelming / Ponder loop (the guide)
+    return [None, _move(dmg=17), _move(dmg=8, hits=3), _move(dmg=11, boss_str=2, heal=30)][i]
+
+
 BOSSES = {
     # validated: the model's win rate relative to Vantom roughly matches the Player's record (see report()).
     "VANTOM": {"hp": 173, "slippery": 9, "move": vantom_move, "status_card": "WOUND", "validated": True},
     "LAGAVULIN_MATRIARCH": {"hp": 222, "asleep": 3, "plating": 12, "move": lagavulin_move, "on_damage": lagavulin_damaged,
                             "validated": True},
     "CEREMONIAL_BEAST": {"hp": 252, "move": beast_move, "on_damage": beast_damaged, "validated": False},  # fails calibration
+    "KNOWLEDGE_DEMON": {"hp": 379, "move": demon_move, "validated": False},  # calibration in report()
 }
 
 
@@ -111,7 +125,7 @@ def draw_cards(n, draw, discard, rng):
     return out
 
 
-def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", max_turns=25):
+def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", max_turns=25, curse="SLOTH"):
     spec = BOSSES[boss]
     rng = random.Random(seed)
     draw = [c.split(".", 1)[-1] for c in deck]
@@ -119,20 +133,23 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     discard, exhausted = [], []
     strength, demon, dexterity = 0, 0, 0
     b = {"hp": spec["hp"], "block": 0, "slippery": spec.get("slippery", 0), "strength": 0, "vuln": 0, "weak": 0,
-         "asleep": spec.get("asleep", 0), "plating": spec.get("plating", 0)}
+         "asleep": spec.get("asleep", 0), "plating": spec.get("plating", 0), "curse": curse}
+    sloth = mind_rot = waste = disint = 0
     for turn in range(1, max_turns + 1):
         strength += demon
         if b.get("asleep", 0) > 0 and b.get("plating"):
             b["block"] = b["plating"]
         mv = spec["move"](b, turn)
         intent = (mv["dmg"] + b["strength"], mv["hits"]) if mv["kind"] == "attack" else (0, 0)
-        hand_ids = draw_cards(5, draw, discard, rng)
-        energy, block, gained_this_turn = 3, 0, 0
+        hand_ids = draw_cards(max(1, 5 - mind_rot), draw, discard, rng)
+        energy, block, gained_this_turn = max(1, 3 - waste), 0, 0
+        cards_played = 0
         for _ in range(4):  # plan, play up to a draw, re-plan with what is left
             hand = [pt.card_from_extract(i, cid) for i, cid in enumerate(hand_ids)]
             enemy = pt.Enemy(0, boss, b["hp"], b["block"], intent[0], intent[1], vuln=b["vuln"] > 0, weak=b["weak"] > 0,
                              slippery=b["slippery"])
-            player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity)
+            player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity,
+                               max_cards=(3 - cards_played) if sloth else None)
             res = pt.plans(hand, player, [enemy])
             if not res:
                 break
@@ -157,6 +174,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 if c.weak:
                     b["weak"] = max(b["weak"], c.weak)
             energy, block = out["energy_left"], out["block"]
+            cards_played += sum(1 for c in order if not c.potion)
             hp -= sum(c.hp_cost for c in order)
             for c in order:
                 gained_this_turn += c.strength
@@ -188,8 +206,20 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             for _ in range(mv["status"]):
                 discard.append(spec.get("status_card", "WOUND"))
         b["strength"] += mv["boss_str"]
+        b["hp"] = min(spec["hp"], b["hp"] + mv.get("heal", 0))
         strength += mv["p_str"]
         dexterity += mv["p_dex"]
+        if mv["kind"] == "curse":  # the chosen curse stacks for the rest of the fight
+            if b["curse"] == "SLOTH":
+                sloth = 1
+            elif b["curse"] == "MIND_ROT":
+                mind_rot += 1
+            elif b["curse"] == "WASTE_AWAY":
+                waste += 1
+            elif b["curse"] == "DISINTEGRATION":
+                disint += 1
+        if disint:
+            hp -= 5 + disint  # Disintegration: 6, then 7, then 8 at the end of your turn (the guide)
         if hp <= 0:
             return {"won": False, "hp": 0, "turns": turn}
         b["vuln"] = max(0, b["vuln"] - 1)
@@ -198,8 +228,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     return {"won": False, "hp": hp, "turns": max_turns, "timeout": True}
 
 
-def evaluate(deck, boss, hp, max_hp, runs, mode="balanced"):
-    rs = [run_fight(deck, boss, hp, max_hp, seed=s, mode=mode) for s in range(runs)]
+def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse="SLOTH"):
+    rs = [run_fight(deck, boss, hp, max_hp, seed=s, mode=mode, curse=curse) for s in range(runs)]
     wins = [r for r in rs if r["won"]]
     return {"win_rate": len(wins) / runs, "hp_lost": statistics.mean(hp - r["hp"] for r in rs),
             "hp_lost_wins": statistics.mean(hp - r["hp"] for r in wins) if wins else float("nan"),
@@ -228,7 +258,7 @@ def report(runs=300):
             r = evaluate(deck, "VANTOM", 80, 80, runs, mode)
             cells += [f"{r['win_rate']:.0%}", f"{r['hp_lost']:.1f}"]
         rows.append(cells)
-    L = ["# Vantom Simulation", "",
+    L = ["# Boss Simulations (Vantom, Knowledge Demon)", "",
          f"Built by `tools/simulate_fight.py --report` ({runs} simulated fights per row and mode, from 80/80 HP). Each turn's plays "
          "are chosen by `tools/plan_turn.py`; Vantom follows its documented cycle (Ink Blot 7, Inky Lance 6x2, Dismember 27 + 3 "
          "Wounds, Prepare +2 Strength; 173 HP; 9 Slippery). Card values are v0.111.1. No relics, potions or upgrades. "
@@ -247,12 +277,17 @@ def report(runs=300):
          "planner's mode interacts with the deck, so treat those rows as policy-dependent.",
          "- The balanced plan beats the safe plan from full HP for most decks; from 60 HP the safe plan did better in a separate "
          "check. This matches the playbook: safe when HP is below plan, balanced when ahead.", ""]
-    # Calibration: the experiment's base deck at 60/80 HP against each boss, the better plan, versus the Player's record
+    kd_deck = expand_deck(["STRIKE_IRONCLAD:2", "DEFEND_IRONCLAD:3", "BASH", "POMMEL_STRIKE", "SHRUG_IT_OFF:2", "UPPERCUT", "ANGER",
+                           "INFLAME:2", "TWIN_STRIKE:2", "FLAME_BARRIER", "BATTLE_TRANCE", "BLUDGEON", "DEMON_FORM",
+                           "SWORD_BOOMERANG", "IMPERVIOUS", "OFFERING"], "IRONCLAD")
+    # Calibration: the experiment's base deck (Act 1 bosses) or the Act 2 deck (Knowledge Demon) at 60/80 HP, the
+    # better plan, versus the Player's record
     import sqlite3
     con = sqlite3.connect(PROJECT / "data" / "runs.db")
     cal = []
     for key in BOSSES:
-        r = max((evaluate(expand_deck(EXPERIMENT_BASE, "IRONCLAD"), key, 60, 80, runs // 2, m) for m in ("balanced", "safe")),
+        cal_deck = kd_deck if key == "KNOWLEDGE_DEMON" else expand_deck(EXPERIMENT_BASE, "IRONCLAD")
+        r = max((evaluate(cal_deck, key, 60, 80, runs // 2, m) for m in ("balanced", "safe")),
                 key=lambda x: x["win_rate"])
         s, n = con.execute("""SELECT SUM(NOT (f.is_last_floor AND NOT r.win)), COUNT(*) FROM floors f JOIN runs r USING(run_id)
                               WHERE r.build_id='v0.107.1' AND r.character='IRONCLAD' AND r.n_players=1 AND NOT r.abandoned
@@ -261,10 +296,23 @@ def report(runs=300):
                     "yes" if BOSSES[key].get("validated") else "**no**"])
     con.close()
     L += ["## Calibration against the Player's record", "",
-          "Base deck at 60/80 HP, the better plan; the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and "
+          "The 15-card base deck for Act 1 bosses and the 22-card Act 2 deck for Knowledge Demon, at 60/80 HP, the better plan; the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and "
           "have relics, potions and upgrades, so the model is expected to be pessimistic; what matters is the ratio between "
           "bosses). A boss marked **no** is not used by `tools/draft.py`.", "",
           md_table(["Boss", "Model win", "The Player survived", "Used in drafting"], cal), ""]
+    # Knowledge Demon: the Curse of Knowledge choice, as four pure strategies
+    kd = []
+    for curse in ("SLOTH", "MIND_ROT", "WASTE_AWAY", "DISINTEGRATION"):
+        r = max((evaluate(kd_deck, "KNOWLEDGE_DEMON", 80, 80, runs * 2 // 3, m, curse) for m in ("balanced", "safe")),
+                key=lambda x: x["win_rate"])
+        kd.append([curse.replace("_", " ").title(), f"{r['win_rate']:.0%}", f"{r['hp_lost']:.1f}", r["turns"]])
+    L += ["## Knowledge Demon: which curse to take", "",
+          "A 22-card end-of-Act-2 deck (two Inflames, Demon Form, two Twin Strikes, Impervious, Offering and others) at 80/80 HP; "
+          "each row always takes the same curse when offered (the real choice is one of two each time). Cycle: Curse of "
+          "Knowledge, Slap 17, Knowledge Overwhelming 8x3, Ponder 11 + heal 30 + 2 Strength (heal single-source); curses stack "
+          "for the rest of the fight; Disintegration modelled as 6, then 7, then 8 at the end of each turn (not summed).", "",
+          md_table(["Curse always taken", "Win", "HP lost", "Median turns"], kd), "",
+          "Reading: the order matches the playbook's choice rule (Sloth first, Disintegration last).", ""]
     out = PROJECT / "reports/phase2/vantom-simulation.md"
     out.write_text("\n".join(L))
     print("wrote", out.relative_to(PROJECT))
