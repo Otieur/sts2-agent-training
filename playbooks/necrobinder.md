@@ -39,7 +39,7 @@ From `knowledge/community/necrobinder-tiers.md` `[COMMUNITY]` (built 2026-11-19 
 - **MetaBot:** win rate of runs containing the card, period "November 2026", version not stated; survivorship-biased, converted to quintiles, weight 1.
 - **Nat 1 Gaming:** expert list on the 11/12 beta patch, weight 1.
 
-† marks a spread of 2+ tiers between sources. The sources disagree far more for Necrobinder than for Ironclad (34 of 84 cards carry †, against 29 of 83 for Ironclad), so treat single tiers as soft.
+† marks a spread of 2+ tiers between sources. The sources disagree on about two cards in five (34 of 84 carry †; Ironclad: 29 of 83), so treat single tiers as soft.
 
 - **S:** Neurosurge, Glimpse Beyond, Call of the Void, Eradicate, Friendship, Transfigure
 - **A:** Banshee's Cry, Shared Fate†, Borrowed Time, Debilitate†, Demesne†, Enfeebling Touch†, Hang, Pagestorm†, Squeeze, Undeath, Legion of Bone†, Misery, Spirit of Ash†
