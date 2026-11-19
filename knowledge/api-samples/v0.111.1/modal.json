@@ -1,0 +1,86 @@
+{
+ "state_version": 16,
+ "native_profile_id": 1,
+ "run_id": "run_unknown",
+ "screen": "MODAL",
+ "session": {
+  "mode": "singleplayer",
+  "phase": "menu",
+  "control_scope": "local_player"
+ },
+ "in_combat": false,
+ "turn": null,
+ "available_actions": [
+  "confirm_modal",
+  "dismiss_modal"
+ ],
+ "combat": null,
+ "run": null,
+ "multiplayer": null,
+ "multiplayer_lobby": null,
+ "map": null,
+ "selection": null,
+ "character_select": null,
+ "timeline": null,
+ "unlock": null,
+ "chest": null,
+ "event": null,
+ "crystal_sphere": null,
+ "shop": null,
+ "rest": null,
+ "reward": null,
+ "bundles": null,
+ "capstone": null,
+ "modal": {
+  "type_name": "NGenericPopup",
+  "underlying_screen": null,
+  "can_confirm": true,
+  "can_dismiss": true,
+  "confirm_label": "YesButton",
+  "dismiss_label": "NoButton"
+ },
+ "game_over": null,
+ "agent_view": {
+  "version": 11,
+  "screen": "MODAL",
+  "native_profile_id": 1,
+  "run_id": "run_unknown",
+  "session": {
+   "mode": "singleplayer",
+   "phase": "menu",
+   "control_scope": "local_player"
+  },
+  "turn": null,
+  "available_actions": [
+   "confirm_modal",
+   "dismiss_modal"
+  ],
+  "combat": null,
+  "run": null,
+  "multiplayer": null,
+  "multiplayer_lobby": null,
+  "map": null,
+  "selection": null,
+  "character_select": null,
+  "timeline": null,
+  "chest": null,
+  "event": null,
+  "crystal_sphere": null,
+  "shop": null,
+  "rest": null,
+  "reward": null,
+  "bundles": null,
+  "capstone": null,
+  "unlock": null,
+  "modal": {
+   "type": "NGenericPopup",
+   "underlying_screen": null,
+   "confirm": true,
+   "dismiss": true,
+   "confirm_label": "YesButton",
+   "dismiss_label": "NoButton"
+  },
+  "game_over": null,
+  "glossary": {}
+ }
+}

@@ -93,11 +93,11 @@
 >
 > **Notes:** the beta wrote `SerializableProgress v24`. Older builds may not read newer save schemas. This is the main reason for the backup.
 
-> **P0.E2.S4: Record the environment** · Size XS · Status: In progress (drafted overnight; game version to confirm)
+> **P0.E2.S4: Record the environment** · Size XS · Status: Done (2026-11-19)
 > *As the Next Session, I want a single file describing the environment, so that I do not re-discover paths and versions.*
 >
 > **Acceptance criteria**
-> - [ ] `docs/environment.md` records the macOS version, game version and Steam build ID, branch, game install path, save path pattern (with the Steam ID replaced by `<id>`), mods folder, `dotnet --version`, Python version, `uv --version`, mod name, mod commit and API port.
+> - [x] `docs/environment.md` records the macOS version, game version and Steam build ID, branch, game install path, save path pattern (with the Steam ID replaced by `<id>`), mods folder, `dotnet --version`, Python version, `uv --version`, mod name, mod commit and API port.
 
 ---
 
@@ -181,7 +181,7 @@
 
 ### P0.E5: API smoke test
 
-> **P0.E5.S1: Capture state samples for every screen** · Size M · Status: In progress (tools/smoke.py --save --watch and docs/runbooks/first-session.md ready; needs the live mod)
+> **P0.E5.S1: Capture state samples for every screen** · Size M · Status: In progress (16 screen samples saved 2026-11-19 in `knowledge/api-samples/v0.111.1/`; still missing: a card reward with its options open, a relic reward)
 > *As the Next Session, I want real JSON samples of each screen type, so that parsers and handlers are built against reality, not documentation.*
 >
 > **Acceptance criteria**
@@ -220,7 +220,7 @@
 
 ### P0.E6: the agent harness integration
 
-> **P0.E6.S1: CLI wrapper `tools/sts.py`** · Size M · Status: In progress (tools/sts.py written against both mods' docs: STS2-Agent and STS2MCP adapters, co-op instances, party view, safety refusals; 16 offline tests; untested live)
+> **P0.E6.S1: CLI wrapper `tools/sts.py`** · Size M · Status: Done (tested live 2026-11-19: health, state, actions with reasons, a full fight; dropped connections handled)
 > *As the Agent, I want a small, token-efficient command-line interface to the mod, so that each decision costs as little context as possible.*
 >
 > **Acceptance criteria**
@@ -237,7 +237,7 @@
 > - [ ] `state --brief` fits a combat screen into about 30 lines: player HP, block, energy, and powers; the hand with indexes, costs and short text; enemies with HP, block, intents and powers; potions; relic names.
 > - [ ] Each subcommand is tested against the live game, with the output shown in `docs/api-notes.md`.
 
-> **P0.E6.S2: MCP connection** · Size S · Status: Todo
+> **P0.E6.S2: MCP connection** · Size S · Status: Closed without enabling MCP (decision 0002: the CLI is the primary interface)
 > *As the Agent, I want the mod's MCP server available in the agent harness, so that the bundled tools (`decide`, `wait_until_actionable`, game data lookups) can be used where they beat the CLI.*
 >
 > **Acceptance criteria**
@@ -269,7 +269,7 @@
 
 ### P0.E7: Fallback path (only if E4 or E5 fails)
 
-> **P0.E7.S1: Try STS2MCP** · Size M · Status: Todo
+> **P0.E7.S1: Try STS2MCP** · Size M · Status: Not needed (STS2-Agent works on v0.111.1)
 > *As the Agent, I want a second mod option ready, so that one broken mod does not block the project.*
 >
 > **Acceptance criteria**
@@ -277,17 +277,17 @@
 > - [ ] Built with `dotnet build`. `STS2_MCP.dll` and `STS2_MCP.json` are installed in `SlayTheSpire2.app/Contents/MacOS/mods/`.
 > - [ ] `curl -s http://localhost:15526/` responds. The smoke tests in E5 pass.
 
-> **P0.E7.S2: Try another branch** · Size S · Status: Todo
+> **P0.E7.S2: Try another branch** · Size S · Status: Not needed
 > *As the Player, I want to know whether the primary mod works on the beta branch instead, so that we can pick the branch to fit the mod.*
 >
 > **Acceptance criteria**
 > - [ ] With the Player's agreement, switch to the beta, rebuild and run the smoke tests. Record the result.
 
-> **P0.E7.S3: Decision record** · Size XS · Status: In progress (decision record 0001 proposed)
+> **P0.E7.S3: Decision record** · Size XS · Status: Done (0001 accepted with results; 0002 chooses the CLI)
 > *As the Next Session, I want to know which mod and branch were chosen and why.*
 >
 > **Acceptance criteria**
-> - [ ] `docs/decisions/0001-mod-and-branch.md` covers the context, the options tried, the results, the decision and its consequences.
+> - [x] `docs/decisions/0001-mod-and-branch.md` covers the context, the options tried, the results, the decision and its consequences.
 
 ---
 

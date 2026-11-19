@@ -26,7 +26,14 @@ Drafted 2026-11-19 (overnight). Items marked "to confirm" need the Player or a g
 
 ## Mods folder (macOS)
 - STS2MCP documents `SlayTheSpire2.app/Contents/MacOS/mods/` (create it). The manifest must be named after the mod ID (for example `STS2_MCP.json`).
-- `~/Library/Application Support/SlayTheSpire2/mods/config/` also exists. Which folder the game actually scans should be confirmed from the log on first launch with a mod (P0.E4.S3).
+- `~/Library/Application Support/SlayTheSpire2/mods/config/` also exists, but the game loads mods from the app bundle's `Contents/MacOS/mods/` (confirmed from the log, 2026-11-19).
+
+## Mod in use
+| Item | Value |
+|---|---|
+| Mod | STS2-Agent 0.16.2, commit `5d7c306`, built locally with .NET 9.0.124 (DLL and `mod_id.json` only, `has_pck: false`) |
+| API | `http://127.0.0.1:8080` (protocol `2026-03-11-v1`), role `human`; MCP not enabled |
+| Profile used with mods | `steam/<id>/modded/profile1` |
 - Note: files inside the app bundle may be removed by a Steam update or "Verify integrity". Reinstall after updates.
 
 ## Mod candidates (source in `vendor/`, not in git)

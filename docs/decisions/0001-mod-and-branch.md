@@ -34,6 +34,11 @@ The Agent needs a mod that exposes game state and accepts actions on macOS arm64
 
 `tools/sts.py` already supports both (`--mod sts2agent` / `--mod sts2mcp`), and `tools/advise.py` reads either format (`tools/mcp_adapter.py` converts STS2MCP states), so switching later only changes a flag. With STS2MCP the deck is rebuilt from combat piles, and the turn planner has no `end_turn_will_kill_player` check.
 
+## Results (2026-11-19)
+- STS2-Agent 0.16.2 built against v0.111.1 with 0 warnings, loaded on the first modded launch, and reported 28 of 28 reflected game members.
+- The smoke test passed on every screen met in two runs; one card and one full fight were played through the API; the event stream was probed.
+- The fallback (STS2MCP, P0.E7.S1) and a branch switch (P0.E7.S2) were not needed.
+
 ## Consequences
 - The Agent plays on v0.111.1 while the Player's benchmarks come from v0.107.1. Compare cautiously: changed cards and enemies are flagged in `knowledge/version-delta-v0.111.1.md`. Start v0.111.1 benchmarks once there are enough runs.
 - Exam seeds may need replacing (seeds are 12 characters on v0.111.1).

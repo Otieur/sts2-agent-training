@@ -2,7 +2,7 @@
 
 Update this file whenever a story changes status. Story-level status lives in each phase document; this board tracks epics.
 
-**Active phase:** Phase 0 (branch switched to main v0.111.1 and STS2-Agent chosen on 2026-11-19; security verdict and .NET 9 SDK install approved the same day; STS2-Agent built, installed and answering on port 8080; next: `docs/runbooks/first-session.md` step 1, the smoke test). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md` (Needs-the-Player checklist in section 5).
+**Active phase:** Phase 0 is nearly done (2026-11-19: mod live on v0.111.1, first session complete; the items left need the game or the Player) and Phase 3 shadowing runs live. Next: Phase 4, the Agent's own practice runs, once the Player agrees how the game is shared (a separate profile is proposed). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md` (Needs-the-Player checklist in section 5).
 **Last updated:** 2026-11-19
 
 ---
@@ -15,9 +15,9 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P0.E2 | Game version | Done | Main v0.111.1 running; the modded profile loads with everything unlocked (2026-11-19) |
 | P0.E3 | Mod acquisition and security review | In progress | Draft review done (both mods); the Player chose STS2-Agent (decision 0001 accepted) and approved the verdict and the .NET 9 SDK install (2026-11-19) |
 | P0.E4 | Build and install | Done | STS2-Agent 0.16.2 built (0 warnings against v0.111.1), installed DLL-only, loaded by the game; `/health` ready, 28 of 28 game members resolved (2026-11-19) |
-| P0.E5 | API smoke test | In progress | tools/smoke.py (read-only) and docs/runbooks/first-session.md ready; needs the live mod |
-| P0.E6 | The agent harness integration | In progress | tools/sts.py CLI (both mods, co-op instances) written and tested offline |
-| P0.E7 | Fallback path | In progress | Decision 0001 (revised) proposes STS2-Agent first on v0.111.1; STS2MCP is the fallback |
+| P0.E5 | API smoke test | In progress | Live 2026-11-19: every screen met passed; one card and one full fight played; event stream probed (no card plays in it); 16 screen samples saved. Left: card-reward and relic-reward samples, precise latency, live error shapes |
+| P0.E6 | The agent harness integration | In progress | CLI tested live (decision 0002: CLI primary, MCP off). Left: gameplay skill review (S3), permissions allowlist (S4, needs the Player), unfocused-game test (S5) |
+| P0.E7 | Fallback path | Done | Not needed: STS2-Agent works on v0.111.1 (decision 0001 results) |
 | P0.E8 | Project scaffolding | Done | Folders, the project instructions, git (local), templates (2026-11-19 overnight) |
 
 ## Phase 1: History analysis ([doc](phase-1-history-analysis.md))
@@ -50,8 +50,8 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P3.E1 | Live view of the Player's game | In progress | sts.py brief view and watch.py written; untested live |
-| P3.E2 | Call-it-first (non-combat) | In progress | tools/shadow.py (calls before the Player acts; agreement from the next state); untested live |
+| P3.E1 | Live view of the Player's game | In progress | Watcher with combat trace running live (`tools/smoke.py --watch --trace`); The Kin, The Insatiable and the Queen recorded 2026-11-19 |
+| P3.E2 | Call-it-first (non-combat) | In progress | `tools/shadow.py` running live since 2026-11-19 (`runs/shadow-01/`); map and rest pick resolution fixed; early agreement: maps 6/9, card rewards 3/6 |
 | P3.E3 | Combat calls | In progress | Trigger policy and full-turn calls in tools/shadow.py |
 | P3.E4 | State recorder and reconstruction | In progress | record.py and reconstruct.py written with offline tests |
 | P3.E5 | Metrics and calibration | Todo | |
