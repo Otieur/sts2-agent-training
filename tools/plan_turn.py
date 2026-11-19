@@ -321,6 +321,7 @@ def simulate(cards, targets, player, enemies):
     return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": inc.hp_lost - to_osty + hp_cost,
             "osty_hp_after": osty - to_osty, "powers": powers,  # energy spent on Powers
             "seq": seq,
+            "enemies_after": [{"hp": max(0, e.hp), "block": e.block, "slippery": e.slippery, "vuln": e.vuln, "weak": e.weak} for e in es],
             "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all(e.hp <= 0 for e in es),
             "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
 
