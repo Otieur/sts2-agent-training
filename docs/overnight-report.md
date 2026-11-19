@@ -49,6 +49,7 @@ Planned blocks (A–J) were finished by 01:11; everything after is extra work fr
 | X113 | Second wiki pass: Soul Fysh, The Kin and Knowledge Demon confirmed; Byrdonis corrected (Swoop 17 first, +2 Strength a turn; the balanced-plan conclusion holds: 70% against 1% with a 12-card deck); the Kin followers are offset |
 | X114–X118 (after Block K) | Third wiki pass: Lagavulin Matriarch order corrected (calibration unchanged); Aeonglass settled (gap 29 closed); Kaiser Crab facing and claw cycles (gap 23 mostly answered); the Queen's sequence (she blocks while the Amalgam lives and attacks only after it dies); notes for Bygone Effigy, Phantasmal Gardeners, Test Subject, Skulking Colony, Phrog Parasite, Mecha Knight, Decimillipede, Soul Nexus and the Knights; planner fixes and additions: Terror Eel's Shriek triggers at 70 HP (not on the first damage), Vital Spark taints Skills, Skittish, Burn and Infection held damage, Infested, Hex |
 | X119–X121 | Final simulation report (Lagavulin order); hallway notes from the wiki (Slumbering Beetle, Hunter Killer, Chompers, Nibbits, Thieving Hopper); planner: Ravenous (a death stuns the Corpse Slugs), Imbalanced (a full block stuns the Bowlbug Rock), Flutter (the Hopper); memory updated with the wiki as a source |
+| X122–X123 | Planner: Burrowed (breaking the Tunneler's Block stuns it) and Shrink (attacks 30% weaker); hallway notes from the wiki for Turret Operator (kill the Living Shield first), Devoted Sculptor (9 Ritual: kill within about 4 turns), Sludge Spinner, Fuzzy Wurm Crawler, Seapunk, Tunneler, Shrinker Beetle |
 
 ## 3. Stories whose status changed
 - P0: E8 done; E1 backup done; E5.S1 in progress (smoke test ready); E5 and E6 in progress (smoke test for both mods; sts.py).
@@ -95,5 +96,5 @@ Full record: `docs/overnight-log.md` (one row per block, start and end times fro
 | 03:52–06:46 | X87–X98: new boss models, planner card and power coverage, advisor robustness, sensitivity checks, upgrades and relics in the simulator |
 | 06:46–09:09 | X99–X113: potions in the simulator, drafting speed, bosses with adds (The Kin), one-command advice, the community wiki pass (Entomancer, Byrdonis and Insatiable models), final report runs |
 | 09:09–09:12 | Block K: this report, the status board, the final commit |
-| 09:12–10:22 | Third wiki pass and planner fixes (X114–X121), final report run, final touch-up |
+| 09:12–10:22 | Third wiki pass and planner fixes (X114–X123), final report run, final touch-up |
 
