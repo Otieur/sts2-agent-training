@@ -284,11 +284,18 @@ def from_state(path):
     return from_state_obj(json.loads(Path(path).read_text()))
 
 
+def deck_ids_from_state(items, upgrades=False):
+    """'CARD.<id>' for each deck item of a live state that is a dict with a string card_id; other items are skipped,
+    since live states may carry nulls or wrong types. With upgrades, upgraded cards get a '+' suffix."""
+    return ["CARD." + d["card_id"] + ("+" if upgrades and d.get("upgraded") is True else "")
+            for d in (items if isinstance(items, list) else [])
+            if isinstance(d, dict) and isinstance(d.get("card_id"), str) and d["card_id"]]
+
+
 def sim_deck_from_state(st):
     """The deck for the fight simulator: like from_state_obj's, with '+' on upgraded cards."""
     st = st.get("data", st)
-    return ["CARD." + d["card_id"] + ("+" if d.get("upgraded") else "") for d in (st.get("run") or {}).get("deck") or []
-            if d.get("card_id")]
+    return deck_ids_from_state((st.get("run") or {}).get("deck"), upgrades=True)
 
 
 def sim_potions_from_state(st):
@@ -307,12 +314,13 @@ def sim_relics_from_state(st):
 def from_state_obj(st):
     st = st.get("data", st)
     run = st.get("run") or {}
-    deck = ["CARD." + d["card_id"] for d in run.get("deck") or [] if d.get("card_id")]
+    deck = deck_ids_from_state(run.get("deck"))
     rew = st.get("reward") or {}
-    offer = [c.get("card_id") for c in (rew.get("card_options") or rew.get("cards") or (st.get("selection") or {}).get("cards") or [])]
+    opts = rew.get("card_options") or rew.get("cards") or (st.get("selection") or {}).get("cards") or []
+    offer = [c.get("card_id") for c in (opts if isinstance(opts, list) else []) if isinstance(c, dict)]
     from stslib import act_number
     act = act_number(run.get("act_id"), default=None) if run.get("act_id") is not None else None  # act_id is 0-based
-    return deck, ["CARD." + o for o in offer if o], act, run.get("floor"), run.get("boss_id")
+    return deck, ["CARD." + o for o in offer if isinstance(o, str) and o], act, run.get("floor"), run.get("boss_id")
 
 
 def guess_character(deck):

@@ -313,7 +313,8 @@ def main(argv=None):
         act = args.act or act_number(run.get("act_id"))
         asc = args.ascension or int(run.get("ascension") or 0)
         boss = args.boss or run.get("boss_id")
-        deck_ids = ["CARD." + d["card_id"] for d in run.get("deck") or [] if d.get("card_id")]
+        deck_ids = ["CARD." + d["card_id"] for d in run.get("deck") or []
+                    if isinstance(d, dict) and isinstance(d.get("card_id"), str) and d["card_id"]]
     else:
         m = json.loads(Path(args.map_file).read_text())
         hp, max_hp, act, asc, boss = args.hp, args.max_hp, args.act or 1, args.ascension, args.boss

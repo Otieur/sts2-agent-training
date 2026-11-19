@@ -51,7 +51,7 @@ def _act(st):
 
 
 def _deck(st):
-    return ["CARD." + d["card_id"] for d in _run(st).get("deck") or [] if d.get("card_id")]
+    return draft.deck_ids_from_state(_run(st).get("deck"))
 
 
 def _character(st):

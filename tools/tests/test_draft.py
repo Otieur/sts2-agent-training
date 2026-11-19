@@ -87,6 +87,16 @@ class TestDraft(unittest.TestCase):
         self.assertGreater(deltas["CARD.TWIN_STRIKE"], deltas["CARD.BREAKTHROUGH"])
         self.assertIsNone(draft.simulated_boss_value(deck, ["CARD.TWIN_STRIKE"], "KNOWLEDGE_DEMON_BOSS"))
 
+    def test_deck_ids_skip_wrong_types(self):
+        items = [{"card_id": "BASH", "upgraded": True}, None, 3, {"card_id": 1.5}, {"card_id": ""}, {"card_id": "STRIKE_IRONCLAD"}]
+        self.assertEqual(draft.deck_ids_from_state(items), ["CARD.BASH", "CARD.STRIKE_IRONCLAD"])
+        self.assertEqual(draft.deck_ids_from_state(items, upgrades=True), ["CARD.BASH+", "CARD.STRIKE_IRONCLAD"])
+        self.assertEqual(draft.deck_ids_from_state("x"), [])
+        self.assertEqual(draft.deck_ids_from_state(None), [])
+        st = {"run": {"deck": items}, "reward": {"card_options": [{"card_id": "ANGER"}, 7, {"card_id": None}]}}
+        deck, offer, *_ = draft.from_state_obj(st)
+        self.assertEqual((deck, offer), (["CARD.BASH", "CARD.STRIKE_IRONCLAD"], ["CARD.ANGER"]))
+
 
 if __name__ == "__main__":
     unittest.main()
