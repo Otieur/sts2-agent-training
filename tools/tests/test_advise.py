@@ -143,6 +143,14 @@ class TestAdvise(unittest.TestCase):
                     continue
                 self.assertIn(name, actions, f"unknown action {name} in: {out}")
 
+    def test_scaling_enemy_recommends_balanced(self):
+        s = st("COMBAT", combat={"player": {"current_hp": 30, "energy": 3, "block": 0, "powers": []},
+                                 "hand": [{"index": 0, "card_id": "STRIKE_IRONCLAD", "energy_cost": 1, "playable": True}],
+                                 "enemies": [{"index": 0, "enemy_id": "BYRDONIS", "name": "Byrdonis", "current_hp": 80, "block": 0,
+                                              "is_alive": True, "powers": [{"power_id": "TERRITORIAL_POWER", "amount": 1}],
+                                              "intents": [{"damage": 16, "hits": 1}]}]})
+        self.assertIn("recommended: the balanced plan (an enemy gains Strength", advise.advise(s))
+
 
 if __name__ == "__main__":
     unittest.main()

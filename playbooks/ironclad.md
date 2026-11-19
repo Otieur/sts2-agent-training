@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.13 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.14 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -205,7 +205,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 6. Potions when they prevent serious HP loss or win a dangerous fight.
 7. Check `end_turn_will_kill_player` and `lethal_risks` before ending the turn.
 8. Write down the expected HP after the enemy turn and compare it next turn. Use `tools/calc.py` for exact numbers.
-9. **Search the turn:** `tools/plan_turn.py` enumerates the hand and prints the safest plan and the best damage-for-HP plan, with targets. **In boss fights follow the balanced plan**: in simulated Vantom and Lagavulin fights it beat the safe plan in all six settings, also from 60% HP, and a switch to safe at low HP did not help (`reports/phase2/vantom-simulation.md`). Both plans reject lines that would leave you at 0 HP. In hallways and elites, choose by the act's HP budget (section 4): safe when HP is below plan, balanced when ahead (not simulated). It models the common combat potions and values Powers for the turns to come (about 10 damage-equivalent per energy in boss fights, 5 in elites, 1 in hallways), but not draw, relics, Thorns or per-turn caps; re-run after drawing. `[HYPOTHESIS]` until the arithmetic is confirmed in game
+9. **Search the turn:** `tools/plan_turn.py` enumerates the hand and prints the safest plan and the best damage-for-HP plan, with targets. **In boss fights follow the balanced plan**: in simulated Vantom and Lagavulin fights it beat the safe plan in all six settings, also from 60% HP, and a switch to safe at low HP did not help (`reports/phase2/vantom-simulation.md`). Both plans reject lines that would leave you at 0 HP. **Against enemies that gain Strength every turn (Byrdonis, and the scaling bosses) also follow the balanced plan**: in a simulated Byrdonis fight a 12-card deck at 56/80 HP won 96% of fights with the balanced plan and 6% with the safe plan, because blocking lets the Strength snowball; with a strong deck the safe plan saved only about 3 HP. Against other hallway and elite fights, choose by the act's HP budget (section 4): safe when HP is below plan, balanced when ahead. It models the common combat potions and values Powers for the turns to come (about 10 damage-equivalent per energy in boss fights, 5 in elites, 1 in hallways), but not draw, relics, Thorns or per-turn caps; re-run after drawing. `[HYPOTHESIS]` until the arithmetic is confirmed in game
 10. **Targeting** (multi-enemy fights) `[HYPOTHESIS]`, also what `tools/plan_turn.py` searches for:
     - Kill first the enemy whose death removes the most incoming damage per point of HP and block you must spend. A kill this turn beats spreading damage.
     - Buffers and summoners next (they raise everyone's damage), then the highest single hit. Encounter notes override: the Kin Priest probably ends the fight; Kaiser Crab focuses Rocket; Phrog Parasite spawns Wrigglers on death.
@@ -276,6 +276,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.14 (2026-11-19, overnight):** simulated Byrdonis: follow the balanced plan against enemies that scale every turn.
 - **v2.13 (2026-11-19, overnight):** H11 (avoid hallway fights under 40% HP) from the history; `tools/path.py` uses finer hallway risk bands; the death review checks it.
 - **v2.12 (2026-11-19, overnight):** boss fights: follow the balanced plan (simulation); turn planner never picks a plan that leaves you at 0 HP; Knowledge Demon curse order confirmed in the simulation.
 - **v2.11 (2026-11-19, overnight):** Vantom fight simulator (`tools/simulate_fight.py`): H6 supported in the model; Breakthrough worse than a Strike against Vantom.

@@ -112,6 +112,13 @@ def entomancer_move(b, turn):
     return [None, _move(dmg=3, hits=7), _move(dmg=18)][i]
 
 
+def byrdonis_move(b, turn):
+    """Byrdonis (elite, 91 HP): Peck 3x3 and Swoop 16 alternating; Territorial: +1 Strength at the end of each of its
+    turns. Order and Territorial amount are [HYPOTHESIS] (the extract lists the two moves and the power only)."""
+    m = _move(dmg=3, hits=3, boss_str=1) if turn % 2 == 1 else _move(dmg=16, boss_str=1)
+    return m
+
+
 BOSSES = {
     # validated: the model's win rate relative to Vantom roughly matches the Player's record (see report()).
     "VANTOM": {"hp": 173, "slippery": 9, "move": vantom_move, "status_card": "WOUND", "validated": True},
@@ -122,6 +129,8 @@ BOSSES = {
     # Entomancer fails calibration badly (every deck loses by turn 5): the extract's Strength gains and Bees 3x7 cannot all
     # apply from turn 1 in this order; probably ascension-dependent values or another order. Not used; see gap 26.
     "ENTOMANCER": {"hp": 145, "hive": 1, "move": entomancer_move, "validated": False, "encounter": "ENTOMANCER_ELITE"},
+    # Byrdonis: the 15-card base deck loses about 26-29 HP here, the Player's Ironclad decks lost 25.8 on average.
+    "BYRDONIS": {"hp": 91, "move": byrdonis_move, "validated": True, "encounter": "BYRDONIS_ELITE"},
 }
 
 
@@ -350,6 +359,22 @@ def report(runs=300):
           "Plans that would leave you at 0 HP are ranked last in every mode (survival guard).", "",
           md_table(["Fight", "Start HP", "Balanced", "Safe below 50%", "Safe"], pm), "",
           "Reading: in these boss fights the balanced plan was best or level in every row; switching to safe at low HP did not help.", ""]
+    # Byrdonis: plan choice against an elite that gains Strength every turn
+    by = []
+    weak_deck = expand_deck(["STRIKE_IRONCLAD:5", "DEFEND_IRONCLAD:4", "BASH", "TWIN_STRIKE", "POMMEL_STRIKE"], "IRONCLAD")
+    for name, d in (("starter + Twin Strike + Pommel Strike (12 cards)", weak_deck), ("base deck (15 cards)", base_deck)):
+        for start in (56, 70):
+            cells = [name, f"{start}/80"]
+            for m in ("balanced", "hybrid:0.5", "safe"):
+                r = evaluate(d, "BYRDONIS", start, 80, runs * 2 // 3, m)
+                cells.append(f"{r['win_rate']:.0%} ({r['hp_lost']:.0f} HP)")
+            by.append(cells)
+    L += ["## Byrdonis: which plan against an elite that scales", "",
+          "Byrdonis (91 HP; Peck 3x3 and Swoop 16 alternating; +1 Strength each turn, order and amount `[HYPOTHESIS]`). "
+          "Calibration: the base deck loses about 26–29 HP here; the Player's Ironclad decks lost 25.8 on average (10 fights).", "",
+          md_table(["Deck", "Start HP", "Balanced: win (HP lost)", "Safe below 50%", "Safe"], by), "",
+          "Reading: blocking instead of attacking lets the Strength snowball. With a weak deck the safe plan collapses; with a "
+          "strong deck it saves a few HP. Against enemies that scale every turn, follow the balanced plan.", ""]
     # Knowledge Demon: the Curse of Knowledge choice, as four pure strategies
     kd = []
     for curse in ("SLOTH", "MIND_ROT", "WASTE_AWAY", "DISINTEGRATION"):

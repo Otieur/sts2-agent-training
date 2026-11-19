@@ -26,7 +26,7 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 
 ## Combat (§9)
 - Read intents; lethal first; never end a turn the planner marks as fatal.
-- **Boss fights: follow the balanced plan** (simulation: best in all six settings). Hallways and elites: safe when HP is below the act plan.
+- **Boss fights and enemies that scale every turn (Byrdonis): follow the balanced plan** (simulation: the safe plan collapsed against Byrdonis with a weak deck). Other hallways and elites: safe when HP is below the act plan.
 - Potions: hold them in hallways unless they decide the fight; use freely in elites and bosses.
 
 ## Bosses (§10, notes in `knowledge/bosses/`)

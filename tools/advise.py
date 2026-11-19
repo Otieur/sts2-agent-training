@@ -112,10 +112,14 @@ def combat(st, top=2):
     for c in hand:
         if c.note:
             out.append(f"note: {c.name}: {c.note}")
+    scaling_powers = ("TERRITORIAL", "RITUAL", "DEMON_FORM", "ENRAGE")  # enemies that gain Strength every turn
+    scaling = any(str(x.get("power_id") or x.get("name") or "").upper().startswith(scaling_powers)
+                  for e in (st.get("combat") or {}).get("enemies") or [] for x in e.get("powers") or [])
     pc = plan_turn.POTION_COST.get(ft, plan_turn.POTION_COST["hallway"])  # unknown: hold potions
     pv = plan_turn.POWER_VALUE.get(ft, plan_turn.POWER_VALUE["elite"])
     out.append(f"fight type: {ft} (potion cost {pc:g} HP, Powers {pv:g} per energy)"
                + (" · recommended: the balanced plan (boss fights, simulation)" if ft == "boss" else
+                  " · recommended: the balanced plan (an enemy gains Strength every turn; simulated Byrdonis)" if scaling else
                   " · choose safe if HP is below the act plan, balanced if ahead"))
     best = {}
     for mode in ("safe", "balanced"):
