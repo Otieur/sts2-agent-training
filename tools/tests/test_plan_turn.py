@@ -121,6 +121,14 @@ class TestPlanTurn(unittest.TestCase):
         o = best(h, player, enemies)
         self.assertTrue(o["all_dead"])
 
+    def test_slow(self):
+        e = [pt.parse_enemy("Effigy:100:0:0:slow", 0)]
+        # Strike (6) then Bash (8): Bash is played second, x1.1 -> 8; order small-to-big
+        o = pt.simulate(hand("Strike", "Bash"), [0, 0], pt.Player(energy=3), e)
+        self.assertEqual(o["dealt"], 6 + 8)
+        o = pt.simulate(hand("Strike", "Strike", "Strike"), [0, 0, 0], pt.Player(energy=3), e)
+        self.assertEqual(o["dealt"], 6 + 6 + 7)  # 6, 6x1.1=6.6->6, 6x1.2=7.2->7
+
 
 if __name__ == "__main__":
     unittest.main()

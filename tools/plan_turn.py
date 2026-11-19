@@ -24,7 +24,7 @@ Usage:
   python3 -I tools/plan_turn.py --hand Strike Strike Bash Defend Defend --energy 3 \\
       --enemy "Jaw Worm:40:0:11" --enemy "Louse:12:0:6x2:weak" [--strength 2] [--player-block 0] [--player-weak]
   Enemy spec: name:hp:block:intent[:flags], intent = total or per_hit x hits (0 if not attacking),
-  flags = vuln, weak, slippery=N, intangible (comma-free, separated by ':').
+  flags = vuln, weak, slippery=N, intangible, slow (comma-free, separated by ':').
 """
 import argparse
 import itertools
@@ -83,6 +83,7 @@ class Enemy:
     weak: bool = False
     slippery: int = 0
     intangible: bool = False
+    slow: bool = False          # Bygone Effigy: damage taken x (1 + 0.1 x cards played earlier this turn) [HYPOTHESIS unit]
 
 
 @dataclass
@@ -174,8 +175,9 @@ def card_from_potion(slot, potion_id):
                 potion=True, flat=spec.get("flat", False), dex=spec.get("dex", 0))
 
 
-def per_hit(card, player, enemy, strength_gained):
+def per_hit(card, player, enemy, strength_gained, played_before=0):
     base = card.dmg
+    slow = 1 + 0.1 * played_before if enemy.slow else 1.0
     if card.flat:
         d = base
         if enemy.slippery > 0 or enemy.intangible:
@@ -183,9 +185,10 @@ def per_hit(card, player, enemy, strength_gained):
         return max(0, d)
     if card.live:
         d = base + strength_gained
-        d = math.floor(d * (calc.VULNERABLE if enemy.vuln else 1.0) + 1e-9)
+        d = math.floor(d * (calc.VULNERABLE if enemy.vuln else 1.0) * slow + 1e-9)
     else:
-        d = calc.hit_damage(base, player.strength + strength_gained, attacker_weak=player.weak, target_vulnerable=enemy.vuln)
+        d = calc.hit_damage(base, player.strength + strength_gained, attacker_weak=player.weak, target_vulnerable=enemy.vuln,
+                            extra_mult=slow)
     if enemy.slippery > 0 or enemy.intangible:
         d = min(d, 1)
     return max(0, d)
@@ -226,6 +229,7 @@ def simulate(cards, targets, player, enemies):
     energy, block, strength_gained, hp_cost, dealt, draws = player.energy, player.block, 0, 0, 0, 0
     dex_gained, potions = 0, 0
     log = []
+    played = 0
     for card, tgt in zip(cards, targets):
         cost = energy if card.x_cost else card.cost
         if cost > energy:
@@ -251,11 +255,11 @@ def simulate(cards, targets, player, enemies):
                     live_now = [e for e in es if e.hp > 0]
                     if live_now:
                         e = live_now[h % len(live_now)]
-                        dealt += hit(e, per_hit(card, player, e, strength_gained))
+                        dealt += hit(e, per_hit(card, player, e, strength_gained, played))
             else:
                 for e in victims:
                     for _ in range(hits):
-                        dealt += hit(e, per_hit(card, player, e, strength_gained))
+                        dealt += hit(e, per_hit(card, player, e, strength_gained, played))
         for e in victims:
             if card.vuln:
                 e.vuln = True
@@ -268,6 +272,8 @@ def simulate(cards, targets, player, enemies):
                 block += card.block + dex_gained
             else:
                 block += calc.block_gain(card.block, player.dexterity + dex_gained, player.frail)
+        if not card.potion:
+            played += 1
         label = (f"potion {card.name} (use_potion slot={card.index})" if card.potion else card.name)
         log.append(label + (f" → {es[tgt].name}[{tgt}]" if card.target == "AnyEnemy" and tgt is not None else ""))
     intents = [(e.intent_per_hit, e.intent_hits) for e in es if e.hp > 0 and e.intent_hits]
@@ -287,7 +293,8 @@ def plans(hand, player, enemies):
         for subset in itertools.combinations(playable, r):
             if sum(0 if c.x_cost else c.cost for c in subset) > player.energy + max_gain:
                 continue
-            ordered = sorted(subset, key=lambda c: (ORDER[phase(c)], -c.dmg * c.hits))
+            slow = any(e.slow for e in enemies)  # against Slow, small attacks first and the big one last
+            ordered = sorted(subset, key=lambda c: (ORDER[phase(c)], (c.dmg * c.hits) if slow else -c.dmg * c.hits))
             single = [i for i, c in enumerate(ordered) if c.target == "AnyEnemy"]
             n_assign = len(alive_idx) ** len(single) if single else 1
             if n_assign <= MAX_ASSIGNMENTS:
@@ -356,7 +363,7 @@ def from_state(st):
                              int(e.get("block") or 0), dmg, hits,
                              vuln=any(k.startswith("VULNERABLE") for k in pw), weak=any(k.startswith("WEAK") for k in pw),
                              slippery=int(next((v for k, v in pw.items() if k.startswith("SLIPPERY")), 0) or 0),
-                             intangible=any(k.startswith("INTANGIBLE") for k in pw)))
+                             intangible=any(k.startswith("INTANGIBLE") for k in pw), slow=any(k.startswith("SLOW") for k in pw)))
     for i, e in enumerate(enemies):
         e.index = i
     run = st.get("run") or {}
@@ -384,6 +391,8 @@ def parse_enemy(spec, index):
             e.weak = True
         elif f == "intangible":
             e.intangible = True
+        elif f == "slow":
+            e.slow = True
         elif f.startswith("slippery="):
             e.slippery = int(f.split("=")[1])
     return e
