@@ -162,12 +162,44 @@ def checks(con):
     return out
 
 
+QUICKREF = PROJECT / "playbooks" / "ironclad-quickref.md"
+
+
+def quickref_checks(con):
+    """Figures repeated in the quick reference, recomputed the same way as for the playbook."""
+    import re as _re
+    q = lambda sql: con.execute(sql).fetchall()  # noqa: E731
+    out = []
+    rows = q("""SELECT 1.0*f.hp_before/f.max_hp, (r.win=0 AND f.is_last_floor=1) FROM runs r JOIN floors f USING(run_id)
+                WHERE r.build_id='v0.107.1' AND r.n_players=1 AND r.abandoned=0 AND f.room_type='elite' AND f.act IN (1,2)""")
+    lo = [k for h, k in rows if h < 0.5]
+    out.append(("quickref H5", f"{round(100 * sum(lo) / len(lo))}% of such elite fights ended the run"))
+    hb = dict((k, (a_, n_)) for k, a_, n_ in q("""SELECT CASE WHEN 1.0*f.hp_before/f.max_hp < 0.3 THEN 'a' WHEN 1.0*f.hp_before/f.max_hp < 0.4 THEN 'b' ELSE 'c' END,
+              SUM(f.is_last_floor AND NOT r.win), COUNT(*) FROM floors f JOIN runs r USING(run_id) WHERE r.build_id='v0.107.1'
+              AND r.n_players=1 AND NOT r.abandoned AND f.room_type='monster' GROUP BY 1"""))
+    out.append(("quickref H11", f"{round(100 * hb['a'][0] / hb['a'][1])}% fatal under 30%, {round(100 * hb['b'][0] / hb['b'][1])}% at 30–40%"))
+    dr = (PROJECT / "reports" / "phase2" / "death-review-ironclad.md").read_text()
+    m = _re.search(r"\| H9 \| (\d+%) \| (\d+%) \|", dr)
+    out.append(("quickref H9", f"Missed in {m.group(1)} of fatal against {m.group(2)} of survived" if m else "<pattern not found>"))
+    cc = (PROJECT / "reports" / "phase2" / "card-choices-ironclad.md").read_text()
+    m = _re.search(r"\| A \| \d+ \| ([+-][\d.]+) pts", cc)
+    out.append(("quickref tiers", f"A-tier picks {float(m.group(1)):+.0f} points" if m else "<pattern not found>"))
+    m = _re.search(r"\| Breakthrough \| \w \| \d+ \| \d+ \| (\d+)% \(\d+/\d+\) \| (\d+)% ", cc)
+    out.append(("quickref Breakthrough", f"{m.group(1)}% against {m.group(2)}% act survival" if m else "<pattern not found>"))
+    return out
+
+
 def main():
     text = PLAYBOOK.read_text()
     con = sqlite3.connect(DATA / "runs.db")
     bad = 0
     for name, expect in checks(con):
         ok = expect in text
+        bad += not ok
+        print(("ok    " if ok else "MISS  ") + f"{name}: {expect}")
+    qtext = QUICKREF.read_text() if QUICKREF.exists() else ""
+    for name, expect in quickref_checks(con):
+        ok = expect in qtext
         bad += not ok
         print(("ok    " if ok else "MISS  ") + f"{name}: {expect}")
     print(f"\n{bad} mismatch(es)" if bad else "\nall figures match")
