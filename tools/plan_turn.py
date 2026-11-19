@@ -318,6 +318,8 @@ POTION_COST = {"hallway": 25.0, "elite": 6.0, "boss": 2.0}
 # [HYPOTHESIS]. A Strike deals 6 per energy now; a Power pays back over the rest of the fight: bosses last 6-10 turns
 # (playbook section 1), elites about 4-5, hallway fights about 3, and the fight model finds scaling cards cost HP in
 # Act 1 hallways but save it at the Act 2 boss. Hence about 10 per energy in bosses, 5 in elites, 1 in hallways.
+# Checked in tools/simulate_fight.py (2026-11-19): boss value 3 lost far more fights with Power decks (Lagavulin 55% against
+# 100% with Demon Form and Pyre); 20 was no better than 10.
 POWER_VALUE = {"hallway": 1.0, "elite": 5.0, "boss": 10.0}
 
 
