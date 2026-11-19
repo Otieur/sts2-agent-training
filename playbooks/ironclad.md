@@ -163,7 +163,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 - Ascender's Bane is Eternal and probably cannot be removed. `[GAME-EXTRACT]` keyword
 
 ## 7. Events and Ancients
-- No outcome-backed event rules yet. Event options and risk tags are in `knowledge/data/extract-2026-09-21/events.json` and `event_options.json` `[GAME-EXTRACT]`. The Player's choices are the baseline (`reports/phase1/path-ironclad.md`).
+- No outcome-backed event rules yet: at the decision point (`reports/phase2/event-choices.md`, 85 options), only one option reached p < 0.05 (Endless Conveyor, Observe Chef: 3/5 against 46/46), about what chance gives. `tools/advise.py` shows each option's record as context. Event options and risk tags are in `knowledge/data/extract-2026-09-21/events.json` and `event_options.json` `[GAME-EXTRACT]`. The Player's choices are the baseline (`reports/phase1/path-ironclad.md`).
 - Observed safe value `[PLAYER-DATA]`:
   - Sunken Treasury, "Second chest": +342 gold on average
   - Wellspring, "Bathe": no HP cost

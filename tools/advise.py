@@ -182,6 +182,11 @@ def event(st):
     if afile.exists():
         import csv
         ancients = {r["relic"]: r for r in csv.DictReader(open(afile))}
+    events = {}
+    efile = PROJECT / "data" / "tables" / "event_choices.csv"
+    if efile.exists():
+        import csv
+        events = {(r["event"], r["option"]): r for r in csv.DictReader(open(efile))}
     out = [f"Event {eid}: {ev.get('title', '')}"]
     for o in ev.get("options") or []:
         key = re.sub(r"^[A-Z_]+\.pages\.", "", o.get("text_key") or "")
@@ -191,6 +196,10 @@ def event(st):
         flag = " LOCKED" if o.get("is_locked") else ""
         flag += " WILL KILL YOU" if o.get("will_kill_player") else ""
         past = f"; the Player chose it {hist[0]}x (HP {hist[1]:+.1f}, gold {hist[2]:+.0f}, max HP {hist[3]:+.1f})" if hist and hist[0] else ""
+        evrec = events.get((eid, key))
+        if evrec:
+            past += (f"; decision-point record: survived the act {int(evrec['survived_chosen'])}/{int(evrec['chosen'])} chosen vs "
+                     f"{int(evrec['survived_others'])}/{int(evrec['others'])} other options, p={evrec['p']}")
         anc = ancients.get(key.rsplit(".", 1)[-1].upper())
         if anc and anc["survive_act_chosen"] and anc["survive_act_passed"]:
             past += (f"; Ancient record (all characters): survived the act {float(anc['survive_act_chosen']):.0%} picked vs "
