@@ -1,5 +1,6 @@
 """Robustness: tools/advise.py on damaged copies of its own screen fixtures (keys dropped, values set to null, list items
-dropped). Live states may lack fields the documentation promises; the advisor must still answer, never raise or fail."""
+dropped). Live states may lack fields the documentation promises; the advisor must still answer, never raise or fail.
+With values of the wrong type it may answer [ADVICE FAILED], but it must still answer and never raise."""
 import copy
 import io
 import random
@@ -49,6 +50,26 @@ def _mutate(s, rng):
     return s
 
 
+WRONG_TYPES = ["", "x", 0, -1, 1.5, [], {}, True]
+
+
+def _retype(s, rng):
+    """A copy of s with one or two values (any depth) replaced by a value of a wrong type."""
+    s = copy.deepcopy(s)
+    for _ in range(rng.randint(1, 2)):
+        ps = list(_paths(s))
+        if not ps:
+            break
+        p = rng.choice(ps)
+        parent = s
+        for k in p[:-1]:
+            parent = parent[k]
+        k = p[-1]
+        if isinstance(parent, dict) or (isinstance(parent, list) and k < len(parent)):
+            parent[k] = rng.choice(WRONG_TYPES)
+    return s
+
+
 class TestAdviseFuzz(unittest.TestCase):
     def test_damaged_states(self):
         seen = []
@@ -77,6 +98,15 @@ class TestAdviseFuzz(unittest.TestCase):
             journal.status_from_state(m)
             sts.brief_sts2agent(m.get("data", m))
             stsstate.decision_point(stsstate.compact(m))
+        # wrong-type values: the advisor may answer [ADVICE FAILED], but must still answer with text, never raise
+        draft.simulated_boss_value = lambda *a, **k: None
+        try:
+            for _ in range(200):
+                with redirect_stdout(io.StringIO()):
+                    out = advise.advise(_retype(rng.choice(seen), rng))
+                self.assertIsInstance(out, str)
+        finally:
+            draft.simulated_boss_value = sim
 
 
 if __name__ == "__main__":
