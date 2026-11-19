@@ -778,24 +778,39 @@ def _dicts(x):
     return [i for i in _list(x) if isinstance(i, dict)]
 
 
+def _num(x):
+    """x as an int when it reads as a number (bools excluded), else None."""
+    if isinstance(x, bool):
+        return None
+    try:
+        return int(x)
+    except (TypeError, ValueError):
+        return None
+
+
+def _int(x):
+    """x as an int, 0 when it does not read as a number."""
+    return _num(x) or 0
+
+
 def from_state(st):
     st = st.get("data", st)
     c = st.get("combat") or {}
     p = c.get("player") or {}
     powers = {(x.get("power_id") or x.get("id") or x.get("name") or "").upper(): x.get("amount", x.get("stacks", 1))
               for x in _dicts(p.get("powers"))}
-    osty = sum(int(x.get("current_hp") or 0) for x in _dicts(p.get("pets")) if (x.get("pet_id") or "").upper() == "OSTY")
-    player = Player(energy=int(p.get("energy") or 0), block=int(p.get("block") or 0), osty_hp=osty,
-                    strength=int(powers.get("STRENGTH_POWER", powers.get("STRENGTH", 0)) or 0),
-                    dexterity=int(powers.get("DEXTERITY_POWER", powers.get("DEXTERITY", 0)) or 0),
+    osty = sum(_int(x.get("current_hp") or 0) for x in _dicts(p.get("pets")) if (x.get("pet_id") or "").upper() == "OSTY")
+    player = Player(energy=_int(p.get("energy") or 0), block=_int(p.get("block") or 0), osty_hp=osty,
+                    strength=_int(powers.get("STRENGTH_POWER", powers.get("STRENGTH", 0)) or 0),
+                    dexterity=_int(powers.get("DEXTERITY_POWER", powers.get("DEXTERITY", 0)) or 0),
                     weak=any(k.startswith("WEAK") for k in powers), frail=any(k.startswith("FRAIL") for k in powers),
-                    hp=p.get("current_hp"), fnp=int(powers.get("FEEL_NO_PAIN_POWER", powers.get("FEEL_NO_PAIN", 0)) or 0),
-                    sandpit=int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0),
-                    end_turn_dmg=int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0),
-                    max_hp=p.get("max_hp"), tender=1 if any(k.startswith("TENDER") for k in powers) else 0,
+                    hp=_num(p.get("current_hp")), fnp=_int(powers.get("FEEL_NO_PAIN_POWER", powers.get("FEEL_NO_PAIN", 0)) or 0),
+                    sandpit=_int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0),
+                    end_turn_dmg=_int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0),
+                    max_hp=_num(p.get("max_hp")), tender=1 if any(k.startswith("TENDER") for k in powers) else 0,
                     colossus=any(k.startswith("COLOSSUS") for k in powers), hexed=any(k.startswith("HEX") for k in powers),
                     shrunk=any(k.startswith("SHRINK") for k in powers),
-                    doom=int(powers.get("DOOM_POWER", powers.get("DOOM", 0)) or 0))
+                    doom=_int(powers.get("DOOM_POWER", powers.get("DOOM", 0)) or 0))
     # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
     # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])
     limits = [int(powers[k] or 3) for k in powers if k.startswith("SLOTH")] + [1 for k in powers if k.startswith("RINGING")]
