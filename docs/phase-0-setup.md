@@ -56,23 +56,23 @@
 > - [ ] A dry run (`rsync -an --delete <backup>/ <live>/`) right after the backup shows no differences.
 > - [ ] The runbook says how to check that the restore worked: the game launches and the profile shows the expected unlocks.
 
-> **P0.E1.S3: Account for Steam Cloud** · Size XS · Status: Todo
+> **P0.E1.S3: Account for Steam Cloud** · Size XS · Status: Done (2026-11-19)
 > *As the Player, I want to know whether Steam Cloud syncs my saves, so that a restore is not silently overwritten by an older cloud copy.*
 >
 > **Acceptance criteria**
-> - [ ] The Player checks Steam → Slay the Spire 2 → Properties → General → Steam Cloud and reports the setting.
-> - [ ] The restore runbook says how to handle a Steam Cloud conflict dialog: choose the local files after a restore.
+> - [x] The Player checks Steam → Slay the Spire 2 → Properties → General → Steam Cloud and reports the setting. **Steam Cloud is on** (the Player, 2026-11-19; the library page shows Cloud status "Up to date").
+> - [x] The restore runbook says how to handle a Steam Cloud conflict dialog: choose the local files after a restore.
 
 ---
 
 ### P0.E2: Game version
 
-> **P0.E2.S1: Switch to the main branch** · Size XS · Player-only · Status: Todo
+> **P0.E2.S1: Switch to the main branch** · Size XS · Player-only · Status: Done (2026-11-19)
 > *As the Player, I want the game on the main branch (v0.111.1 since 2026-11-16), the closest supported version to my 227 runs on v0.107.1 and the version STS2-Agent was validated on.*
 >
 > **Acceptance criteria**
-> - [ ] Steam → Library → Slay the Spire 2 → Properties → Betas (or "Game Versions & Betas") → set to none or the default.
-> - [ ] Steam finishes the download, which appears as an update.
+> - [x] Steam → Library → Slay the Spire 2 → Properties → Betas (or "Game Versions & Betas") → set to none or the default.
+> - [x] Steam finishes the download, which appears as an update. Checked 11:44: the app manifest shows branch `public`, build 26655341, download complete; the app's `release_info.json` reads v0.111.1 (commit cc1f9462, built 2026-11-13). The save folder was unchanged by the switch (rsync dry run against the overnight backup: no differences).
 >
 > **Expect:** the Fool and the v0.113.x content disappear until the Player opts back into the beta.
 
@@ -80,7 +80,7 @@
 > *As the Agent, I want to confirm the running version from the game's own logs, so that every later note is tagged with the right version.*
 >
 > **Acceptance criteria**
-> - [ ] After one launch, the newest `~/Library/Application Support/SlayTheSpire2/logs/godot*.log` contains `release=v0.111.1`.
+> - [ ] After one launch, the newest `~/Library/Application Support/SlayTheSpire2/logs/godot*.log` contains `release=v0.111.1`. (Before launch, `release_info.json` in the app already reads v0.111.1.)
 > - [ ] The "Current save versions" log line is recorded in `docs/environment.md`.
 > - [ ] The log shows no save-load errors.
 

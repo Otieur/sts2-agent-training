@@ -1,6 +1,6 @@
 # 0001: Which mod to start with, on which branch
 
-Date: 2026-11-19 · Status: **proposed** (drafted overnight, revised at 01:15 when the main-branch update was found; the Player decides)
+Date: 2026-11-19 · Status: **accepted** (drafted overnight, revised at 01:15 when the main-branch update was found; the Player chose STS2-Agent on 2026-11-19 at about 11:44. The .NET 9 SDK install and the security review approval are still to be confirmed before the build)
 
 ## Context
 The Agent needs a mod that exposes game state and accepts actions on macOS arm64. Two open-source candidates were reviewed read-only (`docs/reviews/sts2-agent-security-review.md`).
@@ -29,7 +29,7 @@ The Agent needs a mod that exposes game state and accepts actions on macOS arm64
 3. **Stay on the beta (v0.113.1)**
    - Cons: neither mod targets it; the Player chose the tested versions.
 
-## Decision (proposed, revised)
+## Decision (accepted 2026-11-19)
 **Option 1: STS2-Agent on main v0.111.1**, the best version match. Install the .NET 9 SDK (Homebrew `dotnet@9`, Player approval). Keep **STS2MCP as the fallback**. It builds without installing anything, so if the .NET 9 install is a problem, try it first and see whether it still loads on v0.111.1.
 
 `tools/sts.py` already supports both (`--mod sts2agent` / `--mod sts2mcp`), and `tools/advise.py` reads either format (`tools/mcp_adapter.py` converts STS2MCP states), so switching later only changes a flag. With STS2MCP the deck is rebuilt from combat piles, and the turn planner has no `end_turn_will_kill_player` check.

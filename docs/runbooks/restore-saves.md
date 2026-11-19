@@ -4,7 +4,7 @@ Save folder: `~/Library/Application Support/SlayTheSpire2/` (profiles, modded pr
 Backups: `backups/<YYYY-MM-DD>-<label>/SlayTheSpire2/` with a `MANIFEST.sha256` beside it. The `backups/` folder is not in git.
 
 Existing backups:
-- `backups/2026-11-19-pre-phase0/`: taken 2026-11-19 00:53 with the game closed, on the **beta branch (v0.113.1)**, before any branch switch or mod install. 1,104 files, 53,175,099 bytes (shader and Vulkan caches excluded). A dry-run restore showed no differences.
+- `backups/2026-11-19-pre-phase0/`: taken 2026-11-19 00:53 with the game closed, on the **beta branch (v0.113.1)**, before any branch switch or mod install. 1,104 files, 53,175,099 bytes (shader and Vulkan caches excluded). A dry-run restore showed no differences. Checked again 2026-11-19 11:44, after the switch to main v0.111.1 and before any launch: still no differences, so it is also the backup for the main branch until the game is launched.
 
 ## Take a backup
 1. Close the game completely. `pgrep -fl "Slay the Spire 2"` must print nothing.

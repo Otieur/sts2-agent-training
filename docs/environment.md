@@ -19,7 +19,7 @@ Drafted 2026-11-19 (overnight). Items marked "to confirm" need the Player or a g
 | Executable | `SlayTheSpire2.app/Contents/MacOS/Slay the Spire 2` |
 | Game assemblies (arm64) | `SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/` (`sts2.dll`, `GodotSharp.dll`, `0Harmony.dll`) |
 | Steam app ID | 2868840 |
-| Branch / version | Was `public-beta`, v0.113.1, as of 2026-11-18. **Target: main branch, now v0.111.1 (since 2026-11-16; was v0.107.1). To confirm after the Player switches branch.** |
+| Branch / version | **Main branch (`public`), v0.111.1** since 2026-11-19 (app `release_info.json`: commit cc1f9462, built 2026-11-13; Steam build 26655341). Was `public-beta`, v0.113.1, until then. |
 | Save data | `~/Library/Application Support/SlayTheSpire2/` (`steam/<id>/profile1`, `steam/<id>/modded/profile1`, `steam/back_prof1`, `logs/`, `mods/config/`) |
 | Logs | `~/Library/Application Support/SlayTheSpire2/logs/godot*.log` (contains `release=vX.Y.Z` and save schema versions) |
 | Acts seen in v0.107.1 data | Act 1: `ACT.OVERGROWTH` or `ACT.UNDERDOCKS`; Act 2: `ACT.HIVE`; Act 3: `ACT.GLORY` |
@@ -41,8 +41,8 @@ Drafted 2026-11-19 (overnight). Items marked "to confirm" need the Player or a g
 - 33771: the game's local direct-connect port for multiplayer (`-fastmp`)
 
 ## To confirm
-- [ ] Game version after the branch switch (log line `release=`)
+- [x] Game version after the branch switch: v0.111.1 from `release_info.json` (the log line `release=` comes at first launch)
 - [ ] Which mods folder the game scans
 - [ ] Whether the .NET 10 SDK builds STS2MCP's `net9.0` target
 - [ ] Whether the game throttles when unfocused (OQ0.5)
-- [ ] Steam Cloud setting for this game (OQ0.4)
+- [x] Steam Cloud setting for this game (OQ0.4): on

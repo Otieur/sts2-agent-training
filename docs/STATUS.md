@@ -2,7 +2,7 @@
 
 Update this file whenever a story changes status. Story-level status lives in each phase document; this board tracks epics.
 
-**Active phase:** Phase 0 (waiting on the Player: security verdict, branch switch to main v0.111.1, mod and SDK choice; then `docs/runbooks/first-session.md`). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md` (Needs-the-Player checklist in section 5).
+**Active phase:** Phase 0 (branch switched to main v0.111.1 and STS2-Agent chosen on 2026-11-19; waiting on the Player: security verdict approval and the .NET 9 SDK install; then `docs/runbooks/first-session.md`). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md` (Needs-the-Player checklist in section 5).
 **Last updated:** 2026-11-19
 
 ---
@@ -11,9 +11,9 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P0.E1 | Save safety | In progress | Backup taken and verified overnight; Steam Cloud setting (S3) needs the Player |
-| P0.E2 | Game version | In progress | Target is now main v0.111.1 (since 2026-11-16); Player switches branch |
-| P0.E3 | Mod acquisition and security review | In progress | Draft review done (both mods); Player approves verdict |
+| P0.E1 | Save safety | In progress | Backup taken and verified overnight, still matching after the branch switch; Steam Cloud is on (choose local files on a cloud conflict after a restore) |
+| P0.E2 | Game version | In progress | Switched to main v0.111.1 on 2026-11-19 (S1 done); log check and profile check at first launch (S2, S3) |
+| P0.E3 | Mod acquisition and security review | In progress | Draft review done (both mods); the Player chose STS2-Agent (decision 0001 accepted); verdict approval pending |
 | P0.E4 | Build and install | In progress | Toolchain checked; nothing built |
 | P0.E5 | API smoke test | In progress | tools/smoke.py (read-only) and docs/runbooks/first-session.md ready; needs the live mod |
 | P0.E6 | The agent harness integration | In progress | tools/sts.py CLI (both mods, co-op instances) written and tested offline |
