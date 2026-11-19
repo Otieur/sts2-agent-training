@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.12 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.13 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -104,6 +104,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
    - 8% at 50–70% (Ironclad 3/32)
    - 3% at 70% or more (Ironclad 2/31)
    - Exception: the elite is one the deck handles easily (Phantasmal Gardeners, median 12) and the alternative path is worse.
+2b. **Hallway fights under 40% HP: avoid when there is a choice** `[PLAYER-DATA]` outcome, all characters, abandoned runs excluded: 21% of hallway fights entered under 30% HP ended the run (11/52), 12% at 30–40% (7/59), 2% at 40–50% (2/105), under 1% above. In Act 2, 14 of 40 hallway fights entered under 40% were fatal. ? rooms entered under 40% ended the run in 4 of 84. Prefer a ? room or a rest site. `[H11]`
 3. **Elites at 50–70% HP:** take one only if current HP minus its p75 leaves enough to reach the next rest site.
 4. **Re-plan** if HP falls more than 15% of max below the plan, a key card or relic changes the deck's needs, or a detour is forced.
 5. **Room economics** (`reports/phase2/room-values.md`, all characters, mean per visit) `[PLAYER-DATA]`:
@@ -248,7 +249,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
   - Rates lower: Cascade, Demon Form, Battle Trance, Shrug It Off, Bully, Expect a Fight, Pommel Strike, Rupture
 - The Player's implied card order (Phase 1 head-to-head scores): `reports/phase1/card-ranking-ironclad.md`.
 
-**Death review** (`reports/phase2/death-review-ironclad.md`): the playbook's checks flagged 27 of the Player's 40 Ironclad deaths beforehand (22 of 24 boss deaths, 5 of 10 elite deaths, no hallway deaths). Against the base rate at bosses: a broken rest rule (H1) in 38% of fatal against 21% of survived boss fights, missed corner targets (H9) in 88% against 69%; the countable boss checklists in `tools/deck_check.py` first flagged 38% of both (guessed thresholds); re-tuned from the deck-feature data they flag 62% against 39% (measured on overlapping data, so optimistic). `[PLAYER-DATA, observational]`
+**Death review** (`reports/phase2/death-review-ironclad.md`): the playbook's checks flagged 31 of the Player's 40 Ironclad deaths beforehand (22 of 24 boss deaths, 5 of 10 elite deaths, 4 of 6 hallway deaths through H11). Against the base rate at bosses: a broken rest rule (H1) in 38% of fatal against 21% of survived boss fights, missed corner targets (H9) in 88% against 69%; the countable boss checklists in `tools/deck_check.py` first flagged 38% of both (guessed thresholds); re-tuned from the deck-feature data they flag 62% against 39% (measured on overlapping data, so optimistic). `[PLAYER-DATA, observational]`
 
 ## 12. Hypotheses to test (Phase 4 experiments)
 
@@ -263,6 +264,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 | H7 | Knowledge Demon needs a scaling engine (powers, energy, Strength) by the end of Act 2 | Fatal decks: powers 1.7 against 2.7, energy 0.8 against 1.6 (n=40) `[PLAYER-DATA, weak]` | Track engine presence on arrival | New (v2) |
 | H8 | Arrival HP matters most for Queen, The Kin and Aeonglass, and hardly at all for Vantom and Waterfall Giant | Median arrival HP, survived against fatal (all characters, abandoned runs excluded): Queen 79% / 54%, The Kin 64% / 41%, Aeonglass 87% / 65%; Vantom 57% / 58%, Waterfall Giant 57% / 59%. Fatal n is 5–12 per boss | Higher rest thresholds for the first three; for Vantom and Waterfall Giant, prefer a smith that fixes the deck's answer when HP is above the median damage | Refined (v2.5) |
 | H10 | Curses from Ancient relics (Hefty Tablet's Injury) cost more Act 1 survival than the relic's upside gives | Hefty Tablet picked: 8/21 survived Act 1; passed: 6/6 (p = 0.016, all characters; Ironclad 2/3, too few) `[PLAYER-DATA, weak]` | Pass Hefty Tablet in Phase 4; compare Act 1 survival | New (v2.7) |
+| H11 | Avoiding hallway fights under 40% HP reduces deaths | Hallway fatality by entry HP: 21% under 30%, 12% at 30–40%, 2% at 40–50%, under 1% above (n=1,985); Act 2 under 40%: 14/40 | Path choice in Phase 4 (`tools/path.py` uses these bands) | Adopted as a rule (same evidence type as H5) |
 | H9 | Boss survival depends more on block and scaling than on raw damage: targets in section 2.1 | Raw-damage terciles: Act 1 fatal 21% / 22% / 31% (low to high). Block: 30% / 24% / 21%. Scaling 2–3 cards: 17% against 28% (n=173 Act 1 boss fights) `[PLAYER-DATA, observational]` | Track the deck metrics at every boss arrival in Phase 4 | New (v2.2) |
 
 ## 13. Open questions and conflicts
@@ -274,6 +276,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.13 (2026-11-19, overnight):** H11 (avoid hallway fights under 40% HP) from the history; `tools/path.py` uses finer hallway risk bands; the death review checks it.
 - **v2.12 (2026-11-19, overnight):** boss fights: follow the balanced plan (simulation); turn planner never picks a plan that leaves you at 0 HP; Knowledge Demon curse order confirmed in the simulation.
 - **v2.11 (2026-11-19, overnight):** Vantom fight simulator (`tools/simulate_fight.py`): H6 supported in the model; Breakthrough worse than a Strike against Vantom.
 - **v2.10 (2026-11-19, overnight):** deck metrics now count Osty attacks (Necrobinder decks in the all-character analyses); Act 1 raw-damage terciles 21% / 22% / 31%, fight-model coefficients 1.2 and 3.8; conclusions unchanged.

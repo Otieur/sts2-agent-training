@@ -151,6 +151,14 @@ def checks(con):
     m = re.search(r"Sloth \| (\d+%) \|.*?\n\| Mind Rot \| (\d+%) \|.*?\n\| Waste Away \| (\d+%) \|.*?\n\| Disintegration \| (\d+%) \|", vs)
     out.append(("Knowledge Demon curses", "(simulated: Sloth {} wins, Mind Rot {}, Waste Away {}, Disintegration {})".format(*m.groups())
                 if m else "<pattern not found in vantom-simulation.md>"))
+    # H11: hallway fatality by entry HP
+    hb = q("""SELECT CASE WHEN 1.0*f.hp_before/f.max_hp < 0.3 THEN 'a' WHEN 1.0*f.hp_before/f.max_hp < 0.4 THEN 'b'
+                          WHEN 1.0*f.hp_before/f.max_hp < 0.5 THEN 'c' ELSE 'd' END, SUM(f.is_last_floor AND NOT r.win), COUNT(*)
+              FROM floors f JOIN runs r USING(run_id) WHERE r.build_id='v0.107.1' AND r.n_players=1 AND NOT r.abandoned
+              AND f.room_type='monster' GROUP BY 1""")
+    hbd = {k: (a_, n_) for k, a_, n_ in hb}
+    out.append(("H11 bands", f"21% of hallway fights entered under 30% HP ended the run ({hbd['a'][0]}/{hbd['a'][1]}), 12% at 30–40% "
+                             f"({hbd['b'][0]}/{hbd['b'][1]}), 2% at 40–50% ({hbd['c'][0]}/{hbd['c'][1]})"))
     return out
 
 

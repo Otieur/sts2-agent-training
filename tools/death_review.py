@@ -60,6 +60,8 @@ def main():
         enc = (d["model_id"] or "").replace("ENCOUNTER.", "")
         if d["room_type"] == "elite" and frac < 0.5:
             flags.append(f"H5: elite at {frac:.0%} HP")
+        if d["room_type"] == "monster" and frac < 0.4:
+            flags.append(f"H11: hallway fight at {frac:.0%} HP")
         if d["room_type"] == "boss":
             flags += boss_flags(con, ch, d["run_id"], d["floor"], d["act"], d["model_id"], d["ascension"])
         for kind in {f.split(":")[0] for f in flags}:
@@ -98,7 +100,7 @@ def main():
                    for k in ("any", "H1", "H9", "Boss checklist")]), "",
          "## Every death", "",
          md_table(["Seed", "Asc", "Floor", "Room", "Encounter", "Entry HP", "Flags"], rows), "",
-         "Hallway deaths have no pre-fight check yet (H5 covers elites only). Boss checklist items are the countable ones in "
+         "H11 (hallway fights under 40% HP) covers hallway deaths since 2026-11-19. Boss checklist items are the countable ones in "
          "`tools/deck_check.py`; card values are v0.111.1, applied to v0.107.1 decks.", ""]
     out = PROJECT / f"reports/phase2/death-review-{ch.lower()}.md"
     out.write_text("\n".join(L))

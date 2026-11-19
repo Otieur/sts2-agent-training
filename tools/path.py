@@ -113,8 +113,9 @@ class Model:
                     "source": self.character.title() if use is own else "all characters"}
         # fatal rates by entry HP band, fights only (elite, monster); boss: logistic per act
         self.band_risk = {}
-        for kind in ("elite", "monster"):
-            for lo, hi in ((0, .5), (.5, .7), (.7, 9)):
+        for kind, bands in (("elite", ((0, .5), (.5, .7), (.7, 9))),
+                            ("monster", ((0, .3), (.3, .4), (.4, .5), (.5, .7), (.7, 9)))):  # finer for hallways (H11)
+            for lo, hi in bands:
                 xs = [x for x in rows if x["room_type"] == kind and lo <= x["hp_before"] / x["max_hp"] < hi]
                 self.band_risk[(kind, lo)] = (sum(x["died"] for x in xs) + 0.5) / (len(xs) + 1) if xs else 0.05
         self.boss_curve = {}
@@ -135,7 +136,8 @@ class Model:
         return {a: (sum(v) / len(v)) for a, v in vals.items() if v}
 
     def fight_risk(self, kind, hp_frac):
-        lo = 0 if hp_frac < .5 else (.5 if hp_frac < .7 else .7)
+        cuts = (0, .5, .7) if kind == "elite" else (0, .3, .4, .5, .7)
+        lo = max(c for c in cuts if hp_frac >= c) if hp_frac >= 0 else 0
         return self.band_risk.get((kind, lo), 0.05)
 
     def boss_threshold(self, act, boss, max_hp):
