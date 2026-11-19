@@ -6,6 +6,8 @@ Prompt: `prompts/overnight-2026-11-19.md`
 
 Block K (morning report) starts no later than 09:52 EST.
 
+Times: end times come from `date`. Start times after X14 were typed by hand and can be a minute or two off (four rows where the typed start was after the end were corrected at 02:39).
+
 ## Progress
 
 | Block | Start | End | Output | Notes |
@@ -80,5 +82,3 @@ Block K (morning report) starts no later than 09:52 EST.
 | X55: Executable combat advice | 02:36 | 02:37 | plan_turn.commands(): sts.py command sequence for a plan with hand indexes adjusted as cards leave the hand, mod enemy indexes for target_index, potion slots, end_turn, and commands after a draw marked for re-planning; advise.py prints them for the top safe and balanced plans; test added | |
 | X56: Potion cost recalibrated | 02:37 | 02:38 | plan_turn.py potion cost hallway 25, elite 6, boss 2 HP-equivalent (was 8/3/2): a Fire Potion is no longer spent on a non-lethal hallway turn; playbook updated | Found by reading advise output |
 | X57: Fight type from enemy IDs | 02:38 | 02:38 | advise.fight_type uses the room each monster appeared in during the history (108 monsters) when the state has no room type; unknown fights hold potions (hallway cost) but value Powers as elites; test added (93 pass) | |
-
-Note (02:39): start times after X14 were typed by hand and can be a minute or two off; end times come from `date`. Four rows where the typed start was after the end were corrected.
