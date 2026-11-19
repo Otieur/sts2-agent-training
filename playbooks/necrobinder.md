@@ -1,6 +1,6 @@
 # Necrobinder Playbook
 
-Version: v0.1 (draft) · Game version: v0.107.1 · Last updated: 2026-11-19 · Status: groundwork for Phase 5, written overnight before any Necrobinder study. Not ready to play from.
+Version: v0.1 (draft) · Knowledge base: v0.107.1 · Target game: v0.111.1 · Last updated: 2026-11-19 · Status: groundwork for Phase 5, written overnight before any Necrobinder study. Not ready to play from.
 
 Same rules and labels as `playbooks/ironclad.md`. Everything general there (path planning, the elite HP rule, pre-boss rest rule, corner targets, potion policy, combat checklist, boss plans) applies here too, unless this file says otherwise.
 
@@ -47,7 +47,7 @@ From `knowledge/community/necrobinder-tiers.md` `[COMMUNITY]` (built 2026-11-19 
 - **C:** Bone Shards†, Calcify†, Capture Spirit†, Danse Macabre†, Death March, Delay, Devour Life, Graveblast, Grave Warden†, Haunt, Invoke†, Parse†, Sentry Mode, Snap†, Soul Storm†, Veilpiercer†
 - **D:** Bury, Cleanse, Eidolon†, Fear, Flatten†, Melancholy†, Negative Pulse†, Protector†, Right Hand Hand, Sacrifice, Scourge†, Severance, Spur, Afterlife, Blight Strike, Defile, Drain Power, Poke, Pull Aggro, Reave, Sculpting Strike, Wisp, Reap, Sow, Sic 'Em
 
-Version note: none of the three sources is v0.111.1. Nat 1 says the 11/12 beta made no Necrobinder card changes; v0.108–v0.111 changes to Necrobinder cards have not been checked yet (gap).
+Version note: none of the three sources is v0.111.1. v0.111.1 changed ten Necrobinder cards (`knowledge/version-delta-v0.111.1.md`): Eidolon is reworked (ignore its old tier); Time's Up and Legion of Bone no longer exhaust; Sacrifice, Soul Storm and The Scythe got clear buffs. Raise those five by about one tier until v0.111.1 data exists. `[HYPOTHESIS]`
 
 ### 3.2 The Player's habit against consensus
 29 cards differ by 2+ tiers (`knowledge/community/discrepancies-necrobinder.md`). Where the card appears in 10+ finished runs, the Player's own outcome is shown: wins with the card in the final deck against wins without `[PLAYER-DATA]`. This is weak evidence: longer runs collect more cards, so any card looks better in winning decks.

@@ -47,6 +47,32 @@ Sources: [wiki: V0.111.1 – Major Update 3](https://slaythespire.wiki.gg/wiki/S
 | Exoskeleton, Globe Head, Louse Progenitor | Small A8–A9 buffs | Minor. |
 | Multiplayer | Enemy block scaling reduced in 2-player runs | Phase 6. |
 
+## Necrobinder cards changed on v0.111.1
+Source: wiki V0.111.1 – Major Update 3, accessed 2026-11-19 `[COMMUNITY]`. Matters for Phase 5 and for `knowledge/community/necrobinder-tiers.md` (no tier source is on v0.111.1).
+
+| Card | Change | Tier impact `[HYPOTHESIS]` |
+|---|---|---|
+| **Eidolon** | Reworked: was "Exhaust your hand; 9 exhausted gives 1 Intangible". Now "Play all Ethereal cards in your Exhaust pile. Exhaust." Upgrade lowers cost by 1 | Old F/D ratings no longer apply. Good only in Ethereal-heavy decks |
+| **Time's Up** | No longer exhausts | Up |
+| **Legion of Bone** | No longer exhausts | Up (Spire Codex already rated it A) |
+| **Sacrifice** | Block 2× → 3× Osty's max HP | Up (the Player rated it A, consensus D) |
+| **Soul Storm** | Extra damage 2 (3) → 4 (6) | Up (the Player rated it S, consensus C) |
+| **The Scythe** | Damage scaling 4 (5) → 5 (7) | Up |
+| Reave | 9 (11) → 10 (13) | Small up |
+| Shroud | Block 2 (3) → 3 (4) | Small up |
+| Haunt | HP loss 6 (8) → 7 (9) | Small up |
+| Transfigure | Can no longer be generated in combat (bug fix) | None for drafting |
+
+New multiplayer-only Necrobinder cards: Underworld (Doom from allies' attack damage), Soulbound, Cacophony.
+Fixes: Cruelty's extra damage now applies to Osty attacks; Enfeebling Touch with Misery no longer gives Artifact enemies Strength; a crash when an enemy dies to Doom.
+
+## Silent and Regent (brief, for Phase 5 choice)
+- **Silent:** Outbreak is now a Rare 3-cost skill (9 (12) Poison to all); Well-Laid Plans is a Rare power that stops end-of-turn discards; Haze costs 2 and adds Weak; Tracking is 50% (was double); Expertise draws 2 (3) with Retain; Accelerant and Echoing Slash are now Uncommon.
+- **Regent:** many star costs lowered (Guiding Star 1, Alignment 2, Resonance 2); Devastate 35 (45); Regalite gives 4 Block the first time each turn you create a card (was 2 per creation); small nerfs to Pillar of Creation, Collision Course, Refine Blade.
+
+## Relics changed for every character (selected)
+History Course now repeats only Attacks; Tough Egg gives 1 more max HP; Unsettling Lamp is no longer used up when Artifact blocks the debuff; Hand Drill triggers from Expose. The rest are bug fixes.
+
 ## General changes
 - Uncommon cards appear slightly more often.
 - Seeds are 12 characters.
