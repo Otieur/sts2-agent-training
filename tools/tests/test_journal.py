@@ -101,6 +101,12 @@ class TestJournal(unittest.TestCase):
         s = journal.status_from_state({"floor": 3, "act": 1, "hp": 70, "max_hp": 80, "gold": 99, "potions": ["X"]})
         self.assertEqual(s["potions"], ["X"])
 
+    def test_status_from_agent_state(self):
+        st = {"ok": True, "data": {"screen": "MAP", "run": {"floor": 12, "act_id": "0", "current_hp": 41, "max_hp": 80, "gold": 150,
+                                                            "potions": [{"potion_id": "FIRE_POTION", "occupied": True}]}}}
+        s = journal.status_from_state(st)
+        self.assertEqual((s["floor"], s["act"], s["hp"], s["max_hp"], s["gold"], s["potions"]), (12, 1, 41, 80, 150, ["FIRE_POTION"]))
+
 
 if __name__ == "__main__":
     unittest.main()

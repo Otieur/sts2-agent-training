@@ -176,7 +176,11 @@ def table_rows(text, section):
 
 
 def status_from_state(st):
-    """Accept a full STS2MCP state or a compact snapshot."""
+    """Accept a full STS2-Agent or STS2MCP state, or a compact snapshot."""
+    if isinstance(st, dict) and ("screen" in st or "ok" in st):  # STS2-Agent full state
+        from stsstate import compact
+        c = compact(st)
+        return {k: c.get(k) for k in ("floor", "act", "hp", "max_hp", "gold")} | {"potions": c.get("potions") or []}
     if "player" in st:
         p, run = st.get("player") or {}, st.get("run") or {}
         pots = [x.get("id") or x.get("name") for x in p.get("potions") or []]
