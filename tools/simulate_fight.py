@@ -31,9 +31,9 @@ import calc  # noqa: E402
 import plan_turn as pt  # noqa: E402
 from draft import expand_deck  # noqa: E402
 
-def _move(kind="attack", dmg=0, hits=1, status=0, boss_block=0, boss_str=0, p_str=0, p_dex=0, heal=0):
+def _move(kind="attack", dmg=0, hits=1, status=0, boss_block=0, boss_str=0, p_str=0, p_dex=0, heal=0, ringing=False):
     return {"kind": kind, "dmg": dmg, "hits": hits, "status": status, "boss_block": boss_block, "boss_str": boss_str,
-            "p_str": p_str, "p_dex": p_dex, "heal": heal}
+            "p_str": p_str, "p_dex": p_dex, "heal": heal, "ringing": ringing}
 
 
 def vantom_move(b, turn):
@@ -64,9 +64,9 @@ def lagavulin_damaged(b, lost):
 
 
 def beast_move(b, turn):
-    """Stamp (150 Plow) on turn 1; Plow 18 + 2 Strength each turn until 150 HP is lost, then a stun turn with its
-    Strength removed; then Beast Cry (Ringing, not modelled), Stomp 15, Crush 17 + 3 Strength. Order from the
-    extract's declaration order and the boss note `[HYPOTHESIS]`."""
+    """Stamp (Plow 150) on turn 1; Plow 18 + 2 Strength each turn until its HP drops to 150 (community guides; the first
+    model used 150 damage taken and failed calibration), then a stun turn with its Strength removed; then Beast Cry
+    (Ringing: you may play one card next turn), Stomp 15, Crush 17 + 3 Strength. Order `[HYPOTHESIS]`."""
     if turn == 1:
         b["plow"] = 150
         return _move("buff")
@@ -77,16 +77,14 @@ def beast_move(b, turn):
         return _move(dmg=18, boss_str=2)
     i = b.get("cycle", 0)
     b["cycle"] = i + 1
-    return [_move("debuff"), _move(dmg=15), _move(dmg=17, boss_str=3)][i % 3]
+    return [_move("debuff", ringing=True), _move(dmg=15), _move(dmg=17, boss_str=3)][i % 3]
 
 
 def beast_damaged(b, lost):
-    if b.get("plow", 0) > 0:
-        b["plow"] -= lost
-        if b["plow"] <= 0:
-            b["plow"] = 0
-            b["stunned"] = True
-            b["strength"] = 0
+    if b.get("plow", 0) > 0 and b["hp"] <= b["plow"]:  # Plow 150 = the HP at which it triggers
+        b["plow"] = 0
+        b["stunned"] = True
+        b["strength"] = 0
 
 
 def demon_move(b, turn):
@@ -162,6 +160,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     b = {"hp": spec["hp"], "block": 0, "slippery": spec.get("slippery", 0), "strength": 0, "vuln": 0, "weak": 0,
          "asleep": spec.get("asleep", 0), "plating": spec.get("plating", 0), "curse": curse, "hive": spec.get("hive", 0)}
     sloth = mind_rot = waste = disint = 0
+    ringing = False
     for turn in range(1, max_turns + 1):
         strength += demon
         if necro:
@@ -181,7 +180,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             enemy = pt.Enemy(0, boss, b["hp"], b["block"], intent[0], intent[1], vuln=b["vuln"] > 0, weak=b["weak"] > 0,
                              slippery=b["slippery"], hive=b.get("hive", 0))
             player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity,
-                               max_cards=(3 - cards_played) if sloth else None, hp=hp, osty_hp=osty)
+                               max_cards=(1 - cards_played) if ringing else ((3 - cards_played) if sloth else None), hp=hp, osty_hp=osty)
             res = pt.plans(hand, player, [enemy])
             if not res:
                 break
@@ -237,6 +236,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 continue
             break
         discard.extend(hand_ids)
+        ringing = False
         # boss turn
         if mv["kind"] == "attack":
             per = calc.hit_damage(raw_intent[0], attacker_weak=b["weak"] > 0)
@@ -247,6 +247,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             for _ in range(mv["status"]):
                 discard.append(spec.get("status_card", "WOUND"))
         b["strength"] += mv["boss_str"]
+        if mv.get("ringing"):
+            ringing = True
         b["hp"] = min(spec["hp"], b["hp"] + mv.get("heal", 0))
         strength += mv["p_str"]
         dexterity += mv["p_dex"]

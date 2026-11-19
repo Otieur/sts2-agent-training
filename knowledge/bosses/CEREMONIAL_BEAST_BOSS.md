@@ -43,7 +43,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Stomp: 15
   - Crush: 17 + 3 Strength
 - **Plow** `[GAME-EXTRACT]`: after taking damage, it removes the Beast's Strength and stuns it, then the power goes away. The 150 is presumably a damage threshold `[HYPOTHESIS]`.
-- A simulation with that reading (Plow 18 + 2 Strength every turn until 150 HP is lost) makes the fight far harder than the Player's record (2% simulated wins against 5 of 6 real survivals; `reports/phase2/vantom-simulation.md`), so at least one assumption is wrong: Plow may not be a 150-HP threshold, or the Beast may not Plow every turn. Read the intents and the Plow counter in the first fight.
+- **Community guides (search summaries, 2026-11-19):** Plow triggers when the Beast's HP drops to **150** (not after 150 damage; 150–160 at higher ascension), stunning it and wiping its Strength. In phase two, Beast Cry's **Ringing lets you play only one card on your next turn**. Guides advise bringing it to about 150 right before Beast Cry, and not entering phase two with too much HP left `[COMMUNITY]`.
+- A first simulation with the other reading (Plow 18 + 2 Strength every turn until 150 HP is lost) makes the fight far harder than the Player's record (2% simulated wins against 5 of 6 real survivals; `reports/phase2/vantom-simulation.md`), so at least one assumption is wrong: Plow may not be a 150-HP threshold, or the Beast may not Plow every turn. Read the intents and the Plow counter in the first fight.
 
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: Vulnerable sources at least 1 (front-load 150 damage to trigger Plow; survived 1.2, fatal 0.5).
