@@ -19,4 +19,4 @@ Five seeds from the Player's Ironclad history (v0.107.1), chosen 2026-11-19: 2 w
 
 ## Notes
 - The same seed gives the same starting map and the same first events. Rewards diverge once choices differ, so results are similar but not identical.
-- **Seeded starts:** STS2MCP's docs say a seed is rejected at the standard singleplayer character select, so seeded runs may need the Custom mode menu. Custom runs may not count toward unlocks; that doesn't matter here. Confirm in Phase 0 (OQ0.6).
+- **Seeded starts:** STS2-Agent has no action to type a seed (it only reports `character_select.seed`), so the Player enters exam seeds in the game UI. STS2MCP's docs say a seed is rejected at the standard singleplayer character select, so seeded runs may need the Custom mode menu. Custom runs may not count toward unlocks; that doesn't matter here. Confirm in Phase 0 (OQ0.6).
