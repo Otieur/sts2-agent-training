@@ -201,7 +201,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 
 ### P2.E6: Playbook v2
 
-> **P2.E6.S1: Merge the knowledge into the playbook** · Size M · Status: Todo
+> **P2.E6.S1: Merge the knowledge into the playbook** · Size M · Status: Done (playbook v2, 2026-11-19)
 > *As the Next Session, I want the playbook to combine the Player's practice, game facts and community knowledge with clear labels, so that I know how much to trust each rule.*
 >
 > **Acceptance criteria**

@@ -1,178 +1,212 @@
 # Ironclad Playbook
 
-Version: v1 · Game version: v0.107.1 · Last updated: 2026-11-18 · Status: draft, waiting for the Player's factual review
+Version: v2 · Game version: v0.107.1 · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
-The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`. v1 is built from the Player's run history (57 solo Ironclad runs: 12 wins, 40 deaths, 5 abandoned, mostly A7–A10) and two early community notes. Card text and enemy data are not loaded yet; Phase 2 fills most gaps marked "Phase 2".
+The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
-Evidence files: `reports/phase1/` (SUMMARY.md, danger-ironclad.md, cards-ironclad.md, path-ironclad.md, deaths-ironclad.md), `data/benchmarks/ironclad-encounters-v0.107.1.csv`, `knowledge/player-reasoning.md`.
+`[GAME]` > `[OBS]` > `[GAME-EXTRACT]` > `[COMMUNITY]` consensus > `[PLAYER-DATA]` outcomes > single `[COMMUNITY]` > `[PLAYER-SAID]` and habits > `[HYPOTHESIS]`
+
+**Where things are:**
+- Game mechanics: `knowledge/mechanics.md`
+- Ascension: `knowledge/ascension.md`
+- Cards with roles: `knowledge/cards/ironclad.md`
+- Community tiers: `knowledge/community/ironclad-tiers.md`
+- Archetypes: `knowledge/community/archetypes-ironclad.md`
+- Bosses: `knowledge/bosses/`
+- Elites and hallway fights: `knowledge/enemies/`
+- History analysis: `reports/phase1/`
+- Deck features per encounter: `reports/phase2/deck-features-by-encounter.md`
 
 ---
 
 ## 1. Win conditions and overview
 
-- **Runs are lost early, at bosses.** 55% of deaths happen in Act 1 (22/40), and 14 at the Act 1 boss alone. Overall: 24 deaths to bosses, 10 to elites, 6 in hallway fights. `[PLAYER-DATA]` (deaths-ironclad.md)
-  - **Priority 1:** reach the Act 1 boss with a deck that fits that boss and enough HP to survive its typical damage.
-- **HP falls behind in Act 1 in losing runs.** Median HP after floor 15 is 64% in wins and 50% in losses. After the Act 1 boss it is 37% against 21%. `[PLAYER-DATA]`
-- **Bosses are long fights:** median 6–10 turns (benchmark), against 3–6 for hallway fights. Decks need damage that holds up or grows over the fight, not only front-loaded damage. `[PLAYER-DATA]` turn counts; the scaling conclusion is `[HYPOTHESIS]` until Phase 4.
-- **The game heals between acts,** so HP is a per-act budget. Spend it to gain strength within the act, but arrive at each boss with enough. `[PLAYER-DATA]` (HP jumps at floors 18 and 35)
+- **Runs are lost early, at bosses.** In the Player's history, 55% of deaths happen in Act 1 (22/40) and 14 at the Act 1 boss. By fight type: 24 deaths to bosses, 10 to elites, 6 in hallways. `[PLAYER-DATA]`
+  - **Priority 1:** reach each boss with a deck built for *that* boss (section 10) and enough HP for its typical damage.
+- **Bosses are long:** median 6–10 turns. They need damage that holds up or grows (scaling), not only front-loaded damage. The Knowledge Demon history supports this: fatal decks had fewer powers, energy and Strength cards. `[PLAYER-DATA, weak]`
+- **The boss is known at act start** (the map state holds it). Read it on floor 1 of every act. `[GAME-EXTRACT]` via STS2MCP
+- **HP is a per-act budget.** The game heals at each act's Ancient: 100% of missing HP at A0–1, 80% from A2. `[PLAYER-DATA]`
+- Burning Blood heals 6 after each won fight. `[COMMUNITY]`
 
 ## 2. Card evaluation
 
-### 2.1 Procedure (use in this order)
-
-1. **Assess deck needs** against the triangle plus two additions. `[PLAYER-SAID]` framework, adopted. Thresholds come in Phase 2.
-   - **Attack:** enough damage per turn for the next elite and the act boss.
-   - **Defence:** enough block per turn for the next elite's and the boss's big turns.
+### 2.1 Procedure (in order)
+1. **Deck needs.** Measure the deck against five needs, not feel. Thresholds `[HYPOTHESIS]` are set from Phase 4 data.
+   - **Attack:** damage per turn for the next elite and the boss.
+   - **Defence:** block for the biggest hit of the next elite and the boss (boss table, section 10).
    - **Operations:** card draw and energy.
-   - **Scaling:** damage or block that grows over a 6–10 turn boss fight.
-   - **Attack shape:** multi-hit or cheap attacks against big single hits; single-target against multi-target. This matters for specific bosses and elites (sections 10 and 12).
-2. **Fit the boss.** Read the act boss at the start of the act and draft toward its plan (section 10). `[PLAYER-SAID]` + standard practice.
-3. **Look up the card.** Use the provisional order in 2.2 until Phase 2 replaces it.
-4. **Skip if nothing improves the deck for the coming fights.** The Player skips 10% of reward screens in Act 1, 31% in Act 2 and 49% in Act 3, and half the time once the deck reaches 30 cards. That is a sensible pattern, kept as the baseline. `[PLAYER-DATA]` habit
-5. **Duplicates:** the Player almost never takes a second Armaments, Shrug It Off or Breakthrough. Treat a second copy as lower value unless the deck plan needs it. `[PLAYER-DATA]` habit, to be confirmed with card text.
+   - **Scaling:** Strength, powers, energy growth.
+   - **Attack shape:** what the next boss needs. Vantom wants many hit instances and punishes hit-all single hits. Entomancer punishes many hits. Skulking Colony caps damage per turn. The Kin wants hit-all damage.
+2. **Boss fit** overrides tier: draft toward the act boss's deck checklist.
+3. **Tier** from 2.2. Within a tier, prefer the card that fills the weakest need.
+4. **Archetype fit** once committed (section 3).
+5. **Skip** if nothing improves the deck for the coming fights. Bigger decks skip more: the Player's skip rate rises from 5% under 15 cards to 50% at 30+, a sensible pattern. `[PLAYER-DATA]`
 
-### 2.2 Provisional card order (Player baseline, not proven strength)
+### 2.2 Card tiers (community consensus, v0.107-era weighted)
+From `knowledge/community/ironclad-tiers.md` `[COMMUNITY]`. † marks cards where sources disagree by 2+ tiers. Card roles are `[GAME-EXTRACT]`.
 
-This is the Player's implied priority from 632 reward screens (Bradley-Terry, card-ranking-ironclad.md). It describes **habit, not strength**. It is a default only for when Phase 2 data is missing. Brackets give the score and the number of comparisons.
+- **S:** Offering, Cascade, Conflagration, Corruption, Demon Form, Feed, Stoke, Unmovable
+- **A:** Crimson Mantle, Impervious, Fiend Fire, Battle Trance, Brand, Colossus, Dominate, Feel No Pain†, Hellraiser, One-Two Punch†, Pyre†, Tear Asunder†
+- **B:** Barricade†, Bloodletting†, Burning Pact, Cruelty, Juggernaut†, Shrug It Off†, Aggression†, Mangle, Pact's End, Thrash†, Body Slam†, Bully†, Dark Embrace†, Expect a Fight, Flame Barrier, Forgotten Ritual, Pommel Strike†, Rupture, Second Wind†, Stampede†, True Grit
+- **C:** Break†, Armaments†, Ashen Strike, Drum of Battle†, Evil Eye, Headbutt†, Howl from Beyond†, Inferno†, Juggling†, Pillage, Rage, Stomp†, Stone Armor, Taunt†, Uppercut†, Vicious
+- **D:** Anger, Blood Wall, Bludgeon†, Dismantle†, Fight Me†, Inflame, Molten Fist, Primal Force†, Spite, Sword Boomerang, Tremble, Unrelenting, Whirlwind†, Breakthrough, Hemokinesis, Infernal Blade, Perfected Strike, Rampage, Setup Strike, Twin Strike, Cinder, Havoc, Iron Wave, Thunderclap
+- **Multiplayer-only value:** Tank, Demonic Shield. Rate them low solo.
 
-- **High:** Pyre (+3.1, 35), Dominate (+3.1, 58), Thrash (+3.0, 19), Offering (+2.7, 12), Dark Embrace (+2.7, 13), Fiend Fire (+2.6, 14), Cruelty (+2.5, 13), Brand (+2.5, 14), Conflagration (+2.2, 16), Fight Me (+2.1, 36)
-- **Good:** Evil Eye, One-Two Punch, Second Wind, Impervious, Aggression, Pact's End, Stoke, Burning Pact
-- **Situational:** Mangle, Stampede, Vicious, Hellraiser, Colossus, True Grit, Crimson Mantle, Feed, Tear Asunder, Drum of Battle, Tremble, Ashen Strike, Molten Fist, Armaments, Bloodletting, Forgotten Ritual, Infernal Blade, Demon Form, Cascade, Barricade, Unrelenting, Not Yet
-- **Marginal (just above skipping):** Breakthrough, Feel No Pain, Battle Trance, Inferno, Flame Barrier, Uppercut, Shrug It Off, Taunt, Dismantle
-- **Usually skipped by the Player:** Pillage, Bully, Twin Strike, Stomp, Rage, Howl from Beyond, Sword Boomerang, Rupture, Cinder, Pommel Strike, Thunderclap, Havoc, Rampage, Inflame, Iron Wave, Headbutt, Setup Strike, Body Slam, Spite, Bludgeon, Stone Armor, Hemokinesis, Anger, Perfected Strike, Whirlwind, Juggling, Blood Wall, Expect a Fight
+**Context overrides** (tier is a default, not a rule):
+- **Vantom is the Act 1 boss:** raise cheap and multi-hit attacks (Anger, Twin Strike, Sword Boomerang, Thrash, Fight Me). They clear Slippery. Lower hit-all single-hit cards (Breakthrough, Thunderclap). `[GAME-EXTRACT]` mechanics, `[HYPOTHESIS]` value
+- **Strength engine in the deck:** raise multi-hit payoffs one tier. `[COMMUNITY]`
+- **Exhaust engine** (Feel No Pain or Dark Embrace in the deck): raise exhaust outlets one tier.
+- **Second copies:** usually a tier lower, except engine pieces the deck needs twice. `[HYPOTHESIS]`
 
-**Known risk in this order** `[HYPOTHESIS]`: several cheap or multi-hit-looking attacks sit in the skipped group (Anger, Twin Strike, Sword Boomerang). Those may be exactly what Vantom requires (H2). When Vantom is the Act 1 boss, raise cheap and multi-hit attacks until Phase 2 card text and Phase 4 tests settle it.
-
-**Outcome hints** `[HYPOTHESIS]` (survivorship-inflated): win rate of finished runs with the card in the final deck, against without it:
-- Dominate: 53% against 11% (n=15 with)
-- True Grit: 42% against 7% (n=24)
-- Fight Me: 47% against 14% (n=15)
-- Molten Fist: 42% against 12% (n=19)
+### 2.3 Upgrade priority (v2)
+Engine pieces first: Demon Form, Corruption, Barricade, Feel No Pain, Body Slam. Then cards whose upgrade changes their function (Armaments, True Grit gain card choice when upgraded `[GAME-EXTRACT]`). Then the best attack. The Player's habit of upgrading Armaments first is a reasonable baseline for decks without an engine. `[COMMUNITY]` + `[PLAYER-DATA]`
 
 ## 3. Archetypes and commit signals
+See `knowledge/community/archetypes-ironclad.md`. Summary:
 
-- The Player's final decks show no clear archetypes (silhouette about 0.04). They share a core (Armaments 60%, Tremble 48%, True Grit 46%, Shrug It Off 44%, Molten Fist 38%, Bloodletting 37%) plus whatever was strong at the time. `[PLAYER-DATA]`
-- Real archetypes, with their key cards, relics and commit signals, come from community sources in Phase 2 (P2.E4.S3). Until then: draft for deck needs (2.1), not for an archetype.
+| Archetype | Engine | Payoffs | Commit signal `[HYPOTHESIS]` |
+|---|---|---|---|
+| Strength | Demon Form, Dominate, Brand, Fight Me, Rupture | Multi-hit: Twin Strike, Sword Boomerang, Thrash, Tear Asunder, Fiend Fire, Whirlwind | A repeating Strength source plus 2 multi-hit attacks by mid-Act 2 |
+| Exhaust | Corruption, Feel No Pain, Dark Embrace | Fiend Fire, Ashen Strike, Pact's End | Feel No Pain or Dark Embrace plus 2 exhaust outlets |
+| Block | Barricade, Unmovable, Juggernaut | Body Slam, Juggernaut | Barricade or Unmovable plus Body Slam or Juggernaut |
+| HP as a resource | Offering, Bloodletting, Brand | Rupture, Inferno, Crimson Mantle | Rupture or Inferno plus 2 cheap HP costs; careful at high ascension |
+| Tempo | Pyre, Offering, Stampede, Hellraiser, Aggression, Cascade | (any) | Always good; safest when no direction yet |
+
+The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`). Commit when the core appears. Otherwise draft for needs.
 
 ## 4. Path planning and HP budget
 
-1. **At each act start:** read the boss, list candidate paths, and choose one. Score each path on elites, rest sites before elites and the boss, shops, and expected HP cost (sum of benchmark medians for likely fights). Write the plan in the run journal.
-2. **Elites under 50% HP: avoid.** `[PLAYER-DATA]` outcome evidence, n=308 elite fights in Acts 1–2, all characters:
-   - Entered under 50% HP: 24% ended the run (Ironclad 4/16).
-   - Entered at 50–70%: 8% (Ironclad 3/32).
-   - Entered at 70% or more: 3% (Ironclad 2/31).
-   - Exception: take one under 50% only when the alternative path is worse, or the deck clearly handles that elite.
-3. **Elites at 50–70% HP:** decide by the elite's benchmark damage (below) against current HP, with a margin for a bad draw (use p75).
-4. **Re-plan when:** HP falls more than 15% of max below the plan, a key card or relic changes the deck's needs, or a forced detour happens.
+1. **At act start:** read the boss and open its plan. Choose a path by elites, rest sites before elites and the boss, shops, and expected HP cost (sum of benchmark medians; p75 for elites). Write the plan in the run journal.
+2. **Elites under 50% HP: avoid.** `[PLAYER-DATA]` outcome, n=308 elite fights in Acts 1–2, all characters:
+   - 24% of fights entered under 50% HP ended the run (Ironclad 4/16)
+   - 8% at 50–70% (Ironclad 3/32)
+   - 3% at 70% or more (Ironclad 2/31)
+   - Exception: the elite is one the deck handles easily (Phantasmal Gardeners, median 12) and the alternative path is worse.
+3. **Elites at 50–70% HP:** take one only if current HP minus its p75 leaves enough to reach the next rest site.
+4. **Re-plan** if HP falls more than 15% of max below the plan, a key card or relic changes the deck's needs, or a detour is forced.
 
-**Elite benchmark** (Ironclad, HP lost per fight; median / p75; fights). `[PLAYER-DATA]`
+**Elite reference** (Ironclad HP lost per fight, median / p75; notes in `knowledge/enemies/`):
 
-| Act | Elite | Median | p75 | n | Fatal |
+| Act | Elite | Median / p75 | Fatal | Key mechanic `[GAME-EXTRACT]` | Answer |
 |---|---|---|---|---|---|
-| 1 | Bygone Effigy | 29 | 39.5 | 12 | 1 |
-| 1 | Terror Eel | 29 | 39 | 5 | 0 |
-| 1 | Byrdonis | 22.5 | 32.8 | 10 | 3 (all entered at about 29% HP) |
-| 1 | Phrog Parasite | 19 | 30 | 9 | 1 |
-| 1 | Skulking Colony | 19 | 35 | 9 | 1 |
-| 1 | Phantasmal Gardeners | 12 | 19 | 8 | 0 |
-| 2 | Decimillipede | 36.5 | 39.2 | 8 | 0 |
-| 2 | Entomancer | 30 | 38 | 13 | 3 (all characters median: 17) |
-| 2 | Infested Prisms | 27 | 38.8 | 8 | 0 |
-| 3 | Mecha Knight | 34 | 43 | 5 | 1 |
+| 1 | Bygone Effigy | 29 / 39.5 | 1/12 | Sleeps; wakes with +10 Strength (slash 25); Slow (takes more per card played) | Burst during sleep with many cards; block 25 |
+| 1 | Terror Eel | 29 / 39 | 0/5 | First damage stuns it; then 99 Vulnerable on you | Hit it on turn 1; block ×1.5 hits |
+| 1 | Byrdonis | 22.5 / 32.8 | 3/10 | +Strength every turn (Territorial) | Kill fast; never under 50% HP |
+| 1 | Phrog Parasite | 19 / 30 | 1/9 | Spawns Wrigglers on death; Infection cards | Save hit-all damage for wave 2 |
+| 1 | Skulking Colony | 19 / 35 | 1/9 | Caps HP lost per turn | Steady damage; no burst |
+| 1 | Phantasmal Gardeners | 12 / 19 | 0/8 | Several small bodies | Hit-all damage; safest elite |
+| 2 | Decimillipede | 36.5 / 39.2 | 0/8 | Segments reattach | Kill segments together; hit-all damage |
+| 2 | Entomancer | 30 / 38 | 3/13 | **Each damage instance adds a card to your draw pile** | Few big hits, not multi-hit; block Bees 3×7 |
+| 2 | Infested Prisms | 27 / 38.8 | 0/8 | Hits 22–27, Pulsate +4 Strength and 20 block | Block big; don't attack into Pulsate |
+| 3 | Mecha Knight | 34 / 43 | 1/5 | Artifact; Heavy Cleave 35 (40 after Windup) | Block 40; strip Artifact first |
 
 ## 5. Rest-site policy
 
-- **Default: Smith.** At 50% HP or more, the Player's Smith-first habit matches the outcomes seen so far. Before a boss at 50–70% HP, 24% of Smith choices ended at the boss, and both Heal cases are too few to compare. `[PLAYER-DATA]`
-- **Before a boss:** rest if current HP is below that boss's median benchmark damage plus about 10. Otherwise smith. `[HYPOTHESIS]` to test in Phase 4 against the Player's baseline (equally likely to heal or smith at 37% HP before a boss).
-  - Supporting evidence (small samples): before a boss at 35–50% HP, death at the boss after Heal was 17% (1/6) and after Smith 25% (3/12). Across all characters, 21% against 31%.
-  - A Heal restores about 29% of max HP (about 23 on 80).
-- **Not before a boss:** rest under 35% HP if an elite or a dangerous hallway fight is likely before the next rest site. Otherwise smith. `[HYPOTHESIS]`
-- **Upgrade order (baseline):** the Player most often upgrades Armaments first (18 runs), then True Grit, Bash, Dominate, Vicious and Stampede. `[PLAYER-DATA]` habit. Phase 2 card text decides real upgrade value.
+- **Before a boss:** rest if HP is below the boss's threshold in section 10 (median + 10; higher for Queen and Aeonglass, where arrival HP mattered most). Otherwise smith. `[HYPOTHESIS H1]`, tested in Phase 4 against the Player's baseline (equally likely to heal or smith at 37% HP before a boss).
+- **Before an elite on the path:** rest if HP minus the elite's p75 would leave less than 50% of max for the next fights. `[HYPOTHESIS]`
+- **Otherwise:** smith at 50% HP or more. Under 35%, rest. In between, decide by the next two fights' benchmark cost.
+- A rest heals about 29% of max HP (about 23 on 80). `[PLAYER-DATA]`
 
 ## 6. Shop policy (including removal)
 
-- **Gold:** the Player arrives at Act 1 shops with a median 191 gold and spends most of it. Purchases are mostly relics and colorless cards. Most bought relics: Bag of Marbles, Miniature Tent, Vajra, Oddly Smooth Stone, Wing Charm, Membership Card. `[PLAYER-DATA]` habit
-- **Removal:** the Player rates removal as weak in big or draw-heavy decks. The arithmetic agrees that one removal is a small shift, about 3 percentage points of draw quality. `[PLAYER-SAID]` + arithmetic.
-  - **Default:** removal below a good relic or a card that fills a deck need.
-  - **To test** `[HYPOTHESIS]`: remove a Strike at the first Act 1 shop when affordable. Runs that removed a basic card in Act 1 survived Act 1 in 79% of cases (11/14), against 50% (19/38). That comparison is confounded.
-- Ascender's Bane (A5 and up) was never removed in any run. Whether it can be removed is an open question for Phase 2.
+- **Priority** `[HYPOTHESIS]`:
+  1. A relic or card that fills the current boss's checklist
+  2. An S or A-tier card
+  3. Removal of a Strike in a small Act 1 deck
+  4. Other relics
+  5. Potions (especially Weak, Block and Strength for the coming boss)
+- **Removal** `[HYPOTHESIS H4]`: remove a Strike at the first Act 1 shop when affordable, against the Player's relic-first baseline. Arithmetic: one removal is about a 3 percentage point improvement in draw quality. Act 1 basic-removal runs survived Act 1 in 79% of cases against 50% (confounded).
+- From A3, gold is about 25% scarcer. `[PLAYER-DATA]`
+- Ascender's Bane is Eternal and probably cannot be removed. `[GAME-EXTRACT]` keyword
 
 ## 7. Events and Ancients
-
-- **No outcome-backed event rules yet.** The Player's choices per event are in path-ironclad.md as a baseline. Phase 2 adds event text and outcomes.
-- **Observed safe values** `[PLAYER-DATA]`:
-  - Sunken Treasury, "Second chest": +342 gold on average (6 visits).
-  - Wellspring, "Bathe": no HP cost (4 visits).
-- **Observed costly ones** `[PLAYER-DATA]`:
-  - Slippery Bridge: −6.8 HP on average (23 visits).
-  - Whispering Hollow: −6 HP (6 visits).
-- **Ancients:** the Player's pick rates are a baseline only (path-ironclad.md). Phase 2 relic text decides.
+- No outcome-backed event rules yet. Event options and risk tags are in `knowledge/data/extract-2026-09-21/events.json` and `event_options.json` `[GAME-EXTRACT]`. The Player's choices are the baseline (`reports/phase1/path-ironclad.md`).
+- Observed safe value `[PLAYER-DATA]`:
+  - Sunken Treasury, "Second chest": +342 gold on average
+  - Wellspring, "Bathe": no HP cost
+- Observed costly `[PLAYER-DATA]`:
+  - Slippery Bridge: −6.8 HP on average
+  - Whispering Hollow: −6 HP
+- **Ancients:** relic text in `relics.json` `[GAME-EXTRACT]`. Rate by boss fit and scaling.
 
 ## 8. Potion policy
+- **Use freely in elites and bosses.** The Player's baseline is good: about 1.1 per boss fight and 0.8 per elite, and only 4 of 40 deaths with an unused potion. `[PLAYER-DATA]` outcome
+- From A4 there are 2 slots instead of 3 `[PLAYER-DATA]`. Don't hoard.
+- Each boss plan has a potion section. The general rules:
+  - Weak potions go on the boss's biggest-hit turn.
+  - Strength potions never go before Vantom's Slippery is gone.
+  - Debuff potions only after Artifact is stripped (Aeonglass, Mecha Knight).
 
-- **Use potions freely in elites and bosses.** The Player uses about 1.1 per boss fight and 0.8 per elite, and only 4 of 40 deaths still had an unused potion. Keep this. `[PLAYER-DATA]` outcome
-- **Never end a run holding potions.** On a turn where `end_turn_will_kill_player` is true, every usable potion is played first.
-- **Weak potion against Vantom:** use it early (section 10). `[COMMUNITY]`
-
-## 9. Combat checklist (v1; extended in Phases 2–4)
-
-1. Read every enemy intent. Total the incoming damage.
-2. Check for lethal on enemies. Killing an attacker removes its damage.
-3. Block needed = incoming damage minus the HP loss the act budget allows.
-4. Play draw and energy first when they change the options. Play powers early in long fights. Apply Vulnerable before attacks, and Weak before the enemy's big turn.
-5. Use a potion when it prevents serious HP loss or wins a dangerous fight.
-6. Check `end_turn_will_kill_player` and `lethal_risks` before ending the turn.
-7. Write down the expected HP after the enemy turn, and compare it next turn to catch arithmetic errors.
+## 9. Combat checklist
+1. Read every intent. Total the incoming damage. Note special powers (Slippery, Hardened Shell, Personal Hive, Territorial, Thorns, Flutter).
+2. Check for lethal. Killing an attacker removes its damage.
+3. Block needed = incoming damage minus what the act's HP budget allows.
+4. Order: draw and energy first; powers early in long fights; Vulnerable before attacks; Weak before the enemy's big turn.
+5. **Encounter rules:**
+   - Vantom: count Slippery stacks.
+   - Entomancer: minimise hit count.
+   - Skulking Colony: don't overkill the per-turn cap.
+   - Toadpoles with Thorns: single hits.
+   - Exoskeletons (Hard to Kill): many small hits.
+6. Potions when they prevent serious HP loss or win a dangerous fight.
+7. Check `end_turn_will_kill_player` and `lethal_risks` before ending the turn.
+8. Write down the expected HP after the enemy turn and compare it next turn. Use `tools/calc.py` for exact numbers.
 
 ## 10. Boss preparation
 
-Read the boss at the start of the act. Draft and path toward its plan. Benchmarks are Ironclad HP lost per fight. `[PLAYER-DATA]`
+| Act | Boss | Median / p75 | Fatal (Ironclad) | Rest if HP below | The one thing to prepare `[GAME-EXTRACT]` mechanics |
+|---|---|---|---|---|---|
+| 1 Overgrowth | [Vantom](../knowledge/bosses/VANTOM_BOSS.md) | 48 / 57.5 | 6/11 | ~58 | 9 hit instances to clear Slippery; block 27 on turn 3 |
+| 1 Overgrowth | [Ceremonial Beast](../knowledge/bosses/CEREMONIAL_BEAST_BOSS.md) | 39 / 45.5 | 1/7 | ~49 | Front-load damage to break 150 Plow (stuns it, resets its Strength) |
+| 1 Overgrowth | [The Kin](../knowledge/bosses/THE_KIN_BOSS.md) | 34.5 / 41.2 | 0/8 | ~45 | Hit-all damage for the followers |
+| 1 Underdocks | [Waterfall Giant](../knowledge/bosses/WATERFALL_GIANT_BOSS.md) | 38 / 41 | 2/5 | ~48 | Fast kill; bank block for the death explosion |
+| 1 Underdocks | [Soul Fysh](../knowledge/bosses/SOUL_FYSH_BOSS.md) | 33 / 41 | 3/7 | ~43 | Exhaust Beckon cards; burst outside Intangible |
+| 1 Underdocks | [Lagavulin Matriarch](../knowledge/bosses/LAGAVULIN_MATRIARCH_BOSS.md) | 28 / 40.5 | 2/8 | ~38 | Set up while it sleeps; kill before repeated Soul Siphons |
+| 2 Hive | [Knowledge Demon](../knowledge/bosses/KNOWLEDGE_DEMON_BOSS.md) | 45 / 59.8 | 4/12 | ~55 | Scaling and energy (about 60 damage per turn over 7 turns); curse choice |
+| 2 Hive | [Kaiser Crab](../knowledge/bosses/KAISER_CRAB_BOSS.md) | 43.5 / 48.5 | 2/6 | ~54 | Focus the Rocket claw; block 31+ on the Laser |
+| 2 Hive | [The Insatiable](../knowledge/bosses/THE_INSATIABLE_BOSS.md) | 31.5 / 45.8 | 2/6 | ~42 | Watch the Sandpit timer; energy for Frantic Escape |
+| 3 Glory | [Aeonglass](../knowledge/bosses/AEONGLASS_BOSS.md) | 48 / 70 | 0/5 | ~58 (arrive high) | Fewer, bigger cards (Wither every 6 cards); strip 3 Artifact |
+| 3 Glory | [Test Subject](../knowledge/bosses/TEST_SUBJECT_BOSS.md) | 44 / 44 | 0/5 | ~54 | Three phases: attacks in phase 1, full block in 2, burst on tangible turns in 3 |
+| 3 Glory | [Queen](../knowledge/bosses/QUEEN_BOSS.md) | 41 / 47.5 | 2/7 | ~60 (arrive high) | Artifact against You're Mine (99 Weak, Vulnerable, Frail); draw |
 
-| Act | Boss | Median | p75 | n | Fatal | Rest before the boss if HP is below | Plan |
-|---|---|---|---|---|---|---|---|
-| 1 | Vantom | 48 | 57.5 | 11 | 6 | about 58 | `knowledge/bosses/VANTOM_BOSS.md`: strip Slippery with cheap or multi-hit attacks, don't stall `[COMMUNITY]` |
-| 1 | Ceremonial Beast | 39 | 45.5 | 7 | 1 | about 49 | Phase 2 |
-| 1 | Waterfall Giant | 38 | 41 | 5 | 2 | about 48 | Phase 2 |
-| 1 | The Kin | 34.5 | 41.2 | 8 | 0 | about 45 | Phase 2 (longest fight: median 9 turns) |
-| 1 | Soul Fysh | 33 | 41 | 7 | 3 | about 43 | Phase 2 |
-| 1 | Lagavulin Matriarch | 28 | 40.5 | 8 | 2 | about 38 | Phase 2 (high spread: p90 53) |
-| 2 | Knowledge Demon | 45 | 59.8 | 12 | 4 | about 55 | Phase 2 |
-| 2 | Kaiser Crab | 43.5 | 48.5 | 6 | 2 | about 54 | Phase 2 |
-| 2 | The Insatiable | 31.5 | 45.8 | 6 | 2 | about 42 | Phase 2 |
-| 3 | Aeonglass | 48 | 70 | 5 | 0 | about 58 | Phase 2 |
-| 3 | Test Subject | 44 | 44 | 5 | 0 | about 54 | Phase 2 (median 10 turns) |
-| 3 | Queen | 41 | 47.5 | 7 | 2 | about 51 | Phase 2 |
-
-The rest column applies the section 5 hypothesis: median plus 10, rounded.
+At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for both. `[PLAYER-DATA]`
 
 ## 11. Player baseline (habits to beat or test, not targets)
-
-- Smiths down to low HP: equally likely to heal or smith at 27% HP overall, 37% before a boss, 18% elsewhere. Reason given: "at high ascension, get strong for Acts 2–3 or die."
-- Takes elites at moderate or low HP for the same reason.
-- Judges the triangle by feel.
+- Smiths down to low HP: equally likely to heal or smith at 27% HP overall, 37% before a boss.
+- Takes elites at moderate or low HP "to get strong for later".
+- Judges deck needs by feel.
 - Rarely removes cards (34 of 57 runs ever remove one).
 - Rarely takes second copies.
-- The card order in 2.2.
+- **Card habit against consensus** (`knowledge/community/discrepancies.md`, 23 cards with a gap of 2+ tiers):
+  - Rates higher than consensus: Fight Me, Evil Eye, Molten Fist, Tremble, Second Wind, Thrash, Cruelty, Aggression, Dark Embrace, Armaments, Vicious, Drum of Battle, Ashen Strike, Pact's End
+  - Rates lower: Cascade, Demon Form, Battle Trance, Feel No Pain, Body Slam, Bully, Expect a Fight, Pommel Strike, Rupture
+- The Player's implied card order (Phase 1 head-to-head scores): `reports/phase1/card-ranking-ironclad.md`.
 
 ## 12. Hypotheses to test (Phase 4 experiments)
 
-| ID | Hypothesis | Test | Status |
-|---|---|---|---|
-| H1 | Resting before a boss when HP is below the boss's median damage plus 10 reduces boss deaths | Compare runs following the rule with the baseline | Open |
-| H2 | Vantom punishes decks without cheap or multi-hit attacks (Slippery) | Phase 2 card text plus Vantom fights in Phase 4 | Leading explanation |
-| H3 | Entomancer punishes a lack of multi-target damage | Phase 2 enemy and card data | Open |
-| H4 | Removing a Strike at the first Act 1 shop improves Act 1 survival | Phase 4 runs with and without | Open |
-| H5 | Avoiding elites under 50% HP reduces deaths | Already supported by outcome data; adopted as a rule (4.2) | Adopted |
-| H6 | Raising cheap and multi-hit attacks when Vantom is the Act 1 boss fixes the Vantom problem | Phase 4 | Open |
+| ID | Hypothesis | Evidence so far | Test | Status |
+|---|---|---|---|---|
+| H1 | Resting before a boss when HP is below the threshold (section 10) reduces boss deaths | Small samples lean toward resting at 35–50% HP | Rule against baseline over 10+ runs | Open |
+| H2 | Vantom losses come from Slippery: big hits and hit-all single hits are wasted; the fight runs into cycle 2 | Multi-hit *count* does not separate outcomes (n=28). Fatal decks had more hit-all single-hit cards (0.8 against 0.3) and less draw (1.0 against 2.1) `[PLAYER-DATA, weak]` | Play the Vantom plan; log stack-clear turn and damage | Refined (v2) |
+| H3 | ~~Entomancer punishes a lack of multi-target damage~~ **Replaced:** Entomancer punishes hit count (Personal Hive adds a card per damage instance) | `[GAME-EXTRACT]` power definition; fatal decks had more cheap attacks (9.5 against 8.1) | Few big hits against it | Replaced (v2) |
+| H4 | Removing a Strike at the first Act 1 shop improves Act 1 survival | 79% against 50%, confounded | Runs with and without | Open |
+| H5 | Avoiding elites under 50% HP reduces deaths | n=308; 24% against 3–8% | Adopted as a rule | Adopted |
+| H6 | Raising cheap and multi-hit attacks when Vantom is the boss fixes the Vantom problem | Mechanics support it; history can't test it (decks held about 0.7 multi-hit cards) | Phase 4 Vantom fights | Open |
+| H7 | Knowledge Demon needs a scaling engine (powers, energy, Strength) by the end of Act 2 | Fatal decks: powers 1.8 against 2.7, energy 0.8 against 1.6 (n=40) `[PLAYER-DATA, weak]` | Track engine presence on arrival | New (v2) |
+| H8 | Arrival HP matters most for Queen and Aeonglass | Survived arrived at 79% / 87%, fatal at 54% / 65% (all characters) | Higher rest thresholds there | New (v2) |
 
 ## 13. Open questions and conflicts
-
-- Card types and text are needed before the provisional order can be replaced (Phase 2).
-- Which cards are multi-hit, multi-target or 0-cost (Phase 2)?
-- Can Ascender's Bane be removed?
-- The act-to-boss mapping: which Act 1 bosses belong to which act variant, and is the boss visible at act start (OQ2.3)?
-- Rest policy: the Player's baseline against H1. Both stay until Phase 4 data decides.
+- The extract's build version is unverified. Re-check card numbers against live `/data` on v0.107.1 (P2.E1).
+- Not Yet (card) and Aeonglass (boss) are missing from the extract.
+- **Cards where sources disagree** (†): Feel No Pain, One-Two Punch, Pyre, Barricade, Juggernaut, Aggression, Dark Embrace, Body Slam and others. Nat 1 Gaming is v0.113 beta. Spire Codex (main) is partial.
+- Bygone Effigy's Slow multiplier, the Colossus power and Infested Prism's Vital Spark: effects to verify in game.
+- Whether killing the Kin Priest ends that fight; whether Lagavulin Matriarch wakes when damaged.
 
 ## 14. Changelog
-
-- **v1 (2026-11-18):** first version from the Phase 1 run-history analysis and the interview. Adopted: elite HP rule (outcome evidence), triangle framework, boss-first drafting, potion policy. Hypotheses H1–H6 opened. Card order marked as Player baseline only.
+- **v2 (2026-11-19, overnight):** imported decompiled game data (card roles, monster moves, powers).
+  - Replaced the provisional Player-habit card order with community consensus tiers plus context overrides.
+  - Added boss plans for all 12 bosses and notes for 12 elites and 15 hallway fights.
+  - Elite reference with mechanics; ascension-aware notes (A2 heal, A4 potion slots, A10 double boss).
+  - Refined H2, replaced H3 (Entomancer punishes hit count), added H7 and H8.
+  - Moved the Player's card habits to the baseline section.
+- **v1 (2026-11-18):** first version from the Phase 1 run-history analysis and interview.

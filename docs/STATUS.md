@@ -43,7 +43,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P2.E3 | Enemies and encounters | Done | 83-encounter catalogue; 12 elite + 15 hallway notes; Bestiary cross-check (S4) needs the live game |
 | P2.E4 | Community strategy | Done | sources.md, ironclad-tiers.md, archetypes-ironclad.md, discrepancies.md |
 | P2.E5 | Boss plans | Done | All 12 bosses; Aeonglass community-only |
-| P2.E6 | Playbook v2 | Todo | |
+| P2.E6 | Playbook v2 | In progress | v2 written overnight; optional Player skim (S2) |
 | P2.E7 | Knowledge maintenance | Todo | |
 
 ## Phase 3: Shadowing ([doc](phase-3-shadowing.md))

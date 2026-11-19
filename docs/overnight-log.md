@@ -18,3 +18,4 @@ Block K (morning report) starts no later than 09:52 EST.
 | C: Mechanics | 00:37 | 00:39 | knowledge/mechanics.md, knowledge/ascension.md | Ascension list checked against run data: A2, A3, A4, A5, A10 confirmed; MetaBot's list refuted |
 | D: Boss plans | 00:39 | 00:44 | tools/build_encounter_notes.py (auto data blocks), knowledge/encounters.md, knowledge/bosses/*.md (12 plans) | Community boss research (6 searches + 2 pages); every plan lists checklist, HP threshold, opening turns, potions, killer analysis |
 | E: Elites and encounters | 00:44 | 00:47 | knowledge/enemies/*.md (12 elites, 15 hallway) | Entomancer's Personal Hive punishes hit count (H3 replaced); Byrdonis gains Strength every turn; Skulking Colony caps damage per turn; Terror Eel stuns on first damage |
+| J: Playbook v2 | 00:47 | 00:50 | playbooks/ironclad.md v2 | Consensus tiers + context overrides, boss table with plan links and thresholds, elite reference, H2 refined, H3 replaced, H7/H8 added |
