@@ -75,3 +75,4 @@ Block K (morning report) starts no later than 09:52 EST.
 | X50: A7 check | 02:31 | 02:31 | knowledge/ascension.md A7 verified in run data (upgraded card rewards 18.2% -> 9.7%; Rares 14.4% -> 12.1%); gap 13 narrowed | |
 | X51: Event choices | 02:32 | 02:32 | tools/analyze_event_choices.py -> reports/phase2/event-choices.md + csv (85 options; one p<0.05, about chance level); advise.py shows the record; playbook section 7 note | No event rule adopted |
 | X52: Osty damage in deck metrics | 02:33 | 02:34 | deck_metrics counts "Your Osty deals X damage"; deck-strength report and fight model rebuilt; playbook v2.10 figures updated (Act 1 terciles 21/22/31%, coefficients 1.2 and 3.8); conclusions unchanged; checker passes | |
+| X53: Draft morning report | 02:34 | 02:35 | docs/overnight-report.md drafted early as insurance; Block K at 09:52 finalises it | |
