@@ -58,6 +58,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Recharge: sleeps
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: single-hit hit-all attacks at most 1 (focus one claw; survived 0.7, fatal 1.4); energy cards at least 1 (survived 1.2, fatal 0.6).
 - **Face the bigger hit** `[HYPOTHESIS]`: make your last targeted card (or potion) of the turn target the claw whose next attack is larger, so that attack is not a back attack. On the Laser turn, end facing Rocket.
 - **Plan the kill turn around Crab Rage:** the surviving claw gets 99 Block for that turn, so damage after the first kill that turn is wasted. Kill the first claw with your last attack of a turn, then switch to the other claw next turn. It keeps the 5 Strength.
 - **Focus one claw** to halve incoming damage `[HYPOTHESIS]`. Default target: **Rocket** (two guides agree). It has less HP, and its Laser (31, plus Strength) is the biggest hit. Its Recharge turn is a free hit window.

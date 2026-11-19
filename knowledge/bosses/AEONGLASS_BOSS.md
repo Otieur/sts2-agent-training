@@ -36,6 +36,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   3. Increasing Intensity: adds and upgrades Withers, gains Strength; no attack
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: Strength cards at least 1 (fewer, bigger hits against Wither; survived 0.8, fatal 0.3); multi-hit attacks at least 1 (damage per card played; survived 1.7, fatal 0.8).
 - **Fewer, bigger cards per turn.** Every sixth card played summons a Wither. Strength, multi-hit and X-cost attacks beat many small cards.
 - **Exhaust outlets for Withers.** Exhausted beats discarded, since discarded Withers come back.
 - **Strip its 3 Artifact** before relying on Vulnerable or Weak.

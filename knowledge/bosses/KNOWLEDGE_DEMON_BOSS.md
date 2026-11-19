@@ -42,6 +42,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - After three cycles, a plain Slap / Overwhelming / Ponder loop. Ponder heals 30 per player `[COMMUNITY]`, one guide; the game data shows the heal as computed (`Heal ? HP`), so the amount is unverified.
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: Strength cards at least 1 (survived 0.7, fatal 0.2 (H7)); energy cards at least 1 (survived 1.6, fatal 0.8 (H7)).
 - **Sustained damage.** 379 HP plus about 30 healed per cycle over a median 7-turn fight means about 60 damage per turn. Ironclad gets this from scaling (Demon Form; Strength with multi-hit) and energy (Pyre, Bloodletting, Offering).
 - In the history, fatal decks had fewer powers (1.7 against 2.7), fewer energy cards (0.8 against 1.6) and less Strength (0.2 against 0.7), n=40. `[PLAYER-DATA, weak]`
 - **Block** for Overwhelming (24 base, rising with Strength) and Slap (17).

@@ -40,6 +40,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - 173 HP. A typical fight lasts 7 turns (benchmark median).
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: single-hit hit-all attacks at most 0 (wasted on Slippery; survived decks 0.3, fatal 0.8); draw cards at least 2 (finds the cheap attacks; survived 2.1, fatal 1.0).
 - **Clear Slippery in two turns.** 9 hit instances across turns 1–2. The starter deck's Strikes plus Bash give about 6. Multi-hit cards (Twin Strike, Sword Boomerang, Thrash, Fight Me, Dismantle, Tear Asunder, Fiend Fire, Whirlwind) and 0-cost attacks (Anger) close the gap.
 - **27 block on turn 3**, or 20 with Weak on Vantom. Block cards: Impervious 30, Blood Wall 16, Flame Barrier 12, Shrug It Off 8, Evil Eye 8, Taunt 7.
 - **Damage after Slippery:** about 25 per turn to finish by turn 8.

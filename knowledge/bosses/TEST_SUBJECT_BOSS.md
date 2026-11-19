@@ -54,6 +54,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - Nemesis (phase 2 onward) gives it 1 Intangible at the end of its turns `[GAME-EXTRACT]`, which makes alternate turns the damage windows; Painful Stabs adds a Wound when its attacks deal damage `[GAME-EXTRACT]`.
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: multi-hit attacks at least 1 (burst on tangible turns; survived 1.3, fatal 0.6).
 - **Sustained damage** over the longest fight in the game (median 10 turns).
 - **Block for 30 and 45 hits.** Impervious is ideal for Big Pounce.
 - **Phase 1: attack-heavy.** Avoid playing many Skills while it gains Strength from them.

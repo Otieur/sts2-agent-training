@@ -53,6 +53,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - Artifact blocks You're Mine's debuffs `[COMMUNITY]`.
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: draw cards at least 3 (You're Mine: 99 Weak, Vulnerable, Frail; survived 3.9, fatal 2.2).
 - **Artifact or debuff resistance** is the single biggest swing. Each Artifact charge blocks one debuff. After You're Mine without Artifact, you deal 25% less, block 25% less and take 50% more for the rest of the fight.
 - **Draw.** In the history, fatal decks had much less draw (2.2 against 3.9 cards, n=24) `[PLAYER-DATA, weak]`. Bound cards make draw more valuable.
 - **Target choice** `[COMMUNITY]`, two lines:

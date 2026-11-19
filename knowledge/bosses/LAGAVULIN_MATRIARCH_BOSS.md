@@ -46,6 +46,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Plating** `[GAME-EXTRACT]`: gives it block at the start of its turn and again before its turn ends, and ticks down each turn. Your first hits while it sleeps go into that block.
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: powers to set up during sleep at least 1 (survived 0.9, fatal 0.5).
 - **Kill before the second or third Soul Siphon.** Every cycle you lose 2 Strength and 2 Dexterity and it gains 2 Strength.
 - **Use the sleep turns for setup** (powers, Strength), then **hit it on the last sleep turn** (Asleep at 1 in the state): damage wakes it stunned, so you keep every free turn and gain one more `[HYPOTHESIS]` from the power definition. Waking it earlier trades free sleep turns for a single stun turn. If the deck has nothing to set up, hit it at once to strip Plating.
 - **Block about 19 per turn**, rising.

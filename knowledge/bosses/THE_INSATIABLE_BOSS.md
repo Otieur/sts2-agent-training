@@ -42,6 +42,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Sandpit** `[GAME-EXTRACT]`: decrements each turn, and when removed it kills its target (you). Frantic Escape cards (the added cards) push it back `[COMMUNITY]`, corroborated by the game data: Frantic Escape is a 1-cost Status that increases a power already on the target, i.e. adds to the Sandpit counter `[GAME-EXTRACT]`.
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: energy or draw cards at least 2 (play the Frantic Escape cards and still fight (plan; no data signal)).
 - **A race against the Sandpit timer:** either kill 321 HP before it runs out, or spend energy on Frantic Escape cards to buy turns.
 - **Energy** to pay for Frantic Escape and attack in the same turn.
 - **Block 28 on Lunging Bite**, plus Strength after each Salivate.

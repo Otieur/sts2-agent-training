@@ -45,6 +45,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Plow** `[GAME-EXTRACT]`: after taking damage, it removes the Beast's Strength and stuns it, then the power goes away. The 150 is presumably a damage threshold `[HYPOTHESIS]`.
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: Vulnerable sources at least 1 (front-load 150 damage to trigger Plow; survived 1.2, fatal 0.5).
 - **Front-loaded damage** to break Plow quickly: about 150 damage over the first 3 turns. That resets its Strength and wins a stun turn.
 - **Block about 18 per turn** early, rising with Strength.
 

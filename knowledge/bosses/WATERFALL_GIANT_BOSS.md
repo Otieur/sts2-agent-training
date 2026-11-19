@@ -51,6 +51,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Steam Eruption** `[GAME-EXTRACT]`: killing the Giant does not end the fight. It stays (invulnerable, stunned `[COMMUNITY]`) and explodes on its next turn.
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: block cards at least 6 (bank block for the death explosion (plan; no data signal)).
 - **Kill fast:** each turn adds 3 Steam (the explosion grows by 3 per turn).
 - **Keep a big block for the explosion turn** (15 + 3 per turn alive). Impervious or a block potion. Weak on the Giant should reduce the explosion, since it is an attack `[HYPOTHESIS]`.
 - Count the stacks every turn (shown as a power on the Giant).

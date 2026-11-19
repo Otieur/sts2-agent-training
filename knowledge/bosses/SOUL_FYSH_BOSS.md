@@ -44,6 +44,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - While Intangible, every hit is capped (1 damage) `[GAME-EXTRACT]`.
 
 ### Deck checklist
+- **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: exhaust outlets at least 1 (exhaust the Beckon cards (plan; no data signal)).
 - **Exhaust outlets for Beckon cards:** True Grit, Burning Pact, Second Wind, Stoke, Brand, Fiend Fire.
 - **Burst outside Intangible turns.** Big hits on tangible turns. On Fade turns, spend energy on block and setup instead of attacks.
 - **Block for Scream and De-Gas.** After Scream you are Vulnerable (×1.5 damage taken), so De-Gas 16 becomes 24.
