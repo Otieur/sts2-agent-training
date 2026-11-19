@@ -163,11 +163,16 @@ def map_screen(st, top=3):
     if not paths:
         return "map: no route to the boss in the state"
     act, hp, mx = _act(st), run.get("current_hp"), run.get("max_hp")
+    note = None
+    if not isinstance(mx, (int, float)) or mx <= 0:
+        mx, note = 80, "max HP missing from the state: 80 assumed"
+    if not isinstance(hp, (int, float)):
+        hp, note = mx, "HP missing from the state: full HP assumed, so the routes below are optimistic"
     model = pathmod.get_model(_character(st), int(run.get("ascension") or 0))
     w = pathmod.DEFAULT_RISK_WEIGHT.get(act, 16.0)
     res = pathmod.rank(paths, nodes, model, act, hp, mx, run.get("boss_id"), w, pathmod.deck_metrics_from(_deck(st)))
-    idx = {(n["row"], n["col"]): n.get("index") for n in m.get("available_nodes") or []}
-    out = [f"{len(res)} distinct routes, risk weight {w:g}"]
+    idx = {(n.get("row"), n.get("col")): n.get("index") for n in m.get("available_nodes") or []}
+    out = [f"{len(res)} distinct routes, risk weight {w:g}"] + ([f"note: {note}"] if note else [])
     for o in res[:top]:
         out.append(f"  score {o['score']:5.2f}  choose_map_node option_index={idx.get(o['first'], '?')} {o['first']}  {o['seq']}  "
                    f"boss arrival {o['boss_hp']}%, P(run ends) {100 * o['p_end']:.0f}%" + (f"  ! {'; '.join(o['notes'])}" if o["notes"] else ""))
@@ -179,7 +184,7 @@ def card_reward(st):
     run = _run(st)
     res = draft.score_offer(deck, offer, _character(st), act or 1, floor, boss, simulate=(act or 1) == 1,
                             hp=run.get("current_hp"), max_hp=run.get("max_hp") or 80)
-    idx = {"CARD." + c.get("card_id"): c.get("index") for c in (st.get("reward") or {}).get("card_options") or []}
+    idx = {"CARD." + str(c.get("card_id")): c.get("index") for c in (st.get("reward") or {}).get("card_options") or [] if c.get("card_id")}
     out = [f"deck {res['base']['size']} cards, damage/turn {res['base']['dmg']:.1f}, block/turn {res['base']['block']:.1f}, "
            f"scaling {res['base']['scaling']}"]
     for r in res["rows"]:
@@ -195,7 +200,7 @@ def reward_main(st):
     pots = [p for p in _run(st).get("potions") or []]
     free_slots = sum(1 for p in pots if not p.get("occupied"))
     out = ["Claim from the highest index down (indexes shift):"]
-    for r in sorted(rw, key=lambda r: -r.get("index", 0)):
+    for r in sorted(rw, key=lambda r: -(r.get("index") if isinstance(r.get("index"), int) else 0)):
         t = r.get("reward_type")
         if t == "Potion" and free_slots == 0:
             note = "potion slots full: use or discard a weaker potion first, or skip"
@@ -211,6 +216,9 @@ def reward_main(st):
 
 def rest_rule(hp, max_hp, act, ascension, boss, character, nxt=None):
     import path as pathmod
+    if not isinstance(hp, (int, float)) or not isinstance(max_hp, (int, float)) or not max_hp:
+        why = "HP or max HP missing from the state: decide by hand (playbook section 5)"
+        return {k: ("either", why) for k in ("boss", "elite", "other") if nxt in (None, k)}
     model = pathmod.get_model(character, ascension)
     thr = model.boss_threshold(act, boss, max_hp)
     p75 = model.elite_p75.get(act, 35.0)
@@ -255,7 +263,7 @@ def rest(st, nxt=None):
     up = upgrade_candidates(st)
     if up:
         out.append("  upgrade candidates (playbook 2.3: engine, then function-changing, then tier): " + ", ".join(up))
-    others = [k for k in opts if k not in ("HEAL", "SMITH")]
+    others = [str(k) for k in opts if k and k not in ("HEAL", "SMITH")]
     if others:
         out.append(f"  other options here: {', '.join(others)} (judge by the relic's effect)")
     return "\n".join(out)
@@ -393,12 +401,37 @@ def selection(st):
     return "\n".join(out)
 
 
+def _clean(o):
+    """Drop null list items (a list of cards or options with a null in it) so the screen handlers can use .get safely."""
+    if isinstance(o, dict):
+        return {k: _clean(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [_clean(v) for v in o if v is not None]
+    return o
+
+
 def advise(st, nxt=None, deck_cache=None):
+    """Advice for the current screen. A handler that fails on an unexpected state shape reports the error and the
+    screen instead of raising, so a live run is never stopped by the advisor (act by judgment and save the state)."""
+    import traceback
+    try:
+        return _advise(st, nxt, deck_cache)
+    except Exception as ex:  # noqa: BLE001
+        tb = traceback.extract_tb(ex.__traceback__)[-1]
+        scr = ((st or {}).get("data", st) or {}).get("screen") if isinstance(st, dict) else None
+        return (f"[ADVICE FAILED] {type(ex).__name__}: {ex} at {tb.filename.split('/')[-1]}:{tb.lineno} (screen {scr}). "
+                "Act by judgment; save this state to runs/<run>/ and report it in the post-mortem.")
+
+
+def _advise(st, nxt=None, deck_cache=None):
     import mcp_adapter
+    if not isinstance(st, dict):
+        return "no state (expected a JSON object)"
     if mcp_adapter.is_mcp(st):
         st = mcp_adapter.mcp_to_agent(st, **({"deck_cache": deck_cache} if deck_cache else {}))
-    st = st.get("data", st)
-    scr = (st.get("screen") or "").upper()
+    st = st.get("data", st) if isinstance(st.get("data", st), dict) else st
+    st = _clean(st)
+    scr = str(st.get("screen") or "").upper()
     if scr == "COMBAT" or st.get("combat"):
         return "[COMBAT]\n" + combat(st)
     if scr == "MAP":

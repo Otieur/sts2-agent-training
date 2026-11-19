@@ -191,10 +191,13 @@ def _fit(points, iters=4000, lr=0.5):
 def load_map(m):
     nodes = {}
     for n in m.get("nodes") or []:
+        if n.get("row") is None or n.get("col") is None:
+            continue  # a node without coordinates cannot be placed
         nodes[(n["row"], n["col"])] = {"type": norm_type(n.get("node_type")),
-                                       "children": [(c["row"], c["col"]) for c in n.get("children") or []]}
+                                       "children": [(c["row"], c["col"]) for c in n.get("children") or []
+                                                    if c.get("row") is not None and c.get("col") is not None]}
     def rc(x):
-        return (x["row"], x["col"]) if x else None
+        return (x["row"], x["col"]) if x and x.get("row") is not None and x.get("col") is not None else None
     start = rc(m.get("current_node")) or rc(m.get("starting_node"))
     boss = rc(m.get("boss_node"))
     if boss and boss not in nodes:

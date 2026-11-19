@@ -169,7 +169,7 @@ def parse_effect(c):
 
 def card_from_extract(index, card_id, live=None, cost=None, playable=True):
     """live: dict of dynamic value name -> current value (STS2-Agent)."""
-    cid = card_id.split(".", 1)[-1]
+    cid = str(card_id or "?").split(".", 1)[-1]
     c = CARDS.get(cid)
     if not c:
         if cid in EXTRA_STATUSES:  # statuses newer than the extract (Aeonglass's Wither) [COMMUNITY]
@@ -632,7 +632,8 @@ def from_state(st):
     for h in c.get("hand") or []:
         live = {d["name"]: d.get("current_value") for d in h.get("dynamic_values") or [] if d.get("current_value") is not None}
         cost = int(h.get("energy_cost") or 0)
-        hand.append(card_from_extract(int(h.get("index", len(hand))), h.get("card_id", "?"), live or None, cost,
+        idx = h.get("index")
+        hand.append(card_from_extract(int(idx) if isinstance(idx, (int, float)) else len(hand), str(h.get("card_id") or "?"), live or None, cost,
                                       bool(h.get("playable", True))))
         if h.get("costs_x"):
             hand[-1].x_cost = True
