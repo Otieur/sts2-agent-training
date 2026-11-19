@@ -27,7 +27,7 @@ The 15-card base deck for Act 1 fights and the 22-card Act 2 deck for Act 2 figh
 | Boss | Model win | The Player survived | Used in drafting |
 |---|---|---|---|
 | Vantom | 31% | 4/10 (40%) | yes |
-| Lagavulin Matriarch | 36% | 6/8 (75%) | yes |
+| Lagavulin Matriarch | 32% | 6/8 (75%) | yes |
 | Ceremonial Beast | 9% | 5/6 (83%) | **no** |
 | Knowledge Demon | 19% | 8/12 (67%) | **no** |
 | Entomancer | 57% | 10/13 (77%) | yes |
@@ -44,7 +44,7 @@ Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1,
 | Fight | Fights | Model win | Boss HP removed (model) | The Player survived |
 |---|---|---|---|---|
 | Vantom | 10 | 4% | 0.46 | 4/10 (40%) |
-| Lagavulin Matriarch | 8 | 8% | 0.75 | 6/8 (75%) |
+| Lagavulin Matriarch | 8 | 9% | 0.75 | 6/8 (75%) |
 | Ceremonial Beast | 6 | 0% | 0.42 | 5/6 (83%) |
 | Knowledge Demon | 12 | 4% | 0.37 | 8/12 (67%) |
 | Entomancer | 13 | 4% | 0.46 | 10/13 (77%) |
@@ -66,8 +66,8 @@ Win rate when every turn follows the balanced plan, the safe plan below half HP 
 | Vantom, base deck | 60/80 | 31% | 23% | 17% |
 | Vantom, base + Twin Strike + Shrug It Off | 80/80 | 94% | 91% | 83% |
 | Vantom, base + Twin Strike + Shrug It Off | 60/80 | 50% | 43% | 37% |
-| Lagavulin Matriarch, base deck | 80/80 | 93% | 90% | 60% |
-| Lagavulin Matriarch, base deck | 60/80 | 36% | 29% | 27% |
+| Lagavulin Matriarch, base deck | 80/80 | 93% | 91% | 60% |
+| Lagavulin Matriarch, base deck | 60/80 | 32% | 26% | 31% |
 | Soul Fysh, base deck | 80/80 | 91% | 88% | 94% |
 | Soul Fysh, base deck | 60/80 | 27% | 47% | 50% |
 | Waterfall Giant, base deck | 80/80 | 51% | 69% | 69% |
