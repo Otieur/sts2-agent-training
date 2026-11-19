@@ -13,6 +13,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from stslib import PROJECT, md_table, pct  # noqa: E402
 
+
+def _rows(path):
+    """CSV rows from a file that is closed straight away (avoids unclosed handles)."""
+    import csv as _csv
+    with open(path, newline="") as fh:
+        return list(_csv.DictReader(fh))
+
 EXTRACT = PROJECT / "knowledge/data/extract-2026-09-21"
 import re
 
@@ -39,10 +46,10 @@ def main():
     pfile = PROJECT / f"reports/phase1/card-picks-{ch.lower()}.csv"
     rfile = PROJECT / f"reports/phase1/card-ranking-{ch.lower()}.csv"
     if pfile.exists():
-        for r in csv.DictReader(open(pfile)):
+        for r in _rows(pfile):
             picks[r["card"]] = (int(r["offered"]), int(r["picked"]))
     if rfile.exists():
-        for r in csv.DictReader(open(rfile)):
+        for r in _rows(rfile):
             ranks[r["card"]] = (float(r["strength"]), int(r["comparisons"]))
     skip = ranks.get("SKIP", (None, 0))[0]
 

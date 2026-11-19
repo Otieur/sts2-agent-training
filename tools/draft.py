@@ -28,6 +28,13 @@ import deck_metrics as dm  # noqa: E402
 dm.apply_patches("v0.111.1")  # live tools use the target game's card values
 from stslib import PROJECT  # noqa: E402
 
+
+def _rows(path):
+    """CSV rows from a file that is closed straight away (avoids unclosed handles)."""
+    import csv as _csv
+    with open(path, newline="") as fh:
+        return list(_csv.DictReader(fh))
+
 TIER_SCORE = {"S": 5, "A": 4, "B": 3, "C": 2, "D": 1, "F": 0}
 UNKNOWN_TIER = 2.0
 
@@ -101,7 +108,7 @@ def decision_point(character):
     f = PROJECT / "data" / "tables" / f"card_choices_{character.lower()}.csv"
     if f.exists():
         import csv
-        for r in csv.DictReader(open(f)):
+        for r in _rows(f):
             d, p, n = float(r["survive_diff"]), float(r["p"]), int(r["picked"])
             if abs(d) >= 0.20 and p < 0.05 and n >= 10:
                 out[r["card"]] = (0.5 if d > 0 else -0.5,

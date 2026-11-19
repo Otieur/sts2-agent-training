@@ -20,6 +20,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from stslib import DATA, PROJECT, md_table, pct, short  # noqa: E402
 
+
+def _rows(path):
+    """CSV rows from a file that is closed straight away (avoids unclosed handles)."""
+    import csv as _csv
+    with open(path, newline="") as fh:
+        return list(_csv.DictReader(fh))
+
 FIGHT_ROOMS = {"monster", "elite", "boss"}
 
 
@@ -33,7 +40,7 @@ def load_benchmark(character, ascension):
                                  (DATA / "benchmarks" / f"{character.lower()}-encounters-v0.107.1.csv", f"{character.title()} pooled", False)):
         if path.exists():
             rows = {}
-            for r in csv.DictReader(open(path)):
+            for r in _rows(path):
                 if by_band and r["band"] != band:
                     continue
                 if by_band and int(r["n"]) < 5:

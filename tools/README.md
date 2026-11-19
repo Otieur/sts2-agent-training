@@ -21,7 +21,7 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 | `mcp_adapter.py` | Converts STS2MCP states to the STS2-Agent shape, so `advise.py` and every helper work with either mod (deck cached from combat piles) | used by `advise.py` automatically |
 
 ## Shadowing (Phase 3; both mods, `--mod sts2agent` by default)
-`watch.py` (decision-point watcher), `record.py` (state recorder), `reconstruct.py` (actions from snapshots), `stsstate.py` (shared helpers).
+`shadow.py` (call-it-first: logs the Agent's call at each decision before the Player acts, fills in the Player's pick and agreement; `--summary`), `watch.py` (decision-point watcher), `record.py` (state recorder), `reconstruct.py` (actions from snapshots), `stsstate.py` (shared helpers).
 
 ## Dataset and analyses (Phases 1–2)
 | Tool | Output |

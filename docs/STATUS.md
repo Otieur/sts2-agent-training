@@ -51,8 +51,8 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P3.E1 | Live view of the Player's game | In progress | sts.py brief view and watch.py written; untested live |
-| P3.E2 | Call-it-first (non-combat) | Todo | |
-| P3.E3 | Combat calls | Todo | |
+| P3.E2 | Call-it-first (non-combat) | In progress | tools/shadow.py (calls before the Player acts; agreement from the next state); untested live |
+| P3.E3 | Combat calls | In progress | Trigger policy and full-turn calls in tools/shadow.py |
 | P3.E4 | State recorder and reconstruction | In progress | record.py and reconstruct.py written with offline tests |
 | P3.E5 | Metrics and calibration | Todo | |
 | P3.E6 | Retros and playbook v3 | Todo | |

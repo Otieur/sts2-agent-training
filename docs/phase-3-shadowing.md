@@ -65,13 +65,13 @@ The agent harness cannot see a video feed. "Watching" means reading the exact ga
 
 ### P3.E2: Call-it-first for non-combat decisions
 
-> **P3.E2.S1: Commit before the Player acts** · Size S · Status: Todo
+> **P3.E2.S1: Commit before the Player acts** · Size S · Status: In progress (tools/shadow.py logs each call to calls.jsonl before the Player acts; untested live)
 > *As the Agent, I want my call written to a log before the Player chooses, so that agreement statistics are free of hindsight.*
 >
 > **Acceptance criteria**
 > - [ ] Each call is appended to `runs/shadow-<NN>/calls.jsonl` with: timestamp, floor, screen, the options offered, agent_pick, confidence, reason, and the playbook rule used (if any). This happens before the call is posted in chat.
 
-> **P3.E2.S2: Capture the Player's choice** · Size S · Status: Todo
+> **P3.E2.S2: Capture the Player's choice** · Size S · Status: In progress (player_pick and agree filled from the next state (deck change, map position, rest); .run cross-check not yet)
 > *As the Agent, I want the Player's actual pick captured automatically, so that the Player does not have to report it.*
 >
 > **Acceptance criteria**
@@ -95,7 +95,7 @@ The agent harness cannot see a video feed. "Watching" means reading the exact ga
 
 ### P3.E3: Combat calls
 
-> **P3.E3.S1: Trigger policy** · Size XS · Status: Todo
+> **P3.E3.S1: Trigger policy** · Size XS · Status: In progress (trigger policy in tools/shadow.py combat_call)
 > *As the Player, I want combat calls only where they are worth it, so that ordinary fights flow.*
 >
 > **Acceptance criteria**
@@ -106,7 +106,7 @@ The agent harness cannot see a video feed. "Watching" means reading the exact ga
 >   - whenever the Player asks
 > - [ ] At most about 15 combat calls per run, unless the Player asks for more.
 
-> **P3.E3.S2: Full-turn call** · Size S · Status: Todo
+> **P3.E3.S2: Full-turn call** · Size S · Status: In progress (full-turn call with expected HP lost and damage in combat-calls.jsonl; actual HP lost filled in)
 > *As the Agent, I want to propose a complete turn, so that it can be compared with what the Player does.*
 >
 > **Acceptance criteria**

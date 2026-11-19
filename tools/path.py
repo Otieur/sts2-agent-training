@@ -33,6 +33,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from stslib import DATA, MAIN_BUILD, connect  # noqa: E402
 
+
+def _rows(path):
+    """CSV rows from a file that is closed straight away (avoids unclosed handles)."""
+    import csv as _csv
+    with open(path, newline="") as fh:
+        return list(_csv.DictReader(fh))
+
 TYPE_MAP = {"monster": "monster", "elite": "elite", "unknown": "unknown", "event": "unknown", "shop": "shop",
             "rest": "rest_site", "restsite": "rest_site", "rest_site": "rest_site", "treasure": "treasure",
             "boss": "boss", "ancient": "ancient", "start": "start"}
@@ -114,7 +121,7 @@ class Model:
         path = DATA / "benchmarks" / f"{self.character.lower()}-encounters-v0.107.1.csv"
         vals = collections.defaultdict(list)
         if path.exists():
-            for r in csv.DictReader(open(path)):
+            for r in _rows(path):
                 if r.get("room") == "elite" or "_ELITE" in r["encounter"]:
                     vals[int(r.get("act") or 0)].append(float(r["p75_dmg"]))
         return {a: (sum(v) / len(v)) for a, v in vals.items() if v}
@@ -133,7 +140,7 @@ class Model:
                                ("allchars-encounters-by-band-v0.107.1.csv", True)):
             p = DATA / "benchmarks" / fname
             if med is None and p.exists() and boss:
-                for r in csv.DictReader(open(p)):
+                for r in _rows(p):
                     if r["encounter"].endswith(boss.replace("ENCOUNTER.", "")) and r["band"] == band and int(r["n"]) >= 5:
                         med = float(r["median_dmg"])
         return (med if med is not None else 40.0) + 10

@@ -23,6 +23,13 @@ from stslib import PROJECT, md_table, pct  # noqa: E402
 
 # Spire Codex guide "Ironclad Card Tier List": community-submitted runs, main branch as of mid-July 2026
 # (v0.107.x era). Win rate when picked vs average. Partial list (cards the guide names).
+
+def _rows(path):
+    """CSV rows from a file that is closed straight away (avoids unclosed handles)."""
+    import csv as _csv
+    with open(path, newline="") as fh:
+        return list(_csv.DictReader(fh))
+
 SPIRE_CODEX = {
     "Offering": "A", "Crimson Mantle": "A", "Impervious": "A", "Fiend Fire": "A",
     "Aggression": "B", "Not Yet": "B", "Mangle": "B", "Tear Asunder": "B", "Thrash": "B", "Pact's End": "B",
@@ -185,11 +192,11 @@ def build(character):
 
     # Player: Bradley-Terry strength quintiles among cards with 10+ comparisons
     player, player_n, picks = {}, {}, {}
-    for r in csv.DictReader(open(PROJECT / f"reports/phase1/card-ranking-{low}.csv")):
+    for r in _rows(PROJECT / f"reports/phase1/card-ranking-{low}.csv"):
         if r["card"] != "SKIP" and int(r["comparisons"]) >= 10:
             player[norm(r["card"].replace("_", " "))] = float(r["strength"])
             player_n[norm(r["card"].replace("_", " "))] = int(r["comparisons"])
-    for r in csv.DictReader(open(PROJECT / f"reports/phase1/card-picks-{low}.csv")):
+    for r in _rows(PROJECT / f"reports/phase1/card-picks-{low}.csv"):
         picks[norm(r["card"].replace("_", " "))] = (int(r["picked"]), int(r["offered"]))
     pq = quintile_scores(player)
 

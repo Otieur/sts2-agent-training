@@ -30,6 +30,7 @@ The 15-card base deck for Act 1 bosses and the 22-card Act 2 deck for Knowledge 
 | Lagavulin Matriarch | 36% | 6/8 (75%) | yes |
 | Ceremonial Beast | 2% | 5/6 (83%) | **no** |
 | Knowledge Demon | 31% | 8/12 (67%) | **no** |
+| Entomancer | 0% | 10/13 (77%) | **no** |
 
 ## Which plan to follow in a boss fight
 

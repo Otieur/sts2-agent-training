@@ -26,6 +26,13 @@ import plan_turn  # noqa: E402
 import sts  # noqa: E402
 from stslib import PROJECT, connect  # noqa: E402
 
+
+def _rows(path):
+    """CSV rows from a file that is closed straight away (avoids unclosed handles)."""
+    import csv as _csv
+    with open(path, newline="") as fh:
+        return list(_csv.DictReader(fh))
+
 ENGINE_UPGRADES = ["DEMON_FORM", "CORRUPTION", "BARRICADE", "FEEL_NO_PAIN", "BODY_SLAM"]
 FUNCTION_UPGRADES = ["ARMAMENTS", "TRUE_GRIT"]
 REMOVABLE_CURSES_HINT = "Injury, Clumsy and other non-Eternal curses"
@@ -240,12 +247,12 @@ def event(st):
     afile = PROJECT / "data" / "tables" / "ancient_relics.csv"
     if afile.exists():
         import csv
-        ancients = {r["relic"]: r for r in csv.DictReader(open(afile))}
+        ancients = {r["relic"]: r for r in _rows(afile)}
     events = {}
     efile = PROJECT / "data" / "tables" / "event_choices.csv"
     if efile.exists():
         import csv
-        events = {(r["event"], r["option"]): r for r in csv.DictReader(open(efile))}
+        events = {(r["event"], r["option"]): r for r in _rows(efile)}
     out = [f"Event {eid}: {ev.get('title', '')}"]
     for o in ev.get("options") or []:
         key = re.sub(r"^[A-Z_]+\.pages\.", "", o.get("text_key") or "")

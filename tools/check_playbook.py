@@ -15,6 +15,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from stslib import DATA, PROJECT  # noqa: E402
 
+
+def _rows(path):
+    """CSV rows from a file that is closed straight away (avoids unclosed handles)."""
+    import csv as _csv
+    with open(path, newline="") as fh:
+        return list(_csv.DictReader(fh))
+
 PLAYBOOK = PROJECT / "playbooks" / "ironclad.md"
 SOLO_IRON = "r.build_id='v0.107.1' AND r.character='IRONCLAD' AND r.n_players=1"
 FATAL = "(r.win=0 AND r.abandoned=0 AND f.is_last_floor=1)"
@@ -43,7 +50,7 @@ def checks(con):
     out.append(("elites 70%+", f"{round(100 * sum(allc['hi']) / len(allc['hi']))}% at 70% or more (Ironclad {sum(iron['hi'])}/{len(iron['hi'])})"))
 
     # Section 4 and 10: elite and boss tables (median / p75 from the pooled benchmark, fatal from the database)
-    bench = {r["encounter"]: r for r in csv.DictReader(open(DATA / "benchmarks" / "ironclad-encounters-v0.107.1.csv"))}
+    bench = {r["encounter"]: r for r in _rows(DATA / "benchmarks" / "ironclad-encounters-v0.107.1.csv")}
     fatal = {m: (k, t) for m, k, t in q(f"""SELECT f.model_id, SUM({FATAL}), COUNT(*) FROM runs r JOIN floors f USING(run_id)
                                            WHERE {SOLO_IRON} AND f.room_type IN ('elite','boss') GROUP BY 1""")}
     for enc, label in (("BYGONE_EFFIGY_ELITE", "Bygone Effigy"), ("TERROR_EEL_ELITE", "Terror Eel"), ("BYRDONIS_ELITE", "Byrdonis"),
