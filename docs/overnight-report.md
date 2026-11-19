@@ -1,6 +1,6 @@
 # Overnight Report (2026-11-19)
 
-> **Draft written at 02:35 EST, updated at 03:15** as insurance against an interruption. Block K (from 09:52) updates every section; until then the full record is `docs/overnight-log.md`.
+> **Draft written at 02:35 EST, updated at 03:38** as insurance against an interruption. Block K (from 09:52) updates every section; until then the full record is `docs/overnight-log.md`.
 
 Session: 00:22–10:22 EST, autonomous, following `prompts/overnight-2026-11-19.md`. No game launch, no mod build, no installs, no messages, no pushes.
 
@@ -43,6 +43,7 @@ Planned blocks (A–J) were finished by 01:11; everything after is extra work fr
 | X53–X58 | Draft report; Power value and potion cost in the planner; executable combat commands; fight type from enemy IDs; status board refresh |
 | X59–X62 | Card-selection advice; shadowing tools read STS2-Agent; `tools/mcp_adapter.py` (every helper works with STS2MCP); smoke test for STS2MCP |
 | X63–X69 | `tools/simulate_fight.py` (Vantom, Lagavulin, Ceremonial Beast, Knowledge Demon, Entomancer) with calibration; Vantom simulation in drafting; survival guard; balanced plan for bosses; tool-pick logging; Personal Hive cost |
+| X70–X77 | Necrobinder archetypes; `tools/shadow.py` (call-it-first shadowing); planner fuzz and path-planner speed-up (10+ minutes to under 1 s per map); H11 hallway rule; quick reference; **two real bugs found by reading the mod's source**: `act_id` is 0-based (every tool was one act off) and an enemy's existing Weak was applied twice to its intent |
 
 ## 3. Stories whose status changed
 - P0: E8 done; E1 backup done; E5.S1 in progress (smoke test ready).
@@ -68,6 +69,7 @@ Nine, each with its reason and how to reverse it: `docs/overnight-decisions.md`.
 - **Nothing is tested live.** All tools follow the mods' documentation; field names and the arithmetic assumptions (gaps 22–24) need the first session.
 - **Several sources were unreachable** (untapped.gg, BrokenBuilds, Mobalytics returned 403); MetaBot's relic list was rejected as biased.
 - **Evidence is observational.** Every outcome comparison in the history is confounded by the Player's own choices; they are labelled `[PLAYER-DATA, weak]` or `observational`. The re-tuned boss checklists were measured on overlapping data.
+- **Bugs that would have hurt live play, found offline:** `act_id` is 0-based in STS2-Agent (tools read Act 1 as "act 0"); intents already include Weak (the planner under-estimated incoming damage by 25% against Weak enemies); the path planner took minutes per map. All fixed and covered by tests.
 - **Two simulator models failed calibration** (Ceremonial Beast, Entomancer): their move cycles from the extract cannot be right as read; both are excluded and logged as gaps 25 and 26.
 - **Mistakes caught and fixed during the night:** guessed log times (fixed with `date`), a quintile bucketing bug in the tier builder, "about 29%" rest heal (it is 30% rounded down), a mislabelled check in the death review, non-deterministic tie order in one report, a wrong claim about the Player's Drum of Battle picks, a potion cost that spent a Fire Potion on a hallway fight, an over-strong reading of the first Vantom simulation, and an edit that briefly dropped the simulation report's calibration section (restored before commit).
 
