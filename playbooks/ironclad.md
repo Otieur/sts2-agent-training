@@ -65,6 +65,7 @@ From `knowledge/community/ironclad-tiers.md` `[COMMUNITY]`. † marks cards wher
 - **Second copies:** usually a tier lower, except engine pieces the deck needs twice. `[HYPOTHESIS]`
 
 ### 2.3 Upgrade priority (v2)
+Upgrade sizes per card: `knowledge/cards/ironclad-upgrades.md` `[GAME-EXTRACT]`. Biggest jumps include Offering, Pyre and Bloodletting energy, Impervious +10 block, Bludgeon +10, Pact's End +6, Unrelenting +6. Cards marked "not in the extract" likely get cheaper (Barricade, Corruption, Body Slam, Armaments' text change).
 Engine pieces first: Demon Form, Corruption, Barricade, Feel No Pain, Body Slam. Then cards whose upgrade changes their function (Armaments, True Grit gain card choice when upgraded `[GAME-EXTRACT]`). Then the best attack. The Player's habit of upgrading Armaments first is a reasonable baseline for decks without an engine. `[COMMUNITY]` + `[PLAYER-DATA]`
 
 ## 3. Archetypes and commit signals
