@@ -41,7 +41,7 @@ The agent harness cannot see a video feed. "Watching" means reading the exact ga
 > **Acceptance criteria**
 > - [ ] `python3 tools/sts.py state --brief` against the Player's instance returns in under 1 s, with the screen type, the options and their indexes, and the context needed (deck summary on reward screens, HP and gold everywhere).
 
-> **P3.E1.S2: Decision-point watcher** · Size M · Status: Todo
+> **P3.E1.S2: Decision-point watcher** · Size M · Status: In progress (tools/watch.py written with offline tests; untested live)
 > *As the Agent, I want to be woken automatically when the Player reaches a decision, so that the Player does not have to prompt me every time.*
 >
 > **Acceptance criteria**
@@ -129,14 +129,14 @@ The agent harness cannot see a video feed. "Watching" means reading the exact ga
 
 ### P3.E4: State recorder and action reconstruction
 
-> **P3.E4.S1: Recorder** · Size M · Status: Todo
+> **P3.E4.S1: Recorder** · Size M · Status: In progress (tools/record.py written with offline tests; untested live)
 > *As the Agent, I want every state change during the Player's runs saved, so that combat can be analysed afterwards.*
 >
 > **Acceptance criteria**
 > - [ ] `tools/record.py` runs in the background for the whole run. It snapshots `/state` on every change (from events, or polling every 0.5 s during combat), deduplicates by fingerprint, and writes `runs/shadow-<NN>/states.jsonl.gz`.
 > - [ ] Size is checked after the first run. It should be under about 50 MB per run compressed.
 
-> **P3.E4.S2: Reconstruct the Player's plays** · Size L · Status: Todo
+> **P3.E4.S2: Reconstruct the Player's plays** · Size L · Status: In progress (tools/reconstruct.py written with offline tests; validation in P3.E4.S3 needs the Player)
 > *As the Agent, I want the Player's card plays recovered from consecutive snapshots, so that real combat decisions become training data.*
 >
 > **Acceptance criteria**
