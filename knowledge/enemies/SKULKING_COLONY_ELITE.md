@@ -33,6 +33,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ## Plan
 
 ### Key mechanics (current, v0.107.1+) `[COMMUNITY]` wiki patch notes; the extract shows the older version
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 75 (80 at A8+); Zoom 14, Zoom 14, Inertia 9 + 2 Strength, Piercing Stabs 7×2, repeating; it no longer adds Dazed (removed in v0.101.0; the Smash move in the game data is gone since v0.106.0).
 - **Hardened Shell 20:** it loses at most 20 HP per turn (was 15). Hardened Shell's per-turn cap is confirmed by the power definition `[GAME-EXTRACT]`. `tools/plan_turn.py` applies it (damage already taken this turn is not in the state, so a mid-turn re-plan may overestimate).
 - HP 75 (80 at higher ascension), was 70 (75).
 - Smash (9 + 4 Dazed) was **removed**; it uses Zoom (16) on turns 1 and 2. It **no longer gains block** (Inertia's 10 block is gone). It gains +1 more Strength at high ascension.
