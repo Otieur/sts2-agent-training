@@ -20,7 +20,7 @@ Use only actions the state offers. Recompute every index from the latest state. 
 | Screen | Steps | Playbook |
 |---|---|---|
 | `map` | At act start: read `map.boss`, plan the path (journal). Then `choose_map_node index=<next_options index>` | §4, §10 |
-| `monster` / `elite` / `boss` | Combat checklist (§9). `play_card card_index=<i> target=<entity_id>`, `use_potion slot=<n> target=...`, `end_turn`. After `end_turn`, read state again; it may need two reads to reach your next turn. | §9, encounter note |
+| `monster` / `elite` / `boss` | Combat checklist (§9). At the start of each turn (and after any draw), save the state and run `python3 -I tools/plan_turn.py --state <state.json>`; compare the safe and balanced plans with the HP budget and the encounter note before playing. `play_card card_index=<i> target=<entity_id>`, `use_potion slot=<n> target=...`, `end_turn`. After `end_turn`, read state again; it may need two reads to reach your next turn. | §9, encounter note |
 | `hand_select` | `combat_select_card card_index=<i>` (repeat), then `combat_confirm_selection` | §9 |
 | `rewards` | Claim from the highest index down: `claim_reward index=<i>`. A card reward opens `card_reward`. `proceed` when done | §2, §8 |
 | `card_reward` | Procedure §2.1. Score the offer first: `python3 -I tools/draft.py --deck <ids> --offer <names> --act <a> --floor <f> --boss <id>` (or `--from-state <state.json>` on STS2-Agent). Override it only with a stated reason (a relic, a synergy the tool cannot see). Then `select_card_reward card_index=<i>` or `skip_card_reward` | §2 |

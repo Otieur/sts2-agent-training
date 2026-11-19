@@ -186,6 +186,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 6. Potions when they prevent serious HP loss or win a dangerous fight.
 7. Check `end_turn_will_kill_player` and `lethal_risks` before ending the turn.
 8. Write down the expected HP after the enemy turn and compare it next turn. Use `tools/calc.py` for exact numbers.
+9. **Search the turn:** `tools/plan_turn.py` enumerates the hand and prints the safest plan and the best damage-for-HP plan, with targets. Choose between them by the act's HP budget (section 4): safe when HP is below plan or before a big hit, balanced when ahead. It does not model draw, relics, potions, Thorns or per-turn caps; re-run after drawing. `[HYPOTHESIS]` until the arithmetic is confirmed in game
 
 ## 10. Boss preparation
 
