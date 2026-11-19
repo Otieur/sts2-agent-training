@@ -54,7 +54,7 @@
 
 ### P6.E1: Verify the co-op rules
 
-> **P6.E1.S1: Rules file** · Size S · Status: Todo
+> **P6.E1.S1: Rules file** · Size S · Status: Done (knowledge/coop-rules.md; two community sources cross-checked, co-op cards from the extract)
 > *As the Agent, I want the co-op rules in one file with verification status, so that strategy rests on confirmed rules.*
 >
 > **Acceptance criteria**
