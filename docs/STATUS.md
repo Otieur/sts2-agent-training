@@ -2,7 +2,7 @@
 
 Update this file whenever a story changes status. Story-level status lives in each phase document; this board tracks epics.
 
-**Active phase:** Phase 2 (in progress overnight) and Phase 0 (waiting on the Player for the branch switch). Phase 1 is complete.
+**Active phase:** Phase 0 (waiting on the Player: security verdict, branch switch to main v0.111.1, mod and SDK choice; then `docs/runbooks/first-session.md`). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live.
 **Last updated:** 2026-11-19
 
 ---
@@ -12,12 +12,12 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P0.E1 | Save safety | In progress | Backup taken and verified overnight; Steam Cloud setting (S3) needs the Player |
-| P0.E2 | Game version | In progress | environment.md drafted; Player switches branch |
+| P0.E2 | Game version | In progress | Target is now main v0.111.1 (since 2026-11-16); Player switches branch |
 | P0.E3 | Mod acquisition and security review | In progress | Draft review done (both mods); Player approves verdict |
 | P0.E4 | Build and install | In progress | Toolchain checked; nothing built |
-| P0.E5 | API smoke test | Todo | |
-| P0.E6 | The agent harness integration | Todo | |
-| P0.E7 | Fallback path | In progress | Decision 0001 proposes STS2MCP first (v0.107 fix, macOS build support) |
+| P0.E5 | API smoke test | In progress | tools/smoke.py (read-only) and docs/runbooks/first-session.md ready; needs the live mod |
+| P0.E6 | The agent harness integration | In progress | tools/sts.py CLI (both mods, co-op instances) written and tested offline |
+| P0.E7 | Fallback path | In progress | Decision 0001 (revised) proposes STS2-Agent first on v0.111.1; STS2MCP is the fallback |
 | P0.E8 | Project scaffolding | Done | Folders, the project instructions, git (local), templates (2026-11-19 overnight) |
 
 ## Phase 1: History analysis ([doc](phase-1-history-analysis.md))
@@ -38,12 +38,12 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P2.E1 | Game data export | In progress | Decompiled extract imported (577 cards, 121 monsters…); live /data export needs Phase 0 |
+| P2.E1 | Game data export | In progress | Decompiled extract imported; it predates v0.107.1, so card changes are patched (knowledge/data/card-patches.json) and both version deltas documented; live /data export needs Phase 0 |
 | P2.E2 | Mechanics reference | Done | mechanics.md, ascension.md; verification checklist for Phase 4 |
 | P2.E3 | Enemies and encounters | Done | 83-encounter catalogue; 12 elite + 15 hallway notes; Bestiary cross-check (S4) needs the live game |
 | P2.E4 | Community strategy | Done | sources.md, ironclad-tiers.md, archetypes-ironclad.md, discrepancies.md |
 | P2.E5 | Boss plans | Done | All 12 bosses; Aeonglass community-only |
-| P2.E6 | Playbook v2 | In progress | v2 written overnight; optional Player skim (S2) |
+| P2.E6 | Playbook v2 | In progress | Now v2.10: checked against the data (tools/check_playbook.py, 51 checks), decision-point analyses, death review; optional Player skim (S2) |
 | P2.E7 | Knowledge maintenance | Done | docs/runbooks/game-patch.md |
 
 ## Phase 3: Shadowing ([doc](phase-3-shadowing.md))
@@ -64,7 +64,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P4.E1 | Run harness | In progress | Runbooks written; resume test (S5) needs a live run |
 | P4.E2 | Combat procedure | In progress | S1, S3, S4 done (plan_turn.py, journal.py); S2 calculator awaits in-game verification |
 | P4.E3 | Strategy procedures | Done (tooling) | path.py, draft.py, advise.py, deck_check.py; untested live |
-| P4.E4 | Post-mortem | Todo | |
+| P4.E4 | Post-mortem | In progress | S1 facts sheet done (postmortem.py, tested on the Player's runs) |
 | P4.E5 | Evaluation | In progress | Scoreboard, milestones, exam seeds ready |
 | P4.E6 | Ascension ladder | In progress | Rules written |
 | P4.E7 | Operations | Todo | |
@@ -74,8 +74,8 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P5.E1 | Rerun the history pipeline | Done | All characters; cross-character report |
-| P5.E2 | Necrobinder knowledge | In progress | S3 tiers and discrepancies done overnight; archetypes and Osty rules to do |
-| P5.E3 | Playbook v1 (Necrobinder) | Todo | |
+| P5.E2 | Necrobinder knowledge | In progress | S3 tiers and discrepancies done (tiers fail the decision-point check); S2 Osty, Summon and Doom from the power data; archetypes to do |
+| P5.E3 | Playbook v1 (Necrobinder) | In progress | playbooks/necrobinder.md v0.3 (groundwork) |
 | P5.E4 | Light shadowing | Todo | |
 | P5.E5 | Solo ladder | Todo | |
 | P5.E6 | Transfer report and co-op pairing | Todo | Player decides pairing |
