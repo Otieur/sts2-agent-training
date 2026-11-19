@@ -150,3 +150,4 @@ Times: end times come from `date`. Start times after X14 were typed by hand and 
 | X122: Tunneler and Shrinker Beetle | 09:35 | 09:36 | Wiki: Tunneler (Burrowed Block stays; breaking it stuns), Shrinker Beetle (Shrink: attacks 30% weaker until it dies); plan_turn.py models both; notes updated; tests pass | |
 | X123: More hallway notes from the wiki | 09:36 | 09:38 | Turret Operator with Living Shield (kill the Shield first), Devoted Sculptor (9 Ritual: kill within about 4 turns), Sludge Spinner; no StS2 slime splits | |
 | X124: Exoskeletons and Toadpoles | 09:38 | 09:39 | Wiki: Exoskeletons cap each hit at 9 (3 or 4 of them), Toadpoles gain 2 Thorns every third turn; notes updated (both already modelled by the planner via the state) | |
+| X125: Scrolls of Biting and Slimes | 09:39 | 09:40 | Wiki: Scrolls of Biting (Paper Cuts 2 per landing hit; 3-4 Scrolls), Slimes (no splits; Leaf Slimes add Slimed); notes updated | |

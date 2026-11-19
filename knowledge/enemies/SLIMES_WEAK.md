@@ -33,6 +33,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): no slime splits in StS2. Leaf Slime S (11–15 HP; Tackle 3 or Goop: 1 Slimed), Leaf Slime M (32–35; Sticky Shot: 2 Slimed first, then Clump Shot 8 and Sticky Shot alternating), Twig Slime S (7–11; Tackle 4), Twig Slime M (26–28; Sticky Shot first, then mostly Chomp 11). Slimed (1 energy: draw 1 and exhaust) is playable; the planner plays it when energy is spare. Kill the Leaf Slime M early to stop the Slimed flood; hit-all attacks clear the small ones.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - Several slimes. Goop and Sticky Shot add **Slimed** cards (cost 1: draw 1, exhausts), so playing them clears them.
 - Hit-all damage is efficient.
