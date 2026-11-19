@@ -26,6 +26,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 37–39 (41–42 at A8+); Oil Spray 8 + 1 Weak first, then at random Oil Spray, Slam 11 or Rage 6 + 3 Strength, never the same move twice in a row. Read each intent.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - Oil Spray 8 + Weak, Slam 11, Rage 6 + 3 Strength.
 - Weak reduces your damage. Burst before Oil Spray, or block through.

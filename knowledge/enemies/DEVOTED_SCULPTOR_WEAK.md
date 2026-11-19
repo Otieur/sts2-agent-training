@@ -29,6 +29,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 162 (172 at A8+); Forbidden Incantation first (**9 Ritual**: +9 Strength at the end of each of its turns), then Savage 12 (15) every turn, so 12, 21, 30, 39… Kill it within about 4 turns or it outscales any block; `tools/advise.py` recommends the balanced plan against Ritual.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - **Forbidden Incantation: +9 Ritual** (gains 9 Strength every turn end). Savage is 12, then 21, then 30…
 - **Kill it within 2–3 turns** (162 HP). Its p90 (27) and its fatal fights are all about running long.
