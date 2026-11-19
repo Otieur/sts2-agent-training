@@ -79,7 +79,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 
 ### P2.E2: Mechanics reference
 
-> **P2.E2.S1: Core rules** · Size M · Status: Todo
+> **P2.E2.S1: Core rules** · Size M · Status: Done (knowledge/mechanics.md; exact multipliers from the extract, order and rounding on the checklist)
 > *As the Agent, I want the combat rules written down exactly, so that turn planning uses correct arithmetic.*
 >
 > **Acceptance criteria:** `knowledge/mechanics.md` covers:
@@ -90,20 +90,20 @@ Every file starts with a header: game version, date, sources, and the labels use
 > - [ ] Rounding rules, and the order of operations for damage (additive before multiplicative, and so on).
 > - [ ] Each number is labelled `[GAME]` if read from data or verified in a fight. Otherwise it is labelled `[COMMUNITY]` and added to the verification list.
 
-> **P2.E2.S2: Verification list** · Size S · Status: Todo
+> **P2.E2.S2: Verification list** · Size S · Status: Done (11-item checklist at the end of knowledge/mechanics.md)
 > *As the Agent, I want unverified mechanics tested in real fights, so that the damage calculator in Phase 4 is right.*
 >
 > **Acceptance criteria**
 > - [ ] `knowledge/mechanics.md` ends with a checklist of rules to verify: for example "Vulnerable multiplier", "Weak multiplier", "rounding of 1.5× on odd values".
 > - [ ] Each item has a test: which card on which enemy, and the expected number. The tests run during the first Phase 4 runs, or the Player runs them.
 
-> **P2.E2.S3: Ascension modifiers** · Size S · Status: Todo
+> **P2.E2.S3: Ascension modifiers** · Size S · Status: Done (knowledge/ascension.md; 5 of 10 levels confirmed in run data)
 > *As the Agent, I want every ascension level's effect listed, so that strategy can adjust per level.*
 >
 > **Acceptance criteria**
 > - [ ] `knowledge/ascension.md`: A1–A10, each with its effect and the strategy implication (for example "fewer heals: raise the rest threshold").
 
-> **P2.E2.S4: Map and room types** · Size S · Status: Todo
+> **P2.E2.S4: Map and room types** · Size S · Status: Done (acts, bosses by act variant, boss known at act start; in knowledge/mechanics.md)
 > *As the Agent, I want the map structure documented, so that path planning knows what is possible.*
 >
 > **Acceptance criteria**
@@ -191,7 +191,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 > - [ ] Potion plan.
 > - [ ] What killed the Player here (from Phase 1 E5.S2) and the counter.
 
-> **P2.E5.S2: Act-level boss preparation** · Size S · Status: Todo
+> **P2.E5.S2: Act-level boss preparation** · Size S · Status: Done (bosses by act in knowledge/mechanics.md; boss visible at act start via map state)
 > *As the Agent, I want to know which bosses are possible in each act, so that the deck can be prepared for the likely ones.*
 >
 > **Acceptance criteria**
@@ -249,5 +249,5 @@ Every file starts with a header: game version, date, sources, and the labels use
 |---|---|---|
 | OQ2.1 | Which collections does `/data` serve on v0.107.1? | P2.E1.S1 |
 | OQ2.2 | Can the Bestiary be read through the mod? | P2.E3.S4 |
-| OQ2.3 | Is the Act boss visible at the start of the act? | P2.E5.S2 |
+| OQ2.3 | Is the Act boss visible at the start of the act? | **Resolved (likely yes):** the map state holds the boss (STS2MCP exposes it); confirm live |
 | OQ2.4 | How much good v0.107.x-specific community material exists? Early access balance changes often. | P2.E4.S1 |

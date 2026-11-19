@@ -39,7 +39,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P2.E1 | Game data export | In progress | Decompiled extract imported (577 cards, 121 monsters…); live /data export needs Phase 0 |
-| P2.E2 | Mechanics reference | Todo | |
+| P2.E2 | Mechanics reference | Done | mechanics.md, ascension.md; verification checklist for Phase 4 |
 | P2.E3 | Enemies and encounters | Todo | |
 | P2.E4 | Community strategy | Done | sources.md, ironclad-tiers.md, archetypes-ironclad.md, discrepancies.md |
 | P2.E5 | Boss plans | Todo | |
