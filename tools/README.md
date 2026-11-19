@@ -39,6 +39,8 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 | `backtest_rules.py` | `reports/phase2/rule-backtests.md` (H1, H4, H5) |
 | `backtest_draft.py` | `reports/phase2/draft-backtest-<character>.md` |
 | `check_playbook.py` | Recomputes the playbook's data-backed figures; exit 1 on any mismatch |
+| `replay_run.py` | One of the Player's runs, decision by decision, against today's tools (`runs/examples/*/agent-replay.md`) |
+| `death_review.py`, `fight_model.py`, `analyze_event_choices.py` | Death review, deck strength against HP lost, event choices at the decision point |
 
 ## Knowledge builders (Phase 2)
 | Tool | Output |

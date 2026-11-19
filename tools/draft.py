@@ -138,6 +138,7 @@ def boss_fit(c, boss):
             out.append((delta, reason))
     if "VANTOM" in b:
         add(attack and ("multi-hit" in tags or 0 <= cost <= 1) and not is_single_hit_aoe(c), +1.0, "Vantom: cheap or multi-hit attacks clear Slippery")
+        add(attack and "multi-hit" in tags and not is_single_hit_aoe(c), +0.5, "Vantom: several Slippery stacks per card (simulation: multi-hit best)")
         add(attack and is_single_hit_aoe(c), -1.0, "Vantom: single-hit hit-all attacks are wasted on Slippery")
         add("draw" in tags, +0.5, "Vantom: draw (survived decks 2.1, fatal 1.0)")
     elif "KNOWLEDGE_DEMON" in b:
@@ -199,9 +200,16 @@ def simulated_boss_value(deck, offer_ids, boss, hp=None, max_hp=80, runs=SIM_RUN
     start = hp or max_hp
 
     def rate(d):
-        return max(sf.evaluate(d, key, start, max_hp, runs, mode)["win_rate"] for mode in ("balanced", "safe"))
-    base = rate(deck)
-    return base, {cid: rate(deck + [cid]) - base for cid in offer_ids}
+        """Win rate plus half the share of the boss's HP removed (separates options when every deck still loses)."""
+        best = max((sf.evaluate(d, key, start, max_hp, runs, mode) for mode in ("balanced", "safe")),
+                   key=lambda r: (r["win_rate"], r["progress"]))
+        return best["win_rate"] + 0.5 * best["progress"], best["win_rate"]
+    base, base_win = rate(deck)
+    out = {}
+    for cid in offer_ids:
+        val, _ = rate(deck + [cid])
+        out[cid] = val - base
+    return base_win, out
 
 
 def score_offer(deck, offer_ids, character, act, floor, boss, simulate=False, hp=None, max_hp=80):
@@ -253,9 +261,11 @@ def score_offer(deck, offer_ids, character, act, floor, boss, simulate=False, hp
         base_rate, deltas = sim
         for r in rows:
             d = deltas.get("CARD." + r["id"], 0.0)
-            adj = max(-1.0, min(1.0, 5 * d))  # +/-0.1 win rate -> +/-0.5, capped at 1
+            # +/-0.1 win-equivalent -> +/-1 tier, capped: in the decision-point analysis one tier is worth roughly
+            # 10-15 points of act survival (A-tier picks +17, B about 0).
+            adj = max(-1.0, min(1.0, 10 * d))
             r["score"] = round(r["score"] + adj, 2)
-            r["reasons"].append(f"{boss} simulation: win {base_rate:.0%} -> {base_rate + d:.0%} ({adj:+.1f})")
+            r["reasons"].append(f"{boss} simulation: win plus progress {d:+.2f} against the current deck (base win {base_rate:.0%}) ({adj:+.1f})")
     rows.sort(key=lambda r: -r["score"])
     bar = skip_bar(len(deck))
     pick = rows[0] if rows and rows[0]["score"] > bar else None

@@ -31,6 +31,7 @@ The 15-card base deck for Act 1 bosses and the 22-card Act 2 deck for Knowledge 
 | Ceremonial Beast | 2% | 5/6 (83%) | **no** |
 | Knowledge Demon | 31% | 8/12 (67%) | **no** |
 | Entomancer | 0% | 10/13 (77%) | **no** |
+| Byrdonis | 100% | 7/10 (70%) | yes |
 
 ## Which plan to follow in a boss fight
 
@@ -46,6 +47,19 @@ Win rate when every turn follows the balanced plan, the safe plan below half HP 
 | Lagavulin Matriarch, base deck | 60/80 | 36% | 29% | 27% |
 
 Reading: in these boss fights the balanced plan was best or level in every row; switching to safe at low HP did not help.
+
+## Byrdonis: which plan against an elite that scales
+
+Byrdonis (91 HP; Peck 3x3 and Swoop 16 alternating; +1 Strength each turn, order and amount `[HYPOTHESIS]`). Calibration: the base deck loses about 26–29 HP here; the Player's Ironclad decks lost 25.8 on average (10 fights).
+
+| Deck | Start HP | Balanced: win (HP lost) | Safe below 50% | Safe |
+|---|---|---|---|---|
+| starter + Twin Strike + Pommel Strike (12 cards) | 56/80 | 96% (50 HP) | 34% (53 HP) | 6% (56 HP) |
+| starter + Twin Strike + Pommel Strike (12 cards) | 70/80 | 100% (51 HP) | 98% (50 HP) | 36% (66 HP) |
+| base deck (15 cards) | 56/80 | 100% (29 HP) | 100% (26 HP) | 100% (26 HP) |
+| base deck (15 cards) | 70/80 | 100% (29 HP) | 100% (29 HP) | 100% (26 HP) |
+
+Reading: blocking instead of attacking lets the Strength snowball. With a weak deck the safe plan collapses; with a strong deck it saves a few HP. Against enemies that scale every turn, follow the balanced plan.
 
 ## Knowledge Demon: which curse to take
 

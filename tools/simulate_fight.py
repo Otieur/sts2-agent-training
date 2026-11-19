@@ -231,7 +231,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 if c.card_id == "ANGER":
                     discard.append("ANGER")
             if b["hp"] <= 0:
-                return {"won": True, "hp": hp, "turns": turn}
+                return {"won": True, "hp": hp, "turns": turn, "boss_left": 0.0}
             if sum(c.draw for c in order) and seq[cut - 1][0].draw:
                 hand_ids += draw_cards(sum(c.draw for c in order), draw, discard, rng)
                 continue
@@ -262,11 +262,11 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         if disint:
             hp -= 5 + disint  # Disintegration: 6, then 7, then 8 at the end of your turn (the guide)
         if hp <= 0:
-            return {"won": False, "hp": 0, "turns": turn}
+            return {"won": False, "hp": 0, "turns": turn, "boss_left": max(0.0, b["hp"] / spec["hp"])}
         b["vuln"] = max(0, b["vuln"] - 1)
         b["weak"] = max(0, b["weak"] - 1)
         b["block"] = mv["boss_block"]
-    return {"won": False, "hp": hp, "turns": max_turns, "timeout": True}
+    return {"won": False, "hp": hp, "turns": max_turns, "timeout": True, "boss_left": max(0.0, b["hp"] / spec["hp"])}
 
 
 def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse="SLOTH"):
@@ -274,7 +274,8 @@ def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse="SLOTH"):
     wins = [r for r in rs if r["won"]]
     return {"win_rate": len(wins) / runs, "hp_lost": statistics.mean(hp - r["hp"] for r in rs),
             "hp_lost_wins": statistics.mean(hp - r["hp"] for r in wins) if wins else float("nan"),
-            "turns": statistics.median(r["turns"] for r in rs), "timeouts": sum(1 for r in rs if r.get("timeout"))}
+            "turns": statistics.median(r["turns"] for r in rs), "timeouts": sum(1 for r in rs if r.get("timeout")),
+            "progress": statistics.mean(1 - r.get("boss_left", 0.0) for r in rs)}
 
 
 EXPERIMENT_BASE = ["STRIKE_IRONCLAD:4", "DEFEND_IRONCLAD:4", "BASH", "POMMEL_STRIKE", "SHRUG_IT_OFF", "IRON_WAVE", "UPPERCUT",
