@@ -408,6 +408,49 @@ def calibrate_real(runs=40, character="IRONCLAD", bosses=None):
     return out
 
 
+def beast_sensitivity(runs=150):
+    """Gap 25: which single Ceremonial Beast assumption, if softer, brings the model near the Player's record (5/6)?
+    Each row changes one assumption; base deck from 60/80 HP, the better plan."""
+    M = _move
+
+    def make(plow_str=2, ringing=True, stun_turns=1, plow_hp=150, plow_dmg=18, cycle=None):
+        cyc = cycle or [M("debuff", ringing=ringing), M(dmg=15), M(dmg=17, boss_str=3)]
+
+        def mv(b, turn):
+            if turn == 1:
+                b["plow"] = plow_hp
+                return M("buff")
+            if b.get("stunned"):
+                b["stunned"] = b["stunned"] - 1 if b["stunned"] > 1 else 0
+                return M("stun")
+            if b.get("plow", 0) > 0:
+                return M(dmg=plow_dmg, boss_str=plow_str)
+            i = b.get("cycle", 0)
+            b["cycle"] = i + 1
+            return cyc[i % len(cyc)]
+
+        def dmg(b, lost):
+            if b.get("plow", 0) > 0 and b["hp"] <= b["plow"]:
+                b["plow"], b["stunned"], b["strength"] = 0, stun_turns, 0
+        return mv, dmg
+    variants = [("current model", {}), ("no Ringing", {"ringing": False}), ("Plow gains no Strength", {"plow_str": 0}),
+                ("stun lasts 2 turns", {"stun_turns": 2}), ("Plow triggers at 180 HP", {"plow_hp": 180}),
+                ("Plow deals 12", {"plow_dmg": 12}),
+                ("after the stun: Stomp, Crush, Beast Cry", {"cycle": [M(dmg=15), M(dmg=17, boss_str=3), M("debuff", ringing=True)]})]
+    deck = expand_deck(EXPERIMENT_BASE, "IRONCLAD")
+    spec = BOSSES["CEREMONIAL_BEAST"]
+    saved = spec["move"], spec["on_damage"]
+    out = []
+    try:
+        for name, kw in variants:
+            spec["move"], spec["on_damage"] = make(**kw)
+            r = max((evaluate(deck, "CEREMONIAL_BEAST", 60, 80, runs, m) for m in ("balanced", "safe")), key=lambda x: x["win_rate"])
+            out.append((name, r["win_rate"], r["turns"]))
+    finally:
+        spec["move"], spec["on_damage"] = saved
+    return out
+
+
 EXPERIMENT_BASE = ["STRIKE_IRONCLAD:4", "DEFEND_IRONCLAD:4", "BASH", "POMMEL_STRIKE", "SHRUG_IT_OFF", "IRON_WAVE", "UPPERCUT",
                    "ANGER", "INFLAME"]
 EXPERIMENT_VARIANTS = [("base deck (15 cards)", []), ("+ Twin Strike, Sword Boomerang (multi-hit)", ["TWIN_STRIKE", "SWORD_BOOMERANG"]),
@@ -581,7 +624,12 @@ def main(argv=None):
     ap.add_argument("--runs", type=int, default=300)
     ap.add_argument("--character", default="IRONCLAD")
     ap.add_argument("--report", action="store_true", help="run the fixed Vantom experiment and write reports/phase2/vantom-simulation.md")
+    ap.add_argument("--beast-sensitivity", action="store_true", help="gap 25: one-assumption variants of the Ceremonial Beast model")
     args = ap.parse_args(argv)
+    if args.beast_sensitivity:
+        for name, w, turns in beast_sensitivity(args.runs if args.runs != 300 else 150):
+            print(f"  {name:<42} base deck from 60/80: {w:4.0%} wins (median {turns} turns)")
+        return 0
     if args.report:
         report(args.runs)
         return 0
