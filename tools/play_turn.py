@@ -139,7 +139,7 @@ def main(argv=None):
     ap.add_argument("--lines", type=int, default=30, help="advice lines to print")
     a = ap.parse_args(argv)
     t0 = time.time()
-    n = 0
+    n, ok = 0, True
     if a.go:
         summary, cmds = plan_commands(advise(a.run), a.go)
         if not cmds:
@@ -156,16 +156,25 @@ def main(argv=None):
             print(f"  {' '.join(params)} -> {out[:40]}")
             if not out.startswith("OK"):
                 print("STOP: non-OK reply")
+                ok = False
                 break
             settle()
     elif a.act:
+        d = read_state()
+        name = a.act.split()[0]
+        if name not in (d.get("available_actions") or []):  # a menu or overlay opened (seen live 2026-11-19)
+            print(f"REFUSED: '{name}' is not available on screen {d.get('screen')} (actions {d.get('available_actions')})")
+            return 1
         out = act(a.run, a.act.split(), a.reason or a.act)
         n += 1
         print(f"  {a.act} -> {out[:60]}")
+        if not out.startswith("OK"):
+            ok = False
         settle()
     show(a.run, a.lines)
     print(f"[{n} actions, {time.time() - t0:.1f}s]")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

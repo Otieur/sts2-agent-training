@@ -9,19 +9,85 @@
   "control_scope": "local_player"
  },
  "in_combat": false,
- "turn": null,
+ "turn": 5,
  "available_actions": [
   "save_and_quit",
-  "choose_map_node"
+  "choose_map_node",
+  "close_map_screen"
  ],
- "combat": null,
+ "combat": {
+  "action_readiness": {
+   "can_use_combat_actions": false,
+   "reason": "combat_screen_unavailable",
+   "actions_settled": true,
+   "running_action_type": null,
+   "ready_action_type": null,
+   "modal_open": false,
+   "modal_type": null,
+   "player_actions_disabled": false,
+   "is_paused": false,
+   "local_ready_to_end_turn": true,
+   "all_players_ready_to_end_turn": true,
+   "ending_turn_phase_one": false,
+   "ending_turn_phase_two": false,
+   "end_turn_kick": "",
+   "combat_in_progress": false,
+   "combat_over_or_ending": true,
+   "combat_room_mode": null,
+   "hand_in_card_play": null,
+   "hand_in_card_selection": null,
+   "hand_mode": null,
+   "local_turn_ready": false,
+   "snapshot_stable": false,
+   "player_action_phase": false
+  },
+  "player": {
+   "current_hp": 74,
+   "max_hp": 90,
+   "block": 0,
+   "energy": 3,
+   "stars": 0,
+   "focus": 0,
+   "powers": [],
+   "base_orb_slots": 0,
+   "orb_capacity": 0,
+   "empty_orb_slots": 0,
+   "orbs": [],
+   "pets": [],
+   "pet_missing": false,
+   "cards_played_this_turn": 0,
+   "attacks_played_this_turn": 0,
+   "skills_played_this_turn": 0
+  },
+  "players": [
+   {
+    "player_id": "1",
+    "slot_index": 0,
+    "is_local": true,
+    "is_connected": true,
+    "character_id": "IRONCLAD",
+    "character_name": "The Ironclad",
+    "current_hp": 74,
+    "max_hp": 90,
+    "block": 0,
+    "energy": 3,
+    "stars": 0,
+    "focus": 0,
+    "is_alive": true
+   }
+  ],
+  "hand": [],
+  "enemies": [],
+  "end_turn_will_kill_player": false,
+  "lethal_risks": []
+ },
  "run": {
   "character_id": "IRONCLAD",
   "character_name": "The Ironclad",
   "ascension": 0,
   "ascension_effects": [],
-  "floor": 17,
-  "current_hp": 49,
+  "floor": 19,
+  "current_hp": 74,
   "max_hp": 90,
   "gold": 148,
   "max_energy": 3,
@@ -231,30 +297,6 @@
    },
    {
     "index": 8,
-    "card_id": "PILLAGE",
-    "name": "Pillage",
-    "upgraded": false,
-    "card_type": "Attack",
-    "rarity": "Uncommon",
-    "costs_x": false,
-    "star_costs_x": false,
-    "energy_cost": 1,
-    "star_cost": 0,
-    "rules_text": "Deal {Damage:diff()} damage. Draw cards until you draw a non-Attack card.",
-    "resolved_rules_text": "Deal 6 damage. Draw cards until you draw a non-Attack card.",
-    "dynamic_values": [
-     {
-      "name": "Damage",
-      "base_value": 6,
-      "current_value": 6,
-      "enchanted_value": 6,
-      "is_modified": false,
-      "was_just_upgraded": false
-     }
-    ]
-   },
-   {
-    "index": 9,
     "card_id": "SHRUG_IT_OFF",
     "name": "Shrug It Off",
     "upgraded": false,
@@ -286,7 +328,7 @@
     ]
    },
    {
-    "index": 10,
+    "index": 9,
     "card_id": "STOMP",
     "name": "Stomp",
     "upgraded": false,
@@ -310,7 +352,7 @@
     ]
    },
    {
-    "index": 11,
+    "index": 10,
     "card_id": "HEADBUTT",
     "name": "Headbutt",
     "upgraded": false,
@@ -334,7 +376,7 @@
     ]
    },
    {
-    "index": 12,
+    "index": 11,
     "card_id": "JUGGERNAUT",
     "name": "Juggernaut+",
     "upgraded": true,
@@ -358,7 +400,7 @@
     ]
    },
    {
-    "index": 13,
+    "index": 12,
     "card_id": "FEED",
     "name": "Feed+",
     "upgraded": true,
@@ -390,7 +432,7 @@
     ]
    },
    {
-    "index": 14,
+    "index": 13,
     "card_id": "TORIC_TOUGHNESS",
     "name": "Toric Toughness",
     "upgraded": false,
@@ -422,7 +464,7 @@
     ]
    },
    {
-    "index": 15,
+    "index": 14,
     "card_id": "OFFERING",
     "name": "Offering",
     "upgraded": false,
@@ -462,7 +504,7 @@
     ]
    },
    {
-    "index": 16,
+    "index": 15,
     "card_id": "CRIMSON_MANTLE",
     "name": "Crimson Mantle",
     "upgraded": false,
@@ -480,6 +522,118 @@
       "base_value": 7,
       "current_value": 7,
       "enchanted_value": 7,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 16,
+    "card_id": "RELAX",
+    "name": "Relax",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Ancient",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 3,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block. Next turn, draw {Cards:diff()} {Cards:plural:card|cards} and gain {Energy:energyIcons()}.",
+    "resolved_rules_text": "Gain 16 Block. Next turn, draw 2 cards and gain res://images/packed/sprite_fonts/ironclad_energy_icon.pngres://images/packed/sprite_fonts/ironclad_energy_icon.png. Exhaust.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 16,
+      "current_value": 16,
+      "enchanted_value": 16,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Cards",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Energy",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 17,
+    "card_id": "RELAX",
+    "name": "Relax",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Ancient",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 3,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block. Next turn, draw {Cards:diff()} {Cards:plural:card|cards} and gain {Energy:energyIcons()}.",
+    "resolved_rules_text": "Gain 16 Block. Next turn, draw 2 cards and gain res://images/packed/sprite_fonts/ironclad_energy_icon.pngres://images/packed/sprite_fonts/ironclad_energy_icon.png. Exhaust.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 16,
+      "current_value": 16,
+      "enchanted_value": 16,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Cards",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Energy",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 18,
+    "card_id": "TAUNT",
+    "name": "Taunt",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Common",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block. Apply {VulnerablePower:diff()} Vulnerable.",
+    "resolved_rules_text": "Gain 6 Block. Apply 1 Vulnerable.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 6,
+      "current_value": 6,
+      "enchanted_value": 6,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "VulnerablePower",
+      "base_value": 1,
+      "current_value": 1,
+      "enchanted_value": 1,
       "is_modified": false,
       "was_just_upgraded": false
      }
@@ -526,6 +680,14 @@
     "description": "Whenever you enter a [gold]Rest Site[/gold], start the next combat with an additional {Energy:energyIcons()}.",
     "stack": null,
     "is_melted": false
+   },
+   {
+    "index": 5,
+    "relic_id": "PAELS_HORN",
+    "name": "Pael's Horn",
+    "description": "Upon pickup, add [blue]2[/blue] [gold]Relax[/gold] to your [gold]Deck[/gold].",
+    "stack": null,
+    "is_melted": false
    }
   ],
   "players": [
@@ -536,7 +698,7 @@
     "is_connected": true,
     "character_id": "IRONCLAD",
     "character_name": "The Ironclad",
-    "current_hp": 49,
+    "current_hp": 74,
     "max_hp": 90,
     "gold": 148,
     "is_alive": true,
@@ -590,12 +752,6 @@
       "card_type": "Power"
      },
      {
-      "card_id": "PILLAGE",
-      "name": "Pillage",
-      "upgraded": false,
-      "card_type": "Attack"
-     },
-     {
       "card_id": "SHRUG_IT_OFF",
       "name": "Shrug It Off",
       "upgraded": false,
@@ -642,6 +798,24 @@
       "name": "Crimson Mantle",
       "upgraded": false,
       "card_type": "Power"
+     },
+     {
+      "card_id": "RELAX",
+      "name": "Relax",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "RELAX",
+      "name": "Relax",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "TAUNT",
+      "name": "Taunt",
+      "upgraded": false,
+      "card_type": "Skill"
      }
     ],
     "relics": [
@@ -668,6 +842,11 @@
      {
       "relic_id": "VENERABLE_TEA_SET",
       "name": "Venerable Tea Set",
+      "is_melted": false
+     },
+     {
+      "relic_id": "PAELS_HORN",
+      "name": "Pael's Horn",
       "is_melted": false
      }
     ],
@@ -744,7 +923,10 @@
  "multiplayer": null,
  "multiplayer_lobby": null,
  "map": {
-  "current_node": null,
+  "current_node": {
+   "row": 1,
+   "col": 4
+  },
   "is_travel_enabled": true,
   "is_traveling": false,
   "map_generation_count": 2,
@@ -764,10 +946,10 @@
     "row": 0,
     "col": 3,
     "node_type": "Ancient",
-    "state": "Travelable",
-    "visited": false,
+    "state": "Traveled",
+    "visited": true,
     "is_current": false,
-    "is_available": true,
+    "is_available": false,
     "is_start": true,
     "is_boss": false,
     "is_second_boss": false,
@@ -839,9 +1021,9 @@
     "row": 1,
     "col": 4,
     "node_type": "Monster",
-    "state": "Untravelable",
-    "visited": false,
-    "is_current": false,
+    "state": "Traveled",
+    "visited": true,
+    "is_current": true,
     "is_available": false,
     "is_start": false,
     "is_boss": false,
@@ -915,10 +1097,10 @@
     "row": 2,
     "col": 5,
     "node_type": "Unknown",
-    "state": "Untravelable",
+    "state": "Travelable",
     "visited": false,
     "is_current": false,
-    "is_available": false,
+    "is_available": true,
     "is_start": false,
     "is_boss": false,
     "is_second_boss": false,
@@ -2058,9 +2240,9 @@
   "available_nodes": [
    {
     "index": 0,
-    "row": 0,
-    "col": 3,
-    "node_type": "Ancient",
+    "row": 2,
+    "col": 5,
+    "node_type": "Unknown",
     "state": "Travelable",
     "vote_count": 0,
     "has_local_vote": false,
@@ -2076,7 +2258,7 @@
     "coord": null
    }
   ],
-  "underlying_room": null
+  "underlying_room": "Combat"
  },
  "selection": null,
  "character_select": null,
@@ -2102,20 +2284,85 @@
    "phase": "run",
    "control_scope": "local_player"
   },
-  "turn": null,
+  "turn": 5,
   "available_actions": [
    "save_and_quit",
-   "choose_map_node"
+   "choose_map_node",
+   "close_map_screen"
   ],
-  "combat": null,
+  "combat": {
+   "action_readiness": {
+    "can_use_combat_actions": false,
+    "reason": "combat_screen_unavailable",
+    "actions_settled": true,
+    "running_action_type": null,
+    "ready_action_type": null,
+    "modal_open": false,
+    "modal_type": null,
+    "player_actions_disabled": false,
+    "is_paused": false,
+    "local_ready_to_end_turn": true,
+    "all_players_ready_to_end_turn": true,
+    "ending_turn_phase_one": false,
+    "ending_turn_phase_two": false,
+    "end_turn_kick": "",
+    "combat_in_progress": false,
+    "combat_over_or_ending": true,
+    "combat_room_mode": null,
+    "hand_in_card_play": null,
+    "hand_in_card_selection": null,
+    "hand_mode": null,
+    "local_turn_ready": false,
+    "snapshot_stable": false,
+    "player_action_phase": false
+   },
+   "player": {
+    "hp": "74/90",
+    "block": 0,
+    "energy": 3,
+    "stars": 0,
+    "focus": 0,
+    "orbs": [],
+    "pets": [],
+    "pet_missing": false,
+    "cards_played_this_turn": 0,
+    "attacks_played_this_turn": 0,
+    "skills_played_this_turn": 0,
+    "powers": []
+   },
+   "players": [
+    {
+     "player_id": "1",
+     "slot_index": 0,
+     "is_local": true,
+     "is_connected": true,
+     "character_id": "IRONCLAD",
+     "character_name": "The Ironclad",
+     "current_hp": 74,
+     "max_hp": 90,
+     "block": 0,
+     "energy": 3,
+     "stars": 0,
+     "focus": 0,
+     "is_alive": true
+    }
+   ],
+   "end_turn_will_kill_player": false,
+   "lethal_risks": [],
+   "hand": [],
+   "draw": [],
+   "discard": [],
+   "exhaust": [],
+   "enemies": []
+  },
   "run": {
    "character": "The Ironclad",
    "ascension": 0,
    "ascension_effects": [],
-   "floor": 17,
+   "floor": 19,
    "act_id": "1",
    "boss_id": "THE_INSATIABLE_BOSS",
-   "hp": "49/90",
+   "hp": "74/90",
    "gold": 148,
    "max_energy": 3,
    "base_orb_slots": 0,
@@ -2203,12 +2450,17 @@
      ]
     },
     {
-     "line": "Pillage [1 Energy]: Deal 6 damage. Draw cards until you draw a non-Attack card.",
+     "line": "Relax*2 [3 Energy]: Gain 16 Block. Next turn, draw 2 cards and gain res://images/packed/sprite_fonts/ironclad_energy_icon.pngres://images/packed/sprite_fonts/ironclad_energy_icon.png. Exhaust.",
      "card_ids": [
-      "PILLAGE"
+      "RELAX"
      ],
-     "keywords": [],
-     "mods": []
+     "keywords": [
+      "Block",
+      "Exhaust"
+     ],
+     "mods": [
+      "Exhaust"
+     ]
     },
     {
      "line": "Shrug It Off [1 Energy]: Gain 8 Block. Draw 1 card.",
@@ -2237,6 +2489,17 @@
      "mods": []
     },
     {
+     "line": "Taunt [1 Energy]: Gain 6 Block. Apply 1 Vulnerable.",
+     "card_ids": [
+      "TAUNT"
+     ],
+     "keywords": [
+      "Vulnerable",
+      "Block"
+     ],
+     "mods": []
+    },
+    {
      "line": "Toric Toughness [2 Energy]: Gain 5 Block. Gain 5 Block at the start of the next 2 turns.",
      "card_ids": [
       "TORIC_TOUGHNESS"
@@ -2252,16 +2515,19 @@
     "Arcane Scroll",
     "Permafrost",
     "Bag of Marbles",
-    "Venerable Tea Set"
+    "Venerable Tea Set",
+    "Pael's Horn"
    ],
    "relic_ids": [
     "BURNING_BLOOD",
     "ARCANE_SCROLL",
     "PERMAFROST",
     "BAG_OF_MARBLES",
-    "VENERABLE_TEA_SET"
+    "VENERABLE_TEA_SET",
+    "PAELS_HORN"
    ],
    "relic_stacks": [
+    null,
     null,
     null,
     null,
@@ -2273,7 +2539,8 @@
     "Upon pickup, obtain a random [gold]Rare Card[/gold] to add to your [gold]Deck[/gold].",
     "The first time you play a Power each combat, gain [blue]{Block}[/blue] [gold]Block[/gold].",
     "At the start of each combat, apply [blue]{VulnerablePower}[/blue] [gold]Vulnerable[/gold] to ALL enemies.",
-    "Whenever you enter a [gold]Rest Site[/gold], start the next combat with an additional {Energy:energyIcons()}."
+    "Whenever you enter a [gold]Rest Site[/gold], start the next combat with an additional {Energy:energyIcons()}.",
+    "Upon pickup, add [blue]2[/blue] [gold]Relax[/gold] to your [gold]Deck[/gold]."
    ],
    "players": [
     {
@@ -2283,7 +2550,7 @@
      "is_connected": true,
      "character_id": "IRONCLAD",
      "character_name": "The Ironclad",
-     "current_hp": 49,
+     "current_hp": 74,
      "max_hp": 90,
      "gold": 148,
      "is_alive": true,
@@ -2337,12 +2604,6 @@
        "card_type": "Power"
       },
       {
-       "card_id": "PILLAGE",
-       "name": "Pillage",
-       "upgraded": false,
-       "card_type": "Attack"
-      },
-      {
        "card_id": "SHRUG_IT_OFF",
        "name": "Shrug It Off",
        "upgraded": false,
@@ -2389,6 +2650,24 @@
        "name": "Crimson Mantle",
        "upgraded": false,
        "card_type": "Power"
+      },
+      {
+       "card_id": "RELAX",
+       "name": "Relax",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "RELAX",
+       "name": "Relax",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "TAUNT",
+       "name": "Taunt",
+       "upgraded": false,
+       "card_type": "Skill"
       }
      ],
      "relics": [
@@ -2415,6 +2694,11 @@
       {
        "relic_id": "VENERABLE_TEA_SET",
        "name": "Venerable Tea Set",
+       "is_melted": false
+      },
+      {
+       "relic_id": "PAELS_HORN",
+       "name": "Pael's Horn",
        "is_melted": false
       }
      ],
@@ -2478,16 +2762,16 @@
   "multiplayer": null,
   "multiplayer_lobby": null,
   "map": {
-   "current": null,
+   "current": "1,4",
    "local_vote": null,
-   "underlying_room": null,
+   "underlying_room": "Combat",
    "boss_node": "15,3",
    "second_boss_node": null,
    "nodes": [
     {
      "coord": "0,3",
      "node_type": "Ancient",
-     "visited": false,
+     "visited": true,
      "children": [
       "1,0",
       "1,2",
@@ -2513,7 +2797,7 @@
     {
      "coord": "1,4",
      "node_type": "Monster",
-     "visited": false,
+     "visited": true,
      "children": [
       "2,5"
      ]
@@ -2900,7 +3184,7 @@
    "options": [
     {
      "i": 0,
-     "line": "Ancient (0,3)"
+     "line": "Unknown (2,5)"
     }
    ]
   },

@@ -18,6 +18,11 @@ Floor <f>, act <a>, HP <hp>/<max>, gold <g>, potions <list>
 ## Upcoming threats
 - Ceremonial Beast: front-load 150 damage to trigger Plow's stun; one card the turn after Beast Cry (Ringing)
 
+## Act 2 plan (floor 18)
+- Boss: The Insatiable (Sandpit is a power on the boss: 4 after Liquify, +1 per Frantic Escape, -1 at the end of each turn; end every turn at 2 or more; 321 HP at A0).
+- Deck engines: Demon Form+, Juggernaut+ with Crimson Mantle, Toric Toughness, 4 Defends, Shrug, 2 Relax; Stomp for groups; Offering for energy.
+- Needs: more damage per energy for the Sandpit race; card removal of the last Strikes.
+
 ## Floor log
 | Floor | Room | Result | HP change | Notable decision (reason) |
 |---|---|---|---|---|
@@ -37,6 +42,9 @@ Floor <f>, act <a>, HP <hp>/<max>, gold <g>, potions <list>
 | 14 | shop | Removed a Strike (100 gold) | 0 | 15 cards, 2 Strikes left |
 | 15 | elite | Won (Phrog Parasite and 4 Wrigglers) 64 to 65/90; Offering, Venerable Tea Set, Power Potion, Feed +3 max HP | +1 | Override of the route tool (unknown room) paid off; Demon Form turn 1, Juggernaut turn 2, Stomp cleared the Wrigglers |
 | 16 | rest | Smithed Feed | 0 | 72% HP before the boss; the Ancient heals fully at A0 |
+| 17 | boss | Won (Ceremonial Beast) in 7 turns, 65 to 49/90; took Crimson Mantle | -16 | Plow broke at 149 on turn 3 (Juggernaut triggers); stun cancelled the attack; Stampede finished it |
+| 18 | ancient | Pael: Pael's Horn (2 Relax); healed to 90/90 | +41 | Act 2 boss The Insatiable: Sandpit on the boss, end turns at 2+, Frantic Escape early |
+| 19 | monster | Thieving Hopper escaped with Pillage; took Taunt | -16 | MY MISTAKE: two turns ended without playing (menu opened; a test command sent a real end_turn); tool now refuses unavailable actions and stops on failure |
 
 ## Fight log
 | Floor | Encounter | Turns | Damage taken | Benchmark median | Potions used |
@@ -46,6 +54,7 @@ Floor <f>, act <a>, HP <hp>/<max>, gold <g>, potions <list>
 | 6 | FUZZY_WURM_CRAWLER_WEAK | 3 | 4 | 0 (all characters A0-4, n=25) · above p75 (1) | none |
 | 15 | PHROG PARASITE (ELITE) | 5 | 8 | none | none |
 | 17 | CEREMONIAL BEAST (BOSS) | 7 | 22 | none | POWER_POTION, DEXTERITY_POTION |
+| 19 | THIEVING HOPPER (ESCAPED WITH PILLAGE) | 5 | 22 | none | none |
 
 ## Open concerns
 - 
