@@ -132,8 +132,11 @@ def resolve(call, before, after):
         new = [cid for cid in added if cid in call["options"]]
         call["player_pick"] = new[0] if new else ("SKIP" if (after.get("run") or {}).get("deck") is not None else None)
     elif k == "map":
+        # right after the click the map's current_node can still be the room just left (seen live 2026-11-19),
+        # so only a current node among the offered nodes counts as the pick
         cur = (after.get("map") or {}).get("current_node") or {}
-        call["player_pick"] = f"{cur.get('row')},{cur.get('col')}" if cur else None
+        rc = f"{cur.get('row')},{cur.get('col')}" if cur else None
+        call["player_pick"] = rc if rc in (call.get("options") or []) else None
     elif k == "rest":
         hb, ha = (before.get("run") or {}).get("current_hp"), (after.get("run") or {}).get("current_hp")
         if ha is not None and hb is not None and ha > hb:
@@ -141,10 +144,27 @@ def resolve(call, before, after):
         elif upgraded_count(after) > upgraded_count(before):
             call["player_pick"] = "SMITH"
         else:
-            call["player_pick"] = "OTHER"
+            call["player_pick"] = None  # smithing finishes on a later card selection screen; see final()
     if call.get("agent_pick") is not None and call.get("player_pick") is not None:
         call["agree"] = call["agent_pick"] == call["player_pick"] or call["agent_pick"] == "EITHER"
     return call
+
+
+def final(call, st):
+    """Whether a pending call can be written: its pick is known, or can no longer be learned (the run moved on)."""
+    k, floor_now, floor_call = call.get("kind"), (st.get("run") or {}).get("floor"), call.get("floor")
+    moved = floor_now is not None and floor_call is not None
+    if k == "map":
+        return call.get("player_pick") is not None or (moved and floor_now > floor_call + 1)
+    if k == "rest":
+        if call.get("player_pick") is not None:
+            return True
+        if moved and floor_now > floor_call:
+            call["player_pick"] = "OTHER"
+            call["agree"] = call.get("agent_pick") == "EITHER"
+            return True
+        return False
+    return True
 
 
 def shadow(adapter, out_dir, interval=1.0, max_seconds=4 * 3600, clock=time.time, sleep=time.sleep, max_states=None):
@@ -164,10 +184,12 @@ def shadow(adapter, out_dir, interval=1.0, max_seconds=4 * 3600, clock=time.time
         n += 1
         key = screen_key(st)
         if prev is not None and key != screen_key(prev):
-            if pending:  # the Player acted on the previous screen
-                with open(calls_f, "a") as f:
-                    f.write(json.dumps(resolve(pending, pending["_state"], st) | {"_state": None}, default=str) + "\n")
-                pending = None
+            if pending:  # the Player acted on the previous screen; map and rest picks can show up a few screens later
+                resolve(pending, pending["_state"], st)
+                if final(pending, st):
+                    with open(calls_f, "a") as f:
+                        f.write(json.dumps(pending | {"_state": None}, default=str) + "\n")
+                    pending = None
             if pending_combat and (st.get("combat") or {}) and st.get("turn") != pending_combat["turn"]:
                 hp = ((st.get("combat") or {}).get("player") or {}).get("current_hp")
                 if hp is not None and pending_combat.get("hp_before") is not None:
@@ -179,7 +201,12 @@ def shadow(adapter, out_dir, interval=1.0, max_seconds=4 * 3600, clock=time.time
             seen.add(key)
             try:  # one decision the tools cannot handle must not end a long shadowing session
                 call = make_call(st)
+                if call and pending and (pending.get("kind"), pending.get("floor")) == (call.get("kind"), call.get("floor")):
+                    call = None  # the same decision screen reopened (map toggled, rest site after the choice)
                 if call:
+                    if pending:  # a new decision before the old pick was seen: write the old one as it is
+                        with open(calls_f, "a") as f:
+                            f.write(json.dumps(pending | {"_state": None}, default=str) + "\n")
                     call["_state"] = st
                     pending = call
                 if (st.get("screen") or "").upper() == "COMBAT":

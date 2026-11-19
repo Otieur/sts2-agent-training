@@ -46,5 +46,42 @@ class TestShadow(unittest.TestCase):
             self.assertIn("rest", shadow.summary(d))
 
 
+class TestDeferredPicks(unittest.TestCase):
+    """Live 2026-11-19: the map pick and the smith upgrade show up a few screens after the click."""
+
+    def test_map_pick_waits_for_the_new_current_node(self):
+        call = {"kind": "map", "floor": 25, "options": ["8,2", "8,3"], "agent_pick": "8,3"}
+        before = {"run": {"floor": 25}, "map": {"current_node": {"row": 7, "col": 2}}}
+        stale = {"run": {"floor": 26}, "map": {"current_node": {"row": 7, "col": 2}}}  # fight screen, old node
+        shadow.resolve(call, before, stale)
+        self.assertIsNone(call["player_pick"])
+        self.assertFalse(shadow.final(call, stale))
+        moved = {"run": {"floor": 26}, "map": {"current_node": {"row": 8, "col": 2}}}
+        shadow.resolve(call, before, moved)
+        self.assertEqual(call["player_pick"], "8,2")
+        self.assertFalse(call["agree"])
+        self.assertTrue(shadow.final(call, moved))
+
+    def test_rest_smith_seen_on_a_later_screen(self):
+        call = {"kind": "rest", "floor": 27, "agent_pick": "SMITH"}
+        deck = [{"card_id": "BASH", "upgraded": False}]
+        before = {"run": {"floor": 27, "current_hp": 50, "deck": deck}}
+        selecting = {"run": {"floor": 27, "current_hp": 50, "deck": deck}}
+        shadow.resolve(call, before, selecting)
+        self.assertFalse(shadow.final(call, selecting))
+        done = {"run": {"floor": 27, "current_hp": 50, "deck": [{"card_id": "BASH", "upgraded": True}]}}
+        shadow.resolve(call, before, done)
+        self.assertEqual(call["player_pick"], "SMITH")
+        self.assertTrue(call["agree"])
+
+    def test_rest_other_once_the_run_moves_on(self):
+        call = {"kind": "rest", "floor": 27, "agent_pick": "SMITH"}
+        st = {"run": {"floor": 27, "current_hp": 50, "deck": []}}
+        shadow.resolve(call, st, st)
+        self.assertTrue(shadow.final(call, {"run": {"floor": 28}}))
+        self.assertEqual(call["player_pick"], "OTHER")
+        self.assertFalse(call["agree"])
+
+
 if __name__ == "__main__":
     unittest.main()
