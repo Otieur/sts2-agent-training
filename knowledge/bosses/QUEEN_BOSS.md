@@ -51,6 +51,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Enrage: +2 Strength
 - **Amalgam** `[GAME-EXTRACT]`: Tackle 18, 18, Beam 8×3, Tackle 14, 14.
 - Artifact blocks You're Mine's debuffs `[COMMUNITY]`.
+- **Order** `[COMMUNITY]`, one boss database (slay-the-spire-2.pages.dev, early access data, accessed 2026-11-19): Puppet Strings, You're Mine, Burn Bright, Off With Your Head; another guide describes a buff, a multi-hit and a heavy hit without names. Chains of Binding afflicts cards in hand at the start of each turn; cards drawn later are free. Not simulated.
 
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: draw cards at least 3 (You're Mine: 99 Weak, Vulnerable, Frail; survived 3.9, fatal 2.2).

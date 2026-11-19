@@ -34,6 +34,7 @@ The 15-card base deck for Act 1 fights and the 22-card Act 2 deck for Act 2 figh
 | Byrdonis | 100% | 7/10 (70%) | yes |
 | Soul Fysh | 50% | 4/7 (57%) | yes |
 | Waterfall Giant | 14% | 3/5 (60%) | **no** |
+| The Kin | 1% | 8/8 (100%) | **no** |
 
 ## Calibration with the Player's own decks
 
@@ -49,6 +50,7 @@ Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1,
 | Byrdonis | 10 | 65% | 0.93 | 7/10 (70%) |
 | Soul Fysh | 7 | 0% | 0.57 | 4/7 (57%) |
 | Waterfall Giant | 5 | 2% | 0.69 | 3/5 (60%) |
+| The Kin | 8 | 0% | 0.53 | 8/8 (100%) |
 
 Reading: absolute win rates from the simulator mean little for real decks; use it to compare additions to the same deck. A boss whose share removed is low while the Player usually survived (Ceremonial Beast, Entomancer, Knowledge Demon) is modelled too hard.
 
@@ -100,6 +102,17 @@ Byrdonis (91 HP; Peck 3x3 and Swoop 16 alternating; +1 Strength each turn, order
 | base deck (15 cards) | 70/80 | 100% (29 HP) | 100% (29 HP) | 100% (26 HP) |
 
 Reading: blocking instead of attacking lets the Strength snowball. With a weak deck the safe plan collapses; with a strong deck it saves a few HP. Against enemies that scale every turn, follow the balanced plan.
+
+## The Kin: race the Priest or clear the followers
+
+Kin Priest (190 HP; Orb of Frailty 8 + Frail, Orb of Weakness 8 + Weak, Beam 3x3, Ritual +2 Strength) with two Minion followers (58 HP; Quick Slash 5, Boomerang 2x2, Power Dance +2 Strength); killing the Priest ends the fight. Cycles `[HYPOTHESIS]`; the model is far too hard for this boss (the Player survived 8 of 8), so read only the comparison. From full HP, the better plan per row.
+
+| Deck | Every single-target card at the Priest | The planner's own targets |
+|---|---|---|
+| base deck (15 cards) | 38% (77 HP) | 31% (78 HP) |
+| + Thunderclap, Conflagration (hit-all) | 63% (75 HP) | 77% (73 HP) |
+
+Reading (computed): single-target deck: racing the Priest 38% against 31%; with two hit-all cards: the planner's targets (clearing followers) 77% against racing 63%.
 
 ## Knowledge Demon: which curse to take
 

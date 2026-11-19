@@ -52,7 +52,7 @@ Planned blocks (A–J) were finished by 01:11; everything after is extra work fr
 - P6: E1.S1 done; E2.S2, E3.S1, E3.S2, E4.S2, E5.S3 in progress.
 
 ## 4. Decisions taken without you
-Fifteen, each with its reason and how to reverse it: `docs/overnight-decisions.md`. The ones that matter most: the target version is now v0.111.1 (6); decision record 0001 now proposes STS2-Agent first (6, proposal only); the extract's version was corrected (8); the Knowledge Demon curse rule was replaced (12); the planner's card, status and power handling (13, 14) and its Doom timing (15).
+Sixteen, each with its reason and how to reverse it: `docs/overnight-decisions.md`. The ones that matter most: the target version is now v0.111.1 (6); decision record 0001 now proposes STS2-Agent first (6, proposal only); the extract's version was corrected (8); the Knowledge Demon curse rule was replaced (12); the planner's card, status and power handling (13, 14), its Doom timing (15), and how simulated drafting treats unmodelled cards, upgrades, relics and potions (16).
 
 ## 5. Needs the Player
 - [ ] **Approve or reject the security review verdict** (`docs/reviews/sts2-agent-security-review.md`).
