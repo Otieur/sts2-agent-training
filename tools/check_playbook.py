@@ -120,6 +120,13 @@ def checks(con):
     out.append(("fight model block", f"each point of block per turn saves about {abs(100 * e1['blk']):.1f} points in Act 1 elites"))
     out.append(("fight model scaling", f"each scaling card saves about {abs(100 * b2['scaling']):.1f} points at the Act 2 boss but costs about "
                                        f"{100 * m1['scaling']:.1f} points in Act 1 hallways"))
+    # Section 2.1: draft backtest (tools/backtest_draft.py)
+    bt = (PROJECT / "reports" / "phase2" / "draft-backtest-ironclad.md").read_text()
+    m = re.search(r"Agreement:\*\* (\d+)% of screens", bt)
+    m2 = re.search(r"matched the tool:\*\* (\d+)% \(\d+/\d+\); when not: (\d+)% \(\d+/\d+\); Fisher p = ([\d.]+)", bt)
+    out.append(("draft backtest", f"agreed with the Player on {m.group(1)}%, and the act was survived in {m2.group(1)}% of screens where the "
+                                  f"Player's choice matched the tool against {m2.group(2)}% where it did not (p = {m2.group(3)};"
+                if m and m2 else "<pattern not found in draft-backtest-ironclad.md>"))
     return out
 
 
