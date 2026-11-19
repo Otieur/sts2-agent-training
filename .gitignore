@@ -1,0 +1,9 @@
+backups/
+vendor/
+logs/
+data/raw/
+data/runs.db
+data/tables/
+__pycache__/
+*.pyc
+.DS_Store
