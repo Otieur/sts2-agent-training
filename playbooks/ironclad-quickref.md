@@ -43,7 +43,7 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 | Knowledge Demon | Curse offers are Disintegration or one card: take Mind Rot, then Sloth, then Waste Away (close); never stack Disintegration (simulated) |
 | Kaiser Crab | Focus Rocket; end the Laser turn facing Rocket; kill a claw with the turn's last attack (Crab Rage) |
 | Queen | Turn 1 Strong Tackle 26 (v0.111.1): block it; arrive high |
-| The Kin | Racing the Priest probably ends the fight (followers are Minions) |
+| The Kin | Killing the Priest ends the fight (followers are Minions; two guides): race it |
 
 ## Elites (§4)
 Infested Prisms: few Skills (Tainted). Entomancer: few big hits (Personal Hive). Byrdonis: kill fast. Skulking Colony: about 20 a turn (cap). Bygone Effigy: big attack last (Slow).
