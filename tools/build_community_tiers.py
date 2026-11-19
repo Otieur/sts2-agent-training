@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""Build a normalised community tier list for Ironclad and compare it with the Player's priorities.
+"""Build a normalised community tier list per character and compare it with the Player's priorities.
 
 Source tiers are transcribed (as data, with attribution) from the pages listed in
 knowledge/community/sources.md, accessed 2026-11-19. Card names are matched to the extracted game data.
 
-Outputs:
-  knowledge/community/ironclad-tiers.md   consensus tier per card with per-source tiers
-  knowledge/community/discrepancies.md    cards where the Player's habit and the consensus differ by 2+ tiers
+Outputs (per character):
+  knowledge/community/<character>-tiers.md   consensus tier per card with per-source tiers
+  knowledge/community/discrepancies.md (Ironclad) or discrepancies-<character>.md
+                                             cards where the Player's habit and the consensus differ by 2+ tiers
 
-Usage: python3 -I tools/build_community_tiers.py
+Usage: python3 -I tools/build_community_tiers.py [--character IRONCLAD|NECROBINDER|ALL]
 """
+import argparse
 import csv
 import json
 import re
@@ -67,6 +69,72 @@ METABOT_WIN = {
     "Perfected Strike": 18.0, "Bludgeon": 17.9, "Cinder": 15.5,
 }
 
+# ------------------------------------------------------------------------------------------------ Necrobinder
+# Spire Codex guide "Necrobinder Tier List", 2026-07-15, main branch mid-July 2026 (v0.107.x era), community runs.
+# Letter tiers as given (Glimpse Beyond: "highest-rated card in the game", Codex Score 100, given S here). Shared Fate,
+# Banshee's Cry and Misery have win rates but no letter: placed at A from their win rates (between Legion of Bone,
+# 52.7% = A, and Neurosurge, 56.5% = S). Reap and Sow are named as the bottom (~30-33%): D, as for Ironclad's bottom.
+NECRO_SPIRE_CODEX = {
+    "Glimpse Beyond": "S", "Neurosurge": "S", "Shared Fate": "A", "Banshee's Cry": "A", "Misery": "A",
+    "Legion of Bone": "A", "Spirit of Ash": "B", "Seance": "B", "Necro Mastery": "B", "Oblivion": "B", "Reanimate": "B",
+    "Reap": "D", "Sow": "D",
+}
+NECRO_SPIRE_CODEX_WIN = {"Glimpse Beyond": 62.0, "Neurosurge": 56.5, "Shared Fate": 55.4, "Banshee's Cry": 54.9,
+                         "Legion of Bone": 52.7, "Misery": 52.6}
+
+# Nat 1 Gaming (DoggertQBones), Necrobinder card tier list, 2026-11-15, 11/12 beta patch (no Necrobinder card changes
+# in that patch per the article). Expert opinion.
+NECRO_NAT1 = {}
+for tier, names in {
+    "S": "Neurosurge, Friendship",
+    "A": "Call of the Void, Glimpse Beyond, Hang, Eradicate, Borrowed Time, Transfigure, No Escape, Banshees Cry, "
+         "End of Days, Spirit of Ash, Undeath, Reanimate, Squeeze, Dirge, The Scythe, Deathbringer, Fetch, Defy, Bone Shards",
+    "B": "Demesne, Enfeebling Touch, Countdown, Sleight of Flesh, Seance, Protector, High Five, Lethality, Capture Spirit, "
+         "Oblivion, Grave Warden, Necro Mastery, Calcify, Misery, Flatten, Deaths Door, Debilitate, Negative Pulse, "
+         "Pagestorm, Times Up, Scourge, Rattle, Veilpiercer, Melancholy, Soul Storm, Reaper Form, Forbidden Grimoire, "
+         "Shared Fate, Dredge, Shroud, Snap, Unleash, Invoke",
+    "C": "Reap, Haunt, Sentry Mode, Spur, Sow, Sculpting Strike, Death March, Severance, Devour Life, Defile, Pull Aggro, "
+         "Putrefy, Legion of Bone, Right Hand Hand, Graveblast, Blight Strike, Fear, Reave, Drain Power, Bodyguard, Poke, "
+         "Delay, Sacrifice, Pull from Below, Afterlife, Cleanse",
+    "D": "Parse, Wisp, Sic Em, Bury, Danse Macabre",
+    "F": "Eidolon",
+}.items():
+    for n in names.split(", "):
+        NECRO_NAT1[n] = tier
+
+# MetaBot Necrobinder tier list page, accessed 2026-11-19 (period "November 2026"; version and sample sizes not
+# stated; survivorship-biased). Necrobinder-owned cards only; the page also lists colorless and other cards.
+NECRO_METABOT_WIN = {
+    "Legion of Bone": 48.1, "Glimpse Beyond": 46.8, "Neurosurge": 43.7, "Demesne": 40.2, "Shared Fate": 39.5,
+    "Banshee's Cry": 38.1, "Transfigure": 37.0, "Spirit of Ash": 36.8, "Eradicate": 36.8, "Oblivion": 36.3,
+    "Debilitate": 35.2, "Pagestorm": 33.7, "Seance": 33.1, "Call of the Void": 33.1, "Enfeebling Touch": 32.9,
+    "Pull from Below": 32.6, "Danse Macabre": 32.0, "Friendship": 31.8, "Time's Up": 31.6, "Parse": 31.5,
+    "Reanimate": 31.4, "Undeath": 31.2, "Squeeze": 30.9, "Dredge": 30.9, "Necro Mastery": 30.4, "Hang": 30.4,
+    "Misery": 30.2, "Putrefy": 30.0, "Sleight of Flesh": 29.9, "Rattle": 29.7, "Lethality": 29.7, "Borrowed Time": 29.5,
+    "Reaper Form": 29.4, "Eidolon": 29.4, "Dirge": 29.1, "Bury": 29.1, "Devour Life": 28.8, "End of Days": 28.5,
+    "Delay": 28.4, "Sentry Mode": 28.4, "Shroud": 28.1, "Graveblast": 27.9, "Death March": 27.9, "Defy": 27.7,
+    "Haunt": 27.5, "The Scythe": 27.4, "Forbidden Grimoire": 27.4, "Death's Door": 27.3, "High Five": 27.1, "Spur": 26.9,
+    "Countdown": 26.9, "Capture Spirit": 26.7, "Cleanse": 26.6, "Fetch": 26.4, "No Escape": 26.2, "Soul Storm": 25.8,
+    "Right Hand Hand": 25.6, "Invoke": 25.4, "Deathbringer": 25.2, "Wisp": 24.9, "Fear": 24.5, "Severance": 24.5,
+    "Veilpiercer": 24.1, "Calcify": 24.1, "Snap": 24.0, "Grave Warden": 23.8, "Sacrifice": 23.6, "Sic 'Em": 23.1,
+    "Sculpting Strike": 23.1, "Afterlife": 22.8, "Bone Shards": 22.6, "Melancholy": 22.5, "Protector": 22.2,
+    "Scourge": 21.2, "Poke": 21.1, "Flatten": 20.9, "Negative Pulse": 20.6, "Pull Aggro": 20.6, "Defile": 19.9,
+    "Drain Power": 19.3, "Reave": 18.8, "Reap": 18.6, "Blight Strike": 17.1, "Sow": 16.8,
+}
+
+CHARS = {
+    "IRONCLAD": {"owner": "Ironclad", "spire_codex": SPIRE_CODEX, "spire_codex_win": SPIRE_CODEX_WIN, "nat1": NAT1,
+                 "metabot": METABOT_WIN, "nat1_version": "11/12 beta patch (v0.113.x), **not our version**",
+                 "metabot_version": "Not stated", "codex_note": "partial list",
+                 "disc_file": "discrepancies.md"},
+    "NECROBINDER": {"owner": "Necrobinder", "spire_codex": NECRO_SPIRE_CODEX, "spire_codex_win": NECRO_SPIRE_CODEX_WIN,
+                    "nat1": NECRO_NAT1, "metabot": NECRO_METABOT_WIN,
+                    "nat1_version": "11/12 beta patch (v0.113.x; no Necrobinder card changes in that patch), **not our version**",
+                    "metabot_version": "Period \"November 2026\"; version not stated",
+                    "codex_note": "partial list; three letters derived from win rates",
+                    "disc_file": "discrepancies-necrobinder.md"},
+}
+
 TIER_SCORE = {"S": 5, "A": 4, "B": 3, "C": 2, "D": 1, "F": 0}
 WEIGHTS = {"spire_codex": 2.0, "metabot": 1.0, "nat1": 1.0}
 
@@ -79,7 +147,9 @@ def quintile_scores(values):
     """Map a dict name->value to a 0.5..4.5 score by quintile (higher value = higher score)."""
     items = sorted(values.items(), key=lambda kv: kv[1])
     n = len(items)
-    return {k: 0.5 + 4 * (i // max(1, n // 5) if i // max(1, n // 5) < 5 else 4) / 4 for i, (k, _) in enumerate(items)}
+    # Equal-sized buckets: bucket = floor(5 * rank / n), 0..4. (Before 2026-11-19 01:30 the top bucket absorbed the
+    # remainder, e.g. 20 of 84 cards instead of 17.)
+    return {k: 0.5 + min(4, (5 * i) // max(1, n)) for i, (k, _) in enumerate(items)}
 
 
 def tier_of(score):
@@ -94,21 +164,32 @@ def tier_of(score):
     return "D"
 
 
-def main():
+def build(character):
+    cfg = CHARS[character]
+    SPIRE_CODEX, SPIRE_CODEX_WIN, NAT1, METABOT_WIN = cfg["spire_codex"], cfg["spire_codex_win"], cfg["nat1"], cfg["metabot"]
+    title, low = character.title(), character.lower()
     cards = json.loads((PROJECT / "knowledge/data/extract-2026-09-21/cards.json").read_text())
-    iron = {norm(re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", c["name"])): c for c in cards if c["owner"] == "Ironclad"}
+    iron = {norm(re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", c["name"])): c for c in cards if c["owner"] == cfg["owner"]}
     display = {k: re.sub(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", " ", c["name"]) for k, c in iron.items()}
+    # Prefer a source's spelling (keeps apostrophes, hyphens and lower-case "of"/"the"), most punctuated first.
+    def punct(n):
+        return (sum(1 for ch in n if not ch.isalnum() and ch != " "), sum(1 for w in n.split()[1:] if w[:1].islower()))
+    for src in (NAT1, SPIRE_CODEX, METABOT_WIN):
+        for n in src:
+            k = norm(n)
+            if k in display and punct(n) > punct(display[k]):
+                display[k] = n
 
     unmatched = sorted({n for src in (SPIRE_CODEX, NAT1, METABOT_WIN) for n in src if norm(n) not in iron})
     mb = quintile_scores({norm(k): v for k, v in METABOT_WIN.items() if norm(k) in iron})
 
     # Player: Bradley-Terry strength quintiles among cards with 10+ comparisons
     player, player_n, picks = {}, {}, {}
-    for r in csv.DictReader(open(PROJECT / "reports/phase1/card-ranking-ironclad.csv")):
+    for r in csv.DictReader(open(PROJECT / f"reports/phase1/card-ranking-{low}.csv")):
         if r["card"] != "SKIP" and int(r["comparisons"]) >= 10:
             player[norm(r["card"].replace("_", " "))] = float(r["strength"])
             player_n[norm(r["card"].replace("_", " "))] = int(r["comparisons"])
-    for r in csv.DictReader(open(PROJECT / "reports/phase1/card-picks-ironclad.csv")):
+    for r in csv.DictReader(open(PROJECT / f"reports/phase1/card-picks-{low}.csv")):
         picks[norm(r["card"].replace("_", " "))] = (int(r["picked"]), int(r["offered"]))
     pq = quintile_scores(player)
 
@@ -146,13 +227,13 @@ def main():
 
     out = PROJECT / "knowledge/community"
     out.mkdir(parents=True, exist_ok=True)
-    L = ["# Ironclad Community Tiers (normalised)", "",
+    L = [f"# {title} Community Tiers (normalised)", "",
          "Built by `tools/build_community_tiers.py` on 2026-11-19. Label: `[COMMUNITY]`. Sources and their versions are "
          "in `sources.md`.", "",
          "| Source | Kind | Version | Weight |", "|---|---|---|---|",
-         "| Spire Codex guide | Win rate when picked, community-submitted runs; partial list | Main branch, mid-July 2026 (v0.107.x era) | 2 |",
-         "| MetaBot | Win rate of tracked runs containing the card (survivorship-biased, no sample sizes); converted to quintiles | Not stated | 1 |",
-         "| Nat 1 Gaming | Expert opinion | 11/12 beta patch (v0.113.x), **not our version** | 1 |", "",
+         f"| Spire Codex guide | Win rate when picked, community-submitted runs; {cfg['codex_note']} | Main branch, mid-July 2026 (v0.107.x era) | 2 |",
+         f"| MetaBot | Win rate of tracked runs containing the card (survivorship-biased, no sample sizes); converted to quintiles | {cfg['metabot_version']} | 1 |",
+         f"| Nat 1 Gaming | Expert opinion | {cfg['nat1_version']} | 1 |", "",
          "Consensus = weighted mean of tier scores (S=5 … F=0; MetaBot quintiles 0.5–4.5), mapped back: S ≥ 4.25, A ≥ 3.5, "
          "B ≥ 2.75, C ≥ 2.0, D below. **Spread** is the gap in tiers between the most and least favourable source; 2 or more "
          "means the sources disagree. The Player column is the quintile of the Player's own head-to-head score (habit, "
@@ -164,12 +245,12 @@ def main():
                     f"{r['picked']}/{r['offered']}" if r["offered"] else "-"] for r in rows]), "",
          "Spire Codex win rates when picked (main branch, mid-July 2026): " +
          ", ".join(f"{k} {v}%" for k, v in SPIRE_CODEX_WIN.items()) + ".", "",
-         f"Names in sources that are not Ironclad cards in the extracted game data (ignored): {', '.join(unmatched) or 'none'}.", ""]
-    (out / "ironclad-tiers.md").write_text("\n".join(L))
+         f"Names in sources that are not {title} cards in the extracted game data (ignored): {', '.join(unmatched) or 'none'}.", ""]
+    (out / f"{low}-tiers.md").write_text("\n".join(L))
 
     disc = [r for r in rows if r["player_tier"] and abs(TIER_SCORE[r["tier"]] - TIER_SCORE[r["player_tier"]]) >= 2]
     disc.sort(key=lambda r: -abs(TIER_SCORE[r["tier"]] - TIER_SCORE[r["player_tier"]]))
-    D = ["# Discrepancies: Player Habit against Community Consensus (Ironclad)", "",
+    D = [f"# Discrepancies: Player Habit against Community Consensus ({title})", "",
          "Cards whose consensus tier and the Player's habit tier differ by 2 or more tiers. Built by "
          "`tools/build_community_tiers.py`. Neither side is right by default (see `docs/README.md` precedence): these are "
          "questions for Phase 4 experiments. Roles come from the extracted game data.", "",
@@ -178,8 +259,16 @@ def main():
                     f"{r['picked']}/{r['offered']}", f"{r['player_strength']:+.2f} ({r['player_n']})",
                     "Player rates higher" if TIER_SCORE[r["player_tier"]] > TIER_SCORE[r["tier"]] else "Player rates lower"]
                    for r in disc]), ""]
-    (out / "discrepancies.md").write_text("\n".join(D))
-    print(f"{len(rows)} cards tiered; {len(disc)} discrepancies; unmatched names: {unmatched}")
+    (out / cfg["disc_file"]).write_text("\n".join(D))
+    print(f"{title}: {len(rows)} cards tiered; {len(disc)} discrepancies; unmatched names: {unmatched}")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--character", default="ALL", choices=["ALL", *CHARS])
+    args = ap.parse_args()
+    for ch in (CHARS if args.character == "ALL" else [args.character]):
+        build(ch)
 
 
 if __name__ == "__main__":

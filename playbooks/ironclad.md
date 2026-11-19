@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.4 · Knowledge base: v0.107.1 (the Player's history, the extract) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.5 · Knowledge base: v0.107.1 (the Player's history, the extract) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -52,10 +52,10 @@ The goal is strong play, judged by results. Every rule carries a provenance labe
 From `knowledge/community/ironclad-tiers.md` `[COMMUNITY]`. † marks cards where sources disagree by 2+ tiers. Card roles are `[GAME-EXTRACT]`.
 
 - **S:** Offering, Cascade, Conflagration, Corruption, Demon Form, Feed, Stoke, Unmovable
-- **A:** Crimson Mantle, Impervious, Fiend Fire, Battle Trance, Brand, Colossus, Dominate, Feel No Pain†, Hellraiser, One-Two Punch†, Pyre†, Tear Asunder†
-- **B:** Barricade†, Bloodletting†, Burning Pact, Cruelty, Juggernaut†, Shrug It Off†, Aggression†, Mangle, Pact's End, Thrash†, Body Slam†, Bully†, Dark Embrace†, Expect a Fight, Flame Barrier, Forgotten Ritual, Pommel Strike†, Rupture, Second Wind†, Stampede†, True Grit
-- **C:** Break†, Armaments†, Ashen Strike, Drum of Battle†, Evil Eye, Headbutt†, Howl from Beyond†, Inferno†, Juggling†, Pillage, Rage, Stomp†, Stone Armor, Taunt†, Uppercut†, Vicious
-- **D:** Anger, Blood Wall, Bludgeon†, Dismantle†, Fight Me†, Inflame, Molten Fist, Primal Force†, Spite, Sword Boomerang, Tremble, Unrelenting, Whirlwind†, Breakthrough, Hemokinesis, Infernal Blade, Perfected Strike, Rampage, Setup Strike, Twin Strike, Cinder, Havoc, Iron Wave, Thunderclap
+- **A:** Crimson Mantle, Impervious, Fiend Fire, Battle Trance, Brand, Colossus, Dominate, Hellraiser, One-Two Punch†, Pyre†, Tear Asunder†
+- **B:** Barricade†, Bloodletting†, Burning Pact, Cruelty, Feel No Pain, Juggernaut†, Shrug It Off†, Aggression†, Mangle, Pact's End, Thrash†, Bully†, Dark Embrace†, Expect a Fight, Flame Barrier, Forgotten Ritual, Pommel Strike†, Rupture, Second Wind†, Stampede†, True Grit
+- **C:** Break†, Armaments†, Ashen Strike, Body Slam, Drum of Battle†, Howl from Beyond†, Inferno†, Juggling†, Pillage, Rage, Stomp†, Stone Armor, Taunt†, Uppercut†, Vicious
+- **D:** Anger, Blood Wall, Bludgeon†, Dismantle†, Evil Eye, Fight Me†, Headbutt†, Inflame, Molten Fist, Primal Force†, Spite, Sword Boomerang, Tremble, Unrelenting, Whirlwind†, Breakthrough, Hemokinesis, Infernal Blade, Perfected Strike, Rampage, Setup Strike, Twin Strike, Cinder, Havoc, Iron Wave, Thunderclap
 - **Multiplayer-only value:** Tank, Demonic Shield. Rate them low solo.
 
 **Changed on v0.111.1** (`knowledge/version-delta-v0.111.1.md`), adjust the tiers above:
@@ -210,9 +210,9 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Judges deck needs by feel.
 - Rarely removes cards (34 of 57 runs ever remove one).
 - Rarely takes second copies.
-- **Card habit against consensus** (`knowledge/community/discrepancies.md`, 23 cards with a gap of 2+ tiers):
-  - Rates higher than consensus: Fight Me, Evil Eye, Molten Fist, Tremble, Second Wind, Thrash, Cruelty, Aggression, Dark Embrace, Armaments, Vicious, Drum of Battle, Ashen Strike, Pact's End
-  - Rates lower: Cascade, Demon Form, Battle Trance, Feel No Pain, Body Slam, Bully, Expect a Fight, Pommel Strike, Rupture
+- **Card habit against consensus** (`knowledge/community/discrepancies.md`, 19 cards with a gap of 2+ tiers):
+  - Rates higher than consensus: Evil Eye, Fight Me, Tremble, Cruelty, Aggression, Thrash, Dark Embrace, Second Wind, Ashen Strike, Drum of Battle, Vicious
+  - Rates lower: Cascade, Demon Form, Battle Trance, Shrug It Off, Bully, Expect a Fight, Pommel Strike, Rupture
 - The Player's implied card order (Phase 1 head-to-head scores): `reports/phase1/card-ranking-ironclad.md`.
 
 ## 12. Hypotheses to test (Phase 4 experiments)
@@ -237,6 +237,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Whether killing the Kin Priest ends that fight; whether Lagavulin Matriarch wakes when damaged.
 
 ## 14. Changelog
+- **v2.5 (2026-11-19, overnight):** fixed the quintile buckets in `tools/build_community_tiers.py` (the top bucket had absorbed the remainder). Consensus moved for four cards: Feel No Pain A→B, Body Slam B→C, Evil Eye C→D, Headbutt C→D. Habit discrepancies 23 → 19. Tier lists in §2.2 and §11 regenerated from the tier file.
 - **v2.4 (2026-11-19, overnight):** main branch is now v0.111.1. Added the v0.111.1 card changes to §2.2; target version noted in the header.
 - **v2.3 (2026-11-19, overnight):** pre-boss rest threshold uses the ascension-band median; curse removal added to the shop priority. Both from the practice post-mortems in `runs/examples/`.
 - **v2.2 (2026-11-19, overnight):** numeric corner targets for deck needs (section 2.1) from the deck-strength analysis (`reports/phase2/deck-strength.md`, `tools/deck_metrics.py`); H9 added.

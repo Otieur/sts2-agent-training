@@ -18,7 +18,7 @@ Consensus = weighted mean of tier scores (S=5 … F=0; MetaBot quintiles 0.5–4
 | Corruption | Ancient | **S** | 4.25 | - | S | A | 1 | - | - |
 | Demon Form | Rare | **S** | 4.25 | - | S | A | 1 | C | 2/10 |
 | Feed | Rare | **S** | 4.25 | - | A | S | 1 | A | 2/7 |
-| Stoke | Rare | **S** | 4.25 | - | S | A | 1 | S | 3/7 |
+| Stoke | Rare | **S** | 4.25 | - | S | A | 1 | A | 3/7 |
 | Unmovable | Rare | **S** | 4.25 | - | S | A | 1 | - | 0/9 |
 | Crimson Mantle | Rare | **A** | 4.12 | A | S | A | 1 | A | 4/12 |
 | Impervious | Rare | **A** | 4.12 | A | S | A | 1 | S | 4/7 |
@@ -27,26 +27,25 @@ Consensus = weighted mean of tier scores (S=5 … F=0; MetaBot quintiles 0.5–4
 | Brand | Rare | **A** | 3.75 | - | A | A | 0 | S | 4/6 |
 | Colossus | Rare | **A** | 3.75 | - | A | A | 0 | A | 10/19 |
 | Dominate | Uncommon | **A** | 3.75 | - | A | A | 0 | S | 19/20 |
-| Feel No Pain | Uncommon | **A** | 3.75 | - | S | B | 2 | C | 5/15 |
 | Hellraiser | Rare | **A** | 3.75 | - | A | A | 0 | A | 2/6 |
-| One Two Punch | Rare | **A** | 3.75 | - | S | B | 2 | S | 4/11 |
+| One-Two Punch | Rare | **A** | 3.75 | - | S | B | 2 | S | 4/11 |
 | Pyre | Rare | **A** | 3.75 | - | S | B | 2 | S | 11/13 |
 | Tear Asunder | Rare | **A** | 3.62 | B | S | A | 2 | A | 2/7 |
 | Barricade | Rare | **B** | 3.25 | - | S | C | 3 | C | 3/15 |
 | Bloodletting | Common | **B** | 3.25 | - | C | A | 2 | C | 22/55 |
 | Burning Pact | Uncommon | **B** | 3.25 | - | A | B | 1 | A | 11/18 |
 | Cruelty | Rare | **B** | 3.25 | - | A | B | 1 | S | 4/5 |
+| Feel No Pain | Uncommon | **B** | 3.25 | - | A | B | 1 | C | 5/15 |
 | Juggernaut | Rare | **B** | 3.25 | - | S | C | 3 | - | 0/6 |
-| Shrug It Off | Common | **B** | 3.25 | - | C | A | 2 | C | 21/73 |
+| Shrug It Off | Common | **B** | 3.25 | - | C | A | 2 | D | 21/73 |
 | Aggression | Rare | **B** | 3.12 | B | S | C | 3 | S | 4/9 |
 | Mangle | Rare | **B** | 3.12 | B | A | B | 1 | A | 3/9 |
-| Pacts End | Rare | **B** | 3.12 | B | A | B | 1 | S | 3/5 |
+| Pact's End | Rare | **B** | 3.12 | B | A | B | 1 | A | 3/5 |
 | Thrash | Rare | **B** | 3.12 | B | C | A | 2 | S | 6/7 |
 | Demonic Shield | Uncommon | **B** | 3.00 | - | - | B | - | - | - |
-| Body Slam | Common | **B** | 2.75 | - | A | C | 2 | D | 4/45 |
 | Bully | Uncommon | **B** | 2.75 | - | A | C | 2 | D | 3/13 |
 | Dark Embrace | Rare | **B** | 2.75 | - | S | D | 4 | S | 4/5 |
-| Expect A Fight | Uncommon | **B** | 2.75 | - | C | B | 1 | D | 0/14 |
+| Expect a Fight | Uncommon | **B** | 2.75 | - | C | B | 1 | D | 0/14 |
 | Flame Barrier | Uncommon | **B** | 2.75 | - | C | B | 1 | C | 4/12 |
 | Forgotten Ritual | Uncommon | **B** | 2.75 | - | C | B | 1 | C | 7/18 |
 | Pommel Strike | Common | **B** | 2.75 | - | D | A | 3 | D | 7/47 |
@@ -55,12 +54,11 @@ Consensus = weighted mean of tier scores (S=5 … F=0; MetaBot quintiles 0.5–4
 | Stampede | Uncommon | **B** | 2.75 | - | D | A | 3 | A | 9/17 |
 | True Grit | Common | **B** | 2.75 | - | C | B | 1 | A | 23/49 |
 | Break | Ancient | **C** | 2.38 | D | C | S | 4 | - | - |
-| Armaments | Common | **C** | 2.25 | - | D | B | 2 | A | 25/65 |
+| Armaments | Common | **C** | 2.25 | - | D | B | 2 | C | 25/65 |
 | Ashen Strike | Uncommon | **C** | 2.25 | - | C | C | 0 | A | 5/10 |
-| Drum Of Battle | Uncommon | **C** | 2.25 | - | A | D | 3 | A | 9/21 |
-| Evil Eye | Uncommon | **C** | 2.25 | - | C | C | 0 | S | 14/21 |
-| Headbutt | Common | **C** | 2.25 | - | D | B | 2 | D | 7/57 |
-| Howl From Beyond | Uncommon | **C** | 2.25 | - | D | B | 2 | D | 3/19 |
+| Body Slam | Common | **C** | 2.25 | - | C | C | 0 | D | 4/45 |
+| Drum of Battle | Uncommon | **C** | 2.25 | - | A | D | 3 | A | 9/21 |
+| Howl from Beyond | Uncommon | **C** | 2.25 | - | D | B | 2 | D | 3/19 |
 | Inferno | Uncommon | **C** | 2.25 | - | D | B | 2 | C | 3/12 |
 | Juggling | Uncommon | **C** | 2.25 | - | A | D | 3 | D | 0/15 |
 | Pillage | Uncommon | **C** | 2.25 | - | C | C | 0 | D | 4/16 |
@@ -74,9 +72,11 @@ Consensus = weighted mean of tier scores (S=5 … F=0; MetaBot quintiles 0.5–4
 | Blood Wall | Common | **D** | 1.75 | - | D | C | 1 | D | 1/55 |
 | Bludgeon | Uncommon | **D** | 1.75 | - | D | B | 2 | D | 1/21 |
 | Dismantle | Uncommon | **D** | 1.75 | - | D | B | 2 | D | 3/14 |
+| Evil Eye | Uncommon | **D** | 1.75 | - | D | C | 1 | S | 14/21 |
 | Fight Me | Uncommon | **D** | 1.75 | - | D | B | 2 | S | 11/14 |
+| Headbutt | Common | **D** | 1.75 | - | D | B | 2 | D | 7/57 |
 | Inflame | Uncommon | **D** | 1.75 | - | D | C | 1 | D | 2/14 |
-| Molten Fist | Common | **D** | 1.75 | - | D | C | 1 | A | 18/43 |
+| Molten Fist | Common | **D** | 1.75 | - | D | C | 1 | C | 18/43 |
 | Primal Force | Rare | **D** | 1.75 | - | D | B | 2 | - | 1/4 |
 | Spite | Uncommon | **D** | 1.75 | - | D | C | 1 | D | 2/26 |
 | Sword Boomerang | Common | **D** | 1.75 | - | D | C | 1 | D | 10/58 |

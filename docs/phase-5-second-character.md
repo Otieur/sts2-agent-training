@@ -54,7 +54,7 @@
 > - [ ] `tools/sts.py state --brief` shows the relevant fields.
 > - [ ] `tools/calc.py` is extended, with tests.
 
-> **P5.E2.S3: Community strategy** · Size S · Status: Todo
+> **P5.E2.S3: Community strategy** · Size S · Status: In progress (tiers and discrepancies done 2026-11-19: knowledge/community/necrobinder-tiers.md, discrepancies-necrobinder.md, playbook v0.1 §3; archetypes still to do)
 > *As the Agent, I want community tiers and archetypes for Necrobinder, so that the playbook is not limited to the Player's habits.*
 >
 > **Acceptance criteria**

@@ -74,7 +74,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P5.E1 | Rerun the history pipeline | Done | All characters; cross-character report |
-| P5.E2 | Necrobinder knowledge | Todo | |
+| P5.E2 | Necrobinder knowledge | In progress | S3 tiers and discrepancies done overnight; archetypes and Osty rules to do |
 | P5.E3 | Playbook v1 (Necrobinder) | Todo | |
 | P5.E4 | Light shadowing | Todo | |
 | P5.E5 | Solo ladder | Todo | |

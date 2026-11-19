@@ -169,7 +169,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 > **Acceptance criteria**
 > - [ ] Each archetype: key cards, key relics, commit signals, weaknesses. These are compared with the Phase 1 archetype clusters.
 
-> **P2.E4.S4: Discrepancy report** · Size S · Status: Done (23 discrepancies; to discuss or test)
+> **P2.E4.S4: Discrepancy report** · Size S · Status: Done (19 Ironclad discrepancies after the 2026-11-19 quintile fix; 29 for Necrobinder in discrepancies-necrobinder.md; to discuss or test)
 > *As the Player, I want to see where my habits differ from community consensus, so that we can discuss which view is right.*
 >
 > **Acceptance criteria**

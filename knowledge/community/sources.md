@@ -28,6 +28,15 @@ Accessed 2026-11-19 unless noted. **Quality** reflects version match with v0.107
 | slay-the-spire-2.pages.dev Ironclad builds | https://slay-the-spire-2.pages.dev/guides/ironclad-builds | Names "Limit Break" and the relic "Calipers", neither of which exists in the game data. Looks recycled from Slay the Spire 1. Not used. |
 | dood.gg builds (via search summary) | https://dood.gg/sts2/ironclad/builds | Names "Immolate", which is not in the game data. Not used. |
 
+## Necrobinder sources (accessed 2026-11-19)
+| Source | URL | Kind | Version | Quality | Notes |
+|---|---|---|---|---|---|
+| Spire Codex: Necrobinder tier list guide | https://spire-codex.com/guides/necrobinder-tier-list | Win rate when picked, community runs | Main branch, mid-July 2026 (v0.107.x era) | High (best version match), partial list | Glimpse Beyond 62%, Neurosurge 56.5%, Shared Fate 55.4%, Banshee's Cry 54.9%, Legion of Bone 52.7%, Misery 52.6%; Reap and Sow at the bottom (~30–33%). Three letter tiers derived from win rates (see the builder). |
+| MetaBot: Necrobinder tier list | https://metabot.gg/en/slay-the-spire-2/cards/tier-list/necrobinder | Win rate of runs containing the card, pick rate | Period "November 2026"; version and sample sizes not stated | Medium-low | The page mixes in colorless, event and curse cards; only Necrobinder cards are used. Six cards show 0.0%, a likely data gap. |
+| Nat 1 Gaming (DoggertQBones): Necrobinder card tier list | https://nat1gaming.com/sts2/tier-list/necrobinder-card-tier-list/ | Expert opinion | 11/12 beta patch; the article says that patch did not change Necrobinder cards | Medium (not our version) | Full list. |
+| BrokenBuilds: Necrobinder card tier list (Major Update 2) | https://brokenbuilds.gg/slay-the-spire-2/tier-lists/slay-the-spire-2-necrobinder-card-tier-list | Tier list | v0.107.1 per search summary | Not used | 403. The search summary says Capture Spirit tops the list after the v0.107 reworks; unverified. |
+| Dygamelab blog posts (April 30, May 7) | https://dygamelab.blogspot.com/2026/05/slay-spire-2-necrobinder-card-tier-list.html | Blog tier list | Pre-v0.107 | Low (old) | Not used. |
+
 ## Patch notes
 | Source | URL | Used for |
 |---|---|---|

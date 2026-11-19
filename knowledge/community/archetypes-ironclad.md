@@ -15,7 +15,7 @@ Community tiers in brackets come from `ironclad-tiers.md` (consensus, mostly v0.
 - **The Player:** loves Dominate (95% pick rate) and Fight Me (79%), but skips the common multi-hit payoffs (Twin Strike 19%, Sword Boomerang 17%). Strength without payoffs is a half-built engine.
 
 ## 2. Exhaust engine
-- **Engine:** Corruption (ancient, power) [S], Dark Embrace (draw when a card is exhausted) [B, sources disagree], Feel No Pain (block when a card is exhausted) [A].
+- **Engine:** Corruption (ancient, power) [S], Dark Embrace (draw when a card is exhausted) [B, sources disagree], Feel No Pain (block when a card is exhausted) [B].
 - **Exhaust outlets:** Burning Pact (exhaust 1, draw 2) [B], True Grit (7 block, exhaust a card) [C–D], Second Wind (exhaust, 5 block) [B], Stoke (exhaust, draw ?) [S], Brand [A], Thrash, Cinder, Drum of Battle (exhausts a card at the start of each turn) [C], Fiend Fire [A].
 - **Payoffs:** Ashen Strike (damage scales, presumably with exhausted cards; to verify) [C], Pact's End (0 cost, 17 to all enemies; condition to verify) [B], Feel No Pain block, Dark Embrace draw.
 - **Commit signal:** Feel No Pain or Dark Embrace plus two exhaust outlets. Corruption makes it a full engine. `[HYPOTHESIS]`
@@ -24,8 +24,8 @@ Community tiers in brackets come from `ironclad-tiers.md` (consensus, mostly v0.
 
 ## 3. Block and Barricade
 - **Engine:** Barricade (block does not clear) [B, sources disagree], Unmovable (doubles block gained) [S], Juggernaut (deal damage when gaining block) [B, sources disagree].
-- **Block sources:** Impervious (30, exhausts) [A], Colossus (5 + Colossus power) [A], Crimson Mantle (block and damage each turn) [A], Stone Armor (4 Plating) [D], Flame Barrier (12 + thorns) [C], Evil Eye (8) [C], Shrug It Off (8, draw 1) [B], Blood Wall (16, costs 2 HP) [D].
-- **Payoff:** Body Slam (damage equal to block) [B], Juggernaut.
+- **Block sources:** Impervious (30, exhausts) [A], Colossus (5 + Colossus power) [A], Crimson Mantle (block and damage each turn) [A], Stone Armor (4 Plating) [D], Flame Barrier (12 + thorns) [C], Evil Eye (8) [D], Shrug It Off (8, draw 1) [B], Blood Wall (16, costs 2 HP) [D].
+- **Payoff:** Body Slam (damage equal to block) [C], Juggernaut.
 - **Commit signal:** Barricade or Unmovable plus Body Slam or Juggernaut. `[HYPOTHESIS]`
 - **Strengths:** very safe in long fights. The natural co-op tank (Taunt applies Vulnerable and blocks).
 - **Weaknesses:** low damage until the payoff arrives. Slow against scaling bosses unless Body Slam or Juggernaut is online.
