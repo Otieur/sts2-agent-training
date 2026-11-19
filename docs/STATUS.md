@@ -12,7 +12,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P0.E1 | Save safety | In progress | Backup taken and verified overnight, still matching after the branch switch; Steam Cloud is on (choose local files on a cloud conflict after a restore) |
-| P0.E2 | Game version | In progress | Main v0.111.1 running (S1, S2 done); the modded profile loads; character select check at the first run (S3) |
+| P0.E2 | Game version | Done | Main v0.111.1 running; the modded profile loads with everything unlocked (2026-11-19) |
 | P0.E3 | Mod acquisition and security review | In progress | Draft review done (both mods); the Player chose STS2-Agent (decision 0001 accepted) and approved the verdict and the .NET 9 SDK install (2026-11-19) |
 | P0.E4 | Build and install | Done | STS2-Agent 0.16.2 built (0 warnings against v0.111.1), installed DLL-only, loaded by the game; `/health` ready, 28 of 28 game members resolved (2026-11-19) |
 | P0.E5 | API smoke test | In progress | tools/smoke.py (read-only) and docs/runbooks/first-session.md ready; needs the live mod |

@@ -84,11 +84,11 @@
 > - [x] The "Current save versions" log line is recorded in `docs/environment.md`.
 > - [x] The log shows no save-load errors. Only non-fatal "Progress parse" warnings for beta-only IDs (the Fool, its cards, some relics, potions, epochs and one encounter), which v0.111.1 does not know.
 
-> **P0.E2.S3: First-launch profile check** · Size XS · Status: In progress (main menu loads; the Player says the profile looks right; character select and ascension levels to check at the first run start)
+> **P0.E2.S3: First-launch profile check** · Size XS · Status: Done (2026-11-19: the main menu loads on the modded profile; the Player confirms everything is unlocked)
 > *As the Player, I want to confirm my profile survived the downgrade, so that we stop early if it did not.*
 >
 > **Acceptance criteria**
-> - [ ] The main menu loads. Character select shows the unlocked characters, and the ascension levels look as expected.
+> - [x] The main menu loads. Character select shows the unlocked characters, and the ascension levels look as expected. (Confirmed by the Player.)
 > - [ ] If the profile looks reset or the game reports an error: stop, restore from P0.E1.S1, opt back into the beta, and record the finding in `docs/environment.md`.
 >
 > **Notes:** the beta wrote `SerializableProgress v24`. Older builds may not read newer save schemas. This is the main reason for the backup.
