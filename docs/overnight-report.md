@@ -41,6 +41,7 @@ Planned blocks (A–J) were finished by 01:11; everything after is extra work fr
 | X89–X90 | **Advisor robustness**: damaged-state fuzz found about 150 crashes in 800; `advise()` never raises now; fuzz test |
 | X91–X92 | Sensitivity checks for the failing models: Ceremonial Beast (gap 25), Entomancer (gap 26), Knowledge Demon |
 | X93 | Live-safety pass on the planner: commands stop after a card that changes the hand (True Grit's random exhaust), Minion semantics (killing The Kin's Priest or the Queen counts as lethal), Tender; notes for the four rare-but-deadly hallway fights (Slumbering Beetle killed 2 of 5 Ironclad runs that met it; in all four the fatal fights started at low HP, H11); quick reference and decision-loop runbook updated |
+| X94–X97 | Colossus; Necrobinder card audit (Unleash read as 0 offline, now Osty 6 + his HP; next-turn energy no longer counted now); smoke test now catches advisor failures; Doom on enemies and on you in the planner; the full dataset rebuild reproduces every report unchanged; plan choice against the uncalibrated bosses is mostly level |
 
 ## 3. Stories whose status changed
 - P0: E8 done; E1 backup done; E5.S1 in progress (smoke test ready); E5 and E6 in progress (smoke test for both mods; sts.py).
