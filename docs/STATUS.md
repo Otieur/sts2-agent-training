@@ -62,8 +62,8 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P4.E1 | Run harness | In progress | Runbooks written; resume test (S5) needs a live run |
-| P4.E2 | Combat procedure | Todo | |
-| P4.E3 | Strategy procedures | Todo | |
+| P4.E2 | Combat procedure | In progress | S1, S3, S4 done (plan_turn.py, journal.py); S2 calculator awaits in-game verification |
+| P4.E3 | Strategy procedures | Done (tooling) | path.py, draft.py, advise.py, deck_check.py; untested live |
 | P4.E4 | Post-mortem | Todo | |
 | P4.E5 | Evaluation | In progress | Scoreboard, milestones, exam seeds ready |
 | P4.E6 | Ascension ladder | In progress | Rules written |

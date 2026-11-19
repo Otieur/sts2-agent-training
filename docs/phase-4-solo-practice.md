@@ -117,7 +117,7 @@ runs/<YYYY-MM-DD>-<seed>/
 
 ### P4.E2: Combat procedure
 
-> **P4.E2.S1: Turn-planning checklist** · Size S · Status: Todo
+> **P4.E2.S1: Turn-planning checklist** · Size S · Status: Done (playbook section 9, steps 1–10; tools/plan_turn.py searches the turn; 2026-11-19)
 > *As the Agent, I want a fixed checklist for each combat turn, so that I do not skip a step under pressure.*
 >
 > **Acceptance criteria:** the checklist in `playbooks/ironclad.md` (combat section):
@@ -136,13 +136,13 @@ runs/<YYYY-MM-DD>-<seed>/
 > - [ ] `tools/calc.py` handles Strength, Vulnerable, Weak, Frail, Dexterity, multi-hit attacks, block on the target and the order of operations, using `knowledge/mechanics.md`.
 > - [ ] It is verified against at least 10 in-game numbers from the Phase 2 verification list. Unit tests live in `tools/tests/`.
 
-> **P4.E2.S3: Multi-enemy targeting rules** · Size S · Status: Todo
+> **P4.E2.S3: Multi-enemy targeting rules** · Size S · Status: Done (playbook section 9 step 10; plan_turn.py target search; untested live)
 > *As the Agent, I want rules for choosing targets, so that damage goes where it reduces incoming damage most.*
 >
 > **Acceptance criteria**
 > - [ ] Rules are in the playbook: kill priorities (highest damage per HP remaining, summoners, buffers), AoE thresholds, and overkill avoidance. Encounter-specific overrides link to the enemy notes.
 
-> **P4.E2.S4: Fight logging** · Size XS · Status: Todo
+> **P4.E2.S4: Fight logging** · Size XS · Status: Done (tools/journal.py fight: encounter, turns, damage, band benchmark, potions)
 > *As the Agent, I want each fight summarised in the journal, so that the post-mortem can compare it with the benchmark.*
 >
 > **Acceptance criteria**
@@ -152,14 +152,14 @@ runs/<YYYY-MM-DD>-<seed>/
 
 ### P4.E3: Strategy procedures
 
-> **P4.E3.S1: Plan the path at the start of each act** · Size M · Status: Todo
+> **P4.E3.S1: Plan the path at the start of each act** · Size M · Status: Done (tools/path.py ranks every route; start-run runbook step 7; practice in the first runs)
 > *As the Agent, I want to plan the whole act's path at its start, so that elites, rests and shops are sequenced against an HP budget.*
 >
 > **Acceptance criteria**
 > - [ ] At each act start: list candidate paths, score each (elites, rests before elites and the boss, shops, unknowns, expected HP cost from the benchmark), choose one, and write it in the journal.
 > - [ ] Re-plan triggers: HP below budget by more than 15% of max, a key card or relic gained, or a forced detour.
 
-> **P4.E3.S2: Card reward procedure** · Size S · Status: Todo
+> **P4.E3.S2: Card reward procedure** · Size S · Status: Done (tools/draft.py implements the steps and prints the reasons)
 > *As the Agent, I want a fixed way to evaluate card rewards, so that picks follow the deck's needs rather than card strength alone.*
 >
 > **Acceptance criteria**
@@ -170,13 +170,13 @@ runs/<YYYY-MM-DD>-<seed>/
 >   4. Apply the skip rule: skip if no option improves the deck for the coming fights.
 > - [ ] The reason recorded names the need the pick addresses.
 
-> **P4.E3.S3: Rest, shop, event, Ancient and relic procedures** · Size S · Status: Todo
+> **P4.E3.S3: Rest, shop, event, Ancient and relic procedures** · Size S · Status: Done (tools/advise.py handlers cite playbook sections; Ancient and relic choices still by hand)
 > *As the Agent, I want each non-combat choice tied to a playbook section, so that these decisions are as disciplined as card picks.*
 >
 > **Acceptance criteria**
 > - [ ] Each screen handler in E1.S3 cites the playbook section it uses.
 
-> **P4.E3.S4: Deck check at the end of each act** · Size S · Status: Todo
+> **P4.E3.S4: Deck check at the end of each act** · Size S · Status: Done (tools/deck_check.py: corner targets and countable boss checklist items)
 > *As the Agent, I want to check the deck against the next act's demands, so that problems are caught while there is still time to fix them.*
 >
 > **Acceptance criteria**
