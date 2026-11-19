@@ -28,6 +28,7 @@ Status: Plan v1, 2026-11-19.
 ## Plan
 
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): 3 or 4 Scrolls of about 30–37 HP (Act 3, Glory), each on a different step of Chomp 14, More Teeth +2 Strength, Chew 5×2; **Paper Cuts 2**: 2 max HP lost each time a Scroll's attack damage gets through your Block. Block fully, or kill the attackers first.
 - **Paper Cuts:** when it deals damage to you, **you lose max HP**. Block its attacks fully; unblocked damage costs max HP permanently. `tools/plan_turn.py` adds the max HP lost to a plan's cost when its hits get through.
 - Chomp 14, Chew 5×2, More Teeth +2 Strength.
 
