@@ -26,6 +26,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 55–57 (58–59 at A8+); Acid Goop 4, Inhale **+7 Strength**, Acid Goop (11 after the first Inhale), repeating, so every third turn adds 7 to each Goop. Kill it before the second Inhale.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - Acid Goop 4, then **Inhale: +7 Strength** (its next Goop becomes 11).
 - Kill it, or block through the post-Inhale attacks. Low threat (median 6).
