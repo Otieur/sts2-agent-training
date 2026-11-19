@@ -89,6 +89,9 @@ def check_state(st):
     scr = (st.get("screen") or "?").upper()
     issues, notes = [], []
     paths = COMMON + SPEC.get(scr, [])
+    if st.get("run") is None:  # outside a run (main menu, character select, timeline) the mod sends run: null
+        paths = [p for p in paths if not p.startswith("run.")]
+        notes.append("no active run: run fields not checked on this screen")
     for p in paths:
         ok, _ = get_path(st, p)
         if not ok:

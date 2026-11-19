@@ -39,6 +39,16 @@ class TestSmoke(unittest.TestCase):
         self.assertEqual(scr, "COMBAT")
         self.assertEqual(issues, [])
 
+    def test_main_menu_without_run(self):
+        # live STS2-Agent main menu (2026-11-19): run is null outside a run, so run fields are not required
+        st = {"ok": True, "data": {"screen": "MAIN_MENU", "run": None, "run_id": None,
+                                   "session": {"mode": "singleplayer", "phase": "menu", "control_scope": "local_player"},
+                                   "available_actions": ["switch_profile", "open_character_select", "open_timeline"]}}
+        scr, issues, notes = smoke.check_state(st)
+        self.assertEqual(scr, "MAIN_MENU")
+        self.assertEqual(issues, [])
+        self.assertTrue(any("no active run" in n for n in notes))
+
     def test_advice_failure_is_a_problem(self):
         import advise
         saved = advise._advise
