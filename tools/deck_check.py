@@ -36,31 +36,53 @@ def cheap(c):
     return c.get("cost") is not None and 0 <= c["cost"] <= 1
 
 
-# Boss checklist items that can be counted (from knowledge/bosses/*.md "Deck checklist"). [HYPOTHESIS] thresholds.
-# Death review (reports/phase2/death-review-ironclad.md): these flagged 38% of fatal and 38% of survived Ironclad boss
-# fights, so as thresholded they do not discriminate yet. The corner targets (H9) did: 88% against 69%.
+def tagged(tag):
+    return lambda d: count(d, lambda c: tag in c.get("tags", []))
+
+
+def attacks_with(pred):
+    return lambda d: count(d, lambda c: is_attack(c) and pred(c))
+
+
+STRENGTH = tagged("strength")
+ENERGY = tagged("energy")
+DRAW = tagged("draw")
+POWERS = lambda d: count(d, lambda c: c.get("type") == "Power")  # noqa: E731
+MULTI = attacks_with(lambda c: "multi-hit" in c.get("tags", []))
+SINGLE_AOE = attacks_with(draft.is_single_hit_aoe)
+HIT_ALL = attacks_with(lambda c: "aoe" in c.get("tags", []))
+VULN = tagged("vulnerable")
+
+# Boss checklist items that can be counted. Re-tuned 2026-11-19 from reports/phase2/deck-features-by-encounter.md
+# (survived against fatal deck means, all characters, v0.107.1), keeping only features where the data and the
+# boss's mechanics agree, with thresholds near the midpoint. Fatal samples are 4-13 per boss: [HYPOTHESIS].
+# The first version (pure guesses) flagged 38% of fatal and 38% of survived Ironclad boss fights; this version flags 62%
+# against 39% (reports/phase2/death-review-ironclad.md), measured on overlapping data, so the gain is optimistic.
 BOSS_CHECKS = {
     "VANTOM": [
-        ("cheap (0-1 cost) or multi-hit attack cards", lambda d: count(d, lambda c: is_attack(c) and ("multi-hit" in c.get("tags", []) or cheap(c))), 6,
-         "9 Slippery stacks; each hit removes one, Strikes count"),
-        ("single-hit hit-all attacks", lambda d: count(d, lambda c: is_attack(c) and draft.is_single_hit_aoe(c)), -1,
-         "wasted on Slippery; fatal Vantom decks had more (H2)"),
+        ("single-hit hit-all attacks", SINGLE_AOE, 0, "wasted on Slippery; survived decks 0.3, fatal 0.8"),
+        ("draw cards", DRAW, 2, "finds the cheap attacks; survived 2.1, fatal 1.0"),
     ],
     "KNOWLEDGE_DEMON": [
-        ("scaling cards (powers, Strength, energy)", lambda d: count(d, lambda c: c.get("type") == "Power" or "strength" in c.get("tags", []) or "energy" in c.get("tags", [])), 4,
-         "about 60 damage per turn over 7 turns (H7)"),
+        ("Strength cards", STRENGTH, 1, "survived 0.7, fatal 0.2 (H7)"),
+        ("energy cards", ENERGY, 1, "survived 1.6, fatal 0.8 (H7)"),
     ],
-    "THE_KIN": [("hit-all attacks", lambda d: count(d, lambda c: is_attack(c) and "aoe" in c.get("tags", [])), 2, "followers stack Strength")],
-    "CEREMONIAL_BEAST": [("attacks dealing 10+ damage", lambda d: count(d, lambda c: is_attack(c) and (dm.card_numbers("CARD." + c["id"]) or {}).get("dmg", 0) >= 10), 3,
-                          "front-load 150 damage to trigger Plow's stun")],
-    "SOUL_FYSH": [("exhaust outlets", lambda d: count(d, lambda c: "exhaust-other" in c.get("tags", [])), 1, "exhaust the Beckon cards (unblockable HP loss)")],
-    "WATERFALL_GIANT": [("block cards", lambda d: count(d, lambda c: "block" in c.get("tags", [])), 6, "bank block for the death explosion")],
-    "KAISER_CRAB": [("single-target attacks", lambda d: count(d, lambda c: is_attack(c) and c.get("target") == "AnyEnemy"), 6, "focus one claw (Rocket)")],
-    "THE_INSATIABLE": [("energy or draw cards", lambda d: count(d, lambda c: "energy" in c.get("tags", []) or "draw" in c.get("tags", [])), 2, "play the Frantic Escape cards and still fight")],
-    "AEONGLASS": [("zero-cost non-power cards", lambda d: count(d, lambda c: c.get("cost") == 0 and c.get("type") != "Power"), -3, "each card played counts toward Wither (every 6 cards)")],
-    "QUEEN": [("draw cards", lambda d: count(d, lambda c: "draw" in c.get("tags", [])), 2, "You're Mine: 99 Weak, Vulnerable, Frail")],
-    "LAGAVULIN_MATRIARCH": [("powers to set up during sleep", lambda d: count(d, lambda c: c.get("type") == "Power"), 2, "use the sleep turns")],
-    "TEST_SUBJECT": [("block cards", lambda d: count(d, lambda c: "block" in c.get("tags", [])), 7, "phase 2 needs full block; 45-damage Big Pounce")],
+    "AEONGLASS": [
+        ("Strength cards", STRENGTH, 1, "fewer, bigger hits against Wither; survived 0.8, fatal 0.3"),
+        ("multi-hit attacks", MULTI, 1, "damage per card played; survived 1.7, fatal 0.8"),
+    ],
+    "QUEEN": [("draw cards", DRAW, 3, "You're Mine: 99 Weak, Vulnerable, Frail; survived 3.9, fatal 2.2")],
+    "TEST_SUBJECT": [("multi-hit attacks", MULTI, 1, "burst on tangible turns; survived 1.3, fatal 0.6")],
+    "CEREMONIAL_BEAST": [("Vulnerable sources", VULN, 1, "front-load 150 damage to trigger Plow; survived 1.2, fatal 0.5")],
+    "THE_KIN": [("powers", POWERS, 1, "the longest Act 1 fight; survived 1.0, fatal 0.4"),
+                ("hit-all attacks", HIT_ALL, 1, "followers stack Strength (plan)")],
+    "KAISER_CRAB": [("single-hit hit-all attacks", SINGLE_AOE, -1, "focus one claw; survived 0.7, fatal 1.4"),
+                    ("energy cards", ENERGY, 1, "survived 1.2, fatal 0.6")],
+    "LAGAVULIN_MATRIARCH": [("powers to set up during sleep", POWERS, 1, "survived 0.9, fatal 0.5")],
+    "SOUL_FYSH": [("exhaust outlets", tagged("exhaust-other"), 1, "exhaust the Beckon cards (plan; no data signal)")],
+    "WATERFALL_GIANT": [("block cards", tagged("block"), 6, "bank block for the death explosion (plan; no data signal)")],
+    "THE_INSATIABLE": [("energy or draw cards", lambda d: count(d, lambda c: "energy" in c.get("tags", []) or "draw" in c.get("tags", [])), 2,
+                        "play the Frantic Escape cards and still fight (plan; no data signal)")],
 }
 
 
@@ -79,8 +101,10 @@ def check(deck, act, boss):
         out.append(f"Boss checklist: {key} (knowledge/bosses/{key}_BOSS.md)")
         for label, fn, need, why in BOSS_CHECKS[key]:
             have = fn(deck)
-            ok = have <= -need if need < 0 else have >= need
-            bound = f"at most {-need}" if need < 0 else f"at least {need}"
+            if need <= 0:  # 0 or negative: an upper bound ("at most -need")
+                ok, bound = have <= -need, f"at most {-need}"
+            else:
+                ok, bound = have >= need, f"at least {need}"
             out.append(f"  {'OK ' if ok else 'GAP'}  {label}: {have} ({bound}; {why})")
     elif boss:
         out.append(f"No countable checklist for {boss}; read its boss note.")
