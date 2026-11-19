@@ -12,4 +12,4 @@
 5. **Start the run through the menu actions** (STS2MCP: `menu_select` with the options shown by `tools/sts.py state`, plus `seed=` where supported).
 6. **Tell the Player in one line:** "Starting run: Ironclad A<n>, seed <s>, playbook v<x>."
 7. **Floor 1 (the Ancient):** read the act boss from the map state as soon as the map is visible (`map.boss`). Open `knowledge/bosses/<BOSS>.md` and write the act plan into the journal (P4.E3.S1): `python3 -I tools/path.py --state <state.json>` for the route, `python3 -I tools/deck_check.py --state <state.json>` for the deck's gaps against the corner targets and the boss checklist (P4.E3.S4). Repeat the deck check before the boss.
-8. Play using `docs/runbooks/decision-loop.md`.
+8. Play using `docs/runbooks/decision-loop.md`. Keep `playbooks/ironclad-quickref.md` in context; open the full playbook section only when a decision needs it.

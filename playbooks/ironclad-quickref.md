@@ -1,0 +1,47 @@
+# Ironclad Quick Reference (for live play)
+
+One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.13); when they differ, the playbook wins. Section numbers point there.
+
+## Every decision
+1. Save the state: `python3 -I tools/sts.py --mod sts2agent state --raw > runs/<run>/state.json`
+2. Advice: `python3 -I tools/advise.py --state runs/<run>/state.json`
+3. Act with a reason and the tool's pick: `python3 -I tools/sts.py --mod sts2agent --log runs/<run>/decisions.jsonl act <action> key=value ... --reason "..." --tool-pick "<advised action>"`
+4. New floor: `python3 -I tools/journal.py floor ...`; after each fight: `python3 -I tools/journal.py fight ...`
+5. Act start and before each boss: `python3 -I tools/deck_check.py --state runs/<run>/state.json`; the route: `python3 -I tools/path.py --state ...`
+
+## Rules backed by the history (adopted)
+| Rule | Evidence |
+|---|---|
+| **H5:** no elite under 50% HP | 24% of such elite fights ended the run, against 3–8% above (§4) |
+| **H11:** no hallway fight under 40% HP when there is a choice | 21% fatal under 30%, 12% at 30–40%, about 1–2% above; Act 2 under 40%: 14/40 (§4) |
+| **Rest before a boss** below the band median + 10 (Acts 1–2) or 70% (Act 3) | Following the rule went with lower boss fatality both ways (H1, §5) |
+| **Corner targets on arrival at the boss:** Act 1 block/turn 10+ and 2+ scaling cards; Act 2 4+ scaling; Act 3 block/turn 8+ | Missed in 88% of fatal against 69% of survived boss fights (H9, §2.1) |
+
+## Drafting (§2)
+- Consensus tier first (it predicted the Player's Ironclad outcomes: A-tier picks +17 points of act survival).
+- Boss fit overrides tier. Vantom: cheap and multi-hit attacks up, single-hit hit-all down (simulated: multi-hit best; Breakthrough worse than a Strike). Knowledge Demon: Strength, energy, powers.
+- Avoid Breakthrough (the Player's picks: 48% against 78% act survival).
+- Skip when nothing clears the bar (rises with deck size).
+- Ancients: avoid Hefty Tablet (H10), prefer Fishing Rod (§7).
+
+## Combat (§9)
+- Read intents; lethal first; never end a turn the planner marks as fatal.
+- **Boss fights: follow the balanced plan** (simulation: best in all six settings). Hallways and elites: safe when HP is below the act plan.
+- Potions: hold them in hallways unless they decide the fight; use freely in elites and bosses.
+
+## Bosses (§10, notes in `knowledge/bosses/`)
+| Boss | The one thing |
+|---|---|
+| Vantom | 9 Slippery stacks: cheap and multi-hit attacks; block 27 on turn 3 |
+| Lagavulin Matriarch | Set up while asleep; first damage on the last sleep turn (wakes stunned) |
+| Ceremonial Beast | Front-load damage to break Plow (rule unverified, gap 25) |
+| Knowledge Demon | Curse choice: Sloth > Mind Rot > Waste Away > Disintegration (simulated) |
+| Kaiser Crab | Focus Rocket; end the Laser turn facing Rocket; kill a claw with the turn's last attack (Crab Rage) |
+| Queen | Turn 1 Strong Tackle 26 (v0.111.1): block it; arrive high |
+| The Kin | Racing the Priest probably ends the fight (followers are Minions) |
+
+## Elites (§4)
+Infested Prisms: few Skills (Tainted). Entomancer: few big hits (Personal Hive). Byrdonis: kill fast. Skulking Colony: about 20 a turn (cap). Bygone Effigy: big attack last (Slow).
+
+## Before trusting a number
+Gaps 22–26 list the assumptions still unverified in game (live card values, flat potion damage, Kaiser facing, Ceremonial Beast Plow, Entomancer cycle). `docs/runbooks/first-session.md` checks them.
