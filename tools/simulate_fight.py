@@ -11,7 +11,10 @@ status cards (Vantom's Wounds), exhaust, Anger's copy, draw cards (re-plan after
 Not modelled: relics, potions, other powers' effects, upgrades, card-specific conditions.
 
 Bosses: VANTOM (cycle from knowledge/bosses/VANTOM_BOSS.md: Ink Blot 7, Inky Lance 6x2, Dismember 27 + 3 Wounds,
-Prepare +2 Strength; 173 HP; 9 Slippery).
+Prepare +2 Strength; 173 HP; 9 Slippery); LAGAVULIN_MATRIARCH (asleep 3 turns behind 12 Plating, wakes stunned when
+damaged; Slash 19, Slash 2 12 + 12 block, Disembowel 9x2, Soul Siphon); CEREMONIAL_BEAST (Stamp, Plow 18 + 2 Strength
+until 150 HP lost, stun, then Beast Cry, Stomp 15, Crush 17 + 3 Strength). The last two cycles are [HYPOTHESIS]:
+declaration order in the extract plus community notes.
 
 Usage: python3 -I tools/simulate_fight.py --deck STRIKE_IRONCLAD:5 DEFEND_IRONCLAD:4 BASH [--vs TWIN_STRIKE ANGER] \\
            [--boss VANTOM] [--hp 60] [--max-hp 80] [--runs 300]
@@ -28,9 +31,70 @@ import calc  # noqa: E402
 import plan_turn as pt  # noqa: E402
 from draft import expand_deck  # noqa: E402
 
+def _move(kind="attack", dmg=0, hits=1, status=0, boss_block=0, boss_str=0, p_str=0, p_dex=0):
+    return {"kind": kind, "dmg": dmg, "hits": hits, "status": status, "boss_block": boss_block, "boss_str": boss_str,
+            "p_str": p_str, "p_dex": p_dex}
+
+
+def vantom_move(b, turn):
+    cycle = [_move(dmg=7), _move(dmg=6, hits=2), _move(dmg=27, status=3), _move("buff", boss_str=2)]
+    return cycle[(turn - 1) % 4]
+
+
+def lagavulin_move(b, turn):
+    """Asleep 3 turns behind 12 Plating unless damaged (then it wakes stunned); then Slash 19, Slash 2 12 + 12 block,
+    Disembowel 9x2, Soul Siphon (-2 Strength and -2 Dexterity on you, +2 Strength for it). [COMMUNITY] cycle,
+    declaration order in the extract."""
+    if b.get("stunned"):
+        b["stunned"] = False
+        return _move("stun")
+    if b.get("asleep", 0) > 0:
+        b["asleep"] -= 1
+        return _move("sleep")
+    i = b.get("cycle", 0)
+    b["cycle"] = i + 1
+    return [_move(dmg=19), _move(dmg=12, boss_block=12), _move(dmg=9, hits=2), _move("debuff", boss_str=2, p_str=-2, p_dex=-2)][i % 4]
+
+
+def lagavulin_damaged(b, lost):
+    if lost > 0 and b.get("asleep", 0) > 0:
+        b["asleep"] = 0
+        b["stunned"] = True
+        b["plating"] = 0
+
+
+def beast_move(b, turn):
+    """Stamp (150 Plow) on turn 1; Plow 18 + 2 Strength each turn until 150 HP is lost, then a stun turn with its
+    Strength removed; then Beast Cry (Ringing, not modelled), Stomp 15, Crush 17 + 3 Strength. Order from the
+    extract's declaration order and the boss note `[HYPOTHESIS]`."""
+    if turn == 1:
+        b["plow"] = 150
+        return _move("buff")
+    if b.get("stunned"):
+        b["stunned"] = False
+        return _move("stun")
+    if b.get("plow", 0) > 0:
+        return _move(dmg=18, boss_str=2)
+    i = b.get("cycle", 0)
+    b["cycle"] = i + 1
+    return [_move("debuff"), _move(dmg=15), _move(dmg=17, boss_str=3)][i % 3]
+
+
+def beast_damaged(b, lost):
+    if b.get("plow", 0) > 0:
+        b["plow"] -= lost
+        if b["plow"] <= 0:
+            b["plow"] = 0
+            b["stunned"] = True
+            b["strength"] = 0
+
+
 BOSSES = {
-    "VANTOM": {"hp": 173, "slippery": 9, "cycle": [("attack", 7, 1, 0), ("attack", 6, 2, 0), ("attack", 27, 1, 3), ("buff", 0, 0, 0)],
-               "buff_strength": 2, "status_card": "WOUND"},
+    # validated: the model's win rate relative to Vantom roughly matches the Player's record (see report()).
+    "VANTOM": {"hp": 173, "slippery": 9, "move": vantom_move, "status_card": "WOUND", "validated": True},
+    "LAGAVULIN_MATRIARCH": {"hp": 222, "asleep": 3, "plating": 12, "move": lagavulin_move, "on_damage": lagavulin_damaged,
+                            "validated": True},
+    "CEREMONIAL_BEAST": {"hp": 252, "move": beast_move, "on_damage": beast_damaged, "validated": False},  # fails calibration
 }
 
 
@@ -53,45 +117,46 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     draw = [c.split(".", 1)[-1] for c in deck]
     rng.shuffle(draw)
     discard, exhausted = [], []
-    strength, demon = 0, 0
-    b = {"hp": spec["hp"], "block": 0, "slippery": spec.get("slippery", 0), "strength": 0, "vuln": 0, "weak": 0}
+    strength, demon, dexterity = 0, 0, 0
+    b = {"hp": spec["hp"], "block": 0, "slippery": spec.get("slippery", 0), "strength": 0, "vuln": 0, "weak": 0,
+         "asleep": spec.get("asleep", 0), "plating": spec.get("plating", 0)}
     for turn in range(1, max_turns + 1):
         strength += demon
-        move = spec["cycle"][(turn - 1) % len(spec["cycle"])]
-        kind, dmg, hits, status = move
-        intent = (dmg + b["strength"], hits) if kind == "attack" else (0, 0)
+        if b.get("asleep", 0) > 0 and b.get("plating"):
+            b["block"] = b["plating"]
+        mv = spec["move"](b, turn)
+        intent = (mv["dmg"] + b["strength"], mv["hits"]) if mv["kind"] == "attack" else (0, 0)
         hand_ids = draw_cards(5, draw, discard, rng)
         energy, block, gained_this_turn = 3, 0, 0
-        played = []
         for _ in range(4):  # plan, play up to a draw, re-plan with what is left
             hand = [pt.card_from_extract(i, cid) for i, cid in enumerate(hand_ids)]
             enemy = pt.Enemy(0, boss, b["hp"], b["block"], intent[0], intent[1], vuln=b["vuln"] > 0, weak=b["weak"] > 0,
                              slippery=b["slippery"])
-            player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn)
+            player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity)
             res = pt.plans(hand, player, [enemy])
             if not res:
                 break
             best = pt.rank(res, mode, pt.POTION_COST["boss"], pt.POWER_VALUE["boss"])[0]
             seq = best["seq"]
             cut = next((i + 1 for i, (c, _) in enumerate(seq) if c.draw), len(seq))
-            chosen = [c for c, _ in seq[:cut]]
-            if not chosen:
+            order = [c for c, _ in seq[:cut]]
+            if not order:
                 break
-            # replay the chosen prefix to get the exact state after it
-            order = [c for c in chosen]
             targets = [0 if c.target == "AnyEnemy" else None for c in order]
             out = pt.simulate(order, targets, player, [enemy])
             if out is None:
                 break
             ea = out["enemies_after"][0]
+            lost = b["hp"] - ea["hp"]
             b["hp"], b["block"], b["slippery"] = ea["hp"], ea["block"], ea["slippery"]
+            if spec.get("on_damage"):
+                spec["on_damage"](b, lost)
             for c in order:
                 if c.vuln:
                     b["vuln"] = max(b["vuln"], c.vuln)
                 if c.weak:
                     b["weak"] = max(b["weak"], c.weak)
-            energy = out["energy_left"]
-            block = out["block"]
+            energy, block = out["energy_left"], out["block"]
             hp -= sum(c.hp_cost for c in order)
             for c in order:
                 gained_this_turn += c.strength
@@ -109,29 +174,27 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                     discard.append(c.card_id)
                 if c.card_id == "ANGER":
                     discard.append("ANGER")
-                played.append(c.card_id)
             if b["hp"] <= 0:
                 return {"won": True, "hp": hp, "turns": turn}
-            new = sum(c.draw for c in order)
-            if new and seq[cut - 1][0].draw:
-                hand_ids += draw_cards(new, draw, discard, rng)
+            if sum(c.draw for c in order) and seq[cut - 1][0].draw:
+                hand_ids += draw_cards(sum(c.draw for c in order), draw, discard, rng)
                 continue
             break
         discard.extend(hand_ids)
         # boss turn
-        if kind == "attack":
+        if mv["kind"] == "attack":
             per = calc.hit_damage(intent[0], attacker_weak=b["weak"] > 0)
-            total = per * intent[1]
-            hp -= max(0, total - block)
-            for _ in range(status):
-                discard.append(spec["status_card"])
-        else:
-            b["strength"] += spec["buff_strength"]
+            hp -= max(0, per * intent[1] - block)
+            for _ in range(mv["status"]):
+                discard.append(spec.get("status_card", "WOUND"))
+        b["strength"] += mv["boss_str"]
+        strength += mv["p_str"]
+        dexterity += mv["p_dex"]
         if hp <= 0:
             return {"won": False, "hp": 0, "turns": turn}
         b["vuln"] = max(0, b["vuln"] - 1)
         b["weak"] = max(0, b["weak"] - 1)
-        b["block"] = 0
+        b["block"] = mv["boss_block"]
     return {"won": False, "hp": hp, "turns": max_turns, "timeout": True}
 
 
@@ -184,6 +247,24 @@ def report(runs=300):
          "planner's mode interacts with the deck, so treat those rows as policy-dependent.",
          "- The balanced plan beats the safe plan from full HP for most decks; from 60 HP the safe plan did better in a separate "
          "check. This matches the playbook: safe when HP is below plan, balanced when ahead.", ""]
+    # Calibration: the experiment's base deck at 60/80 HP against each boss, the better plan, versus the Player's record
+    import sqlite3
+    con = sqlite3.connect(PROJECT / "data" / "runs.db")
+    cal = []
+    for key in BOSSES:
+        r = max((evaluate(expand_deck(EXPERIMENT_BASE, "IRONCLAD"), key, 60, 80, runs // 2, m) for m in ("balanced", "safe")),
+                key=lambda x: x["win_rate"])
+        s, n = con.execute("""SELECT SUM(NOT (f.is_last_floor AND NOT r.win)), COUNT(*) FROM floors f JOIN runs r USING(run_id)
+                              WHERE r.build_id='v0.107.1' AND r.character='IRONCLAD' AND r.n_players=1 AND NOT r.abandoned
+                              AND f.model_id = ?""", ["ENCOUNTER." + key + "_BOSS"]).fetchone()
+        cal.append([key.replace("_", " ").title(), f"{r['win_rate']:.0%}", f"{s}/{n} ({s / n:.0%})" if n else "-",
+                    "yes" if BOSSES[key].get("validated") else "**no**"])
+    con.close()
+    L += ["## Calibration against the Player's record", "",
+          "Base deck at 60/80 HP, the better plan; the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and "
+          "have relics, potions and upgrades, so the model is expected to be pessimistic; what matters is the ratio between "
+          "bosses). A boss marked **no** is not used by `tools/draft.py`.", "",
+          md_table(["Boss", "Model win", "The Player survived", "Used in drafting"], cal), ""]
     out = PROJECT / "reports/phase2/vantom-simulation.md"
     out.write_text("\n".join(L))
     print("wrote", out.relative_to(PROJECT))

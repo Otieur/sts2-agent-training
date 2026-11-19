@@ -186,7 +186,7 @@ def simulated_boss_value(deck, offer_ids, boss, hp=None, max_hp=80, runs=SIM_RUN
     offered card, each deck scored with the better of the planner's two plans (the choice of plan changes results).
     Returns (base rate, {card_id: delta_win}) or None. [HYPOTHESIS] model."""
     import simulate_fight as sf
-    key = next((k for k in sf.BOSSES if boss and k in boss.upper()), None)
+    key = next((k for k in sf.BOSSES if boss and k in boss.upper() and sf.BOSSES[k].get("validated")), None)
     if not key:
         return None
     start = hp or max_hp

@@ -21,3 +21,13 @@ Calibration: a typical 16-card floor-17 deck starting at 60/80 HP wins 33–39% 
 - **Breakthrough is worse than a plain Strike here**: two Breakthroughs fall below the two-Strike control in both plans (58% against 66% balanced, 32% against 47% safe); its 9 damage is capped to 1 while Slippery lasts, and it costs HP. Thunderclap with Breakthrough is level with the control under the balanced plan and below it under the safe plan. Consistent with H2 and with Breakthrough's decision-point record.
 - **Draw and block help only under the safe plan** (above the base there, below it under the balanced plan): the planner's mode interacts with the deck, so treat those rows as policy-dependent.
 - The balanced plan beats the safe plan from full HP for most decks; from 60 HP the safe plan did better in a separate check. This matches the playbook: safe when HP is below plan, balanced when ahead.
+
+## Calibration against the Player's record
+
+Base deck at 60/80 HP, the better plan; the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and have relics, potions and upgrades, so the model is expected to be pessimistic; what matters is the ratio between bosses). A boss marked **no** is not used by `tools/draft.py`.
+
+| Boss | Model win | The Player survived | Used in drafting |
+|---|---|---|---|
+| Vantom | 20% | 4/10 (40%) | yes |
+| Lagavulin Matriarch | 35% | 6/8 (75%) | yes |
+| Ceremonial Beast | 2% | 5/6 (83%) | **no** |
