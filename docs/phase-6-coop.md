@@ -118,7 +118,7 @@
 > - [ ] Every subcommand works against the teammate.
 > - [ ] `data.companion.auto_play` is confirmed `false`.
 
-> **P6.E3.S2: Read the host's state too** · Size S · Status: In progress (`--instance host` read-only and `tools/sts.py party` written and tested offline, 2026-11-19; untested live)
+> **P6.E3.S2: Read the host's state too** · Size S · Status: In progress (`--instance host` read-only and `tools/sts.py party` written and tested offline, 2026-11-19; `tools/advise.py` shows the party's HP and block in co-op combat; untested live)
 > *As the Agent, I want to read the Player's own instance as well, so that I can see the Player's hand, energy and plan around it, which my own instance does not show.*
 >
 > **Acceptance criteria**

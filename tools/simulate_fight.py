@@ -215,14 +215,20 @@ SIM_RELICS = {"VAJRA", "ODDLY_SMOOTH_STONE", "ANCHOR", "BAG_OF_PREPARATION", "RE
               "FESTIVE_POPPER", "HAPPY_FLOWER", "LIZARD_TAIL", "RED_SKULL"}  # relics the simulator applies (see run_fight)
 
 
-def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", max_turns=25, curse=BEST_CURSES, relics=()):
+POTION_SLOT = 100  # potion cards get index POTION_SLOT + n, apart from hand positions
+TEMPORARY_POTIONS = {"FLEX_POTION", "SPEED_POTION"}  # their Strength or Dexterity lasts only the turn
+
+
+def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", max_turns=25, curse=BEST_CURSES, relics=(),
+              potions=()):
     """relics: relic IDs held; those in SIM_RELICS are applied with their plainest reading of the game data
     [GAME-EXTRACT] + [HYPOTHESIS] (once per fight unless the data says otherwise): Vajra +1 Strength, Oddly Smooth Stone +1
     Dexterity, Anchor 10 Block on turn 1, Bag of Preparation +2 cards on turn 1, Red Mask 1 Weak on the boss at the start,
     Gorget 4 Plating (Block each turn, one less each turn), Blood Vial heal 2 at the start, Festive Popper 9 damage at the
     start, Happy Flower +1 energy every third turn, Lizard Tail revives once at half HP, Red Skull +3 Strength at half HP
-    or less."""
+    or less. potions: potion IDs held; the planner may use each once (boss potion cost) [HYPOTHESIS]."""
     spec = BOSSES[boss]
+    pots = [str(x).split(".", 1)[-1].upper() for x in potions or () if x]
     R = {str(r).split(".", 1)[-1].upper() for r in relics or ()}
     rng = random.Random(seed)
     draw = [c.split(".", 1)[-1] for c in deck]
@@ -276,6 +282,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         cards_played = 0
         for _ in range(4):  # plan, play up to a draw, re-plan with what is left
             hand = [pt.card_from_extract(i, cid) for i, cid in enumerate(hand_ids)]
+            hand += [pt.card_from_potion(POTION_SLOT + n, pid) for n, pid in enumerate(pots)]
             for c in hand:  # Powers whose effect the simulator does not model earn no future value here (else the
                 if c.power and c.card_id not in MODELLED_POWERS and not c.strength and not c.dex:  # planner wastes turns)
                     c.power = False
@@ -319,9 +326,21 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             osty = out.get("osty_before_enemy", osty)
             cards_played += sum(1 for c in order if not c.potion)
             hp -= sum(c.hp_cost for c in order)
-            names = {c.index: hand_ids[c.index] for c in order}  # the hand entries played (keeps the '+' of upgrades)
+            names = {c.index: hand_ids[c.index] for c in order if not c.potion}  # hand entries played (keeps the '+')
             hand_ids = [x for i, x in enumerate(hand_ids) if i not in names]
+            used = {c.index - POTION_SLOT for c in order if c.potion}
             for c in order:
+                if c.potion:
+                    if c.heal_pct:  # Blood Potion
+                        hp = min(max_hp, hp + max_hp * c.heal_pct // 100)
+                    if c.card_id not in TEMPORARY_POTIONS:
+                        strength += c.strength
+                        dexterity += c.dex
+                    continue
+            pots = [x for n, x in enumerate(pots) if n not in used]
+            for c in order:
+                if c.potion:
+                    continue
                 gained_this_turn += c.strength
                 name = names[c.index]
                 rec = pt.CARDS.get(c.card_id) or {}
@@ -423,8 +442,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     return {"won": False, "hp": hp, "turns": max_turns, "timeout": True, "boss_left": max(0.0, b["hp"] / spec["hp"])}
 
 
-def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse=BEST_CURSES, relics=()):
-    rs = [run_fight(deck, boss, hp, max_hp, seed=s, mode=mode, curse=curse, relics=relics) for s in range(runs)]
+def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse=BEST_CURSES, relics=(), potions=()):
+    rs = [run_fight(deck, boss, hp, max_hp, seed=s, mode=mode, curse=curse, relics=relics, potions=potions) for s in range(runs)]
     wins = [r for r in rs if r["won"]]
     return {"win_rate": len(wins) / runs, "hp_lost": statistics.mean(hp - r["hp"] for r in rs),
             "hp_lost_wins": statistics.mean(hp - r["hp"] for r in wins) if wins else float("nan"),
@@ -432,9 +451,22 @@ def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse=BEST_CURSES, r
             "progress": statistics.mean(1 - r.get("boss_left", 0.0) for r in rs)}
 
 
+def potions_at(con, run_id, floor):
+    """Potions held at the start of a floor: picked (non-shop) or bought before it, minus used or discarded before it."""
+    held = []
+    for r in con.execute("""SELECT floor, kind, source, potion_id, picked FROM potion_events WHERE run_id = ? AND floor < ?
+                            ORDER BY floor, CASE kind WHEN 'used' THEN 1 WHEN 'discarded' THEN 1 ELSE 0 END""", (run_id, floor)):
+        pid = r["potion_id"]
+        if (r["kind"] == "offered" and r["picked"] and r["source"] != "shop") or r["kind"] == "bought":
+            held.append(pid)
+        elif r["kind"] in ("used", "discarded") and pid in held:
+            held.remove(pid)
+    return held
+
+
 def calibrate_real(runs=40, character="IRONCLAD", bosses=None):
     """The Player's own decks on arrival at each modelled fight (v0.107.1, solo, finished runs), simulated from the
-    arrival HP with the better of the two plans, the deck's upgrades and the relics in SIM_RELICS. Returns {boss: (mean
+    arrival HP with the better of the two plans, the deck's upgrades, the relics in SIM_RELICS and the potions held. Returns {boss: (mean
     simulated win rate, survived, fights, mean share of the boss's HP removed)}. Other relics,
     potions or upgrades, so the model should be pessimistic by a similar amount for every boss."""
     from deck_metrics import deck_at
@@ -452,7 +484,8 @@ def calibrate_real(runs=40, character="IRONCLAD", bosses=None):
             rel = [x["relic_id"] for x in con.execute("SELECT relic_id FROM relic_events WHERE run_id = ? AND floor < ? AND picked = 1",
                                                       (r["run_id"], r["floor"]))]
             hp, mx = r["hp_before"] or r["max_hp"], r["max_hp"] or 80
-            best = max((evaluate(deck, key, hp, mx, runs, m, relics=rel) for m in ("balanced", "safe")),
+            pots = potions_at(con, r["run_id"], r["floor"])
+            best = max((evaluate(deck, key, hp, mx, runs, m, relics=rel, potions=pots) for m in ("balanced", "safe")),
                        key=lambda x: (x["win_rate"], x["progress"]))
             sims.append(best["win_rate"])
             prog.append(best["progress"])
@@ -579,11 +612,12 @@ def report(runs=300):
     rc = [[k.replace("_", " ").title(), n, f"{m:.0%}", f"{pr:.2f}", f"{s}/{n} ({s / n:.0%})"] for k, (m, s, n, pr) in real.items()]
     L += ["## Calibration with the Player's own decks", "",
           "Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1, solo, finished runs), replayed with "
-          "the deck the run had on arrival (with its upgrades), its arrival HP and the relics the simulator applies (`SIM_RELICS`: "
-          "Vajra, Anchor, Gorget and others), the better of the two plans. It has no potions, no other relics, and only the card "
-          "effects `tools/plan_turn.py` reads (Powers other than Strength, Dexterity, Demon Form, Pyre and Feel No Pain do "
-          "nothing), so its win rates for real decks are far too low; the share of the boss's HP removed is the more useful "
-          "comparison between bosses.", "",
+          "the deck the run had on arrival (with its upgrades), its arrival HP, the potions it held and the relics the simulator "
+          "applies (`SIM_RELICS`: Vajra, Anchor, Gorget and others), the better of the two plans. It has no other relics and only "
+          "the card effects `tools/plan_turn.py` reads (Powers other than Strength, Dexterity, Demon Form, Pyre and Feel No Pain "
+          "do nothing), and the planner looks one turn ahead, so its boss win rates for real decks are far too low; the share of "
+          "the boss's HP removed is the more useful comparison between bosses. The short elite fight (Byrdonis) comes out close "
+          "to the record, so the gap grows with fight length, as missing scaling effects would make it.", "",
           md_table(["Fight", "Fights", "Model win", "Boss HP removed (model)", "The Player survived"], rc), "",
           "Reading: absolute win rates from the simulator mean little for real decks; use it to compare additions to the same "
           "deck. A boss whose share removed is low while the Player usually survived (Ceremonial Beast, Entomancer, Knowledge "

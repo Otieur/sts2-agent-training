@@ -189,7 +189,7 @@ def skip_bar(deck_size):
 SIM_RUNS = 80
 
 
-def simulated_boss_value(deck, offer_ids, boss, hp=None, max_hp=80, runs=SIM_RUNS, relics=()):
+def simulated_boss_value(deck, offer_ids, boss, hp=None, max_hp=80, runs=SIM_RUNS, relics=(), potions=()):
     """For bosses tools/simulate_fight.py models and marks validated (Vantom, Lagavulin Matriarch, Soul Fysh,
     Byrdonis): simulated win rate of the deck and of the deck plus each
     offered card, each deck scored with the better of the planner's two plans (the choice of plan changes results).
@@ -202,7 +202,7 @@ def simulated_boss_value(deck, offer_ids, boss, hp=None, max_hp=80, runs=SIM_RUN
 
     def rate(d):
         """Win rate plus half the share of the boss's HP removed (separates options when every deck still loses)."""
-        best = max((sf.evaluate(d, key, start, max_hp, runs, mode, relics=relics) for mode in ("balanced", "safe")),
+        best = max((sf.evaluate(d, key, start, max_hp, runs, mode, relics=relics, potions=potions) for mode in ("balanced", "safe")),
                    key=lambda r: (r["win_rate"], r["progress"]))
         return best["win_rate"] + 0.5 * best["progress"], best["win_rate"]
     base, base_win = rate(deck)
@@ -213,7 +213,8 @@ def simulated_boss_value(deck, offer_ids, boss, hp=None, max_hp=80, runs=SIM_RUN
     return base_win, out
 
 
-def score_offer(deck, offer_ids, character, act, floor, boss, simulate=False, hp=None, max_hp=80, sim_deck=None, sim_relics=()):
+def score_offer(deck, offer_ids, character, act, floor, boss, simulate=False, hp=None, max_hp=80, sim_deck=None, sim_relics=(),
+                sim_potions=()):
     tiers = load_tiers(character)
     base = metrics(deck)
     eng = engines(deck)
@@ -257,7 +258,7 @@ def score_offer(deck, offer_ids, character, act, floor, boss, simulate=False, hp
             s += 1.0; reasons.append("exhaust engine: exhaust outlet (+1)")
         rows.append({"card": display(c), "id": c["id"], "score": round(s, 2), "reasons": reasons,
                      "d_dmg": d_dmg, "d_block": d_block, "d_scaling": d_scal})
-    sim = (simulated_boss_value(sim_deck or deck, offer_ids, boss, hp, max_hp, relics=sim_relics)  # sim_deck keeps upgrades
+    sim = (simulated_boss_value(sim_deck or deck, offer_ids, boss, hp, max_hp, relics=sim_relics, potions=sim_potions)
            if simulate else None)
     if sim:
         base_rate, deltas = sim
@@ -288,6 +289,12 @@ def sim_deck_from_state(st):
     st = st.get("data", st)
     return ["CARD." + d["card_id"] + ("+" if d.get("upgraded") else "") for d in (st.get("run") or {}).get("deck") or []
             if d.get("card_id")]
+
+
+def sim_potions_from_state(st):
+    """Potion IDs held (run.potions[] occupied slots) for the fight simulator."""
+    st = st.get("data", st)
+    return [x.get("potion_id") for x in (st.get("run") or {}).get("potions") or [] if isinstance(x, dict) and x.get("occupied") and x.get("potion_id")]
 
 
 def sim_relics_from_state(st):

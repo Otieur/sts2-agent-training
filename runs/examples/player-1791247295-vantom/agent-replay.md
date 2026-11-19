@@ -8,7 +8,7 @@ Ironclad · A10 · died on floor 17 to VANTOM_BOSS. Built by `tools/replay_run.p
 |---|---|---|---|---|---|---|
 | 1 | card reward | Sword Boomerang, Taunt, Molten Fist | Sword Boomerang | Sword Boomerang | same | tier D; Vantom: cheap or multi-hit attacks clear Slippery (+1) |
 | 1 | Ancient | Fishing Rod, Lost Coffer, Precarious Shears | Lost Coffer | Fishing Rod | **differs** | decision-point record (reports/phase2/ancient-relics.md) |
-| 2 | card reward | Bloodletting, Twin Strike, Iron Wave | Bloodletting | Bloodletting | same | tier B (sources disagree); VANTOM_BOSS simulation: win plus progress -0.00 against the current deck (base win 0%) (-0.0) |
+| 2 | card reward | Bloodletting, Twin Strike, Iron Wave | Bloodletting | Bloodletting | same | tier B (sources disagree); VANTOM_BOSS simulation: win plus progress +0.01 against the current deck (base win 0%) (+0.1) |
 | 5 | card reward | Twin Strike, Breakthrough, Body Slam | Twin Strike | Body Slam | **differs** | tier C; Vantom: cheap or multi-hit attacks clear Slippery (+1) |
 | 6 | card reward | Rage, Iron Wave, Body Slam | Rage | Iron Wave | **differs** | tier D; Vantom: cheap or multi-hit attacks clear Slippery (+1) |
 | 8 | rest site | HP 50/80 | SMITH | SMITH | same | HP 50/80 = 62% (rest under 40% per H11, smith at 50%+) |

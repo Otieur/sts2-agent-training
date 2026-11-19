@@ -57,6 +57,18 @@ class TestSimulateFight(unittest.TestCase):
         self.assertGreaterEqual(relic["win_rate"], plain["win_rate"])
         self.assertGreater(upgraded["win_rate"], plain["win_rate"])
 
+    def test_potions(self):
+        deck = expand_deck(sf.EXPERIMENT_BASE, "IRONCLAD")
+        plain = sf.evaluate(deck, "VANTOM", 60, 80, 20, "balanced")
+        pots = sf.evaluate(deck, "VANTOM", 60, 80, 20, "balanced", potions=("POTION.STRENGTH_POTION", "WEAK_POTION", "BLOOD_POTION"))
+        self.assertGreater(pots["win_rate"], plain["win_rate"])
+        from stslib import connect
+        con = connect()
+        rid = con.execute("SELECT run_id FROM potion_events WHERE kind = 'used' LIMIT 1").fetchone()["run_id"]
+        held = sf.potions_at(con, rid, 999)
+        con.close()
+        self.assertIsInstance(held, list)
+
     def test_soul_fysh_cycle_and_beckon(self):
         b = {}
         moves = [sf.fysh_move(b, t) for t in range(1, 11)]

@@ -17,6 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import advise  # noqa: E402
 import draft  # noqa: E402
+import simulate_fight as sf  # noqa: E402
 from deck_metrics import deck_at  # noqa: E402
 from stslib import DATA, PROJECT, connect, md_table  # noqa: E402
 
@@ -46,7 +47,8 @@ def replay(run_ref):
         res = draft.score_offer(deck, ids, ch, act, floor, boss, simulate=(act == 1),  # as advise.py does in Act 1
                                 hp=fl.get("hp_after"), max_hp=fl.get("max_hp") or 80, sim_deck=deck_at(con, rid, floor, upgrades=True),
                                 sim_relics=[x["relic_id"] for x in con.execute(
-                                    "SELECT relic_id FROM relic_events WHERE run_id = ? AND floor < ? AND picked = 1", (rid, floor))])
+                                    "SELECT relic_id FROM relic_events WHERE run_id = ? AND floor < ? AND picked = 1", (rid, floor))],
+                                sim_potions=sf.potions_at(con, rid, floor))
         tool = res["pick"]["card"] if res["pick"] else "skip"
         player = next((o["card_id"].split(".", 1)[-1].replace("_", " ").title() for o in offers if o["picked"]), "skip")
         same = tool.replace(" ", "").lower() == player.replace(" ", "").lower()

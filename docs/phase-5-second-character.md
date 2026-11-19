@@ -46,7 +46,7 @@
 > **Acceptance criteria**
 > - [ ] `knowledge/cards/necrobinder.md`, built from the game data with role tags (adding tags for character-specific mechanics) and the Phase 5 pick rates.
 
-> **P5.E2.S2: Mechanics** · Size M · Status: In progress (Osty, Summon, Doom from the power data in playbooks/necrobinder.md §1; plan_turn.py models Osty)
+> **P5.E2.S2: Mechanics** · Size M · Status: In progress (Osty, Summon, Doom from the power data in playbooks/necrobinder.md §1; plan_turn.py models Osty, Unleash (6 + Osty's HP) and Doom on enemies and on you; the Necrobinder fight simulation still fails calibration)
 > *As the Agent, I want Necrobinder's own mechanics specified exactly, so that combat arithmetic and state reading cover them.*
 >
 > **Acceptance criteria**

@@ -117,7 +117,7 @@ runs/<YYYY-MM-DD>-<seed>/
 
 ### P4.E2: Combat procedure
 
-> **P4.E2.S1: Turn-planning checklist** · Size S · Status: Done (playbook section 9, steps 1–10; tools/plan_turn.py searches the turn; 2026-11-19)
+> **P4.E2.S1: Turn-planning checklist** · Size S · Status: Done (playbook section 9, steps 1–10; tools/plan_turn.py searches the turn; 2026-11-19; card-specific rules, playable statuses, 17 potions and the boss and elite powers added overnight)
 > *As the Agent, I want a fixed checklist for each combat turn, so that I do not skip a step under pressure.*
 >
 > **Acceptance criteria:** the checklist in `playbooks/ironclad.md` (combat section):
@@ -136,7 +136,7 @@ runs/<YYYY-MM-DD>-<seed>/
 > - [ ] `tools/calc.py` handles Strength, Vulnerable, Weak, Frail, Dexterity, multi-hit attacks, block on the target and the order of operations, using `knowledge/mechanics.md`.
 > - [ ] It is verified against at least 10 in-game numbers from the Phase 2 verification list. Unit tests live in `tools/tests/`.
 
-> **P4.E2.S3: Multi-enemy targeting rules** · Size S · Status: Done (playbook section 9 step 10; plan_turn.py target search; untested live)
+> **P4.E2.S3: Multi-enemy targeting rules** · Size S · Status: Done (playbook section 9 step 10; plan_turn.py target search with Minion and Crab Rage rules; untested live)
 > *As the Agent, I want rules for choosing targets, so that damage goes where it reduces incoming damage most.*
 >
 > **Acceptance criteria**
