@@ -211,8 +211,24 @@ def main(argv=None, opener=None, sleep=time.sleep, clock=time.time):
         print("  PROBLEM " + i)
     seen, bad = set(), bool(hissues)
     deadline = clock() + args.minutes * 60
+    away = False
     while True:
-        st = ad.state()
+        try:
+            st = ad.state()
+        except sts.ModError as e:
+            if not args.watch:
+                print(f"cannot read the state: {e}")
+                return 2
+            if not away:  # the game was closed or is restarting: wait for it until the deadline
+                print(f"mod not reachable ({e}); waiting for the game")
+                away = True
+            if clock() > deadline:
+                break
+            sleep(3.0)
+            continue
+        if away:
+            print("mod reachable again")
+            away = False
         scr, issues, notes = (check_mcp_state if mcp else check_state)(st)
         if scr not in seen:
             seen.add(scr)

@@ -32,6 +32,7 @@ its own.
 Standard library only. Run with python3 -I.
 """
 import argparse
+import http.client
 import json
 import sys
 import time
@@ -66,6 +67,9 @@ def _http(method, url, body=None, timeout=10, opener=None):
             raise ModError(f"HTTP {e.code}: {raw[:200]}")
     except urllib.error.URLError as e:
         raise ModError(f"cannot reach {url}: {e.reason}")
+    except (http.client.HTTPException, OSError) as e:  # dropped connection or timeout, e.g. the game quit mid-request
+        after = "" if method == "GET" else "; the action may or may not have been applied, so read the state before retrying"
+        raise ModError(f"connection to {url} failed: {type(e).__name__}: {e}{after}")
     try:
         return json.loads(raw)
     except json.JSONDecodeError:

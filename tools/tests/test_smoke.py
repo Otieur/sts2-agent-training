@@ -96,6 +96,49 @@ class TestSmoke(unittest.TestCase):
         self.assertTrue(any("next_options" in i for i in issues))
         tmp.cleanup()
 
+    def test_dropped_connection_is_a_mod_error(self):
+        # live 2026-11-19: quitting the game closed the connection mid-request (RemoteDisconnected)
+        import http.client
+        import sts
+
+        def drop(req, timeout=None):
+            raise http.client.RemoteDisconnected("Remote end closed connection without response")
+        with self.assertRaises(sts.ModError) as get_err:
+            sts._http("GET", "http://127.0.0.1:8080/state", opener=drop)
+        self.assertNotIn("may or may not", str(get_err.exception))
+        with self.assertRaises(sts.ModError) as post_err:
+            sts._http("POST", "http://127.0.0.1:8080/action", body={"action": "end_turn"}, opener=drop)
+        self.assertIn("may or may not have been applied", str(post_err.exception))
+
+    def test_watch_waits_for_the_game(self):
+        import sts
+        calls = {"n": 0}
+        clock = iter(range(0, 10_000, 100))
+
+        class Ad(sts.Sts2AgentAdapter):  # keeps the class's static helpers (screen) that advise.py uses
+            def __init__(self, *a, **k):
+                pass
+
+            def health(self):
+                return {"data": {"service": "sts2-ai-agent", "game_version": "v0.111.1", "status": "ready"}}
+
+            def state(self):
+                calls["n"] += 1
+                if calls["n"] == 2:
+                    raise sts.ModError("connection failed")
+                return {"data": {"screen": "MAIN_MENU", "run": None, "session": {"mode": "singleplayer"}}}
+        orig = sts.Sts2AgentAdapter
+        sts.Sts2AgentAdapter = Ad
+        try:
+            out = io.StringIO()
+            with redirect_stdout(out):
+                rc = smoke.main(["--watch", "--minutes", "5"], sleep=lambda s: None, clock=lambda: next(clock))
+        finally:
+            sts.Sts2AgentAdapter = orig
+        self.assertEqual(rc, 0)
+        self.assertIn("waiting for the game", out.getvalue())
+        self.assertIn("mod reachable again", out.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
