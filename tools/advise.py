@@ -207,8 +207,8 @@ def card_reward(st):
 
 
 def reward_main(st):
-    rw = (st.get("reward") or {}).get("rewards") or []
-    pots = [p for p in _run(st).get("potions") or []]
+    rw = plan_turn._dicts((st.get("reward") or {}).get("rewards"))
+    pots = plan_turn._dicts(_run(st).get("potions"))
     free_slots = sum(1 for p in pots if not p.get("occupied"))
     out = ["Claim from the highest index down (indexes shift):"]
     for r in sorted(rw, key=lambda r: -(r.get("index") if isinstance(r.get("index"), int) else 0)):
@@ -449,7 +449,7 @@ def _advise(st, nxt=None, deck_cache=None):
     if scr == "MAP":
         return "[MAP]\n" + map_screen(st)
     if scr == "REWARD":
-        rw = st.get("reward") or {}
+        rw = st.get("reward") if isinstance(st.get("reward"), dict) else {}
         if rw.get("card_options"):
             return "[CARD REWARD]\n" + card_reward(st)
         return "[REWARD]\n" + reward_main(st)

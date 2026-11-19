@@ -844,7 +844,7 @@ def from_state(st):
                              paper_cuts=int(next((v for k, v in pw.items() if k.startswith("PAPER_CUTS")), 0) or 0)))
     for i, e in enumerate(enemies):
         e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
-    run = st.get("run") or {}
+    run = st.get("run") if isinstance(st.get("run"), dict) else {}
     for slot, pot in enumerate(_list(run.get("potions"))):
         if isinstance(pot, dict) and pot.get("occupied") and isinstance(pot.get("potion_id"), str):
             pc = card_from_potion(int(pot.get("index", slot)), pot["potion_id"])
