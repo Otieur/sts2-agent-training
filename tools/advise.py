@@ -50,17 +50,47 @@ def _character(st):
 
 
 # ------------------------------------------------------------------------------------------------ screens
+_ROOM_OF_MONSTER = None
+
+
+def room_of_monster():
+    """Monster id -> the room type it appeared in most (monster / elite / boss), from the Player's history."""
+    global _ROOM_OF_MONSTER
+    if _ROOM_OF_MONSTER is None:
+        import collections
+        counts = collections.defaultdict(collections.Counter)
+        con = connect()
+        for room, ids in con.execute("SELECT room_type, monster_ids FROM floors WHERE room_type IN ('monster','elite','boss') AND monster_ids IS NOT NULL"):
+            try:
+                names = json.loads(ids)
+            except (TypeError, ValueError):
+                names = []
+            for m in names:
+                counts[str(m).split(".", 1)[-1].upper()][room] += 1
+        con.close()
+        _ROOM_OF_MONSTER = {m: c.most_common(1)[0][0] for m, c in counts.items()}
+    return _ROOM_OF_MONSTER
+
+
 def fight_type(st):
-    """boss / elite / hallway from the STS2-Agent state, for potion cost and Power value."""
+    """boss / elite / hallway / unknown from the STS2-Agent state: an explicit room type if the state has one,
+    else the act boss's name, else the room each enemy appeared in during the Player's history."""
     c = st.get("combat") or {}
-    names = " ".join(str(e.get("enemy_id") or e.get("name") or "") for e in c.get("enemies") or []).upper()
+    ids = [str(e.get("enemy_id") or "").split(".", 1)[-1].upper() for e in c.get("enemies") or []]
     room = str((st.get("run") or {}).get("room_type") or st.get("room_type") or "").lower()
     boss = (_run(st).get("boss_id") or "").upper().replace("_BOSS", "").replace("ENCOUNTER.", "")
-    if "boss" in room or (boss and boss in names):
+    if "boss" in room or (boss and any(boss in i for i in ids)):
         return "boss"
     if "elite" in room:
         return "elite"
-    return "hallway" if room else "elite"
+    if room:
+        return "hallway"
+    rooms = {room_of_monster().get(i) for i in ids if i} - {None}
+    if "boss" in rooms:
+        return "boss"
+    if "elite" in rooms:
+        return "elite"
+    return "hallway" if rooms == {"monster"} else "unknown"
 
 
 def combat(st, top=2):
@@ -73,11 +103,13 @@ def combat(st, top=2):
     for c in hand:
         if c.note:
             out.append(f"note: {c.name}: {c.note}")
-    out.append(f"fight type: {ft} (potion cost {plan_turn.POTION_COST[ft]:g} HP, Powers {plan_turn.POWER_VALUE[ft]:g} per energy)")
+    pc = plan_turn.POTION_COST.get(ft, plan_turn.POTION_COST["hallway"])  # unknown: hold potions
+    pv = plan_turn.POWER_VALUE.get(ft, plan_turn.POWER_VALUE["elite"])
+    out.append(f"fight type: {ft} (potion cost {pc:g} HP, Powers {pv:g} per energy)")
     best = {}
     for mode in ("safe", "balanced"):
         out.append(f"{mode}:")
-        ranked = plan_turn.rank(res, mode, plan_turn.POTION_COST[ft], plan_turn.POWER_VALUE[ft])
+        ranked = plan_turn.rank(res, mode, pc, pv)
         best[mode] = ranked[0] if ranked else None
         out += ["  " + plan_turn.fmt(o, player.hp) for o in ranked[:top]]
     for mode, o in best.items():

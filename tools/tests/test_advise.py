@@ -98,6 +98,14 @@ class TestAdvise(unittest.TestCase):
         self.assertIn("Ancient record", out)
         self.assertIn("p=0.016", out)
 
+    def test_fight_type(self):
+        def combat_with(enemy_id):
+            return {"run": {"boss_id": "VANTOM_BOSS"}, "combat": {"enemies": [{"enemy_id": enemy_id}]}}
+        self.assertEqual(advise.fight_type(combat_with("VANTOM")), "boss")
+        self.assertEqual(advise.fight_type(combat_with("BYRDONIS")), "elite")
+        self.assertEqual(advise.fight_type(combat_with("NIBBIT")), "hallway")
+        self.assertEqual(advise.fight_type(combat_with("SOMETHING_NEW")), "unknown")
+
 
 if __name__ == "__main__":
     unittest.main()
