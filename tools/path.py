@@ -56,13 +56,21 @@ def norm_type(t):
 
 
 # ------------------------------------------------------------------------------------------------ model
+_FIGHT_MODEL = None
+
+
+def _fight_model():
+    global _FIGHT_MODEL
+    if _FIGHT_MODEL is None:
+        path = DATA / "tables" / "fight_model.json"
+        _FIGHT_MODEL = json.loads(path.read_text()) if path.exists() else {}
+    return _FIGHT_MODEL
+
+
 def fight_adjust(act, room, ascension, deck_metrics=None):
     """Change in expected HP lost (share of max HP) for this ascension and deck, relative to the average fight in the
     history, from the significant coefficients of tools/fight_model.py. 0 when the model file is missing."""
-    path = DATA / "tables" / "fight_model.json"
-    if not path.exists():
-        return 0.0
-    m = json.loads(path.read_text()).get(f"{act}:{room}")
+    m = _fight_model().get(f"{act}:{room}")
     if not m:
         return 0.0
     x = {"ascension": ascension, **(deck_metrics or {})}
@@ -131,7 +139,14 @@ class Model:
         return self.band_risk.get((kind, lo), 0.05)
 
     def boss_threshold(self, act, boss, max_hp):
-        """Rest-before-boss threshold in HP (playbook section 5): band median + 10 in Acts 1-2, 70% in Act 3."""
+        """Rest-before-boss threshold in HP (playbook section 5): band median + 10 in Acts 1-2, 70% in Act 3. Cached."""
+        cache = self.__dict__.setdefault("_thr", {})
+        key = (act, boss, max_hp)
+        if key not in cache:
+            cache[key] = self._boss_threshold(act, boss, max_hp)
+        return cache[key]
+
+    def _boss_threshold(self, act, boss, max_hp):
         if act >= 3:
             return 0.70 * max_hp
         band = "A0-4" if self.ascension <= 4 else ("A5-9" if self.ascension <= 9 else "A10")
@@ -248,13 +263,14 @@ def simulate(path, nodes, model, act, hp, max_hp, boss_id, deck_metrics=None):
 
 
 def rank(paths, nodes, model, act, hp, max_hp, boss_id, risk_weight, deck_metrics=None):
+    """Simulate each distinct (first step, room-type sequence) once: routes that share both have the same outcome."""
     res, seen = [], set()
     for p in paths:
-        o = simulate(p, nodes, model, act, hp, max_hp, boss_id, deck_metrics)
-        key = (o["first"], o["seq"])
+        key = (p[1] if len(p) > 1 else None, tuple(nodes[q]["type"] for q in p[1:]))
         if key in seen:
             continue
         seen.add(key)
+        o = simulate(p, nodes, model, act, hp, max_hp, boss_id, deck_metrics)
         o["score"] = o["value"] - risk_weight * o["p_end"]
         res.append(o)
     res.sort(key=lambda o: -o["score"])

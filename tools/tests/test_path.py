@@ -74,6 +74,29 @@ class TestPath(unittest.TestCase):
         self.assertIn("3 routes", buf.getvalue())
         self.assertIn("risk weight 12", buf.getvalue())
 
+    def test_large_map_is_fast(self):
+        import random
+        import time
+        rng = random.Random(9)
+        types = ["Monster"] * 5 + ["Unknown"] * 3 + ["Elite", "RestSite", "Shop", "Treasure"]
+        nodes, layer = [], {0: [3]}
+        for r in range(15):
+            nxt = set()
+            for c in sorted(set(layer[r])):
+                kids = sorted({max(0, min(6, c + d)) for d in rng.sample([-1, 0, 1], rng.choice([2, 2, 3]))})
+                nxt |= set(kids)
+                nodes.append({"row": r, "col": c, "node_type": "Start" if r == 0 else rng.choice(types),
+                              "children": [{"row": r + 1, "col": k} for k in kids] if r < 14 else [{"row": 15, "col": 3}]})
+            layer[r + 1] = sorted(nxt)
+        nodes.append({"row": 15, "col": 3, "node_type": "Boss", "children": []})
+        n, s, b = pathmod.load_map({"nodes": nodes, "current_node": None, "starting_node": {"row": 0, "col": 3}, "boss_node": {"row": 15, "col": 3}})
+        t0 = time.time()
+        paths = pathmod.enumerate_paths(n, s, b)
+        res = pathmod.rank(paths, n, self.model, 1, 70, 80, "VANTOM_BOSS", 12)
+        self.assertGreater(len(paths), 1000)
+        self.assertLess(time.time() - t0, 5.0)
+        self.assertTrue(res)
+
 
 if __name__ == "__main__":
     unittest.main()
