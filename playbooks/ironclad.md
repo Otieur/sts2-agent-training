@@ -149,7 +149,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
   - Evidence (`reports/phase2/boss-arrival-hp.md`) is mixed. Boss death rates fall steeply with arrival HP, most of all in Act 3. But the Player's heals and smiths at the same HP were followed by almost the same boss death rate (31% against 30% under 50% HP). Confounding cuts both ways.
 - **Before an elite on the path:** rest if HP minus the elite's p75 would leave less than 50% of max for the next fights. `[HYPOTHESIS]`
 - **Exception before Vantom and Waterfall Giant** (H8): arrival HP did not separate outcomes there. Between the band median and median + 10, smith if the upgrade improves the deck's answer (a multi-hit or cheap attack against Slippery, a block card against the explosion). `[HYPOTHESIS]`
-- **Otherwise:** smith at 50% HP or more. Under 35%, rest. In between, decide by the next two fights' benchmark cost.
+- **Otherwise:** smith at 50% HP or more. Under 40%, rest (hallway fights below 40% are where fatality jumps, H11; was 35%). In between, decide by the next two fights' benchmark cost.
 - A rest heals 30% of max HP, rounded down (24 on 80), capped at max HP. 237 of 297 heals match exactly; larger ones are presumably relic boosts. `[PLAYER-DATA]`
 
 ## 6. Shop policy (including removal)

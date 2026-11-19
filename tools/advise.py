@@ -199,8 +199,8 @@ def rest_rule(hp, max_hp, act, ascension, boss, character, nxt=None):
     cases = {
         "boss": ("rest" if hp < thr else "smith", f"HP {hp} vs boss threshold {thr:.0f} ({'70% in Act 3' if act >= 3 else 'band median + 10'})"),
         "elite": ("rest" if hp - p75 < 0.5 * max_hp else "smith", f"HP {hp} minus elite p75 {p75:.0f} vs 50% of max ({0.5 * max_hp:.0f})"),
-        "other": ("rest" if hp < 0.35 * max_hp else ("smith" if hp >= 0.5 * max_hp else "decide by the next two fights' p75"),
-                  f"HP {hp}/{max_hp} = {100 * hp / max_hp:.0f}% (rest under 35%, smith at 50%+)"),
+        "other": ("rest" if hp < 0.40 * max_hp else ("smith" if hp >= 0.5 * max_hp else "decide by the next two fights' p75"),
+                  f"HP {hp}/{max_hp} = {100 * hp / max_hp:.0f}% (rest under 40% per H11, smith at 50%+)"),
     }
     return {k: v for k, v in cases.items() if nxt in (None, k)}
 

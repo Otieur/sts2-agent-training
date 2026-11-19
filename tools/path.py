@@ -6,7 +6,7 @@ Model per room, by act (all characters on v0.107.1 unless the character has 30+ 
   - HP change: mean net HP change of that room type as a share of max HP          [PLAYER-DATA]
   - Loot: mean cards, relics, potions and gold taken there                          [PLAYER-DATA]
   - Rest sites follow the playbook rule (section 5): rest before a boss below its threshold, before an elite when
-    HP minus the elite's p75 would fall under 50%, or under 35% HP; otherwise smith. A rest heals 30% of max HP.
+    HP minus the elite's p75 would fall under 50%, or under 40% HP (H11); otherwise smith. A rest heals 30% of max HP.
   - Fatal risk: elites by entry HP band (under 50% / 50-70% / 70%+, from the data, the playbook's H5 rule);
     hallway fights the same way; the boss by a logistic fit of fatal against arrival HP for the act.
 Score = value - risk_weight x P(run ends on this route). Value counts relics 1, cards 0.3, upgrades 0.3,
@@ -239,7 +239,7 @@ def simulate(path, nodes, model, act, hp, max_hp, boss_id, deck_metrics=None):
             nxt = next((x for x in types[i + 1:] if x in ("elite", "boss", "rest_site")), "boss")
             p75 = model.elite_p75.get(act, 35.0)
             rest = ((nxt == "boss" and hp < model.boss_threshold(act, boss_id, max_hp))
-                    or (nxt == "elite" and hp - p75 < 0.5 * max_hp) or frac < 0.35)
+                    or (nxt == "elite" and hp - p75 < 0.5 * max_hp) or frac < 0.40)
             if rest:
                 hp = min(max_hp, hp + math.floor(REST_HEAL * max_hp))
                 loot["rest"] += 1
