@@ -33,7 +33,7 @@ Drafted 2026-11-19 (overnight). Items marked "to confirm" need the Player or a g
 |---|---|
 | Mod | STS2-Agent 0.16.2, commit `5d7c306`, built locally with .NET 9.0.124 (DLL and `mod_id.json` only, `has_pck: false`) |
 | API | `http://127.0.0.1:8080` (protocol `2026-03-11-v1`), role `human`; MCP not enabled |
-| Profile used with mods | `steam/<id>/modded/profile1` |
+| Profiles used with mods | `steam/<id>/modded/profile1`: the Player's. `steam/<id>/modded/profile2`: the Agent's practice profile, seeded 2026-11-19 with a copy of the Player's `progress.save` and `prefs.save` (unlocks and settings; no history, no unfinished run). The game opens on the last profile used, so switch back in the game before playing yourself. |
 - Note: files inside the app bundle may be removed by a Steam update or "Verify integrity". Reinstall after updates.
 
 ## Mod candidates (source in `vendor/`, not in git)
