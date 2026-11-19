@@ -1,0 +1,1079 @@
+: stream opened
+
+id: 11
+event: session_started
+data: {"event_id":11,"type":"session_started","timestamp_utc":"2026-11-19T19:14:29.9486500Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","session_phase":"run"}}
+
+id: 12
+event: stream_ready
+data: {"event_id":12,"type":"stream_ready","timestamp_utc":"2026-11-19T19:14:29.9504490Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","in_combat":true,"turn":1,"action_window_open":false}}
+
+id: 13
+event: player_action_window_opened
+data: {"event_id":13,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:14:31.8965880Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 14
+event: available_actions_changed
+data: {"event_id":14,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:31.8966310Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 15
+event: player_action_window_closed
+data: {"event_id":15,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:14:32.0357400Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 16
+event: available_actions_changed
+data: {"event_id":16,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:32.0357640Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 17
+event: player_action_window_opened
+data: {"event_id":17,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:14:33.0392910Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 18
+event: available_actions_changed
+data: {"event_id":18,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:33.0393450Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 19
+event: player_action_window_closed
+data: {"event_id":19,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:14:33.1913050Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 20
+event: available_actions_changed
+data: {"event_id":20,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:33.1913300Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 21
+event: player_action_window_opened
+data: {"event_id":21,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:14:33.4595490Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 22
+event: available_actions_changed
+data: {"event_id":22,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:33.4595760Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 23
+event: player_action_window_closed
+data: {"event_id":23,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:14:33.8816550Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 24
+event: available_actions_changed
+data: {"event_id":24,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:33.8817350Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 25
+event: player_action_window_opened
+data: {"event_id":25,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:14:38.1523630Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 26
+event: available_actions_changed
+data: {"event_id":26,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:38.1526410Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 27
+event: player_action_window_closed
+data: {"event_id":27,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:14:38.7037300Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 28
+event: available_actions_changed
+data: {"event_id":28,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:38.7037510Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 29
+event: screen_changed
+data: {"event_id":29,"type":"screen_changed","timestamp_utc":"2026-11-19T19:14:39.5267260Z","data":{"from":"COMBAT","to":"CARD_SELECTION","run_id":"2K1WDEZ3TMWU"}}
+
+id: 30
+event: available_actions_changed
+data: {"event_id":30,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:39.5267540Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 31
+event: screen_changed
+data: {"event_id":31,"type":"screen_changed","timestamp_utc":"2026-11-19T19:14:40.8073770Z","data":{"from":"CARD_SELECTION","to":"COMBAT","run_id":"2K1WDEZ3TMWU"}}
+
+id: 32
+event: available_actions_changed
+data: {"event_id":32,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:40.8074230Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 33
+event: player_action_window_opened
+data: {"event_id":33,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:14:41.6324600Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 34
+event: available_actions_changed
+data: {"event_id":34,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:41.6324800Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 35
+event: player_action_window_closed
+data: {"event_id":35,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:14:42.0581230Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 36
+event: available_actions_changed
+data: {"event_id":36,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:42.0581390Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 37
+event: player_action_window_opened
+data: {"event_id":37,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:14:44.0359850Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 38
+event: available_actions_changed
+data: {"event_id":38,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:44.0360130Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 39
+event: player_action_window_closed
+data: {"event_id":39,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:14:44.7815470Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 40
+event: available_actions_changed
+data: {"event_id":40,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:44.7815790Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 41
+event: player_action_window_opened
+data: {"event_id":41,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:14:45.9856690Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 42
+event: available_actions_changed
+data: {"event_id":42,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:45.9856970Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 43
+event: player_action_window_closed
+data: {"event_id":43,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:14:48.3539710Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 44
+event: available_actions_changed
+data: {"event_id":44,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:48.3540090Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 45
+event: player_action_window_opened
+data: {"event_id":45,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:14:49.1818740Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 46
+event: available_actions_changed
+data: {"event_id":46,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:49.1818890Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 47
+event: player_action_window_closed
+data: {"event_id":47,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:14:49.8766330Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 48
+event: available_actions_changed
+data: {"event_id":48,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:49.8766490Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 49
+event: combat_turn_changed
+data: {"event_id":49,"type":"combat_turn_changed","timestamp_utc":"2026-11-19T19:14:57.2902670Z","data":{"run_id":"2K1WDEZ3TMWU","from":1,"to":2}}
+
+id: 50
+event: player_action_window_opened
+data: {"event_id":50,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:14:59.7733050Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 51
+event: available_actions_changed
+data: {"event_id":51,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:14:59.7733250Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 52
+event: player_action_window_closed
+data: {"event_id":52,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:00.8828510Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 53
+event: available_actions_changed
+data: {"event_id":53,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:00.8828750Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 54
+event: player_action_window_opened
+data: {"event_id":54,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:01.7258410Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 55
+event: available_actions_changed
+data: {"event_id":55,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:01.7258540Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 56
+event: player_action_window_closed
+data: {"event_id":56,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:01.8722130Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 57
+event: available_actions_changed
+data: {"event_id":57,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:01.8722280Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 58
+event: player_action_window_opened
+data: {"event_id":58,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:02.9748200Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 59
+event: available_actions_changed
+data: {"event_id":59,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:02.9748330Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 60
+event: player_action_window_closed
+data: {"event_id":60,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:04.5998560Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 61
+event: available_actions_changed
+data: {"event_id":61,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:04.5998740Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 62
+event: player_action_window_opened
+data: {"event_id":62,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:05.5328750Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 63
+event: available_actions_changed
+data: {"event_id":63,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:05.5328910Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 64
+event: player_action_window_closed
+data: {"event_id":64,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:06.3493380Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 65
+event: available_actions_changed
+data: {"event_id":65,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:06.3493510Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 66
+event: player_action_window_opened
+data: {"event_id":66,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:07.5828600Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 67
+event: available_actions_changed
+data: {"event_id":67,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:07.5828740Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 68
+event: player_action_window_closed
+data: {"event_id":68,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:08.3948900Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 69
+event: available_actions_changed
+data: {"event_id":69,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:08.3949050Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 70
+event: combat_turn_changed
+data: {"event_id":70,"type":"combat_turn_changed","timestamp_utc":"2026-11-19T19:15:16.0865660Z","data":{"run_id":"2K1WDEZ3TMWU","from":2,"to":3}}
+
+id: 71
+event: player_action_window_opened
+data: {"event_id":71,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:18.1909920Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 72
+event: available_actions_changed
+data: {"event_id":72,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:18.1922110Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 73
+event: player_action_window_closed
+data: {"event_id":73,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:30.2488570Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 74
+event: available_actions_changed
+data: {"event_id":74,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:30.2489040Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 75
+event: player_action_window_opened
+data: {"event_id":75,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:31.7702990Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 76
+event: available_actions_changed
+data: {"event_id":76,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:31.7703130Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 77
+event: player_action_window_closed
+data: {"event_id":77,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:32.8386310Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 78
+event: available_actions_changed
+data: {"event_id":78,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:32.8386510Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 79
+event: player_action_window_opened
+data: {"event_id":79,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:37.9962020Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 80
+event: available_actions_changed
+data: {"event_id":80,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:37.9962120Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 81
+event: player_action_window_closed
+data: {"event_id":81,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:43.6805890Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 82
+event: available_actions_changed
+data: {"event_id":82,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:43.6806430Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 83
+event: player_action_window_opened
+data: {"event_id":83,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:46.0379850Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 84
+event: available_actions_changed
+data: {"event_id":84,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:46.0379980Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 85
+event: player_action_window_closed
+data: {"event_id":85,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:46.1655120Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 86
+event: available_actions_changed
+data: {"event_id":86,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:46.1655240Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 87
+event: screen_changed
+data: {"event_id":87,"type":"screen_changed","timestamp_utc":"2026-11-19T19:15:47.5184430Z","data":{"from":"COMBAT","to":"CARD_PILE","run_id":"2K1WDEZ3TMWU"}}
+
+id: 88
+event: available_actions_changed
+data: {"event_id":88,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:47.5184560Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_PILE","actions":["close_cards_view","discard_potion","save_and_quit"]}}
+
+id: 89
+event: screen_changed
+data: {"event_id":89,"type":"screen_changed","timestamp_utc":"2026-11-19T19:15:48.3201530Z","data":{"from":"CARD_PILE","to":"COMBAT","run_id":"2K1WDEZ3TMWU"}}
+
+id: 90
+event: available_actions_changed
+data: {"event_id":90,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:48.3201630Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 91
+event: combat_turn_changed
+data: {"event_id":91,"type":"combat_turn_changed","timestamp_utc":"2026-11-19T19:15:52.1484270Z","data":{"run_id":"2K1WDEZ3TMWU","from":3,"to":4}}
+
+id: 92
+event: player_action_window_opened
+data: {"event_id":92,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:53.2326460Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 93
+event: available_actions_changed
+data: {"event_id":93,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:53.2326610Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 94
+event: player_action_window_closed
+data: {"event_id":94,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:54.6119740Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 95
+event: available_actions_changed
+data: {"event_id":95,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:54.6119910Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 96
+event: player_action_window_opened
+data: {"event_id":96,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:55.2884530Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 97
+event: available_actions_changed
+data: {"event_id":97,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:55.2884660Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 98
+event: player_action_window_closed
+data: {"event_id":98,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:55.4161920Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 99
+event: available_actions_changed
+data: {"event_id":99,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:55.4162090Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 100
+event: player_action_window_opened
+data: {"event_id":100,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:55.6835770Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 101
+event: available_actions_changed
+data: {"event_id":101,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:55.6835980Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 102
+event: player_action_window_closed
+data: {"event_id":102,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:56.2131400Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 103
+event: available_actions_changed
+data: {"event_id":103,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:56.2131550Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 104
+event: player_action_window_opened
+data: {"event_id":104,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:15:57.1650960Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 105
+event: available_actions_changed
+data: {"event_id":105,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:57.1651100Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 106
+event: player_action_window_closed
+data: {"event_id":106,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:15:57.8437620Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 107
+event: available_actions_changed
+data: {"event_id":107,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:15:57.8437780Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 108
+event: combat_ended
+data: {"event_id":108,"type":"combat_ended","timestamp_utc":"2026-11-19T19:15:59.7820460Z","data":{"run_id":"2K1WDEZ3TMWU"}}
+
+id: 109
+event: screen_changed
+data: {"event_id":109,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:04.9008240Z","data":{"from":"COMBAT","to":"REWARD","run_id":"2K1WDEZ3TMWU"}}
+
+id: 110
+event: reward_decision_required
+data: {"event_id":110,"type":"reward_decision_required","timestamp_utc":"2026-11-19T19:16:04.9027550Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REWARD","reward_count":4,"card_option_count":0}}
+
+id: 111
+event: available_actions_changed
+data: {"event_id":111,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:04.9027690Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REWARD","actions":["claim_reward","collect_rewards_and_proceed","resolve_rewards","save_and_quit"]}}
+
+id: 112
+event: available_actions_changed
+data: {"event_id":112,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:06.3636040Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REWARD","actions":["choose_reward_card","collect_rewards_and_proceed","resolve_rewards","save_and_quit","skip_reward_cards"]}}
+
+id: 113
+event: available_actions_changed
+data: {"event_id":113,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:08.3617870Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REWARD","actions":["claim_reward","collect_rewards_and_proceed","resolve_rewards","save_and_quit"]}}
+
+id: 114
+event: screen_changed
+data: {"event_id":114,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:09.0622460Z","data":{"from":"REWARD","to":"MAP","run_id":"2K1WDEZ3TMWU"}}
+
+id: 115
+event: route_decision_required
+data: {"event_id":115,"type":"route_decision_required","timestamp_utc":"2026-11-19T19:16:09.0630770Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","available_nodes":1}}
+
+id: 116
+event: available_actions_changed
+data: {"event_id":116,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:09.0630860Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["choose_map_node","close_map_screen","discard_potion","save_and_quit"]}}
+
+id: 117
+event: available_actions_changed
+data: {"event_id":117,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:10.0370790Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["discard_potion","save_and_quit"]}}
+
+id: 118
+event: screen_changed
+data: {"event_id":118,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:11.0741090Z","data":{"from":"MAP","to":"COMBAT","run_id":"2K1WDEZ3TMWU"}}
+
+id: 119
+event: screen_changed
+data: {"event_id":119,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:11.4064360Z","data":{"from":"COMBAT","to":"REST","run_id":"2K1WDEZ3TMWU"}}
+
+id: 120
+event: available_actions_changed
+data: {"event_id":120,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:11.4064650Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REST","actions":["choose_rest_option","discard_potion","save_and_quit"]}}
+
+id: 121
+event: screen_changed
+data: {"event_id":121,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:12.0909480Z","data":{"from":"REST","to":"CARD_SELECTION","run_id":"2K1WDEZ3TMWU"}}
+
+id: 122
+event: available_actions_changed
+data: {"event_id":122,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:12.0909630Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 123
+event: player_action_window_opened
+data: {"event_id":123,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:16:13.3464030Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["confirm_selection","discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 124
+event: available_actions_changed
+data: {"event_id":124,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:13.3464140Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["confirm_selection","discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 125
+event: screen_changed
+data: {"event_id":125,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:14.2935770Z","data":{"from":"CARD_SELECTION","to":"REST","run_id":"2K1WDEZ3TMWU"}}
+
+id: 126
+event: player_action_window_closed
+data: {"event_id":126,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:16:14.2935890Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REST","actions":["discard_potion","proceed","save_and_quit"]}}
+
+id: 127
+event: available_actions_changed
+data: {"event_id":127,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:14.2935950Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REST","actions":["discard_potion","proceed","save_and_quit"]}}
+
+id: 128
+event: screen_changed
+data: {"event_id":128,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:14.7217870Z","data":{"from":"REST","to":"MAP","run_id":"2K1WDEZ3TMWU"}}
+
+id: 129
+event: route_decision_required
+data: {"event_id":129,"type":"route_decision_required","timestamp_utc":"2026-11-19T19:16:14.7218030Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","available_nodes":2}}
+
+id: 130
+event: available_actions_changed
+data: {"event_id":130,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:14.7218070Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["choose_map_node","close_map_screen","discard_potion","save_and_quit"]}}
+
+id: 131
+event: available_actions_changed
+data: {"event_id":131,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:16.8386650Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["discard_potion","save_and_quit"]}}
+
+id: 132
+event: screen_changed
+data: {"event_id":132,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:17.8232690Z","data":{"from":"MAP","to":"REST","run_id":"2K1WDEZ3TMWU"}}
+
+id: 133
+event: available_actions_changed
+data: {"event_id":133,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:17.8232810Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REST","actions":["discard_potion","proceed","save_and_quit"]}}
+
+id: 134
+event: screen_changed
+data: {"event_id":134,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:17.9477090Z","data":{"from":"REST","to":"CHEST","run_id":"2K1WDEZ3TMWU"}}
+
+id: 135
+event: available_actions_changed
+data: {"event_id":135,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:17.9477210Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CHEST","actions":["discard_potion","open_chest","save_and_quit"]}}
+
+id: 136
+event: available_actions_changed
+data: {"event_id":136,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:18.7522410Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CHEST","actions":["choose_treasure_relic","discard_potion","save_and_quit"]}}
+
+id: 137
+event: available_actions_changed
+data: {"event_id":137,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:19.9676380Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CHEST","actions":["discard_potion","proceed","save_and_quit"]}}
+
+id: 138
+event: screen_changed
+data: {"event_id":138,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:20.9355730Z","data":{"from":"CHEST","to":"MAP","run_id":"2K1WDEZ3TMWU"}}
+
+id: 139
+event: route_decision_required
+data: {"event_id":139,"type":"route_decision_required","timestamp_utc":"2026-11-19T19:16:20.9355870Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","available_nodes":2}}
+
+id: 140
+event: available_actions_changed
+data: {"event_id":140,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:20.9355920Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["choose_map_node","close_map_screen","discard_potion","save_and_quit"]}}
+
+id: 141
+event: available_actions_changed
+data: {"event_id":141,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:28.8723130Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["discard_potion","save_and_quit"]}}
+
+id: 142
+event: screen_changed
+data: {"event_id":142,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:30.0146450Z","data":{"from":"MAP","to":"CHEST","run_id":"2K1WDEZ3TMWU"}}
+
+id: 143
+event: available_actions_changed
+data: {"event_id":143,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:30.0146550Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CHEST","actions":["discard_potion","proceed","save_and_quit"]}}
+
+id: 144
+event: screen_changed
+data: {"event_id":144,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:30.2170710Z","data":{"from":"CHEST","to":"REST","run_id":"2K1WDEZ3TMWU"}}
+
+id: 145
+event: available_actions_changed
+data: {"event_id":145,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:30.2170790Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REST","actions":["choose_rest_option","discard_potion","save_and_quit"]}}
+
+id: 146
+event: screen_changed
+data: {"event_id":146,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:30.8913700Z","data":{"from":"REST","to":"CARD_SELECTION","run_id":"2K1WDEZ3TMWU"}}
+
+id: 147
+event: available_actions_changed
+data: {"event_id":147,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:30.8913810Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 148
+event: player_action_window_opened
+data: {"event_id":148,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:16:32.6666300Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["confirm_selection","discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 149
+event: available_actions_changed
+data: {"event_id":149,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:32.6666410Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["confirm_selection","discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 150
+event: player_action_window_closed
+data: {"event_id":150,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:16:33.7827950Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 151
+event: available_actions_changed
+data: {"event_id":151,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:33.7828190Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 152
+event: player_action_window_opened
+data: {"event_id":152,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:16:35.0166790Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["confirm_selection","discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 153
+event: available_actions_changed
+data: {"event_id":153,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:35.0166970Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["confirm_selection","discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 154
+event: player_action_window_closed
+data: {"event_id":154,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:16:36.1013470Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 155
+event: available_actions_changed
+data: {"event_id":155,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:36.1013610Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 156
+event: screen_changed
+data: {"event_id":156,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:38.1839890Z","data":{"from":"CARD_SELECTION","to":"REST","run_id":"2K1WDEZ3TMWU"}}
+
+id: 157
+event: available_actions_changed
+data: {"event_id":157,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:38.1840270Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REST","actions":["choose_rest_option","discard_potion","save_and_quit"]}}
+
+id: 158
+event: available_actions_changed
+data: {"event_id":158,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:39.1252770Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REST","actions":["discard_potion","save_and_quit"]}}
+
+id: 159
+event: available_actions_changed
+data: {"event_id":159,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:41.6957960Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REST","actions":["discard_potion","proceed","save_and_quit"]}}
+
+id: 160
+event: screen_changed
+data: {"event_id":160,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:42.2535570Z","data":{"from":"REST","to":"MAP","run_id":"2K1WDEZ3TMWU"}}
+
+id: 161
+event: route_decision_required
+data: {"event_id":161,"type":"route_decision_required","timestamp_utc":"2026-11-19T19:16:42.2535820Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","available_nodes":1}}
+
+id: 162
+event: available_actions_changed
+data: {"event_id":162,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:42.2535890Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["choose_map_node","close_map_screen","discard_potion","save_and_quit"]}}
+
+id: 163
+event: available_actions_changed
+data: {"event_id":163,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:43.3686230Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["discard_potion","save_and_quit"]}}
+
+id: 164
+event: screen_changed
+data: {"event_id":164,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:44.5301370Z","data":{"from":"MAP","to":"REST","run_id":"2K1WDEZ3TMWU"}}
+
+id: 165
+event: available_actions_changed
+data: {"event_id":165,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:44.5301480Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REST","actions":["discard_potion","proceed","save_and_quit"]}}
+
+id: 166
+event: screen_changed
+data: {"event_id":166,"type":"screen_changed","timestamp_utc":"2026-11-19T19:16:44.7027140Z","data":{"from":"REST","to":"COMBAT","run_id":"2K1WDEZ3TMWU"}}
+
+id: 167
+event: combat_started
+data: {"event_id":167,"type":"combat_started","timestamp_utc":"2026-11-19T19:16:44.7034300Z","data":{"run_id":"2K1WDEZ3TMWU","turn":1}}
+
+id: 168
+event: available_actions_changed
+data: {"event_id":168,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:44.7034370Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 169
+event: player_action_window_opened
+data: {"event_id":169,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:16:48.6034200Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 170
+event: available_actions_changed
+data: {"event_id":170,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:48.6034380Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 171
+event: player_action_window_closed
+data: {"event_id":171,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:16:48.7353310Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 172
+event: available_actions_changed
+data: {"event_id":172,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:48.7353410Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 173
+event: player_action_window_opened
+data: {"event_id":173,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:16:49.0084720Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 174
+event: available_actions_changed
+data: {"event_id":174,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:16:49.0084960Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 175
+event: player_action_window_closed
+data: {"event_id":175,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:01.4959090Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 176
+event: available_actions_changed
+data: {"event_id":176,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:01.4959200Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 177
+event: player_action_window_opened
+data: {"event_id":177,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:02.7229860Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 178
+event: available_actions_changed
+data: {"event_id":178,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:02.7230020Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 179
+event: player_action_window_closed
+data: {"event_id":179,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:03.4158370Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 180
+event: available_actions_changed
+data: {"event_id":180,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:03.4158490Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 181
+event: screen_changed
+data: {"event_id":181,"type":"screen_changed","timestamp_utc":"2026-11-19T19:17:05.0351120Z","data":{"from":"COMBAT","to":"CARD_SELECTION","run_id":"2K1WDEZ3TMWU"}}
+
+id: 182
+event: available_actions_changed
+data: {"event_id":182,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:05.0351310Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 183
+event: screen_changed
+data: {"event_id":183,"type":"screen_changed","timestamp_utc":"2026-11-19T19:17:09.9265280Z","data":{"from":"CARD_SELECTION","to":"COMBAT","run_id":"2K1WDEZ3TMWU"}}
+
+id: 184
+event: available_actions_changed
+data: {"event_id":184,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:09.9265490Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 185
+event: player_action_window_opened
+data: {"event_id":185,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:10.4689070Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 186
+event: available_actions_changed
+data: {"event_id":186,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:10.4689150Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 187
+event: player_action_window_closed
+data: {"event_id":187,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:14.2546040Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 188
+event: available_actions_changed
+data: {"event_id":188,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:14.2546120Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 189
+event: player_action_window_opened
+data: {"event_id":189,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:16.0315990Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 190
+event: available_actions_changed
+data: {"event_id":190,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:16.0316110Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 191
+event: player_action_window_closed
+data: {"event_id":191,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:16.4564220Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 192
+event: available_actions_changed
+data: {"event_id":192,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:16.4564320Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 193
+event: player_action_window_opened
+data: {"event_id":193,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:18.9504750Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 194
+event: available_actions_changed
+data: {"event_id":194,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:18.9504860Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 195
+event: player_action_window_closed
+data: {"event_id":195,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:19.3625210Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 196
+event: available_actions_changed
+data: {"event_id":196,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:19.3625300Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 197
+event: player_action_window_opened
+data: {"event_id":197,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:21.3995920Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 198
+event: available_actions_changed
+data: {"event_id":198,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:21.3995990Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 199
+event: player_action_window_closed
+data: {"event_id":199,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:22.8981440Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 200
+event: available_actions_changed
+data: {"event_id":200,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:22.8981590Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 201
+event: player_action_window_opened
+data: {"event_id":201,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:23.6989820Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 202
+event: available_actions_changed
+data: {"event_id":202,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:23.6989910Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 203
+event: player_action_window_closed
+data: {"event_id":203,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:24.3660290Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 204
+event: available_actions_changed
+data: {"event_id":204,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:24.3660480Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 205
+event: player_action_window_opened
+data: {"event_id":205,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:26.7000050Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 206
+event: available_actions_changed
+data: {"event_id":206,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:26.7000130Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 207
+event: player_action_window_closed
+data: {"event_id":207,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:26.9825650Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 208
+event: available_actions_changed
+data: {"event_id":208,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:26.9825740Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 209
+event: combat_turn_changed
+data: {"event_id":209,"type":"combat_turn_changed","timestamp_utc":"2026-11-19T19:17:32.8675730Z","data":{"run_id":"2K1WDEZ3TMWU","from":1,"to":2}}
+
+id: 210
+event: player_action_window_opened
+data: {"event_id":210,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:35.2981520Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 211
+event: available_actions_changed
+data: {"event_id":211,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:35.2981630Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 212
+event: player_action_window_closed
+data: {"event_id":212,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:35.9882660Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 213
+event: available_actions_changed
+data: {"event_id":213,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:35.9882900Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 214
+event: player_action_window_opened
+data: {"event_id":214,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:37.4669220Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 215
+event: available_actions_changed
+data: {"event_id":215,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:37.4669340Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 216
+event: player_action_window_closed
+data: {"event_id":216,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:38.0157000Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 217
+event: available_actions_changed
+data: {"event_id":217,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:38.0157110Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 218
+event: player_action_window_opened
+data: {"event_id":218,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:39.1053130Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 219
+event: available_actions_changed
+data: {"event_id":219,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:39.1053380Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 220
+event: player_action_window_closed
+data: {"event_id":220,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:40.6185620Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 221
+event: available_actions_changed
+data: {"event_id":221,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:40.6185700Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 222
+event: player_action_window_opened
+data: {"event_id":222,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:44.2799710Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 223
+event: available_actions_changed
+data: {"event_id":223,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:44.2799820Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 224
+event: player_action_window_closed
+data: {"event_id":224,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:44.9477690Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 225
+event: available_actions_changed
+data: {"event_id":225,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:44.9477800Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 226
+event: combat_turn_changed
+data: {"event_id":226,"type":"combat_turn_changed","timestamp_utc":"2026-11-19T19:17:47.9181840Z","data":{"run_id":"2K1WDEZ3TMWU","from":2,"to":3}}
+
+id: 227
+event: player_action_window_opened
+data: {"event_id":227,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:17:49.9335580Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 228
+event: available_actions_changed
+data: {"event_id":228,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:49.9335670Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 229
+event: player_action_window_closed
+data: {"event_id":229,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:17:50.7469480Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 230
+event: available_actions_changed
+data: {"event_id":230,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:50.7469570Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 231
+event: screen_changed
+data: {"event_id":231,"type":"screen_changed","timestamp_utc":"2026-11-19T19:17:52.8919990Z","data":{"from":"COMBAT","to":"CARD_SELECTION","run_id":"2K1WDEZ3TMWU"}}
+
+id: 232
+event: available_actions_changed
+data: {"event_id":232,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:52.8920090Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 233
+event: screen_changed
+data: {"event_id":233,"type":"screen_changed","timestamp_utc":"2026-11-19T19:17:55.8866950Z","data":{"from":"CARD_SELECTION","to":"COMBAT","run_id":"2K1WDEZ3TMWU"}}
+
+id: 234
+event: available_actions_changed
+data: {"event_id":234,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:55.8867080Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 235
+event: screen_changed
+data: {"event_id":235,"type":"screen_changed","timestamp_utc":"2026-11-19T19:17:56.5914910Z","data":{"from":"COMBAT","to":"CARD_PILE","run_id":"2K1WDEZ3TMWU"}}
+
+id: 236
+event: available_actions_changed
+data: {"event_id":236,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:56.5915080Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_PILE","actions":["close_cards_view","discard_potion","save_and_quit"]}}
+
+id: 237
+event: screen_changed
+data: {"event_id":237,"type":"screen_changed","timestamp_utc":"2026-11-19T19:17:57.3017150Z","data":{"from":"CARD_PILE","to":"COMBAT","run_id":"2K1WDEZ3TMWU"}}
+
+id: 238
+event: available_actions_changed
+data: {"event_id":238,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:17:57.3017280Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 239
+event: screen_changed
+data: {"event_id":239,"type":"screen_changed","timestamp_utc":"2026-11-19T19:18:00.1282340Z","data":{"from":"COMBAT","to":"CARD_SELECTION","run_id":"2K1WDEZ3TMWU"}}
+
+id: 240
+event: available_actions_changed
+data: {"event_id":240,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:00.1282450Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"CARD_SELECTION","actions":["discard_potion","save_and_quit","select_deck_card"]}}
+
+id: 241
+event: screen_changed
+data: {"event_id":241,"type":"screen_changed","timestamp_utc":"2026-11-19T19:18:00.9805740Z","data":{"from":"CARD_SELECTION","to":"COMBAT","run_id":"2K1WDEZ3TMWU"}}
+
+id: 242
+event: available_actions_changed
+data: {"event_id":242,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:00.9805840Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 243
+event: player_action_window_opened
+data: {"event_id":243,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:18:01.3851390Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 244
+event: available_actions_changed
+data: {"event_id":244,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:01.3851540Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 245
+event: player_action_window_closed
+data: {"event_id":245,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:18:01.7882030Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 246
+event: available_actions_changed
+data: {"event_id":246,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:01.7882120Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 247
+event: player_action_window_opened
+data: {"event_id":247,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:18:04.0976320Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 248
+event: available_actions_changed
+data: {"event_id":248,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:04.0976400Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 249
+event: player_action_window_closed
+data: {"event_id":249,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:18:04.2320440Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 250
+event: available_actions_changed
+data: {"event_id":250,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:04.2320520Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 251
+event: combat_turn_changed
+data: {"event_id":251,"type":"combat_turn_changed","timestamp_utc":"2026-11-19T19:18:08.2447930Z","data":{"run_id":"2K1WDEZ3TMWU","from":3,"to":4}}
+
+id: 252
+event: player_action_window_opened
+data: {"event_id":252,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:18:08.5200780Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 253
+event: available_actions_changed
+data: {"event_id":253,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:08.5200980Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","save_and_quit","use_potion"]}}
+
+id: 254
+event: player_action_window_closed
+data: {"event_id":254,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:18:09.0781080Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 255
+event: available_actions_changed
+data: {"event_id":255,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:09.0781190Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 256
+event: player_action_window_opened
+data: {"event_id":256,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:18:10.1659890Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 257
+event: available_actions_changed
+data: {"event_id":257,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:10.1660010Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 258
+event: player_action_window_closed
+data: {"event_id":258,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:18:11.5517540Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 259
+event: available_actions_changed
+data: {"event_id":259,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:11.5517810Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 260
+event: player_action_window_opened
+data: {"event_id":260,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:18:12.0808890Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 261
+event: available_actions_changed
+data: {"event_id":261,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:12.0808980Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 262
+event: player_action_window_closed
+data: {"event_id":262,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:18:13.0108040Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 263
+event: available_actions_changed
+data: {"event_id":263,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:13.0108170Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 264
+event: player_action_window_opened
+data: {"event_id":264,"type":"player_action_window_opened","timestamp_utc":"2026-11-19T19:18:15.5033600Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 265
+event: available_actions_changed
+data: {"event_id":265,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:15.5033830Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","end_turn","play_card","save_and_quit","use_potion"]}}
+
+id: 266
+event: player_action_window_closed
+data: {"event_id":266,"type":"player_action_window_closed","timestamp_utc":"2026-11-19T19:18:15.6381270Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 267
+event: available_actions_changed
+data: {"event_id":267,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:15.6381360Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"COMBAT","actions":["discard_potion","save_and_quit"]}}
+
+id: 268
+event: combat_ended
+data: {"event_id":268,"type":"combat_ended","timestamp_utc":"2026-11-19T19:18:16.1922980Z","data":{"run_id":"2K1WDEZ3TMWU"}}
+
+id: 269
+event: screen_changed
+data: {"event_id":269,"type":"screen_changed","timestamp_utc":"2026-11-19T19:18:19.3299750Z","data":{"from":"COMBAT","to":"REWARD","run_id":"2K1WDEZ3TMWU"}}
+
+id: 270
+event: reward_decision_required
+data: {"event_id":270,"type":"reward_decision_required","timestamp_utc":"2026-11-19T19:18:19.3299880Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REWARD","reward_count":2,"card_option_count":0}}
+
+id: 271
+event: available_actions_changed
+data: {"event_id":271,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:19.3299920Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REWARD","actions":["claim_reward","collect_rewards_and_proceed","resolve_rewards","save_and_quit"]}}
+
+id: 272
+event: available_actions_changed
+data: {"event_id":272,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:20.2610830Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REWARD","actions":["choose_reward_card","collect_rewards_and_proceed","resolve_rewards","save_and_quit","skip_reward_cards"]}}
+
+id: 273
+event: available_actions_changed
+data: {"event_id":273,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:26.0488100Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"REWARD","actions":["collect_rewards_and_proceed","resolve_rewards","save_and_quit"]}}
+
+id: 274
+event: screen_changed
+data: {"event_id":274,"type":"screen_changed","timestamp_utc":"2026-11-19T19:18:26.5709750Z","data":{"from":"REWARD","to":"MAP","run_id":"2K1WDEZ3TMWU"}}
+
+id: 275
+event: route_decision_required
+data: {"event_id":275,"type":"route_decision_required","timestamp_utc":"2026-11-19T19:18:26.5709900Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","available_nodes":1}}
+
+id: 276
+event: available_actions_changed
+data: {"event_id":276,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:26.5709960Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["choose_map_node","close_map_screen","discard_potion","save_and_quit"]}}
+
+id: 277
+event: available_actions_changed
+data: {"event_id":277,"type":"available_actions_changed","timestamp_utc":"2026-11-19T19:18:27.5688810Z","data":{"run_id":"2K1WDEZ3TMWU","screen":"MAP","actions":["discard_potion","save_and_quit"]}}
+
+id: 278
+event: screen_changed
+data: {"event_id":278,"type":"screen_changed","timestamp_utc":"2026-11-19T19:18:28.6926420Z","data":{"from":"MAP","to":"COMBAT","run_id":"2K1WDEZ3TMWU"}}
+
+id: 279
+event: combat_started
+data: {"event_id":279,"type":"combat_started","timestamp_utc":"2026-11-19T19:18:28.8891200Z","data":{"run_id":"2K1WDEZ3TMWU","turn":1}}
+
+curl exit 28

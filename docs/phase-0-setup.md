@@ -202,12 +202,12 @@
 > - [x] The fight ends in a win with no stuck state. (A10 floor 22 hallway, Bowlbug Rock and Egg, 2 turns, 9 actions; an Act 2 fight rather than Act 1.)
 > - [ ] `docs/api-notes.md` records the actions taken, the median and p95 time per action (request to state settled), and any waits needed (`combat.action_readiness`).
 
-> **P0.E5.S4: Probe the event stream** · Size S · Status: Todo
+> **P0.E5.S4: Probe the event stream** · Size S · Status: Done (2026-11-19)
 > *As the Agent, I want to know exactly what `/events/stream` emits when the human plays a card, so that Phase 3 can choose between direct event capture and state-diff reconstruction.*
 >
 > **Acceptance criteria**
-> - [ ] A 2-minute capture of `/events/stream` while the Player plays a fight by hand is saved to `knowledge/api-samples/events-human-play.txt`.
-> - [ ] `docs/api-notes.md` answers: does any event identify the card the human played? (Yes / No / Partial.)
+> - [x] A 2-minute capture of `/events/stream` while the Player plays a fight by hand is saved to `knowledge/api-samples/events-human-play.txt`. (4 minutes, two fights.)
+> - [x] `docs/api-notes.md` answers: does any event identify the card the human played? (Yes / No / Partial.) **No**: the stream reports action windows, screens, turns and decisions, not cards; plays are reconstructed from state differences.
 
 > **P0.E5.S5: Document error behaviour** · Size S · Status: Todo
 > *As the Agent, I want to see each error shape once, so that the run harness handles them correctly.*
