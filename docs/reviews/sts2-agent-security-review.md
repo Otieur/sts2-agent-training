@@ -90,4 +90,6 @@ Method: a targeted read of the C# sources (175 files, about 47.7k lines for STS2
 
 ## Recommendation for decision record 0001 (proposed, not taken)
 
+> **Superseded on 2026-11-19.** This paragraph was written while main was v0.107.1. Main is now v0.111.1, the version STS2-Agent's docs reference, so the revised decision record 0001 proposes STS2-Agent first (with a .NET 9 SDK install) and STS2MCP as the fallback. The security findings and verdicts above are unchanged.
+
 STS2MCP has an explicit v0.107 compatibility fix and documented macOS install steps. STS2-Agent's docs reference v0.111 beta, and its teammate launcher needs macOS fixes. So the proposal: **try STS2MCP first for solo play on v0.107.1** (Phase 0 smoke tests and Phase 4), and keep STS2-Agent for its richer API and the co-op teammate, to be patched and tested in Phase 6. The Player decides.
