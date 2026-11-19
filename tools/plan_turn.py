@@ -66,6 +66,9 @@ class Card:
     live: bool = False          # numbers already include the player's own modifiers
     playable: bool = True
     note: str = ""
+    potion: bool = False        # a potion slot (index = slot); costs nothing but is spent
+    flat: bool = False          # unpowered damage/block: no Strength, Vulnerable, Weak, Dexterity or Frail
+    dex: int = 0                # Dexterity gained (applies to later block cards)
 
 
 @dataclass
@@ -143,8 +146,41 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
     return card
 
 
+# Combat potions modelled as zero-cost plays (values from the extract's potions.json, base values) [GAME-EXTRACT].
+POTIONS = {
+    "FIRE_POTION": dict(target="AnyEnemy", dmg=20, flat=True),
+    "EXPLOSIVE_AMPOULE": dict(target="AllEnemies", dmg=10, flat=True),
+    "BLOCK_POTION": dict(target="Self", block=12, flat=True),
+    "WEAK_POTION": dict(target="AnyEnemy", weak=3),
+    "VULNERABLE_POTION": dict(target="AnyEnemy", vuln=3),
+    "STRENGTH_POTION": dict(target="Self", strength=2),
+    "FLEX_POTION": dict(target="Self", strength=5),
+    "ENERGY_POTION": dict(target="Self", energy=2),
+    "DEXTERITY_POTION": dict(target="Self", dex=2),
+    "SPEED_POTION": dict(target="Self", dex=5),
+    "SWIFT_POTION": dict(target="Self", draw=3),
+}
+POTION_COST = {"hallway": 8.0, "elite": 3.0, "boss": 2.0}  # HP-equivalent cost of spending a potion [HYPOTHESIS]
+
+
+def card_from_potion(slot, potion_id):
+    pid = (potion_id or "").split(".", 1)[-1].upper()
+    spec = POTIONS.get(pid)
+    name = pid.replace("_", " ").title()
+    if not spec:
+        return Card(slot, pid, name, 0, "Self", playable=False, potion=True, note="potion not modelled")
+    return Card(slot, pid, name, 0, spec["target"], dmg=spec.get("dmg", 0), block=spec.get("block", 0), vuln=spec.get("vuln", 0),
+                weak=spec.get("weak", 0), strength=spec.get("strength", 0), energy=spec.get("energy", 0), draw=spec.get("draw", 0),
+                potion=True, flat=spec.get("flat", False), dex=spec.get("dex", 0))
+
+
 def per_hit(card, player, enemy, strength_gained):
     base = card.dmg
+    if card.flat:
+        d = base
+        if enemy.slippery > 0 or enemy.intangible:
+            d = min(d, 1)
+        return max(0, d)
     if card.live:
         d = base + strength_gained
         d = math.floor(d * (calc.VULNERABLE if enemy.vuln else 1.0) + 1e-9)
@@ -173,7 +209,7 @@ ORDER = {"energy": 0, "strength": 1, "debuff": 2, "attack": 3, "block": 4, "othe
 def phase(card):
     if card.energy and not card.dmg:
         return "energy"
-    if card.strength and not card.dmg:
+    if (card.strength or card.dex) and not card.dmg:
         return "strength"
     if (card.vuln or card.weak) and card.target in ("AnyEnemy", "AllEnemies"):
         return "debuff"
@@ -188,6 +224,7 @@ def simulate(cards, targets, player, enemies):
     """Play cards in order with the given targets. Returns the outcome dict, or None if energy runs out."""
     es = [Enemy(**vars(e)) for e in enemies]
     energy, block, strength_gained, hp_cost, dealt, draws = player.energy, player.block, 0, 0, 0, 0
+    dex_gained, potions = 0, 0
     log = []
     for card, tgt in zip(cards, targets):
         cost = energy if card.x_cost else card.cost
@@ -198,6 +235,8 @@ def simulate(cards, targets, player, enemies):
         hp_cost += card.hp_cost
         draws += card.draw
         strength_gained += card.strength
+        dex_gained += card.dex
+        potions += card.potion
         alive = [e for e in es if e.hp > 0]
         hits = card.hits * (cost if card.x_cost else 1)
         if card.target == "AllEnemies":
@@ -223,14 +262,20 @@ def simulate(cards, targets, player, enemies):
             if card.weak:
                 e.weak = True
         if card.block:
-            block += card.block if card.live else calc.block_gain(card.block, player.dexterity, player.frail)
-        log.append(card.name + (f" → {es[tgt].name}[{tgt}]" if card.target == "AnyEnemy" and tgt is not None else ""))
+            if card.flat:
+                block += card.block
+            elif card.live:
+                block += card.block + dex_gained
+            else:
+                block += calc.block_gain(card.block, player.dexterity + dex_gained, player.frail)
+        label = (f"potion {card.name} (use_potion slot={card.index})" if card.potion else card.name)
+        log.append(label + (f" → {es[tgt].name}[{tgt}]" if card.target == "AnyEnemy" and tgt is not None else ""))
     intents = [(e.intent_per_hit, e.intent_hits) for e in es if e.hp > 0 and e.intent_hits]
     weak = [e.weak for e in es if e.hp > 0 and e.intent_hits]
     inc = calc.incoming_hp_loss(intents, player_block=block, weak_enemies=weak)
     return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": inc.hp_lost + hp_cost,
             "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all(e.hp <= 0 for e in es),
-            "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es]}
+            "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
 
 
 def plans(hand, player, enemies):
@@ -260,11 +305,15 @@ def plans(hand, player, enemies):
     return results
 
 
-def rank(results, mode):
+def rank(results, mode, potion_cost=POTION_COST["elite"]):
+    """Lethal first (with the fewest potions); then the mode's objective, where each potion spent counts as
+    potion_cost HP lost."""
     if mode == "safe":
-        key = lambda o: (not o["all_dead"], o["hp_lost"], -o["kills"], -o["dealt"], o["draws"] == 0)  # noqa: E731
+        key = lambda o: (not o["all_dead"], o["potions"] if o["all_dead"] else 0,  # noqa: E731
+                         o["hp_lost"] + potion_cost * o["potions"], -o["kills"], -o["dealt"], o["draws"] == 0)
     else:
-        key = lambda o: (not o["all_dead"], -(o["dealt"] - o["hp_lost"]), o["hp_lost"], -o["kills"])  # noqa: E731
+        key = lambda o: (not o["all_dead"], o["potions"] if o["all_dead"] else 0,  # noqa: E731
+                         -(o["dealt"] - o["hp_lost"] - potion_cost * o["potions"]), o["hp_lost"], -o["kills"])
     seen, out = set(), []
     for o in sorted(results, key=key):
         sig = tuple(sorted(o["plays"]))
@@ -310,6 +359,12 @@ def from_state(st):
                              intangible=any(k.startswith("INTANGIBLE") for k in pw)))
     for i, e in enumerate(enemies):
         e.index = i
+    run = st.get("run") or {}
+    for slot, pot in enumerate(run.get("potions") or []):
+        if pot.get("occupied") and pot.get("potion_id"):
+            pc = card_from_potion(int(pot.get("index", slot)), pot["potion_id"])
+            if pc.playable:
+                hand.append(pc)
     return hand, player, enemies
 
 
@@ -347,7 +402,8 @@ def resolve_card(name):
 
 def fmt(o, hp):
     after = f", HP after {hp - o['hp_lost']}" if hp is not None else ""
-    flags = (" · LETHAL" if o["all_dead"] else "") + (f" · re-plan after drawing {o['draws']}" if o["draws"] else "")
+    flags = (" · LETHAL" if o["all_dead"] else "") + (f" · re-plan after drawing {o['draws']}" if o["draws"] else "") \
+        + (f" · spends {o['potions']} potion(s)" if o.get("potions") else "")
     return (f"{' + '.join(o['plays']) or '(play nothing)'}\n      deal {o['dealt']}, kills {o['kills']}, block {o['block']} "
             f"vs incoming {o['incoming']}, HP lost {o['hp_lost']}{after}, energy left {o['energy_left']}, "
             f"enemy HP {o['enemy_hp']}{flags}")
@@ -366,6 +422,8 @@ def main(argv=None):
     ap.add_argument("--player-frail", action="store_true")
     ap.add_argument("--hp", type=int)
     ap.add_argument("--top", type=int, default=3)
+    ap.add_argument("--potion", action="append", default=[], help="potion id held, e.g. FIRE_POTION (repeatable)")
+    ap.add_argument("--fight", choices=list(POTION_COST), default="elite", help="sets the cost of spending a potion")
     args = ap.parse_args(argv)
     if args.state:
         hand, player, enemies = from_state(json.loads(Path(args.state).read_text()))
@@ -373,6 +431,7 @@ def main(argv=None):
         hand = [card_from_extract(i, resolve_card(n)) for i, n in enumerate(args.hand or [])]
         player = Player(args.energy, args.player_block, args.strength, args.dexterity, args.player_weak, args.player_frail, args.hp)
         enemies = [parse_enemy(s, i) for i, s in enumerate(args.enemy)]
+        hand += [card_from_potion(i, pid) for i, pid in enumerate(args.potion)]
     if not enemies:
         raise SystemExit("no enemies")
     for c in hand:
@@ -381,7 +440,7 @@ def main(argv=None):
     res = plans(hand, player, enemies)
     for mode in ("safe", "balanced"):
         print(f"{mode}:")
-        for o in rank(res, mode)[:args.top]:
+        for o in rank(res, mode, POTION_COST[args.fight])[:args.top]:
             print("  " + fmt(o, player.hp))
     return 0
 

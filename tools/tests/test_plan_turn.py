@@ -86,6 +86,41 @@ class TestPlanTurn(unittest.TestCase):
         self.assertEqual(o["dealt"], 30)  # 5 x 3 hits x 2 enemies
         self.assertEqual(o["energy_left"], 0)
 
+    def test_potions(self):
+        enemies = [pt.parse_enemy("Byrdonis:30:0:18", 0)]
+        h = hand("Strike", "Strike", "Defend") + [pt.card_from_potion(0, "FIRE_POTION")]
+        o = best(h, pt.Player(energy=3), enemies)
+        self.assertTrue(o["all_dead"])
+        self.assertEqual(o["potions"], 1)
+        # not needed for lethal -> lethal without the potion ranks first
+        h = hand("Bash", "Strike") + [pt.card_from_potion(0, "FIRE_POTION")]
+        o = best(h, pt.Player(energy=3), [pt.parse_enemy("Louse:15:0:5", 0)])
+        self.assertTrue(o["all_dead"])
+        self.assertEqual(o["potions"], 0)
+        # flat damage ignores Vulnerable and Strength, but Slippery still caps it
+        o = pt.simulate([pt.card_from_potion(0, "FIRE_POTION")], [0], pt.Player(energy=3, strength=3),
+                        [pt.parse_enemy("A:50:0:0:vuln", 0)])
+        self.assertEqual(o["dealt"], 20)
+        o = pt.simulate([pt.card_from_potion(0, "FIRE_POTION")], [0], pt.Player(energy=3), [pt.parse_enemy("V:173:0:7:slippery=9", 0)])
+        self.assertEqual(o["dealt"], 1)
+        # Dexterity potion raises later block cards
+        o = pt.simulate([pt.card_from_potion(0, "DEXTERITY_POTION")] + hand("Defend"), [None, None], pt.Player(energy=3),
+                        [pt.parse_enemy("A:50:0:10", 0)])
+        self.assertEqual(o["block"], 7)
+        self.assertFalse(pt.card_from_potion(0, "MYSTERY_POTION").playable)
+
+    def test_potions_from_state(self):
+        st = {"data": {"combat": {"player": {"current_hp": 30, "energy": 1, "block": 0, "powers": []},
+                                  "hand": [{"index": 0, "card_id": "STRIKE_IRONCLAD", "energy_cost": 1, "playable": True}],
+                                  "enemies": [{"index": 0, "name": "A", "current_hp": 25, "block": 0, "is_alive": True,
+                                               "powers": [], "intents": [{"damage": 10, "hits": 1}]}]},
+                       "run": {"potions": [{"index": 0, "potion_id": "FIRE_POTION", "occupied": True},
+                                           {"index": 1, "potion_id": None, "occupied": False}]}}}
+        h, player, enemies = pt.from_state(st)
+        self.assertEqual([c.potion for c in h], [False, True])
+        o = best(h, player, enemies)
+        self.assertTrue(o["all_dead"])
+
 
 if __name__ == "__main__":
     unittest.main()
