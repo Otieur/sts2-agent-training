@@ -123,6 +123,8 @@ class Sts2AgentAdapter:
 
     @staticmethod
     def screen(state):
+        if not isinstance(state, dict):
+            return "?"
         return state.get("screen") or (state.get("session") or {}).get("screen") or "?"
 
     @staticmethod
@@ -260,12 +262,14 @@ def _a_hand(hand):
 def brief_sts2agent(st):
     """Compact text view of a full STS2-Agent /state (fields per vendor/STS2-Agent/docs/api.md)."""
     scr = Sts2AgentAdapter.screen(st)
+    if not isinstance(st, dict):
+        return "[?] no state"
     run = st.get("run") or {}
     sess = st.get("session") or {}
     mode = "co-op" if Sts2AgentAdapter.is_multiplayer(st) else "solo"
     out = [f"[{scr}] {mode} floor {run.get('floor', '-')} A{run.get('ascension', '-')} turn {st.get('turn') or '-'}"]
     if run:
-        pots = [x.get("name") for x in run.get("potions") or [] if x.get("occupied")]
+        pots = [str(x.get("name") or x.get("potion_id") or "?") for x in run.get("potions") or [] if isinstance(x, dict) and x.get("occupied")]
         out.append(f"HP {run.get('current_hp')}/{run.get('max_hp')} gold {run.get('gold')} potions: {', '.join(pots) or 'none'}")
     c = st.get("combat")
     if c:

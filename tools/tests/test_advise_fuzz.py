@@ -11,6 +11,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import advise  # noqa: E402
 import draft  # noqa: E402
+import journal  # noqa: E402
+import sts  # noqa: E402
+import stsstate  # noqa: E402
 import test_advise  # noqa: E402
 
 
@@ -69,6 +72,11 @@ class TestAdviseFuzz(unittest.TestCase):
         finally:
             advise.advise, draft.simulated_boss_value = orig, sim
         self.assertTrue(advise.advise(None).startswith("no state"))
+        # the other helpers that read live states must not raise on them either
+        for m in [_mutate(rng.choice(seen), rng) for _ in range(150)]:
+            journal.status_from_state(m)
+            sts.brief_sts2agent(m.get("data", m))
+            stsstate.decision_point(stsstate.compact(m))
 
 
 if __name__ == "__main__":

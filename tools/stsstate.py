@@ -18,6 +18,8 @@ AGENT_SCREENS = {"COMBAT": "combat", "MAP": "map", "REST": "rest_site", "SHOP": 
 def compact(st):
     """Reduce a full state to what the recorder and reconstruction need."""
     st = st.get("data", st) if isinstance(st, dict) and "ok" in st else st
+    if not isinstance(st, dict):
+        return {}
     if "state_type" not in st and "screen" in st:
         return compact_agent(st)
     p = st.get("player") or {}
