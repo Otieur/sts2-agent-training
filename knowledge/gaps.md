@@ -32,6 +32,7 @@ Everything still unverified, ranked by how much it affects play (S6, written 202
 | 13 | Ascension effects not visible in data: A1 (more elites), A6 (one fewer rest site), A8 and A9 exact numbers (A7 checked 2026-11-19: upgraded rewards halve, Rares drop from 14% to 12%) | HP budgets at higher ascension | Read `run.ascension_effects` (STS2-Agent) or the in-game list |
 | 14 | Hypotheses H1–H9 | Core strategy rules | Phase 4 experiments with logging (`playbooks/ironclad.md` §12) |
 | 15 | Co-op: do enemy attacks hit every player? Enemy HP scaling per player | All co-op block planning | Phase 6 first co-op fight (P6.E1.S2) |
+| 30 | Combat-long value the one-turn planner cannot see: Armaments+ upgrades every card in hand for the rest of the fight, but `tools/plan_turn.py` scores it as 5 Block only (the upgrade is ignored). Seen live 2026-11-19 against Byrdonis (A10): the Player opened Armaments+, Tremble, Defend (0 damage on turn 1) where the planner chose Tremble, Molten Fist, Strike `[OBS]` | Turn plans undervalue in-fight upgrades and setup cards | Give in-combat upgrades a value per upgraded card (like Powers), then compare both openings in `tools/simulate_fight.py` against Byrdonis |
 
 ## Low impact (later phases)
 | # | Gap | How to close |
