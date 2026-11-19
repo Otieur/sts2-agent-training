@@ -1,6 +1,6 @@
 # Ironclad Quick Reference (for live play)
 
-One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.17); when they differ, the playbook wins. Section numbers point there.
+One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.18); when they differ, the playbook wins. Section numbers point there.
 
 ## Every decision
 1. State and advice in one: `python3 -I tools/advise.py --live --save runs/<run>/state.json` (co-op: add `--instance teammate`; STS2MCP: `--mod sts2mcp`)
@@ -43,7 +43,7 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 | Knowledge Demon | Curse offers are Disintegration or one card: take Mind Rot, then Sloth, then Waste Away (close); never stack Disintegration (simulated) |
 | Kaiser Crab | Focus Rocket; end the Laser turn facing Rocket; kill a claw with the turn's last attack (Crab Rage) |
 | Queen | Turn 1 Strong Tackle 26 (Amalgam): block it; turn 2 You're Mine puts 99 Frail, Weak and Vulnerable on you (Artifact blocks it); she blocks 20 a turn while the Amalgam lives and only attacks after it dies; arrive high |
-| The Kin | Killing the Priest ends the fight (followers are Minions; two guides): race it with a single-target deck; with hit-all damage clear the followers first (simulated) |
+| The Kin | Killing the Priest ends the fight (followers are Minions; confirmed in game): race it with a single-target deck; with hit-all damage clear the followers first (simulated) |
 | The Insatiable | Sandpit (4) kills you at 0: end every turn at 2 or more, and play Frantic Escape while cheap to keep 3–4; cost rises each play |
 | Test Subject | Phase 1: each Skill gives it 2 Strength, so attack; phases 100/200/300 HP with a one-turn stun between |
 | Aeonglass | Strip its 3 Artifact before debuffs; a Wither every 6 cards (3 damage at end of turn if held, 6 once upgraded): fewer, bigger plays; Ebb 22 + 33 Block |
