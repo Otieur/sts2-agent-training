@@ -23,7 +23,7 @@ Use only actions the state offers. Recompute every index from the latest state. 
 | `monster` / `elite` / `boss` | Combat checklist (§9). `play_card card_index=<i> target=<entity_id>`, `use_potion slot=<n> target=...`, `end_turn`. After `end_turn`, read state again; it may need two reads to reach your next turn. | §9, encounter note |
 | `hand_select` | `combat_select_card card_index=<i>` (repeat), then `combat_confirm_selection` | §9 |
 | `rewards` | Claim from the highest index down: `claim_reward index=<i>`. A card reward opens `card_reward`. `proceed` when done | §2, §8 |
-| `card_reward` | Procedure §2.1: `select_card_reward card_index=<i>` or `skip_card_reward` | §2 |
+| `card_reward` | Procedure §2.1. Score the offer first: `python3 -I tools/draft.py --deck <ids> --offer <names> --act <a> --floor <f> --boss <id>` (or `--from-state <state.json>` on STS2-Agent). Override it only with a stated reason (a relic, a synergy the tool cannot see). Then `select_card_reward card_index=<i>` or `skip_card_reward` | §2 |
 | `rest_site` | §5 thresholds: `choose_rest_option index=<i>`, resolve any card selection, then `proceed` | §5 |
 | `shop` | §6 priority: `shop_purchase index=<i>` (repeat), then `proceed` | §6 |
 | `event` | Read options and their risk (`events.json`): `choose_event_option index=<i>`. Ancients: `advance_dialogue` until options show | §7 |

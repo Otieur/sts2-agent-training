@@ -48,6 +48,8 @@ The goal is strong play, judged by results. Every rule carries a provenance labe
 4. **Archetype fit** once committed (section 3).
 5. **Skip** if nothing improves the deck for the coming fights. Bigger decks skip more: the Player's skip rate rises from 5% under 15 cards to 50% at 30+, a sensible pattern. `[PLAYER-DATA]`
 
+`tools/draft.py` applies steps 1–5 mechanically (tier, v0.111.1 adjustments, boss fit, corner-target needs, engines, a skip bar rising 0.1 per card above 15) and prints the reasons. It cannot see relics, upgrades, Strength scaling of multi-hit cards or `?` card values; override it with a stated reason when those matter. `[HYPOTHESIS]` weights
+
 ### 2.2 Card tiers (community consensus, v0.107-era weighted)
 From `knowledge/community/ironclad-tiers.md` `[COMMUNITY]`. † marks cards where sources disagree by 2+ tiers. Card roles are `[GAME-EXTRACT]`.
 
