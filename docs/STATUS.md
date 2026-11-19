@@ -40,7 +40,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 |---|---|---|---|
 | P2.E1 | Game data export | In progress | Decompiled extract imported; it predates v0.107.1, so card changes are patched (knowledge/data/card-patches.json) and both version deltas documented; live /data export needs Phase 0 |
 | P2.E2 | Mechanics reference | Done | mechanics.md, ascension.md; verification checklist for Phase 4 |
-| P2.E3 | Enemies and encounters | Done | 83-encounter catalogue; 12 elite + 15 hallway notes; Bestiary cross-check (S4) needs the live game |
+| P2.E3 | Enemies and encounters | Done | 83-encounter catalogue; 12 elite + 19 hallway notes (15 most frequent, 4 rare but deadly), all with the community wiki's move tables (2026-11-19); Bestiary cross-check (S4) needs the live game |
 | P2.E4 | Community strategy | Done | sources.md, ironclad-tiers.md, archetypes-ironclad.md, discrepancies.md |
 | P2.E5 | Boss plans | Done | All 12 bosses; Aeonglass community-only. Fight simulator (tools/simulate_fight.py) calibrated for Vantom, Lagavulin Matriarch, Soul Fysh, Byrdonis, Entomancer; Waterfall Giant, Ceremonial Beast, Knowledge Demon, The Kin, The Insatiable modelled but not validated (sensitivity checks name what to read in the first fight); boss move tables checked against the community wiki |
 | P2.E6 | Playbook v2 | In progress | Now v2.17: checked against the data (tools/check_playbook.py, 60 checks including the quick reference), decision-point analyses, death review, boss-specific plan choice from the simulator; optional Player skim (S2) |
