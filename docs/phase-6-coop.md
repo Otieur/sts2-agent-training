@@ -110,7 +110,7 @@
 
 ### P6.E3: Teammate control
 
-> **P6.E3.S1: Point the harness at the teammate instance** · Size S · Status: Todo
+> **P6.E3.S1: Point the harness at the teammate instance** · Size S · Status: In progress (`tools/sts.py --instance teammate` written and tested offline against the documented API, 2026-11-19; untested live)
 > *As the Agent, I want the Phase 4 harness to target the teammate's port, so that all the solo tooling works in co-op.*
 >
 > **Acceptance criteria**
@@ -118,7 +118,7 @@
 > - [ ] Every subcommand works against the teammate.
 > - [ ] `data.companion.auto_play` is confirmed `false`.
 
-> **P6.E3.S2: Read the host's state too** · Size S · Status: Todo
+> **P6.E3.S2: Read the host's state too** · Size S · Status: In progress (`--instance host` read-only and `tools/sts.py party` written and tested offline, 2026-11-19; untested live)
 > *As the Agent, I want to read the Player's own instance as well, so that I can see the Player's hand, energy and plan around it, which my own instance does not show.*
 >
 > **Acceptance criteria**

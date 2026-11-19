@@ -91,3 +91,11 @@ Full reference: `vendor/STS2-Agent/docs/api.md` (about 2,000 lines) and the mach
 
 ### Observed behaviour
 (Filled in during Phase 0 E5 if STS2MCP is used.)
+
+## Co-op harness (tools/sts.py), from the STS2-Agent docs (2026-11-19, untested live)
+- Teammate discovery: the host window's `GET /health` returns `data.companion` (`api_host`, `api_port`, `process_id`, `auto_play`) once the teammate is connected; `null` otherwise. The teammate's port is usually not 8080 (examples in the mod's validation log: 8081, 18081, 18082).
+- `data.instance_role` is `human` on the Player's window and `companion` on the teammate. `sts.py --instance teammate act` checks it before every action.
+- Routing: `session.mode` (`singleplayer` / `multiplayer`) is the documented basis; `multiplayer.is_multiplayer` is the fallback. `sts.py` refuses to act on a multiplayer run unless `--instance teammate` is used.
+- Both instances simulate the whole run (lockstep), so `run.players[]` (deck, relics, potions) and `combat.players[]` (HP, block, energy) are fresh on either. Only the local hand is exposed: the Player's hand needs the host's `/state` (`sts.py --instance host state`, read-only).
+- `target_index` for ally-targeting cards and potions uses the position in `combat.players[]` / `run.players[]`, not `player_id`.
+- `sts.py party` compares floor, run_id, enemy HP and player HP between the two instances and prints any mismatch (P6.E5 desync check).

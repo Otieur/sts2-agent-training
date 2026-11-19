@@ -13,9 +13,21 @@ Commands:
   state [--brief | --raw]        current screen (brief = compact text for decisions)
   act <action> [key=value ...] --reason "..."   send one action; the reason is mandatory and logged
   wait [--timeout 20]            poll until the screen settles (combat play phase, or a new screen)
+  party                          co-op: one view of both players (HP, block, energy, both hands), the enemies,
+                                 and a consistency check between the host's and the teammate's state
 
-Safety: profile deletion and debug/console actions are refused. Every action is appended to a decision log
-(--log, default runs/current/decisions.jsonl) because STS2MCP keeps no decision log of its own.
+Instances (co-op, Phase 6, P6.E3.S1/S2), chosen with --instance:
+  solo      (default) the single game window
+  host      the Player's window. Read-only: act is refused, the Agent never acts for the Player.
+  teammate  the Agent's own window. STS2-Agent: the port is read from the host's /health
+            (data.companion.api_port) unless --port is given, and act checks that the instance reports
+            instance_role=companion. STS2MCP: --port is required.
+  --host-port sets the host window's port (default 8080 for STS2-Agent, 15526 for STS2MCP).
+
+Safety: profile deletion and debug/console actions are refused. Acting on a multiplayer run is refused unless
+--instance teammate is used, so a co-op action can never land on the Player's character. Every action is
+appended to a decision log (--log, default runs/current/decisions.jsonl) because STS2MCP keeps no decision log of
+its own.
 
 Standard library only. Run with python3 -I.
 """
@@ -105,9 +117,17 @@ class Sts2AgentAdapter:
         ok = bool(resp.get("ok")) and (resp.get("data") or {}).get("status") != "failed"
         return ok, resp
 
+    def health_data(self):
+        h = self.health()
+        return h.get("data", h) if isinstance(h, dict) else {}
+
     @staticmethod
     def screen(state):
-        return (state.get("session") or {}).get("screen") or state.get("screen") or "?"
+        return state.get("screen") or (state.get("session") or {}).get("screen") or "?"
+
+    @staticmethod
+    def is_multiplayer(state):
+        return (state.get("session") or {}).get("mode") == "multiplayer" or bool((state.get("multiplayer") or {}).get("is_multiplayer"))
 
 
 # ---------------------------------------------------------------------------------------------- brief views
@@ -198,9 +218,140 @@ def brief_sts2mcp(st):
     return "\n".join(x for x in out if x)
 
 
+def _a_powers(lst):
+    return ", ".join(f"{p.get('name') or p.get('power_id') or p.get('id')} {p.get('amount', p.get('stacks', ''))}".strip()
+                     for p in (lst or [])) or "-"
+
+
+def _a_intents(e):
+    out = []
+    for i in e.get("intents") or []:
+        kind = i.get("intent_type") or "?"
+        if i.get("damage") is not None:
+            hits = i.get("hits") or 1
+            out.append(f"{kind} {i.get('damage')}" + (f"x{hits}" if hits > 1 else "") + f" (={i.get('total_damage')})")
+        else:
+            out.append(f"{kind} {i.get('label') or ''}".strip())
+    return "; ".join(out) or (e.get("move_id") or "-")
+
+
+def _a_player_rows(players, local_label="you", other_label="teammate"):
+    rows = []
+    for p in players or []:
+        who = local_label if p.get("is_local") else other_label
+        dead = "" if p.get("is_alive", True) else " DEAD"
+        conn = "" if p.get("is_connected", True) else " (disconnected)"
+        rows.append(f"  [{p.get('slot_index')}] {p.get('character_name') or p.get('character_id')} ({who}) "
+                    f"HP {p.get('current_hp')}/{p.get('max_hp')} block {p.get('block', 0)} energy {p.get('energy', '-')}{dead}{conn}")
+    return rows
+
+
+def _a_hand(hand):
+    rows = []
+    for c in hand or []:
+        cost = "X" if c.get("costs_x") else c.get("energy_cost")
+        flag = "" if c.get("playable", True) else f" (cannot: {c.get('unplayable_reason')})"
+        tgt = f" targets {c.get('valid_target_indices')}" if c.get("requires_target") else ""
+        text = c.get("resolved_rules_text") or c.get("rules_text") or ""
+        rows.append(f"  [{c.get('index')}] {c.get('name')}{'+' if c.get('upgraded') else ''} ({cost}){tgt}: {text}{flag}")
+    return rows
+
+
 def brief_sts2agent(st):
-    view = st.get("agent_view") or st
-    return json.dumps(view, separators=(",", ":"))[:6000]
+    """Compact text view of a full STS2-Agent /state (fields per vendor/STS2-Agent/docs/api.md)."""
+    scr = Sts2AgentAdapter.screen(st)
+    run = st.get("run") or {}
+    sess = st.get("session") or {}
+    mode = "co-op" if Sts2AgentAdapter.is_multiplayer(st) else "solo"
+    out = [f"[{scr}] {mode} floor {run.get('floor', '-')} A{run.get('ascension', '-')} turn {st.get('turn') or '-'}"]
+    if run:
+        pots = [x.get("name") for x in run.get("potions") or [] if x.get("occupied")]
+        out.append(f"HP {run.get('current_hp')}/{run.get('max_hp')} gold {run.get('gold')} potions: {', '.join(pots) or 'none'}")
+    c = st.get("combat")
+    if c:
+        p = c.get("player") or {}
+        out.append(f"You: HP {p.get('current_hp')}/{p.get('max_hp')} block {p.get('block', 0)} energy {p.get('energy')}"
+                   f"{' stars ' + str(p.get('stars')) if p.get('stars') else ''} | {_a_powers(p.get('powers'))}")
+        if len(c.get("players") or []) > 1:
+            out.append("Party:")
+            out.extend(_a_player_rows(c.get("players")))
+        out.append("Enemies:")
+        for e in c.get("enemies") or []:
+            if not e.get("is_alive", True):
+                continue
+            out.append(f"  [{e.get('index')}] {e.get('name')} HP {e.get('current_hp')}/{e.get('max_hp')} block {e.get('block', 0)} "
+                       f"| {_a_intents(e)} | {_a_powers(e.get('powers'))}")
+        out.append("Hand:")
+        out.extend(_a_hand(c.get("hand")))
+        if c.get("end_turn_will_kill_player"):
+            out.append("WARNING: ending the turn now is lethal: " + "; ".join(
+                f"{r.get('source')}: {r.get('reason') or r.get('kind') or ''}".strip() for r in c.get("lethal_risks") or []))
+        ar = c.get("action_readiness") or {}
+        if ar and ar.get("ready") is False:
+            out.append(f"Not ready: {ar.get('reason') or ar}")
+    elif st.get("map"):
+        m = st["map"]
+        out.append(f"Boss: {run.get('boss_id') or (m.get('boss_node') or {})}")
+        for o in m.get("options") or m.get("next_options") or []:
+            votes = f" votes {o.get('voted_player_ids')}" if o.get("voted_player_ids") else ""
+            out.append(f"  [{o.get('index', o.get('i'))}] {o.get('node_type') or o.get('type')} {o.get('coord', '')}{votes}")
+    else:
+        body = {k: v for k, v in st.items() if v not in (None, [], {}) and k not in ("run", "session", "available_actions")}
+        out.append(json.dumps(body, separators=(",", ":"))[:3000])
+    if st.get("available_actions"):
+        out.append("Actions: " + ", ".join(st["available_actions"]))
+    return "\n".join(x for x in out if x)
+
+
+def party_view(host_st, mate_st):
+    """One screen for co-op: both players, both hands, enemies, and host/teammate consistency (P6.E3.S2, P6.E5)."""
+    out = []
+    hc, mc = host_st.get("combat") or {}, mate_st.get("combat") or {}
+    hr, mr = host_st.get("run") or {}, mate_st.get("run") or {}
+    out.append(f"[{Sts2AgentAdapter.screen(mate_st)}] floor {mr.get('floor', '-')} turn {mate_st.get('turn') or '-'}")
+    players = mc.get("players") or hc.get("players") or mr.get("players") or []
+    out.append("Players:")
+    out.extend(_a_player_rows(players, local_label="Agent", other_label="Player"))
+    if mc.get("enemies"):
+        out.append("Enemies:")
+        for e in mc["enemies"]:
+            if e.get("is_alive", True):
+                out.append(f"  [{e.get('index')}] {e.get('name')} HP {e.get('current_hp')}/{e.get('max_hp')} block {e.get('block', 0)} "
+                           f"| {_a_intents(e)} | {_a_powers(e.get('powers'))}")
+        total = sum((i.get("total_damage") or 0) for e in mc["enemies"] if e.get("is_alive", True) for i in e.get("intents") or [])
+        out.append(f"Incoming attack damage this turn (sum of intents, before targeting): {total}")
+    if hc.get("hand") is not None and hc:
+        out.append("Player's hand (read-only):")
+        out.extend(_a_hand(hc.get("hand")) or ["  (empty)"])
+    if mc:
+        out.append("Agent's hand:")
+        out.extend(_a_hand(mc.get("hand")) or ["  (empty)"])
+        if mc.get("end_turn_will_kill_player"):
+            out.append("WARNING: ending the Agent's turn now is lethal for the Agent")
+    if hc.get("end_turn_will_kill_player"):
+        out.append("WARNING: the Player's end turn is lethal for the Player")
+    issues = consistency(host_st, mate_st)
+    out.append("Consistency: " + ("ok" if not issues else "; ".join(issues)))
+    return "\n".join(out)
+
+
+def consistency(host_st, mate_st):
+    """Compare what both instances report about the shared world (lockstep: they should agree)."""
+    issues = []
+    hr, mr = host_st.get("run") or {}, mate_st.get("run") or {}
+    if hr.get("floor") != mr.get("floor"):
+        issues.append(f"floor host {hr.get('floor')} vs teammate {mr.get('floor')}")
+    if host_st.get("run_id") and mate_st.get("run_id") and host_st["run_id"] != mate_st["run_id"]:
+        issues.append(f"run_id host {host_st['run_id']} vs teammate {mate_st['run_id']}")
+    he = [(e.get("enemy_id"), e.get("current_hp")) for e in (host_st.get("combat") or {}).get("enemies") or []]
+    me = [(e.get("enemy_id"), e.get("current_hp")) for e in (mate_st.get("combat") or {}).get("enemies") or []]
+    if he and me and he != me:
+        issues.append(f"enemies host {he} vs teammate {me}")
+    hp = {p.get("player_id"): p.get("current_hp") for p in (host_st.get("combat") or {}).get("players") or []}
+    mp = {p.get("player_id"): p.get("current_hp") for p in (mate_st.get("combat") or {}).get("players") or []}
+    if hp and mp and hp != mp:
+        issues.append(f"player HP host {hp} vs teammate {mp}")
+    return issues
 
 
 # ----------------------------------------------------------------------------------------------------- CLI
@@ -225,9 +376,46 @@ def log_decision(path, record):
 
 
 def make_adapter(args, opener=None):
-    if args.mod == "sts2agent":
+    """Return the adapter for --instance. Raises ModError when the teammate cannot be located."""
+    instance = getattr(args, "instance", "solo")
+    if args.mod == "sts2mcp":
+        if instance == "solo":
+            return Sts2McpAdapter(args.port or 15526, multiplayer=args.mp, opener=opener)
+        if instance == "host":
+            return Sts2McpAdapter(args.host_port or 15526, multiplayer=True, opener=opener)
+        if not args.port:
+            raise SystemExit("--instance teammate with --mod sts2mcp needs --port (STS2MCP has no teammate discovery)")
+        return Sts2McpAdapter(args.port, multiplayer=True, opener=opener)
+    if instance == "solo":
         return Sts2AgentAdapter(args.port or 8080, opener=opener)
-    return Sts2McpAdapter(args.port or 15526, multiplayer=args.mp, opener=opener)
+    host = Sts2AgentAdapter(args.host_port or 8080, opener=opener)
+    if instance == "host":
+        return host
+    if args.port:
+        return Sts2AgentAdapter(args.port, opener=opener)
+    comp = host.health_data().get("companion")
+    if not comp or not comp.get("api_port"):
+        raise ModError("no teammate connected: the host's /health has companion = null (invite the AI teammate first)")
+    if comp.get("api_host", "127.0.0.1") not in LOCAL_HOSTS:
+        raise ModError(f"refusing non-local teammate address {comp.get('api_host')}")
+    return Sts2AgentAdapter(int(comp["api_port"]), opener=opener)
+
+
+def check_can_act(args, adapter, before):
+    """Refuse actions that could land on the Player's character. Returns an error message or None."""
+    instance = getattr(args, "instance", "solo")
+    if instance == "host":
+        return "refused: the host instance is the Player's window; the Agent never acts there (use --instance teammate)"
+    if adapter.name == "sts2agent":
+        if instance == "teammate":
+            role = adapter.health_data().get("instance_role")
+            if role != "companion":
+                return f"refused: the target instance reports instance_role={role!r}, not 'companion'"
+        elif Sts2AgentAdapter.is_multiplayer(before):
+            return "refused: this is a multiplayer run; act through --instance teammate"
+    elif instance == "solo" and args.mp:
+        return "refused: --mp in solo mode; act through --instance teammate --port <teammate port>"
+    return None
 
 
 def main(argv=None, opener=None):
@@ -235,6 +423,8 @@ def main(argv=None, opener=None):
     ap.add_argument("--mod", choices=["sts2mcp", "sts2agent"], default="sts2mcp")
     ap.add_argument("--port", type=int, default=None)
     ap.add_argument("--mp", action="store_true", help="STS2MCP multiplayer endpoint")
+    ap.add_argument("--instance", choices=["solo", "host", "teammate"], default="solo")
+    ap.add_argument("--host-port", type=int, default=None)
     ap.add_argument("--log", default=str(PROJECT / "runs/current/decisions.jsonl"))
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("health")
@@ -246,10 +436,19 @@ def main(argv=None, opener=None):
     a.add_argument("--reason", required=True)
     w = sub.add_parser("wait")
     w.add_argument("--timeout", type=float, default=20)
+    sub.add_parser("party")
     args = ap.parse_args(argv)
-    adapter = make_adapter(args, opener)
-    brief = brief_sts2agent if adapter.name == "sts2agent" else brief_sts2mcp
     try:
+        if args.cmd == "party":
+            if args.mod != "sts2agent":
+                raise SystemExit("party needs --mod sts2agent (STS2MCP: run state with --instance host and --instance teammate)")
+            host = Sts2AgentAdapter(args.host_port or 8080, opener=opener)
+            args.instance = "teammate"
+            mate = make_adapter(args, opener)
+            print(party_view(host.state(), mate.state()))
+            return
+        adapter = make_adapter(args, opener)
+        brief = brief_sts2agent if adapter.name == "sts2agent" else brief_sts2mcp
         if args.cmd == "health":
             print(json.dumps(adapter.health()))
         elif args.cmd == "state":
@@ -260,9 +459,13 @@ def main(argv=None, opener=None):
                 raise SystemExit(f"refused: '{args.action}' is blocked by project rules (see docs/reviews/)")
             params = parse_params(args.params)
             before = adapter.state()
+            err = check_can_act(args, adapter, before)
+            if err:
+                raise SystemExit(err)
             ok, resp = adapter.act(args.action, params, args.reason)
             log_decision(args.log, {
                 "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"), "mod": adapter.name,
+                "instance": args.instance,
                 "screen": adapter.screen(before), "floor": (before.get("run") or {}).get("floor"),
                 "action": args.action, "params": params, "reason": args.reason, "ok": ok,
                 "message": resp.get("message") or (resp.get("error") or {}).get("code"),
