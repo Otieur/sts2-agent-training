@@ -385,6 +385,13 @@ class TestPlanTurn(unittest.TestCase):
                         pt.Player(energy=2), [e])
         self.assertEqual(o["hp_lost"], 0)                      # fully blocked: no cuts
 
+    def test_lasting_potions_valued_like_powers(self):
+        h = [pt.card_from_potion(0, "STRENGTH_POTION"), pt.card_from_extract(1, "DEFEND_IRONCLAD")]
+        e = [pt.parse_enemy("A:100:0:5", 0)]
+        boss = pt.rank(pt.plans(h, pt.Player(energy=1, hp=50), e), "balanced", pt.POTION_COST["boss"], pt.POWER_VALUE["boss"])[0]
+        hall = pt.rank(pt.plans(h, pt.Player(energy=1, hp=50), e), "balanced", pt.POTION_COST["hallway"], pt.POWER_VALUE["hallway"])[0]
+        self.assertEqual((boss["potions"], hall["potions"]), (1, 0))   # drink it in a boss fight, keep it in a hallway
+
     def test_beckon_held_loss(self):
         h = [pt.card_from_extract(0, "BECKON"), pt.card_from_extract(1, "STRIKE_IRONCLAD")]
         self.assertEqual((h[0].held_loss, h[0].cost, h[0].playable), (6, 1, True))

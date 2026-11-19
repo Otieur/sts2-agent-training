@@ -297,10 +297,10 @@ POTIONS = {
     "BLOCK_POTION": dict(target="Self", block=12, flat=True),
     "WEAK_POTION": dict(target="AnyEnemy", weak=3),
     "VULNERABLE_POTION": dict(target="AnyEnemy", vuln=3),
-    "STRENGTH_POTION": dict(target="Self", strength=2),
+    "STRENGTH_POTION": dict(target="Self", strength=2, lasting=True),
     "FLEX_POTION": dict(target="Self", strength=5),
     "ENERGY_POTION": dict(target="Self", energy=2),
-    "DEXTERITY_POTION": dict(target="Self", dex=2),
+    "DEXTERITY_POTION": dict(target="Self", dex=2, lasting=True),
     "SPEED_POTION": dict(target="Self", dex=5),
     "SWIFT_POTION": dict(target="Self", draw=3),
     "POTION_SHAPED_ROCK": dict(target="AnyEnemy", dmg=15, flat=True),
@@ -335,6 +335,7 @@ def card_from_potion(slot, potion_id):
                 weak=spec.get("weak", 0), strength=spec.get("strength", 0), energy=spec.get("energy", 0), draw=spec.get("draw", 0),
                 potion=True, flat=spec.get("flat", False), dex=spec.get("dex", 0))
     card.retaliate, card.heal_pct = spec.get("retaliate", 0), spec.get("heal_pct", 0)
+    card.power = bool(spec.get("lasting"))  # Strength or Dexterity for the whole fight: valued like a 1-energy Power
     return card
 
 
