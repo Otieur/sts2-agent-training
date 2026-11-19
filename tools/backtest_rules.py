@@ -3,6 +3,8 @@
 
 H4: removing a Strike/Defend in Act 1 vs Act 1 survival, among runs that had the chance (an Act 1 shop with 75+ gold).
 H5: elite fights in Acts 1-2 that ended the run, by HP on arrival (<50% vs >=50%).
+H1: pre-boss rest sites: the playbook's rest rule (section 5, the same thresholds as tools/path.py) against the
+Player's choice, and the boss fight's outcome.
 
 Observational evidence; confounders noted in the report.
 Usage: python3 -I tools/backtest_rules.py   → reports/phase2/rule-backtests.md
@@ -48,6 +50,27 @@ def main():
         lo = [x for x in xs if x["hp"] < 0.5]
         hi = [x for x in xs if x["hp"] >= 0.5]
         h5.append([b, fmt(sum(x["died"] for x in lo), len(lo)), fmt(sum(x["died"] for x in hi), len(hi))])
+    # H1: pre-boss rests against the rule
+    import path as pathmod
+    h1 = collections.defaultdict(lambda: [0, 0])
+    for r in con.execute("""
+        SELECT c.run_id, c.floor, c.act, c.choice, c.hp_before, c.max_hp, r.character, r.ascension,
+               (SELECT g.model_id FROM floors g WHERE g.run_id = c.run_id AND g.floor = c.floor + 1) AS boss,
+               (SELECT g.is_last_floor AND NOT r.win FROM floors g WHERE g.run_id = c.run_id AND g.floor = c.floor + 1) AS died
+        FROM rest_choices c JOIN runs r USING(run_id)
+        WHERE r.n_players = 1 AND r.build_id = ? AND NOT r.abandoned AND c.next_is_boss = 1 AND c.choice IN ('HEAL','SMITH')""",
+            [MAIN_BUILD]):
+        if r["died"] is None or not r["boss"]:
+            continue
+        model = pathmod.get_model(r["character"], r["ascension"])
+        thr = model.boss_threshold(r["act"], r["boss"], r["max_hp"])
+        rule = "HEAL" if r["hp_before"] < thr else "SMITH"
+        case = f"rule {rule.lower()}, Player {r['choice'].lower()}"
+        h1[case][0] += r["died"]
+        h1[case][1] += 1
+        key = "matched" if rule == r["choice"] else "differed"
+        h1[key][0] += r["died"]
+        h1[key][1] += 1
     L = ["# Rule Backtests", "",
          f"All characters, solo, {MAIN_BUILD}, finished runs. Built by `tools/backtest_rules.py`. `[PLAYER-DATA]`, observational.", "",
          "## H4: remove a basic card in Act 1", "",
@@ -58,7 +81,13 @@ def main():
          "at A5 and above.", "",
          "## H5: elites under 50% HP", "",
          md_table(["Band", "Entered under 50% HP: fatal", "Entered at 50% or more: fatal"], h5), "",
-         "Reading: the danger holds in every band and is strongest at A5 and above (about 3–5 times the fatal rate). Kept as a rule.", ""]
+         "Reading: the danger holds in every band and is strongest at A5 and above (about 3–5 times the fatal rate). Kept as a rule.", "",
+         "## H1: rest before the boss by the playbook rule", "",
+         "Pre-boss rest sites where the Player chose HEAL or SMITH. The rule: Acts 1–2 rest below the boss's band median + 10, "
+         "Act 3 below 70% (playbook section 5; thresholds from `tools/path.py`). Outcome: the boss fight ended the run.", "",
+         md_table(["Case", "Boss fights", "Fatal"], [[k, v[1], fmt(v[0], v[1])] for k, v in sorted(h1.items())]), "",
+         "Reading: if following the rule helps, \"rule heal, Player smith\" should be the most dangerous row. Arrival HP and "
+         "deck strength are confounded with the choice, so treat this as a consistency check, not proof.", ""]
     out = PROJECT / "reports/phase2/rule-backtests.md"
     out.write_text("\n".join(L))
     print("wrote", out.relative_to(PROJECT))

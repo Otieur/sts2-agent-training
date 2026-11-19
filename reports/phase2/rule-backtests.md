@@ -25,3 +25,18 @@ Reading: a clear gap at A5–9 and A10, none at A0–4. Remaining confounders: g
 | All | 16/66 (24%) | 14/242 (6%) |
 
 Reading: the danger holds in every band and is strongest at A5 and above (about 3–5 times the fatal rate). Kept as a rule.
+
+## H1: rest before the boss by the playbook rule
+
+Pre-boss rest sites where the Player chose HEAL or SMITH. The rule: Acts 1–2 rest below the boss's band median + 10, Act 3 below 70% (playbook section 5; thresholds from `tools/path.py`). Outcome: the boss fight ended the run.
+
+| Case | Boss fights | Fatal |
+|---|---|---|
+| differed | 109 | 35/109 (32%) |
+| matched | 248 | 52/248 (21%) |
+| rule heal, Player heal | 110 | 34/110 (31%) |
+| rule heal, Player smith | 89 | 31/89 (35%) |
+| rule smith, Player heal | 20 | 4/20 (20%) |
+| rule smith, Player smith | 138 | 18/138 (13%) |
+
+Reading: if following the rule helps, "rule heal, Player smith" should be the most dangerous row. Arrival HP and deck strength are confounded with the choice, so treat this as a consistency check, not proof.
