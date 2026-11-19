@@ -348,6 +348,12 @@ class TestPlanTurn(unittest.TestCase):
         hop.flutter = 5
         o = pt.simulate(ids("SWORD_BOOMERANG", "TWIN_STRIKE"), [None, 0], pt.Player(energy=2), [hop])
         self.assertEqual((o["dealt"], o["incoming"]), (1 + 1 + 1 + 2 + 2, 0))  # all five hits halved; the fifth stuns it
+        tun = pt.parse_enemy("Tunneler:87:10:24", 0)
+        tun.burrowed = True
+        o = pt.simulate(ids("BASH", "STRIKE_IRONCLAD"), [0, 0], pt.Player(energy=3), [tun])
+        self.assertEqual(o["incoming"], 0)                                 # 10 Block broken: stunned
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1, strength=2, shrunk=True), [pt.parse_enemy("A:50:0:0", 0)])
+        self.assertEqual(o["dealt"], 5)                                    # (6 + 2) x 0.7
 
     def test_crab_rage(self):
         ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731

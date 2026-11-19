@@ -31,6 +31,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19, beta-branch content): HP 87 (92 at A8+); Bite 13 first, then Burrow (+32 Block that does not reset while burrowed), then From Below 24 every turn while burrowed; **breaking all its Block while burrowed stuns it** (Emerging Strike: nothing), after which it restarts with Bite. Plan: break the 32 Block in one turn if you can (the stun skips a From Below 24); `tools/plan_turn.py` counts the stun.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - **Burrow:** 32 block. **Burrowed:** its block is not cleared; breaking the block stuns it and removes the burrow.
 - Below hits for 23. Either break the 32 block (stun) or block the 23.

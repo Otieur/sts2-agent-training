@@ -19,8 +19,8 @@ Barrier (damage back per enemy hit), Body Slam (damage = Block, played after blo
 Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); boosters are played first. Slippery stacks
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
-Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Infested (its death is not the end), Ravenous (a death stuns the slugs), Imbalanced (a full block stuns it), Flutter (half damage; enough hits stun it), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
-non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Hex (held cards are lost), Doom (fatal at the end of your turn if HP is at or below it).
+Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Infested (its death is not the end), Ravenous (a death stuns the slugs), Imbalanced (a full block stuns it), Flutter (half damage; enough hits stun it), Burrowed (breaking its Block stuns it), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
+non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Hex (held cards are lost), Shrink (30% less attack damage), Doom (fatal at the end of your turn if HP is at or below it).
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
 until the arithmetic is confirmed in game (knowledge/mechanics.md checklist).
@@ -133,6 +133,7 @@ class Enemy:
     ravenous: bool = False      # Ravenous (Corpse Slug): when another enemy dies it eats it and is stunned (attack cancelled)
     imbalanced: bool = False    # Imbalanced (Bowlbug Rock): stunned next turn if its attack is fully blocked
     flutter: int = 0            # Flutter (Thieving Hopper): Attack damage halved; this many more hits stun it
+    burrowed: bool = False      # Burrowed (Tunneler): breaking all its Block stuns it (its attack is cancelled)
     crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
     minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
     doom: int = 0               # Doom on it: it dies at the end of its own turn (after attacking) if its HP is at or below it
@@ -158,6 +159,7 @@ class Player:
     colossus: bool = False      # Colossus already played this turn
     doom: int = 0               # Doom on you: you die at the end of your turn if your HP is at or below it
     hexed: bool = False         # Hex (Spectral Knight): every card is Ethereal, so cards left in hand are exhausted
+    shrunk: bool = False        # Shrink (Shrinker Beetle): your attacks deal 30% less (after Strength)
 
 
 def parse_effect(c):
@@ -374,6 +376,8 @@ def per_hit(card, player, enemy, strength_gained, played_before=0):
         d = min(d, 1)
     if enemy.hit_cap is not None:
         d = min(d, enemy.hit_cap)
+    if player.shrunk and not card.live and not card.flat:  # Shrink: 30% less, after Strength (live values include it)
+        d = math.floor(d * 0.7 + 1e-9)
     if enemy.flutter > 0:  # Flutter: Attack damage taken halved (the wiki)
         d = d // 2
     return max(0, d)
@@ -415,6 +419,9 @@ def hit(enemy, dmg):
             enemy.intent_hits = 0
     absorbed = min(enemy.block, dmg)
     enemy.block -= absorbed
+    if enemy.burrowed and absorbed > 0 and enemy.block == 0:  # Burrowed Block broken: stunned (the wiki)
+        enemy.burrowed = False
+        enemy.intent_hits = 0
     dealt = min(enemy.hp, dmg - absorbed)
     if enemy.hp_cap is not None:  # Hardened Shell: HP lost per turn capped [GAME-EXTRACT]
         dealt = max(0, min(dealt, enemy.hp_cap - enemy.lost_turn))
@@ -777,6 +784,7 @@ def from_state(st):
                     end_turn_dmg=int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0),
                     max_hp=p.get("max_hp"), tender=1 if any(k.startswith("TENDER") for k in powers) else 0,
                     colossus=any(k.startswith("COLOSSUS") for k in powers), hexed=any(k.startswith("HEX") for k in powers),
+                    shrunk=any(k.startswith("SHRINK") for k in powers),
                     doom=int(powers.get("DOOM_POWER", powers.get("DOOM", 0)) or 0))
     # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
     # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])
@@ -819,6 +827,7 @@ def from_state(st):
                              infested=any(k.startswith("INFESTED") for k in pw), ravenous=any(k.startswith("RAVENOUS") for k in pw),
                              imbalanced=any(k.startswith("IMBALANCED") for k in pw),
                              flutter=int(next((v for k, v in pw.items() if k.startswith("FLUTTER")), 0) or 0),
+                             burrowed=any(k.startswith("BURROWED") for k in pw),
                              crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
                              minion=any(k.startswith("MINION") for k in pw),
                              doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0),

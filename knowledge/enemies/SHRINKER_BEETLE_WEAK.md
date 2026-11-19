@@ -26,6 +26,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 38–40 (40–42 at A8+); opens with Shrinker (**Shrink: your attacks deal 30% less**, after Strength, until the beetle dies; Osty unaffected), then Chomp 7 and Stomp 13 alternating. Kill it early: every attack against anything is 30% weaker while it lives; `tools/plan_turn.py` applies Shrink to base card numbers.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - **Shrink:** your damage × 0.7 while it lasts. Chomp 7, Stomp 13.
 - Expect less damage after Shrinker. Plan burst before it lands, or block through it.
