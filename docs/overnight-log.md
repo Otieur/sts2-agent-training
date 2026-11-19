@@ -66,3 +66,4 @@ Block K (morning report) starts no later than 09:52 EST.
 | X41: Power definitions close gaps | 02:16 | 02:16 | Slow = x(1 + 0.1 x count) (Bygone Effigy note, mechanics, playbook row: big attack last); Colossus halves damage taken for a duration (mechanics check 10); gap 11 narrowed | |
 | X42: Slow in the turn planner | 02:17 | 02:16 | plan_turn.py models Slow (x(1 + 0.1 x cards played earlier), small attacks first) from the state or the slow flag; test added (89 pass) | Unit of Slow unconfirmed |
 | X43: Tools index | 02:17 | 02:17 | tools/README.md (every tool by purpose, with typical calls); the project instructions point to it | |
+| X44: Reproducibility check | 02:18 | 02:22 | Reran every Phase 1 and Phase 2 analysis: all outputs identical except analyze_deaths tie order (hash-seed dependent); fixed with a name tie-break and regenerated the four death reports | |
