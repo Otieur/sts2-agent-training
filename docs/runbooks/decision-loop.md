@@ -16,7 +16,24 @@ The same loop for every decision. The interface is `tools/sts.py` (`--mod sts2ag
 
 Use only actions the state offers. Recompute every index from the latest state. **In combat, hand indexes shift after each card played:** play from the highest index down, or re-read state between plays.
 
-## Screen handlers (STS2MCP state types)
+## Screen handlers (STS2-Agent, the primary mod)
+`tools/advise.py --live` prints the exact command for most screens; this table is the fallback. Action names are from the mod's action contract (`vendor/STS2-Agent/docs/api.md`); every action carries `--reason`.
+
+| Screen | Actions | Playbook |
+|---|---|---|
+| `MAP` | `choose_map_node option_index=<i>`; `close_map_screen` if the map was opened over an unfinished room | §4 |
+| `COMBAT` | `play_card card_index=<i> [target_index=<enemy>]`, `use_potion option_index=<slot> [target_index=...]`, `end_turn`; re-run advice after any draw or hand change | §9 |
+| `REWARD` | `claim_reward option_index=<i>` (or `collect_rewards_and_proceed`); a card reward: `choose_reward_card option_index=<i>` or `skip_reward_cards`; then `proceed` | §2, §8 |
+| `REST` | `choose_rest_option option_index=<i>` (some co-op options need `target_index`), resolve any selection, `proceed` | §5 |
+| `SHOP` | `open_shop_inventory`, `buy_card` / `buy_relic` / `buy_potion option_index=<i>`, `remove_card_at_shop` then `select_deck_card option_index=<i>`, `close_shop_inventory`, `proceed` | §6 |
+| `EVENT` | `choose_event_option option_index=<i>` | §7 |
+| `CHEST` | `open_chest`, `choose_treasure_relic option_index=<i>`, `proceed` | §7 |
+| `CARD_SELECTION` | `select_deck_card option_index=<i>` (repeat), `confirm_selection` | §2.3, §6 |
+| Bundles, Capstone | `choose_bundle option_index=<i>` then `confirm_bundle`; `choose_capstone_option option_index=<i>` | §7 |
+| `GAME_OVER` | `docs/runbooks/end-run.md` (`continue_game_over`, then `return_to_main_menu`) | none |
+| Modal or overlay | `confirm_modal` / `dismiss_modal`; `close_cards_view` for card views | none |
+
+## Screen handlers (STS2MCP state types, the fallback mod)
 | Screen | Steps | Playbook |
 |---|---|---|
 | `map` | At act start: read `map.boss`, plan the path (journal): `python3 -I tools/path.py --state <state.json>` ranks every route by expected loot against fatal risk; re-run after any big HP change. Then `choose_map_node index=<next_options index>` | §4, §10 |
