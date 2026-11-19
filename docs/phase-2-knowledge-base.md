@@ -219,7 +219,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 
 ### P2.E7: Knowledge maintenance
 
-> **P2.E7.S1: Patch procedure** · Size S · Status: Todo
+> **P2.E7.S1: Patch procedure** · Size S · Status: Done (docs/runbooks/game-patch.md)
 > *As the Next Session, I want a procedure for game updates, so that the knowledge base does not silently go stale.*
 >
 > **Acceptance criteria**

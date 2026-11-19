@@ -37,7 +37,7 @@
 
 ### P0.E1: Save safety
 
-> **P0.E1.S1: Back up the full save folder** · Size S · Status: Todo
+> **P0.E1.S1: Back up the full save folder** · Size S · Status: Done (2026-11-19 00:53, backups/2026-11-19-pre-phase0/, 1,104 files verified)
 > *As the Player, I want a complete, verified copy of my saves before anything changes, so that a bad branch switch or a mod bug cannot cost me progress.*
 >
 > **Acceptance criteria**
@@ -48,7 +48,7 @@
 >
 > **Notes:** the folder holds the main profile, the modded profile, a backup profile, settings and 233 unique run histories. `backups/` stays out of version control.
 
-> **P0.E1.S2: Write and dry-run the restore procedure** · Size S · Status: Todo
+> **P0.E1.S2: Write and dry-run the restore procedure** · Size S · Status: Done (docs/runbooks/restore-saves.md; dry run showed no differences)
 > *As the Player, I want a tested restore procedure, so that I can roll back without the Agent's help if needed.*
 >
 > **Acceptance criteria**
@@ -152,7 +152,7 @@
 > - [ ] The build log is saved to `logs/build-<date>.txt`.
 > - [ ] **If compilation fails** on game API differences: the errors are listed in `docs/api-notes.md`, with an estimate of the patch effort. More than about 2 hours of patching triggers E7.
 
-> **P0.E4.S3: Install into the macOS mods folder** · Size S · Status: Todo
+> **P0.E4.S3: Install into the macOS mods folder** · Size S · Status: In progress (docs/runbooks/mod-install.md written; install waits for the Player's approval)
 > *As the Agent, I want the mod installed where the macOS build actually loads mods, so that it runs on launch.*
 >
 > **Acceptance criteria**

@@ -49,7 +49,7 @@ runs/<YYYY-MM-DD>-<seed>/
 
 ### P4.E1: Run harness
 
-> **P4.E1.S1: Run start procedure** · Size S · Status: Todo
+> **P4.E1.S1: Run start procedure** · Size S · Status: Done (docs/runbooks/start-run.md)
 > *As the Agent, I want a fixed start routine, so that every run is set up and logged the same way.*
 >
 > **Acceptance criteria**
@@ -62,7 +62,7 @@ runs/<YYYY-MM-DD>-<seed>/
 >   6. Start the run through the API.
 > - [ ] The Player gets one chat line: "Starting run: Ironclad A<n>, seed <s>, playbook v<x>".
 
-> **P4.E1.S2: Decision loop** · Size M · Status: Todo
+> **P4.E1.S2: Decision loop** · Size M · Status: Done (docs/runbooks/decision-loop.md)
 > *As the Agent, I want one documented loop for every decision, so that play is consistent and auditable.*
 >
 > **Acceptance criteria:** `docs/runbooks/decision-loop.md` specifies:
@@ -75,13 +75,13 @@ runs/<YYYY-MM-DD>-<seed>/
 > 7. On each new floor, update the journal.
 > - [ ] Only actions in `available_actions` are used. Indexes always come from the latest state, never from memory.
 
-> **P4.E1.S3: Screen handlers** · Size M · Status: Todo
+> **P4.E1.S3: Screen handlers** · Size M · Status: Done (screen handlers in decision-loop.md)
 > *As the Agent, I want a short procedure per screen type, so that no screen is handled by improvisation.*
 >
 > **Acceptance criteria**
 > - [ ] The decision loop runbook has one subsection each for: map, combat, card reward, relic and potion reward, shop (open, buy or remove, close, proceed), rest site, event, treasure, Ancient, card selection overlays (upgrade, remove, transform), boss relic, and game over (`continue_game_over` before anything else).
 
-> **P4.E1.S4: Error recovery** · Size S · Status: Todo
+> **P4.E1.S4: Error recovery** · Size S · Status: Done (error table in decision-loop.md)
 > *As the Agent, I want a table of errors and responses, so that a mod error does not end a run.*
 >
 > **Acceptance criteria:** the runbook has this table, extended with what Phase 0 observed.
@@ -103,7 +103,7 @@ runs/<YYYY-MM-DD>-<seed>/
 > - [ ] The journal holds enough to continue the plan: the deck plan, the path plan and the threats.
 > - [ ] Tested once on purpose: start a new session mid-run and continue correctly.
 
-> **P4.E1.S6: Run end procedure** · Size S · Status: Todo
+> **P4.E1.S6: Run end procedure** · Size S · Status: Done (docs/runbooks/end-run.md)
 > *As the Agent, I want each run closed out the same way, so that post-mortems always have complete data.*
 >
 > **Acceptance criteria**
@@ -226,13 +226,13 @@ runs/<YYYY-MM-DD>-<seed>/
 
 ### P4.E5: Evaluation
 
-> **P4.E5.S1: Scoreboard** · Size S · Status: Todo
+> **P4.E5.S1: Scoreboard** · Size S · Status: Done (metrics/scoreboard.csv header)
 > *As the Player, I want a single table of every run, so that progress is visible.*
 >
 > **Acceptance criteria**
 > - [ ] `metrics/scoreboard.csv` columns: date, run_id, character, ascension, seed, exam_seed (y/n), playbook_version, win, floor_reached, act_reached, killed_by, elites_killed, total_damage_taken, fights_above_p75, errors, actions, wall_minutes, tokens.
 
-> **P4.E5.S2: Exam seeds** · Size S · Status: Todo
+> **P4.E5.S2: Exam seeds** · Size S · Status: In progress (5 seeds chosen in metrics/exam-seeds.md; seeded start to confirm)
 > *As the Player, I want the Agent tested on fixed seeds, so that progress can be measured fairly, including against my own results.*
 >
 > **Acceptance criteria**
@@ -242,7 +242,7 @@ runs/<YYYY-MM-DD>-<seed>/
 >
 > **Notes:** depends on OQ0.6 (seeded starts through the API). Custom-seed runs may not count toward unlocks, which does not matter here. Card rewards depend on choices made, so the same seed is similar, not identical.
 
-> **P4.E5.S3: Milestone tracking** · Size XS · Status: Todo
+> **P4.E5.S3: Milestone tracking** · Size XS · Status: Done (metrics/milestones.md)
 > *As the Player, I want milestones recorded when reached, so that the project's progress is obvious.*
 >
 > **Acceptance criteria**
@@ -258,7 +258,7 @@ runs/<YYYY-MM-DD>-<seed>/
 
 ### P4.E6: Ascension ladder
 
-> **P4.E6.S1: Ladder rules** · Size XS · Status: Todo
+> **P4.E6.S1: Ladder rules** · Size XS · Status: Done (ladder in metrics/milestones.md)
 > *As the Agent, I want clear rules for difficulty, so that I do not stay too easy or jump too hard.*
 >
 > **Acceptance criteria**

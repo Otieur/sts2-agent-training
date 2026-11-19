@@ -11,7 +11,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P0.E1 | Save safety | Todo | |
+| P0.E1 | Save safety | In progress | Backup taken and verified overnight; Steam Cloud setting (S3) needs the Player |
 | P0.E2 | Game version | In progress | environment.md drafted; Player switches branch |
 | P0.E3 | Mod acquisition and security review | In progress | Draft review done (both mods); Player approves verdict |
 | P0.E4 | Build and install | In progress | Toolchain checked; nothing built |
@@ -44,7 +44,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P2.E4 | Community strategy | Done | sources.md, ironclad-tiers.md, archetypes-ironclad.md, discrepancies.md |
 | P2.E5 | Boss plans | Done | All 12 bosses; Aeonglass community-only |
 | P2.E6 | Playbook v2 | In progress | v2 written overnight; optional Player skim (S2) |
-| P2.E7 | Knowledge maintenance | Todo | |
+| P2.E7 | Knowledge maintenance | Done | docs/runbooks/game-patch.md |
 
 ## Phase 3: Shadowing ([doc](phase-3-shadowing.md))
 
@@ -61,12 +61,12 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P4.E1 | Run harness | Todo | |
+| P4.E1 | Run harness | In progress | Runbooks written; resume test (S5) needs a live run |
 | P4.E2 | Combat procedure | Todo | |
 | P4.E3 | Strategy procedures | Todo | |
 | P4.E4 | Post-mortem | Todo | |
-| P4.E5 | Evaluation | Todo | |
-| P4.E6 | Ascension ladder | Todo | |
+| P4.E5 | Evaluation | In progress | Scoreboard, milestones, exam seeds ready |
+| P4.E6 | Ascension ladder | In progress | Rules written |
 | P4.E7 | Operations | Todo | |
 
 ## Phase 5: Second character ([doc](phase-5-second-character.md))
