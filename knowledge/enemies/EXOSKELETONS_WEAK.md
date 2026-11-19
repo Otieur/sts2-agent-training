@@ -28,7 +28,8 @@ Status: Plan v1, 2026-11-19.
 ## Plan
 
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
-- **Hard to Kill:** damage per hit is capped at its amount. Many small hits beat one big hit. `tools/plan_turn.py` applies the cap from the state.
+- **Hard to Kill:** damage per hit is capped at its amount. Many small hits beat one big hit.
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): 3 or 4 Exoskeletons of 24–28 HP; Hard to Kill caps each hit at **9**; Skitter 1×3, Mandibles 8 (always followed by Enrage +2 Strength), Enrage; they open on different moves. Hit-all and multi-hit attacks under 9 per hit are ideal; a 14-damage Strike+ wastes 5. `tools/plan_turn.py` applies the cap from the state.
 - Skitter 1×3, Mandible 8, Enrage +2 Strength.
 
 ## Sources

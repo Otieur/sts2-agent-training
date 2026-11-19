@@ -26,6 +26,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): Toadpoles of 21–25 HP; Whirl 7, Spiken (+2 Thorns: 2 damage back on each attack hit), Spike Spit 3×3 (and loses the 2 Thorns), repeating; in the weak encounter the front one opens with Spiken. Avoid multi-hit attacks on a Toadpole with Thorns (each hit costs 2); `tools/plan_turn.py` counts Thorns.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - **Thorns:** Spiken gives it 2 Thorns, so multi-hit attacks take 2 back per hit. Spike Spit drops its Thorns as it attacks.
 - Single hits are better here.
