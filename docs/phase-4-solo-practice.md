@@ -236,7 +236,7 @@ runs/<YYYY-MM-DD>-<seed>/
 > *As the Player, I want the Agent tested on fixed seeds, so that progress can be measured fairly, including against my own results.*
 >
 > **Acceptance criteria**
-> - [ ] 5 seeds are chosen from the Player's Ironclad v0.107.1 history: 2 wins and 3 losses, with different killers and ascension levels close to the current ladder level. They are listed in `metrics/exam-seeds.md` with the Player's original result.
+> - [ ] 5 seeds are chosen from the Player's Ironclad v0.107.1 history: 2 wins and 3 losses, with different killers and ascension levels close to the current ladder level. They are listed in `metrics/exam-seeds.md` with the Player's original result. (2026-11-19: main is now v0.111.1 with 12-character seeds; if the old seeds fail, choose replacements from the first v0.111.1 runs.)
 > - [ ] Replayed at the baseline (first eligible run), then at M3 and M5.
 > - [ ] Results are compared with the Player's result on the same seed (floor reached, win).
 >

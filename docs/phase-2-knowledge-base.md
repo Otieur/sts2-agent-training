@@ -1,6 +1,6 @@
 # Phase 2: Knowledge Base
 
-**Goal:** a verified, version-tagged reference for game v0.107.1, covering cards, relics, potions, mechanics, enemies, encounters and bosses. Community strategy is merged into Ironclad playbook v2 with clear provenance.
+**Goal:** a verified, version-tagged reference for the game version the Agent plays (main branch, v0.111.1 since 2026-11-16; the Player's history and the decompiled extract are v0.107.x–v0.110, see `knowledge/version-delta-v0.111.1.md`), covering cards, relics, potions, mechanics, enemies, encounters and bosses. Community strategy is merged into Ironclad playbook v2 with clear provenance.
 
 **Depends on:** Phase 0 for game data exported through the mod; Phase 1 for encounter lists and the Player's habits. Community research (E4) can start at any time.
 **Unblocks:** Phases 3 and 4.
@@ -23,7 +23,7 @@
 
 ```
 knowledge/
-  data/v0.107.1/        raw JSON exports from the mod (cards.json, relics.json, ...)
+  data/v0.111.1/        raw JSON exports from the mod (cards.json, relics.json, ...)
   cards/                ironclad.md, necrobinder.md, colorless.md, curses-status.md
   relics.md  potions.md  mechanics.md  ascension.md  events.md
   encounters.md         catalogue: every encounter, pool, act, HP, link to its note
@@ -49,11 +49,11 @@ Every file starts with a header: game version, date, sources, and the labels use
 > - [ ] The collection names are listed in `docs/api-notes.md`, from the API docs and by probing `GET /data/<name>` for: cards, relics, potions, monsters, encounters, events, powers, keywords, characters, acts.
 > - [ ] Unavailable collections are noted with their error codes (`collection_not_found`, `game_data_unavailable`).
 
-> **P2.E1.S2: Export the raw data** · Size S · Status: In progress (extract imported to knowledge/data/extract-2026-09-21/; live /data export on v0.107.1 pending)
+> **P2.E1.S2: Export the raw data** · Size S · Status: In progress (extract imported to knowledge/data/extract-2026-09-21/; live /data export on v0.111.1 pending)
 > *As the Next Session, I want raw exports saved by version, so that a game patch can be diffed rather than re-researched.*
 >
 > **Acceptance criteria**
-> - [ ] `knowledge/data/v0.107.1/<collection>.json`, each with a sidecar `.meta.json` (export time, mod version, game version, record count).
+> - [ ] `knowledge/data/v0.111.1/<collection>.json`, each with a sidecar `.meta.json` (export time, mod version, game version, record count).
 
 > **P2.E1.S3: Readable card references** · Size M · Status: Done (from the extract, knowledge/cards/ironclad.md; re-verify numbers against live /data)
 > *As the Agent, I want a compact card reference per pool, so that I can read a card's full text and role without calling the API mid-decision.*
@@ -247,7 +247,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 
 | ID | Question | Resolved by |
 |---|---|---|
-| OQ2.1 | Which collections does `/data` serve on v0.107.1? | P2.E1.S1 |
+| OQ2.1 | Which collections does `/data` serve on v0.111.1? | P2.E1.S1 |
 | OQ2.2 | Can the Bestiary be read through the mod? | P2.E3.S4 |
 | OQ2.3 | Is the Act boss visible at the start of the act? | **Resolved (likely yes):** the map state holds the boss (STS2MCP exposes it); confirm live |
 | OQ2.4 | How much good v0.107.x-specific community material exists? Early access balance changes often. | P2.E4.S1 |
