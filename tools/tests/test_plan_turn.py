@@ -344,6 +344,10 @@ class TestPlanTurn(unittest.TestCase):
         rock.imbalanced = True
         o = pt.simulate(ids("DEFEND_IRONCLAD", "DEFEND_IRONCLAD", "DEFEND_IRONCLAD"), [None] * 3, pt.Player(energy=3), [rock])
         self.assertEqual(o["stun_bonus"], 15)       # Headbutt fully blocked: it is stunned next turn
+        hop = pt.parse_enemy("Hopper:79:0:21", 0)
+        hop.flutter = 5
+        o = pt.simulate(ids("SWORD_BOOMERANG", "TWIN_STRIKE"), [None, 0], pt.Player(energy=2), [hop])
+        self.assertEqual((o["dealt"], o["incoming"]), (1 + 1 + 1 + 2 + 2, 0))  # all five hits halved; the fifth stuns it
 
     def test_crab_rage(self):
         ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731

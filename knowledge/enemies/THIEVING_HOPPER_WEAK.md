@@ -29,6 +29,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, beta-branch content, accessed 2026-11-19): HP 79 (84 at A8+); Thievery 17 + steals a card from your deck, Flutter (Attack damage taken halved until it has been hit 5 times, which stuns it), Hat Trick 21, Nab 14, then Escape on turn 5, taking the stolen card for the rest of the run (killing it returns the card; if it escapes there is no gold). Plan: kill it within 4 turns; multi-hit attacks break Flutter; `tools/plan_turn.py` models Flutter.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - **Thievery: 17 damage and removes one of your cards from combat.** Nab 14, Hat Trick 21.
 - **Flutter:** halves damage it takes; each hit removes a stack and stuns it.

@@ -19,7 +19,7 @@ Barrier (damage back per enemy hit), Body Slam (damage = Block, played after blo
 Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); boosters are played first. Slippery stacks
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
-Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Infested (its death is not the end), Ravenous (a death stuns the slugs), Imbalanced (a full block stuns it), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
+Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Infested (its death is not the end), Ravenous (a death stuns the slugs), Imbalanced (a full block stuns it), Flutter (half damage; enough hits stun it), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
 non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Hex (held cards are lost), Doom (fatal at the end of your turn if HP is at or below it).
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
@@ -132,6 +132,7 @@ class Enemy:
     infested: bool = False      # Infested (Phrog Parasite): its death summons Wrigglers, so the fight goes on
     ravenous: bool = False      # Ravenous (Corpse Slug): when another enemy dies it eats it and is stunned (attack cancelled)
     imbalanced: bool = False    # Imbalanced (Bowlbug Rock): stunned next turn if its attack is fully blocked
+    flutter: int = 0            # Flutter (Thieving Hopper): Attack damage halved; this many more hits stun it
     crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
     minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
     doom: int = 0               # Doom on it: it dies at the end of its own turn (after attacking) if its HP is at or below it
@@ -373,6 +374,8 @@ def per_hit(card, player, enemy, strength_gained, played_before=0):
         d = min(d, 1)
     if enemy.hit_cap is not None:
         d = min(d, enemy.hit_cap)
+    if enemy.flutter > 0:  # Flutter: Attack damage taken halved (the wiki)
+        d = d // 2
     return max(0, d)
 
 
@@ -406,6 +409,10 @@ def hit(enemy, dmg):
         enemy.hive_added = getattr(enemy, "hive_added", 0) + enemy.hive
     if enemy.slippery > 0:
         enemy.slippery -= 1
+    if enemy.flutter > 0:  # every hit counts toward the stun; at 0 it is stunned (attack this turn assumed cancelled)
+        enemy.flutter -= 1
+        if enemy.flutter == 0:
+            enemy.intent_hits = 0
     absorbed = min(enemy.block, dmg)
     enemy.block -= absorbed
     dealt = min(enemy.hp, dmg - absorbed)
@@ -811,6 +818,7 @@ def from_state(st):
                              skittish=int(next((v for k, v in pw.items() if k.startswith("SKITTISH")), 0) or 0),
                              infested=any(k.startswith("INFESTED") for k in pw), ravenous=any(k.startswith("RAVENOUS") for k in pw),
                              imbalanced=any(k.startswith("IMBALANCED") for k in pw),
+                             flutter=int(next((v for k, v in pw.items() if k.startswith("FLUTTER")), 0) or 0),
                              crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
                              minion=any(k.startswith("MINION") for k in pw),
                              doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0),
