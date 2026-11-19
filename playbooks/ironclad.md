@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.5 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.6 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -31,7 +31,7 @@ The goal is strong play, judged by results. Every rule carries a provenance labe
 ## 2. Card evaluation
 
 ### 2.1 Procedure (in order)
-1. **Deck needs.** Measure the deck against five needs, not feel. Run `python3 -I tools/deck_metrics.py --deck <card ids>` for damage and block per turn (random 5-card hands, 3 energy, base numbers).
+1. **Deck needs.** Measure the deck against five needs, not feel. Run `python3 -I tools/deck_check.py --deck <card ids> --act <a> --boss <id>` for damage and block per turn (random 5-card hands, 3 energy, base numbers, v0.111.1 card values) against the corner targets and the boss's countable checklist.
    - **Corner targets on arrival at the boss** `[HYPOTHESIS H9]`, from `reports/phase2/deck-strength.md` (all characters, 356 boss fights):
      - Act 1: block per turn at least 10, and 2+ scaling cards (Powers or Strength cards)
      - Act 2: 4+ scaling cards
@@ -138,6 +138,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
   - **Act 3 and the A10 double boss: rest if HP is below 70%.**
   - Evidence (`reports/phase2/boss-arrival-hp.md`) is mixed. Boss death rates fall steeply with arrival HP, most of all in Act 3. But the Player's heals and smiths at the same HP were followed by almost the same boss death rate (31% against 30% under 50% HP). Confounding cuts both ways.
 - **Before an elite on the path:** rest if HP minus the elite's p75 would leave less than 50% of max for the next fights. `[HYPOTHESIS]`
+- **Exception before Vantom and Waterfall Giant** (H8): arrival HP did not separate outcomes there. Between the band median and median + 10, smith if the upgrade improves the deck's answer (a multi-hit or cheap attack against Slippery, a block card against the explosion). `[HYPOTHESIS]`
 - **Otherwise:** smith at 50% HP or more. Under 35%, rest. In between, decide by the next two fights' benchmark cost.
 - A rest heals 30% of max HP, rounded down (24 on 80), capped at max HP. 237 of 297 heals match exactly; larger ones are presumably relic boosts. `[PLAYER-DATA]`
 
@@ -171,6 +172,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
   - Weak potions go on the boss's biggest-hit turn.
   - Strength potions never go before Vantom's Slippery is gone.
   - Debuff potions only after Artifact is stripped (Aeonglass, Mecha Knight).
+- `tools/plan_turn.py` includes held potions in its search: it prefers a lethal line with the fewest potions and otherwise charges each potion as HP (hallway 8, elite 3, boss 2), so it suggests potions when they save more HP than that. `[HYPOTHESIS]` weights
 
 ## 9. Combat checklist
 1. Read every intent. Total the incoming damage. Note special powers (Slippery, Hardened Shell, Personal Hive, Territorial, Thorns, Flutter).
@@ -189,7 +191,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 6. Potions when they prevent serious HP loss or win a dangerous fight.
 7. Check `end_turn_will_kill_player` and `lethal_risks` before ending the turn.
 8. Write down the expected HP after the enemy turn and compare it next turn. Use `tools/calc.py` for exact numbers.
-9. **Search the turn:** `tools/plan_turn.py` enumerates the hand and prints the safest plan and the best damage-for-HP plan, with targets. Choose between them by the act's HP budget (section 4): safe when HP is below plan or before a big hit, balanced when ahead. It does not model draw, relics, potions, Thorns or per-turn caps; re-run after drawing. `[HYPOTHESIS]` until the arithmetic is confirmed in game
+9. **Search the turn:** `tools/plan_turn.py` enumerates the hand and prints the safest plan and the best damage-for-HP plan, with targets. Choose between them by the act's HP budget (section 4): safe when HP is below plan or before a big hit, balanced when ahead. It models the common combat potions but not draw, relics, Thorns or per-turn caps; re-run after drawing. `[HYPOTHESIS]` until the arithmetic is confirmed in game
 10. **Targeting** (multi-enemy fights) `[HYPOTHESIS]`, also what `tools/plan_turn.py` searches for:
     - Kill first the enemy whose death removes the most incoming damage per point of HP and block you must spend. A kill this turn beats spreading damage.
     - Buffers and summoners next (they raise everyone's damage), then the highest single hit. Encounter notes override: the Kin Priest probably ends the fight; Kaiser Crab focuses Rocket; Phrog Parasite spawns Wrigglers on death.
@@ -202,10 +204,10 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 |---|---|---|---|---|---|
 | 1 Overgrowth | [Vantom](../knowledge/bosses/VANTOM_BOSS.md) | 48 / 57.5 | 6/11 | ~58 | 9 hit instances to clear Slippery; block 27 on turn 3 |
 | 1 Overgrowth | [Ceremonial Beast](../knowledge/bosses/CEREMONIAL_BEAST_BOSS.md) | 39 / 45.5 | 1/7 | ~49 | Front-load damage to break 150 Plow (stuns it, resets its Strength) |
-| 1 Overgrowth | [The Kin](../knowledge/bosses/THE_KIN_BOSS.md) | 34.5 / 41.2 | 0/8 | ~45 | Hit-all damage for the followers |
+| 1 Overgrowth | [The Kin](../knowledge/bosses/THE_KIN_BOSS.md) | 34.5 / 41.2 | 0/8 | ~45 | Followers are Minions: killing the Priest probably ends the fight, so race it unless hit-all damage clears the followers in 2 turns |
 | 1 Underdocks | [Waterfall Giant](../knowledge/bosses/WATERFALL_GIANT_BOSS.md) | 38 / 41 | 2/5 | ~48 | Fast kill; bank block for the death explosion |
 | 1 Underdocks | [Soul Fysh](../knowledge/bosses/SOUL_FYSH_BOSS.md) | 33 / 41 | 3/7 | ~43 | Exhaust Beckon cards; burst outside Intangible |
-| 1 Underdocks | [Lagavulin Matriarch](../knowledge/bosses/LAGAVULIN_MATRIARCH_BOSS.md) | 28 / 40.5 | 2/8 | ~38 | Set up while it sleeps; kill before repeated Soul Siphons |
+| 1 Underdocks | [Lagavulin Matriarch](../knowledge/bosses/LAGAVULIN_MATRIARCH_BOSS.md) | 28 / 40.5 | 2/8 | ~38 | Set up while it sleeps, first damage on the last sleep turn (it wakes stunned); kill before repeated Soul Siphons |
 | 2 Hive | [Knowledge Demon](../knowledge/bosses/KNOWLEDGE_DEMON_BOSS.md) | 45 / 59.8 | 4/12 | ~55 | Scaling and energy (about 60 damage per turn over 7 turns); curse choice: usually Sloth (at most 3 cards per turn), Disintegration last |
 | 2 Hive | [Kaiser Crab](../knowledge/bosses/KAISER_CRAB_BOSS.md) | 43.5 / 48.5 | 2/6 | ~54 | Focus Rocket; block 31+ on the Laser and end that turn facing Rocket (back attacks ×1.5); kill a claw with the turn's last attack (Crab Rage: the other gets 99 Block and 5 Strength) |
 | 2 Hive | [The Insatiable](../knowledge/bosses/THE_INSATIABLE_BOSS.md) | 31.5 / 45.8 | 2/6 | ~42 | Watch the Sandpit timer; energy for Frantic Escape |
@@ -250,10 +252,12 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - The extract predates v0.107.1 (`knowledge/version-delta-extract-to-v0.107.1.md`): Conflagration, Drum of Battle and Unrelenting changed in v0.107.1, and Infested Prism and Skulking Colony were reworked. On v0.111.1, the cards and enemies in `knowledge/version-delta-v0.111.1.md` differ as well. Re-check numbers against live data (P2.E1).
 - Not Yet (card) and Aeonglass (boss) are missing from the extract.
 - **Cards where sources disagree** (†, 29 cards): One-Two Punch, Pyre, Tear Asunder, Barricade, Bloodletting, Juggernaut, Shrug It Off, Aggression, Thrash, Bully and others (full list in §2.2). Nat 1 Gaming is v0.113 beta. Spire Codex (main) is partial.
-- Bygone Effigy's Slow multiplier, the Colossus power and Infested Prism's Vital Spark: effects to verify in game.
-- Whether killing the Kin Priest ends that fight; whether Lagavulin Matriarch wakes when damaged.
+- Bygone Effigy's Slow multiplier, the Colossus power, Infested Prism's current moves and Tainted duration: to verify in game.
+- Kin Priest: the Minion power suggests its death ends the fight (confirm). Lagavulin Matriarch: the power data says damage wakes it stunned (confirm which power is removed with Asleep).
+- Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.6 (2026-11-19, overnight):** coherence pass. Section 2.1 points to `tools/deck_check.py`; section 5 adds the H8 exception for Vantom and Waterfall Giant; section 8 describes potion search in `tools/plan_turn.py`; boss rows for Lagavulin Matriarch and The Kin use the power data; section 13 updated.
 - **v2.5 (2026-11-19, overnight):** consistency pass against the data: rest heal is 30% of max HP rounded down (was "about 29%"); room economics ranges per act; the elite HP-band sample excludes abandoned runs (stated); H8 widened to The Kin and narrowed for Vantom and Waterfall Giant; v0.111.1 elite and boss changes noted under the tables. Deck-strength figures recomputed with v0.107.1 card values (the extract predates v0.107.1): Act 1 raw-damage tercile 28% (was 29%), Ironclad fatal decks 16.8 against 15.1 (was 14.7); corner targets unchanged. Also fixed the quintile buckets in `tools/build_community_tiers.py` (the top bucket had absorbed the remainder). Consensus moved for four cards: Feel No Pain A→B, Body Slam B→C, Evil Eye C→D, Headbutt C→D. Habit discrepancies 23 → 19. Tier lists in §2.2 and §11 regenerated from the tier file.
 - **v2.4 (2026-11-19, overnight):** main branch is now v0.111.1. Added the v0.111.1 card changes to §2.2; target version noted in the header.
 - **v2.3 (2026-11-19, overnight):** pre-boss rest threshold uses the ascension-band median; curse removal added to the shop priority. Both from the practice post-mortems in `runs/examples/`.

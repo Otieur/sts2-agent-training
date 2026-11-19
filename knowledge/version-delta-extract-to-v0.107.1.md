@@ -30,7 +30,7 @@ Source: wiki "V0.107.1 – Major Update 2" (https://slaythespire.wiki.gg/wiki/Sl
 | Card | Change | Note |
 |---|---|---|
 | Conflagration | Was 8 (9) to all, +2 (3) per other Attack played this turn. Now 2 damage to all enemies, 4 (5) times | Multi-hit hit-all now: good against Slippery and against multi-enemy fights |
-| Drum of Battle | Was a 0-cost Power. Now a 1-cost Uncommon Skill: draw 2; when exhausted, gain 2 (3) Energy | The Player's 9/21 picks were mostly of the old card |
+| Drum of Battle | Was a 0-cost Power. Now a 1-cost Uncommon Skill: draw 2; when exhausted, gain 2 (3) Energy | The Player's history is all v0.107.1, so the Player's 9/21 picks were of the new card; only the extract shows the old one |
 | Howl from Beyond | Trigger moved from start of turn to end of turn | |
 | Unrelenting | 12 (18) → 14 (20) | |
 | Entrench | Gains extra Block from enchantments like Nimble | Minor |
