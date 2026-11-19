@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.9 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.10 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -36,7 +36,7 @@ The goal is strong play, judged by results. Every rule carries a provenance labe
      - Act 1: block per turn at least 10, and 2+ scaling cards (Powers or Strength cards)
      - Act 2: 4+ scaling cards
      - Act 3: block per turn at least 8
-   - **Raw damage is not enough.** Decks with the most raw damage died *more* often at bosses (Act 1: 28% against 18%). Fatal Ironclad Act 1 decks had more damage (16.8 against 15.1 per turn) and less block (8.4 against 9.6). Once raw damage is about the starter deck's (15 per turn), add block and scaling before more attacks.
+   - **Raw damage is not enough.** Decks with the most raw damage died *more* often at bosses (Act 1: 31% against 21%). Fatal Ironclad Act 1 decks had more damage (16.8 against 15.1 per turn) and less block (8.4 against 9.6). Once raw damage is about the starter deck's (15 per turn), add block and scaling before more attacks.
    - **Act 1 timing:** elites reward front-loaded damage, bosses reward block and scaling. Act 1 elites: highest raw-damage tercile 3/62 fatal against 7–9/62 for the others; lowest block tercile 10/62 fatal. So draft attacks for the first elites (floors 5–10), then shift to block and scaling before the Act 1 boss. `[PLAYER-DATA, observational]`
    - **Attack:** damage per turn for the next elite and the boss.
    - **Defence:** block for the biggest hit of the next elite and the boss (boss table, section 10).
@@ -114,7 +114,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
    | Shop | +1% to +4% | 0.6–1 card and 0.6–1 relic bought |
    | Treasure | 0 | 1 relic, gold |
 
-   **Deck and ascension adjust these costs** (`reports/phase2/fight-model.md`, regression of HP lost on deck metrics and ascension; low R², so small adjustments only) `[PLAYER-DATA, observational]`: each ascension level adds about 0.4–1.8 points of max HP lost per fight; each point of block per turn saves about 1.3 points in Act 1 elites; each scaling card saves about 3.9 points at the Act 2 boss but costs about 2.3 points in Act 1 hallways (powers are slow in short fights). `tools/path.py` applies the significant coefficients relative to the average deck.
+   **Deck and ascension adjust these costs** (`reports/phase2/fight-model.md`, regression of HP lost on deck metrics and ascension; low R², so small adjustments only) `[PLAYER-DATA, observational]`: each ascension level adds about 0.4–1.8 points of max HP lost per fight; each point of block per turn saves about 1.2 points in Act 1 elites; each scaling card saves about 3.8 points at the Act 2 boss but costs about 2.3 points in Act 1 hallways (powers are slow in short fights). `tools/path.py` applies the significant coefficients relative to the average deck.
 
    **Path heuristics** `[HYPOTHESIS]`:
    - ? rooms are the cheapest source of value. Prefer them over monsters when HP is below plan.
@@ -261,7 +261,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 | H7 | Knowledge Demon needs a scaling engine (powers, energy, Strength) by the end of Act 2 | Fatal decks: powers 1.7 against 2.7, energy 0.8 against 1.6 (n=40) `[PLAYER-DATA, weak]` | Track engine presence on arrival | New (v2) |
 | H8 | Arrival HP matters most for Queen, The Kin and Aeonglass, and hardly at all for Vantom and Waterfall Giant | Median arrival HP, survived against fatal (all characters, abandoned runs excluded): Queen 79% / 54%, The Kin 64% / 41%, Aeonglass 87% / 65%; Vantom 57% / 58%, Waterfall Giant 57% / 59%. Fatal n is 5–12 per boss | Higher rest thresholds for the first three; for Vantom and Waterfall Giant, prefer a smith that fixes the deck's answer when HP is above the median damage | Refined (v2.5) |
 | H10 | Curses from Ancient relics (Hefty Tablet's Injury) cost more Act 1 survival than the relic's upside gives | Hefty Tablet picked: 8/21 survived Act 1; passed: 6/6 (p = 0.016, all characters; Ironclad 2/3, too few) `[PLAYER-DATA, weak]` | Pass Hefty Tablet in Phase 4; compare Act 1 survival | New (v2.7) |
-| H9 | Boss survival depends more on block and scaling than on raw damage: targets in section 2.1 | Raw-damage terciles: Act 1 fatal 18% / 29% / 28% (low to high). Block: 30% / 24% / 21%. Scaling 2–3 cards: 17% against 28% (n=173 Act 1 boss fights) `[PLAYER-DATA, observational]` | Track the deck metrics at every boss arrival in Phase 4 | New (v2.2) |
+| H9 | Boss survival depends more on block and scaling than on raw damage: targets in section 2.1 | Raw-damage terciles: Act 1 fatal 21% / 22% / 31% (low to high). Block: 30% / 24% / 21%. Scaling 2–3 cards: 17% against 28% (n=173 Act 1 boss fights) `[PLAYER-DATA, observational]` | Track the deck metrics at every boss arrival in Phase 4 | New (v2.2) |
 
 ## 13. Open questions and conflicts
 - The extract predates v0.107.1 (`knowledge/version-delta-extract-to-v0.107.1.md`): Conflagration, Drum of Battle and Unrelenting changed in v0.107.1, and Infested Prism and Skulking Colony were reworked. On v0.111.1, the cards and enemies in `knowledge/version-delta-v0.111.1.md` differ as well. Re-check numbers against live data (P2.E1).
@@ -272,6 +272,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.10 (2026-11-19, overnight):** deck metrics now count Osty attacks (Necrobinder decks in the all-character analyses); Act 1 raw-damage terciles 21% / 22% / 31%, fight-model coefficients 1.2 and 3.8; conclusions unchanged.
 - **v2.9 (2026-11-19, overnight):** fight model (`tools/fight_model.py`): deck metrics and ascension adjust room HP costs in section 4 and in `tools/path.py`.
 - **v2.8 (2026-11-19, overnight):** card tiers checked against the Player's outcomes at the decision point (`tools/analyze_card_choices.py`): the consensus predicts act survival for Ironclad; Breakthrough flagged.
 - **v2.7 (2026-11-19, overnight):** Ancient choices from `tools/analyze_ancients.py` (picked against passed at the same decision point): avoid Hefty Tablet (H10), prefer Fishing Rod; warning against raw relic win rates.

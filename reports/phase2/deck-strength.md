@@ -6,15 +6,15 @@ All characters, solo, v0.107.1, finished runs: every boss fight with the deck at
 
 | Act | Survived | Fatal | Damage/turn (survived) | Damage/turn (fatal) | Block/turn (survived) | Block/turn (fatal) | Deck size (survived) | Deck size (fatal) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 130 | 43 | 12.5 | 13.5 | 8.6 | 8.3 | 19 | 20 |
-| 2 | 78 | 24 | 12.3 | 14.1 | 7.7 | 7.9 | 26 | 26 |
-| 3 | 55 | 26 | 11.4 | 11.1 | 7.2 | 6.7 | 32 | 32 |
+| 1 | 130 | 43 | 13.2 | 13.9 | 8.6 | 8.3 | 19 | 20 |
+| 2 | 78 | 24 | 12.9 | 14.7 | 7.7 | 7.9 | 26 | 26 |
+| 3 | 55 | 26 | 11.7 | 12.4 | 7.2 | 6.7 | 32 | 32 |
 
 ## Fatal rate by damage per turn (terciles within each act)
 
-- **Act 1:** low (4–12): 10/57 fatal (18%) · middle (12–15): 17/58 fatal (29%) · high (15–30): 16/58 fatal (28%)
-- **Act 2:** low (3–11): 6/34 fatal (18%) · middle (11–15): 7/34 fatal (21%) · high (15–29): 11/34 fatal (32%)
-- **Act 3:** low (0–10): 7/27 fatal (26%) · middle (10–13): 9/27 fatal (33%) · high (13–24): 10/27 fatal (37%)
+- **Act 1:** low (6–12): 12/57 fatal (21%) · middle (12–15): 13/58 fatal (22%) · high (15–30): 18/58 fatal (31%)
+- **Act 2:** low (6–12): 6/34 fatal (18%) · middle (12–15): 6/34 fatal (18%) · high (15–29): 12/34 fatal (35%)
+- **Act 3:** low (6–11): 8/27 fatal (30%) · middle (11–13): 8/27 fatal (30%) · high (13–24): 10/27 fatal (37%)
 
 ## Fatal rate by block per turn (terciles within each act)
 
@@ -40,9 +40,9 @@ Starter Ironclad deck for reference: 15.0 damage/turn, 9.8 block/turn.
 
 ## Elites (Acts 1–2): the same proxies
 
-- **Act 1, damage per turn:** low (5–12): 7/62 fatal, median HP lost 21% · middle (12–15): 9/62 fatal, median HP lost 24% · high (15–21): 3/62 fatal, median HP lost 23%
+- **Act 1, damage per turn:** low (7–13): 8/62 fatal, median HP lost 20% · middle (13–15): 8/62 fatal, median HP lost 24% · high (15–21): 3/62 fatal, median HP lost 23%
 - **Act 1, block per turn:** low (5–8): 10/62 fatal, median HP lost 26% · middle (8–10): 6/62 fatal, median HP lost 20% · high (10–17): 3/62 fatal, median HP lost 21%
-- **Act 2, damage per turn:** low (2–11): 2/40 fatal, median HP lost 28% · middle (11–15): 5/41 fatal, median HP lost 36% · high (16–29): 4/41 fatal, median HP lost 30%
+- **Act 2, damage per turn:** low (6–12): 2/40 fatal, median HP lost 29% · middle (12–16): 5/41 fatal, median HP lost 36% · high (16–29): 4/41 fatal, median HP lost 32%
 - **Act 2, block per turn:** low (4–7): 3/40 fatal, median HP lost 30% · middle (7–9): 4/41 fatal, median HP lost 33% · high (9–16): 4/41 fatal, median HP lost 30%
 
 In Act 1, elites go the other way from bosses: the highest raw-damage tercile had the fewest fatal elite fights. Low block had the most. Act 2 elites show no clear pattern.
@@ -51,7 +51,7 @@ In Act 1, elites go the other way from bosses: the highest raw-damage tercile ha
 
 Numbers in this section are computed from the tables above.
 
-- **Raw damage does not protect you at bosses.** Decks in the highest damage tercile died more often than the lowest (Act 1: 28% against 18%; Act 2: 32% against 18%). High raw damage usually means a deck of attacks with few powers and block, which wins hallways and loses long boss fights.
+- **Raw damage does not protect you at bosses.** Decks in the highest damage tercile died more often than the lowest (Act 1: 31% against 21%; Act 2: 35% against 18%). High raw damage usually means a deck of attacks with few powers and block, which wins hallways and loses long boss fights.
 - **Block and scaling do.** Act 1: highest block tercile 21% fatal against 30% for the lowest; Act 3: 26% against 41%. Scaling cards: Act 1 decks with 2–3 had 17% fatal against 28% with 0–1; Act 2 decks with 4+ had 17% against 35% with 1.
 - **Ironclad:** fatal Act 1 boss decks had more raw damage (16.8 against 15.1 per turn) and less block (8.4 against 9.6).
 - Proposed corner targets on arrival at the boss `[HYPOTHESIS H9]`:

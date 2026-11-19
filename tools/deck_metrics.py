@@ -68,7 +68,8 @@ def card_numbers(cid):
         hits = int(m.group(1))
     elif "X (energy spent) times" in e:
         hits = ENERGY
-    dmg = sum(int(x) for x in re.findall(r"Deal (\d+) damage", e)) * hits
+    dmg = (sum(int(x) for x in re.findall(r"Deal (\d+) damage", e))
+           + sum(int(x) for x in re.findall(r"Your Osty deals (\d+) damage", e))) * hits  # Osty attacks count (Necrobinder)
     block = sum(int(x) for x in re.findall(r"(?:Gain|Give(?: the target)?) (\d+) Block", e))
     draw = sum(int(x) for x in re.findall(r"Draw (\d+) card", e))
     energy = sum(int(x) for x in re.findall(r"Gain (\d+) Energy", e))
