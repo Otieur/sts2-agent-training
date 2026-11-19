@@ -23,7 +23,7 @@ Planned blocks (A–J) were finished by 01:11; everything after is extra work fr
 | C Mechanics | `knowledge/mechanics.md`, `knowledge/ascension.md` |
 | D Boss plans | `knowledge/bosses/` (12 plans) |
 | E Elites and encounters | `knowledge/enemies/` (12 elites, 19 hallway fights: the 15 most frequent and 4 rare but deadly ones) |
-| J Playbook v2 | `playbooks/ironclad.md` (now v2.15), `playbooks/ironclad-quickref.md` |
+| J Playbook v2 | `playbooks/ironclad.md` (now v2.16), `playbooks/ironclad-quickref.md` |
 | H Other characters | Phase 1 reports and benchmarks for Necrobinder, Silent, Regent; `playbooks/necrobinder.md` (v0.3) |
 | G Offline tools | `tools/calc.py`, `postmortem.py`, `sts.py` |
 | I Co-op rules | `knowledge/coop-rules.md` |

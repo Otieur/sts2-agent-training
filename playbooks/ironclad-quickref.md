@@ -1,6 +1,6 @@
 # Ironclad Quick Reference (for live play)
 
-One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.15); when they differ, the playbook wins. Section numbers point there.
+One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.16); when they differ, the playbook wins. Section numbers point there.
 
 ## Every decision
 1. Save the state: `python3 -I tools/sts.py --mod sts2agent state --raw > runs/<run>/state.json`

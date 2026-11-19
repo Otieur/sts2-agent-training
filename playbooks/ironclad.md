@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.15 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.16 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -276,6 +276,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.16 (2026-11-19, overnight):** The Insatiable: end every turn at Sandpit 2 or more (community numbers); The Kin: killing the Priest ends the fight (two guides), and in the simulator racing it pays with single-target decks while hit-all decks should clear the followers; Test Subject's Enrage counts Skills only; simulated drafting uses the run's upgrades and common relics and skips cards the simulator does not model.
 - **v2.15 (2026-11-19, overnight):** Knowledge Demon curse rule rebuilt around the real offers (Disintegration or Mind Rot, Sloth, Waste Away; Disintegration stacks); Soul Fysh and Waterfall Giant added to the simulator (cycles from community guides; Soul Fysh calibrated loosely against 4/7 and used in drafting, Waterfall Giant too hard in the model and not used): follow the safe plan against both; Slippery stacks credited in the balanced plan; turn planner reads Beckon, Mangle, Flame Barrier, Body Slam, Fiend Fire, Dismantle and the old Forgotten Ritual condition; real-deck calibration shows the simulator's absolute win rates mean nothing for real decks.
 - **v2.14 (2026-11-19, overnight):** simulated Byrdonis: follow the balanced plan against enemies that scale every turn.
 - **v2.13 (2026-11-19, overnight):** H11 (avoid hallway fights under 40% HP) from the history; `tools/path.py` uses finer hallway risk bands; the death review checks it.
