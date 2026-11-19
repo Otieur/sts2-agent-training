@@ -8,6 +8,8 @@ Goal: the Agent plays Slay the Spire 2 competently, first solo and then as a co-
 
 Written 2026-11-18. Update this file when a phase finishes or the plan changes.
 
+**Where things stand (2026-11-19, after the overnight session):** Phases 1 and 2 are done offline; the Phase 4 toolchain (turn planner, path planner, draft scorer, deck check, fight simulator, one `advise.py` entry point, both mods) is written and tested offline only; Phase 0 waits on the player (security verdict, branch switch to v0.111.1, mod choice), then a 30-minute first session (`docs/runbooks/first-session.md`). Summary: `docs/overnight-report.md`.
+
 **Detailed phase documents** (epics, user stories, acceptance criteria, what to expect, exit gates) are in [docs/](docs/README.md). Progress is tracked in [docs/STATUS.md](docs/STATUS.md). This file is the overview; the phase documents are the specification.
 
 ---
@@ -198,6 +200,8 @@ Repeat Phases 1–4 for Necrobinder, reusing the knowledge base. It should go fa
 | Mod bugs or co-op desync corrupt a run | Use the modded profile only; back up saves; never use the game's Load button for co-op saves (the mod docs warn this can mark the save corrupt) |
 | Context compaction mid-run loses the plan | Run journal updated every floor |
 | Learning only from the player's history caps skill at the player's level | Outside knowledge (Phase 2), the Agent's own experiments, exam seeds |
+| The decompiled game data is older than the player's history (pre-v0.107.1) and two patches behind the game | Card changes patched (`knowledge/data/card-patches.json`); both version deltas documented; live `/data` export in Phase 2 replaces it |
+| Models and rules tuned on the player's own history are confounded | Decision-point comparisons, base rates, calibration against the record (simulator), and Phase 4 experiments before any rule is adopted |
 | Small sample sizes (12 Ironclad wins) | Report counts next to rates; treat win correlations as hypotheses |
 | Overfitting the playbook to one run | Changes need evidence; changelog; exam seeds catch regressions |
 | Token usage (the STS2MCP author reports about 8M tokens per run for a smaller model) | Record tokens per run in the scoreboard so the real cost is known |
