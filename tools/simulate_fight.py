@@ -102,6 +102,16 @@ def demon_move(b, turn):
     return [None, _move(dmg=17), _move(dmg=8, hits=3), _move(dmg=11, boss_str=2, heal=30)][i]
 
 
+def entomancer_move(b, turn):
+    """Entomancer (elite, 145 HP): Pheromone Spit (+1 Personal Hive, +3 Strength), Bees 3x7, Spear 18, repeating, in the
+    extract's declaration order `[HYPOTHESIS]`. Personal Hive starts at 1."""
+    i = (turn - 1) % 3
+    if i == 0:
+        b["hive"] = b.get("hive", 1) + 1
+        return _move("buff", boss_str=3)
+    return [None, _move(dmg=3, hits=7), _move(dmg=18)][i]
+
+
 BOSSES = {
     # validated: the model's win rate relative to Vantom roughly matches the Player's record (see report()).
     "VANTOM": {"hp": 173, "slippery": 9, "move": vantom_move, "status_card": "WOUND", "validated": True},
@@ -109,6 +119,9 @@ BOSSES = {
                             "validated": True},
     "CEREMONIAL_BEAST": {"hp": 252, "move": beast_move, "on_damage": beast_damaged, "validated": False},  # fails calibration
     "KNOWLEDGE_DEMON": {"hp": 379, "move": demon_move, "validated": False},  # calibration in report()
+    # Entomancer fails calibration badly (every deck loses by turn 5): the extract's Strength gains and Bees 3x7 cannot all
+    # apply from turn 1 in this order; probably ascension-dependent values or another order. Not used; see gap 26.
+    "ENTOMANCER": {"hp": 145, "hive": 1, "move": entomancer_move, "validated": False, "encounter": "ENTOMANCER_ELITE"},
 }
 
 
@@ -133,7 +146,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     discard, exhausted = [], []
     strength, demon, dexterity = 0, 0, 0
     b = {"hp": spec["hp"], "block": 0, "slippery": spec.get("slippery", 0), "strength": 0, "vuln": 0, "weak": 0,
-         "asleep": spec.get("asleep", 0), "plating": spec.get("plating", 0), "curse": curse}
+         "asleep": spec.get("asleep", 0), "plating": spec.get("plating", 0), "curse": curse, "hive": spec.get("hive", 0)}
     sloth = mind_rot = waste = disint = 0
     for turn in range(1, max_turns + 1):
         strength += demon
@@ -147,7 +160,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         for _ in range(4):  # plan, play up to a draw, re-plan with what is left
             hand = [pt.card_from_extract(i, cid) for i, cid in enumerate(hand_ids)]
             enemy = pt.Enemy(0, boss, b["hp"], b["block"], intent[0], intent[1], vuln=b["vuln"] > 0, weak=b["weak"] > 0,
-                             slippery=b["slippery"])
+                             slippery=b["slippery"], hive=b.get("hive", 0))
             player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity,
                                max_cards=(3 - cards_played) if sloth else None, hp=hp)
             res = pt.plans(hand, player, [enemy])
@@ -168,6 +181,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 break
             ea = out["enemies_after"][0]
             lost = b["hp"] - ea["hp"]
+            for _ in range(out.get("hive_cards", 0)):  # Personal Hive: dead cards shuffled into the draw pile
+                draw.insert(rng.randrange(len(draw) + 1), "WOUND")
             b["hp"], b["block"], b["slippery"] = ea["hp"], ea["block"], ea["slippery"]
             if spec.get("on_damage"):
                 spec["on_damage"](b, lost)
@@ -298,7 +313,7 @@ def report(runs=300):
         r = max((evaluate(cal_deck, key, 60, 80, runs // 2, m) for m in ("balanced", "safe")), key=lambda x: x["win_rate"])
         s, n = con.execute("""SELECT SUM(NOT (f.is_last_floor AND NOT r.win)), COUNT(*) FROM floors f JOIN runs r USING(run_id)
                               WHERE r.build_id='v0.107.1' AND r.character='IRONCLAD' AND r.n_players=1 AND NOT r.abandoned
-                              AND f.model_id = ?""", ["ENCOUNTER." + key + "_BOSS"]).fetchone()
+                              AND f.model_id = ?""", ["ENCOUNTER." + BOSSES[key].get("encounter", key + "_BOSS")]).fetchone()
         cal.append([key.replace("_", " ").title(), f"{r['win_rate']:.0%}", f"{s}/{n} ({s / n:.0%})" if n else "-",
                     "yes" if BOSSES[key].get("validated") else "**no**"])
     con.close()

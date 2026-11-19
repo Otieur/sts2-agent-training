@@ -89,6 +89,7 @@ class Enemy:
     intangible: bool = False
     slow: bool = False          # Bygone Effigy: damage taken x (1 + 0.1 x cards played earlier this turn) [HYPOTHESIS unit]
     ref: Optional[int] = None   # the enemy's index in the mod's state (combat.enemies[].index), for target_index
+    hive: int = 0               # Entomancer's Personal Hive: each damage instance it takes adds this many cards to your draw pile
 
 
 @dataclass
@@ -223,9 +224,16 @@ def per_hit(card, player, enemy, strength_gained, played_before=0):
     return max(0, d)
 
 
+# Damage-equivalent cost of each card Personal Hive adds to your draw pile [HYPOTHESIS]: an added dead card is likely
+# drawn about once in the rest of the fight and replaces a real card play (about a Strike's 6), slightly discounted.
+HIVE_COST = 5.0
+
+
 def hit(enemy, dmg):
     if enemy.hp <= 0:
         return 0
+    if enemy.hive and dmg > 0:
+        enemy.hive_added = getattr(enemy, "hive_added", 0) + enemy.hive
     if enemy.slippery > 0:
         enemy.slippery -= 1
     absorbed = min(enemy.block, dmg)
@@ -325,6 +333,7 @@ def simulate(cards, targets, player, enemies):
     return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": lost, "dies": dies,
             "osty_hp_after": osty - to_osty, "powers": powers,  # energy spent on Powers
             "seq": seq,
+            "hive_cards": sum(getattr(e, "hive_added", 0) for e in es),
             "enemies_after": [{"hp": max(0, e.hp), "block": e.block, "slippery": e.slippery, "vuln": e.vuln, "weak": e.weak} for e in es],
             "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all(e.hp <= 0 for e in es),
             "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
@@ -395,10 +404,12 @@ def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALU
     tie-break in the safe mode."""
     if mode == "safe":
         key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         o["hp_lost"] + potion_cost * o["potions"], -o.get("powers", 0), -o["kills"], -o["dealt"], o["draws"] == 0)
+                         o["hp_lost"] + potion_cost * o["potions"], o.get("hive_cards", 0), -o.get("powers", 0), -o["kills"],
+                         -o["dealt"], o["draws"] == 0)
     else:
         key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         -(o["dealt"] - o["hp_lost"] - potion_cost * o["potions"] + power_value * o.get("powers", 0)),
+                         -(o["dealt"] - o["hp_lost"] - potion_cost * o["potions"] + power_value * o.get("powers", 0)
+                           - HIVE_COST * o.get("hive_cards", 0)),
                          o["hp_lost"], -o["kills"])
     seen, out = set(), []
     for o in sorted(results, key=key):
@@ -445,7 +456,7 @@ def from_state(st):
                              vuln=any(k.startswith("VULNERABLE") for k in pw), weak=any(k.startswith("WEAK") for k in pw),
                              slippery=int(next((v for k, v in pw.items() if k.startswith("SLIPPERY")), 0) or 0),
                              intangible=any(k.startswith("INTANGIBLE") for k in pw), slow=any(k.startswith("SLOW") for k in pw),
-                             ref=raw))
+                             ref=raw, hive=int(next((v for k, v in pw.items() if k.startswith("PERSONAL_HIVE")), 0) or 0)))
     for i, e in enumerate(enemies):
         e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
     run = st.get("run") or {}

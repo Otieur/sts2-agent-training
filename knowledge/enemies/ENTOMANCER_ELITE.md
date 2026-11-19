@@ -34,6 +34,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### Key mechanics `[GAME-EXTRACT]`
 - **Personal Hive:** every time the Entomancer takes damage, a generated card is added to **your** draw pile. Many small hits clog your deck.
 - Bees: 3×7 (21 base, plus Strength). Spear: 18. Pheromone Spit: gains Strength and more Hive.
+- These extract numbers cannot all hold from turn 1 (a simulation with Spit first loses every fight by turn 5, far from the Player's record); expect some to be ascension-dependent (gap 26). `tools/plan_turn.py` charges each card Personal Hive would add (reads `PERSONAL_HIVE` from the state), so it prefers few big hits here.
 
 ### Priorities and recommended answers
 - **Few, big hits.** Use single big attacks (Bludgeon, Hemokinesis, Uppercut, Strength-boosted single hits). Avoid multi-hit cards (Sword Boomerang, Twin Strike, Fiend Fire, Whirlwind) here. Each hit adds a card.

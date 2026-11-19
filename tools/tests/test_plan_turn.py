@@ -182,6 +182,16 @@ class TestPlanTurn(unittest.TestCase):
         self.assertFalse(o["dies"])
         self.assertEqual(o["block"], 10)
 
+    def test_personal_hive(self):
+        e = pt.parse_enemy("Ento:145:0:0", 0)
+        e.hive = 1
+        o = pt.simulate(hand("Twin Strike"), [0], pt.Player(energy=3), [e])
+        self.assertEqual(o["hive_cards"], 2)       # two damage instances, one card each
+        e2 = pt.parse_enemy("Ento:145:0:0", 0)
+        e2.hive = 1
+        res = pt.plans(hand("Twin Strike", "Strike"), pt.Player(energy=1), [e2])
+        self.assertEqual(pt.rank(res, "balanced")[0]["plays"][0].split(" →")[0], "Strike")  # Strike 6 - 5 beats Twin Strike 10 - 2 x 5
+
 
 if __name__ == "__main__":
     unittest.main()
