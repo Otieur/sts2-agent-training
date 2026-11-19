@@ -157,6 +157,23 @@ class TestPlanTurn(unittest.TestCase):
         self.assertEqual(boss["powers"], 3)   # Demon Form (3 energy) in a boss fight
         self.assertEqual(hall["powers"], 0)   # three Strikes in a hallway
 
+    def test_commands_adjust_indexes(self):
+        h = hand("Strike", "Defend", "Bash")      # indexes 0, 1, 2
+        e = [pt.parse_enemy("Worm:40:0:11", 0)]
+        e[0].ref = 3                              # the mod's own enemy index
+        o = pt.simulate([h[2], h[0]], [0, 0], pt.Player(energy=3), e)   # Bash (index 2), then Strike (index 0)
+        cmds = pt.commands(o, h)
+        self.assertIn("play_card card_index=2 target_index=3", cmds[0])
+        self.assertIn("play_card card_index=0 target_index=3", cmds[1])   # Strike still at 0 after Bash left
+        o = pt.simulate([h[0], h[2]], [0, 0], pt.Player(energy=3), e)   # Strike first: Bash shifts from 2 to 1
+        cmds = pt.commands(o, h)
+        self.assertIn("card_index=0", cmds[0])
+        self.assertIn("card_index=1", cmds[1])
+        self.assertIn("end_turn", cmds[-1])
+        p = pt.card_from_potion(1, "FIRE_POTION")
+        o = pt.simulate([p], [0], pt.Player(energy=3), e)
+        self.assertIn("use_potion option_index=1 target_index=3", pt.commands(o, h)[0])
+
 
 if __name__ == "__main__":
     unittest.main()

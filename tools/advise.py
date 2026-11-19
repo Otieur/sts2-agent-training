@@ -74,9 +74,16 @@ def combat(st, top=2):
         if c.note:
             out.append(f"note: {c.name}: {c.note}")
     out.append(f"fight type: {ft} (potion cost {plan_turn.POTION_COST[ft]:g} HP, Powers {plan_turn.POWER_VALUE[ft]:g} per energy)")
+    best = {}
     for mode in ("safe", "balanced"):
         out.append(f"{mode}:")
-        out += ["  " + plan_turn.fmt(o, player.hp) for o in plan_turn.rank(res, mode, plan_turn.POTION_COST[ft], plan_turn.POWER_VALUE[ft])[:top]]
+        ranked = plan_turn.rank(res, mode, plan_turn.POTION_COST[ft], plan_turn.POWER_VALUE[ft])
+        best[mode] = ranked[0] if ranked else None
+        out += ["  " + plan_turn.fmt(o, player.hp) for o in ranked[:top]]
+    for mode, o in best.items():
+        if o:
+            out.append(f"commands for the top {mode} plan (indexes already adjusted):")
+            out += ["  " + c for c in plan_turn.commands(o, hand, mode=mode)]
     c = st.get("combat") or {}
     if c.get("end_turn_will_kill_player"):
         out.append("WARNING: ending the turn now is lethal (mod's lethal check)")

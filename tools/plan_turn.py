@@ -88,6 +88,7 @@ class Enemy:
     slippery: int = 0
     intangible: bool = False
     slow: bool = False          # Bygone Effigy: damage taken x (1 + 0.1 x cards played earlier this turn) [HYPOTHESIS unit]
+    ref: Optional[int] = None   # the enemy's index in the mod's state (combat.enemies[].index), for target_index
 
 
 @dataclass
@@ -255,6 +256,7 @@ def simulate(cards, targets, player, enemies):
     osty = player.osty_hp
     log = []
     played = 0
+    seq = []
     for card, tgt in zip(cards, targets):
         cost = energy if card.x_cost else card.cost
         if cost > energy:
@@ -305,6 +307,8 @@ def simulate(cards, targets, player, enemies):
             osty = 0
         if not card.potion:
             played += 1
+        seq.append((card, es[tgt].ref if (card.target == "AnyEnemy" and tgt is not None and es[tgt].ref is not None)
+                    else (tgt if card.target == "AnyEnemy" else None)))
         label = (f"potion {card.name} (use_potion slot={card.index})" if card.potion else card.name)
         log.append(label + (f" → {es[tgt].name}[{tgt}]" if card.target == "AnyEnemy" and tgt is not None else ""))
     intents = [(e.intent_per_hit, e.intent_hits) for e in es if e.hp > 0 and e.intent_hits]
@@ -313,6 +317,7 @@ def simulate(cards, targets, player, enemies):
     to_osty = min(osty, inc.hp_lost)  # Osty takes the unblocked damage first while alive [GAME-EXTRACT] DIE_FOR_YOU_POWER
     return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": inc.hp_lost - to_osty + hp_cost,
             "osty_hp_after": osty - to_osty, "powers": powers,  # energy spent on Powers
+            "seq": seq,
             "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all(e.hp <= 0 for e in es),
             "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
 
@@ -343,6 +348,29 @@ def plans(hand, player, enemies):
                 if out:
                     results.append(out)
     return results
+
+
+def commands(o, hand, log="runs/<run>/decisions.jsonl", mode="safe"):
+    """sts.py commands (STS2-Agent) for a plan, with hand indexes adjusted as cards leave the hand. Commands after a
+    draw card are marked: re-read the state and re-plan after the draw."""
+    remaining = [c.index for c in hand if not c.potion]
+    out, drawn = [], False
+    for card, target in o.get("seq", []):
+        tgt = f" target_index={target}" if target is not None else ""
+        reason = f"Turn plan ({mode}): {card.name}" + (f" on enemy {target}" if target is not None else "")
+        if card.potion:
+            cmd = f"act use_potion option_index={card.index}{tgt}"
+        else:
+            pos = remaining.index(card.index)
+            remaining.pop(pos)
+            cmd = f"act play_card card_index={pos}{tgt}"
+        prefix = "# after re-planning: " if drawn else ""
+        out.append(f'{prefix}python3 -I tools/sts.py --mod sts2agent --log {log} {cmd} --reason "{reason}"')
+        if card.draw:
+            drawn = True
+    if not drawn:
+        out.append(f'python3 -I tools/sts.py --mod sts2agent --log {log} act end_turn --reason "Turn plan ({mode}) complete"')
+    return out
 
 
 def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALUE["elite"]):
@@ -401,6 +429,7 @@ def from_state(st):
                              slippery=int(next((v for k, v in pw.items() if k.startswith("SLIPPERY")), 0) or 0),
                              intangible=any(k.startswith("INTANGIBLE") for k in pw), slow=any(k.startswith("SLOW") for k in pw)))
     for i, e in enumerate(enemies):
+        e.ref = e.index  # keep the mod's index for target_index
         e.index = i
     run = st.get("run") or {}
     for slot, pot in enumerate(run.get("potions") or []):
