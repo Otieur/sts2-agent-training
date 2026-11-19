@@ -32,7 +32,7 @@ The training loop is: **play → log every decision with a reason → review the
 
 ### 2.1 Available data
 
-The run history (`~/Library/Application Support/SlayTheSpire2/steam/<id>/profile1/saves/history/*.run`) holds 233 unique runs. 227 of them were played on v0.107.1, which is the current main-branch version. Each `.run` file records, floor by floor:
+The run history (`~/Library/Application Support/SlayTheSpire2/steam/<id>/profile1/saves/history/*.run`) holds 233 unique runs. 227 of them were played on v0.107.1, the main-branch version until 2026-11-16 (main is now v0.111.1; see below). Each `.run` file records, floor by floor:
 
 - card rewards offered and the one picked (or a skip)
 - shop stock and purchases, and card removals
@@ -63,10 +63,11 @@ Second character: **Necrobinder**, which has the most card reward decisions reco
 
 ### 2.3 Game version and mod
 
-- **Target version: main branch v0.107.1.** It matches 227 of the 233 recorded runs, and it is the branch with Steam Workshop mod support.
+- **Target version: main branch, now v0.111.1** (updated 2026-11-19: Mega Crit moved main from v0.107.1 to v0.111.1 on 2026-11-16, bundling betas v0.108–v0.111). The Player's 227 runs are from v0.107.1, one patch cycle earlier. Changed cards and enemies are listed in `knowledge/version-delta-v0.111.1.md`.
 - **Primary mod: [Meddrin/STS2-Agent](https://github.com/Meddrin/STS2-Agent)**, a fork of CharTyr/STS2-Agent licensed under AGPL-3.0. It provides a localhost HTTP API, an optional MCP server, a decision log with per-action reasons, and an "Invite AI Teammate" feature. That feature launches a second local game instance in offline mode, which an external agent can drive. It was last updated 2026-09-24, and its docs reference game v0.111.0.
 - **Fallback mod: [Gennadiyev/STS2MCP](https://github.com/Gennadiyev/STS2MCP)**, licensed under MIT. It runs a REST API on `localhost:15526`, documents the macOS install path, and supports beta multiplayer, including localhost joins. Its last release was v0.4.0 (May), tested up to v0.99.1.
-- **Risk:** neither mod states v0.107.1 or macOS as tested. Phase 0 checks compatibility. If the primary mod fails on v0.107.1, the options in order are: rebuild it from source against the local game assemblies and fix the breaks, switch to the fallback mod, or switch the game to whichever branch the mod works on.
+- **Mod choice (revised, decision 0001):** STS2-Agent first, since its docs reference v0.111.0, the base of the new main; STS2MCP (last fixed for v0.107) as the fallback.
+- **Risk:** neither mod states v0.111.1 or macOS as tested. Phase 0 checks compatibility. If the primary mod fails on v0.111.1, the options in order are: rebuild it from source against the local game assemblies and fix the breaks, switch to the fallback mod, or switch the game to whichever branch the mod works on.
 
 ---
 
@@ -75,7 +76,7 @@ Second character: **Necrobinder**, which has the most card reward decisions reco
 ### Phase 0: Setup
 
 1. **Back up saves.** Copy `~/Library/Application Support/SlayTheSpire2` to a dated backup folder before changing branches. Switching from beta (save schema newer) to main may not read the newer files.
-2. **Switch branch.** In Steam, set Slay the Spire 2 → Properties → Betas to "None" so the game runs v0.107.1. Confirm the version in `logs/godot.log` (`release=v0.107.1`).
+2. **Switch branch.** In Steam, set Slay the Spire 2 → Properties → Betas to "None" so the game runs the main branch (v0.111.1). Confirm the version in `logs/godot.log` (`release=v0.111.1`).
 3. **Review the mod source.** Clone STS2-Agent and read the code before installing it. Check that it binds only to `127.0.0.1`, find any outbound network calls (the built-in autoplay calls external LLM APIs, and that feature stays unconfigured), and look at what the second-instance launcher executes.
 4. **Build from source** with `dotnet` (`./scripts/build-mod.sh --configuration Release`). Do not use a prebuilt binary. Install the built files into the macOS mods folder (`SlayTheSpire2.app/Contents/MacOS/mods/`) and enable mods in the game settings.
 5. **Verify** with `curl http://127.0.0.1:<port>/health`: it should show the game version and that the mod is loaded.
@@ -193,7 +194,7 @@ Repeat Phases 1–4 for Necrobinder, reusing the knowledge base. It should go fa
 
 | Risk | Mitigation |
 |---|---|
-| Mod not compatible with v0.107.1 or macOS | Build from source and patch; fallback mod; change branch |
+| Mod not compatible with v0.111.1 or macOS | Build from source and patch; fallback mod; change branch |
 | Mod bugs or co-op desync corrupt a run | Use the modded profile only; back up saves; never use the game's Load button for co-op saves (the mod docs warn this can mark the save corrupt) |
 | Context compaction mid-run loses the plan | Run journal updated every floor |
 | Learning only from the player's history caps skill at the player's level | Outside knowledge (Phase 2), the Agent's own experiments, exam seeds |

@@ -5,7 +5,7 @@
 2. A fresh backup exists (`docs/runbooks/restore-saves.md`).
 3. The game is on the intended branch.
 
-Decision record 0001 proposes **STS2MCP first** for solo play.
+Decision record 0001 (revised 2026-11-19) proposes **STS2-Agent first** (Option B), since main is now v0.111.1, the version its docs reference. STS2MCP (Option A) is the fallback: it needs no SDK install but was last fixed for v0.107.
 
 Game paths:
 ```bash

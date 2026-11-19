@@ -38,7 +38,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### Priorities and recommended answers
 - **Few, big hits.** Use single big attacks (Bludgeon, Hemokinesis, Uppercut, Strength-boosted single hits). Avoid multi-hit cards (Sword Boomerang, Twin Strike, Fiend Fire, Whirlwind) here. Each hit adds a card.
 - **Block the Bees turn:** 21 or more, rising with each Pheromone Spit. Weak on it cuts each bee hit.
-- **Kill before it stacks Strength:** 145 HP.
+- **Kill before it stacks Strength:** 145 HP (165 at A8+ on v0.111.1).
 - This replaces hypothesis H3 ("needs multi-target damage"). The data shows it is a single enemy that punishes hit count.
 
 ### Ready to fight

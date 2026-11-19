@@ -13,9 +13,9 @@
 |---|---|
 | **Duration** | 1–2 evenings of Agent work. Most of the elapsed time goes to downloads, builds and game restarts. |
 | **Player time** | About 45 minutes: switch the Steam branch, launch and quit the game a few times, accept the mod consent dialog, approve the security review verdict, approve tool permissions. |
-| **Best case** | The mod builds on the first try, loads on v0.107.1, and the Agent plays a full fight through the API in the first evening. |
+| **Best case** | The mod builds on the first try, loads on v0.111.1, and the Agent plays a full fight through the API in the first evening. |
 | **Likely case** | One or two snags: the build cannot find the game's assemblies inside the macOS app bundle, the mods folder location needs to be discovered from the logs, or the API port differs from the documented default. Each is a 15–60 minute fix. |
-| **Worst case** | The mod does not compile against v0.107.1, or loads but crashes. Then E7 applies: patch the mod, switch to the fallback mod, or run the game on whichever branch the mod supports. Expect an extra evening. |
+| **Worst case** | The mod does not compile against v0.111.1, or loads but crashes. Then E7 applies: patch the mod, switch to the fallback mod, or run the game on whichever branch the mod supports. Expect an extra evening. |
 | **What the Player will notice** | With mods enabled, the game uses a separate modded profile (`modded/profile1`). Runs played with mods on do not mix with the main profile. A copy of the main profile already exists there. |
 
 ---
@@ -68,7 +68,7 @@
 ### P0.E2: Game version
 
 > **P0.E2.S1: Switch to the main branch** · Size XS · Player-only · Status: Todo
-> *As the Player, I want the game on the main branch v0.107.1, so that the Agent trains on the same version as 227 of my 233 recorded runs.*
+> *As the Player, I want the game on the main branch (v0.111.1 since 2026-11-16), the closest supported version to my 227 runs on v0.107.1 and the version STS2-Agent was validated on.*
 >
 > **Acceptance criteria**
 > - [ ] Steam → Library → Slay the Spire 2 → Properties → Betas (or "Game Versions & Betas") → set to none or the default.
@@ -80,7 +80,7 @@
 > *As the Agent, I want to confirm the running version from the game's own logs, so that every later note is tagged with the right version.*
 >
 > **Acceptance criteria**
-> - [ ] After one launch, the newest `~/Library/Application Support/SlayTheSpire2/logs/godot*.log` contains `release=v0.107.1`.
+> - [ ] After one launch, the newest `~/Library/Application Support/SlayTheSpire2/logs/godot*.log` contains `release=v0.111.1`.
 > - [ ] The "Current save versions" log line is recorded in `docs/environment.md`.
 > - [ ] The log shows no save-load errors.
 
@@ -174,7 +174,7 @@
 >
 > **Acceptance criteria**
 > - [ ] The port is found (the F8 overlay, the mod config, or the logs). The documented default is 8080, but it is not guaranteed.
-> - [ ] `curl -s http://127.0.0.1:<port>/health` returns JSON with the game version `v0.107.1` and the mod version.
+> - [ ] `curl -s http://127.0.0.1:<port>/health` returns JSON with the game version `v0.111.1` and the mod version.
 > - [ ] The Godot log shows no exceptions from the mod during startup.
 
 ---
@@ -339,7 +339,7 @@
 Phase 0 is done when all of these hold, and the Player has confirmed in chat:
 
 - [ ] E1 complete (backup verified, restore documented)
-- [ ] E2 complete (v0.107.1 confirmed, profile intact) **or** a decision record choosing another branch
+- [ ] E2 complete (v0.111.1 confirmed, profile intact) **or** a decision record choosing another branch
 - [ ] E3.S2 verdict approved by the Player
 - [ ] E4 complete (mod built from source, installed, `/health` OK)
 - [ ] E5.S1–S3 complete (samples captured, one full fight played via the API)
@@ -368,7 +368,7 @@ E5.S4 (event stream probe) and E5.S5 (error shapes) may finish early in Phase 3 
 
 | ID | Question | Resolved by |
 |---|---|---|
-| OQ0.1 | Does STS2-Agent compile and run on v0.107.1? | P0.E4.S2, P0.E5 |
+| OQ0.1 | Does STS2-Agent compile and run on v0.111.1 (main since 2026-11-16)? | P0.E4.S2, P0.E5 |
 | OQ0.2 | Which folder does the macOS build load mods from? | P0.E4.S3 |
 | OQ0.3 | Does the event stream identify the human's card plays? | P0.E5.S4 |
 | OQ0.4 | Does Steam Cloud sync these saves? | P0.E1.S3 |

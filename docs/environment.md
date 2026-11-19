@@ -19,7 +19,7 @@ Drafted 2026-11-19 (overnight). Items marked "to confirm" need the Player or a g
 | Executable | `SlayTheSpire2.app/Contents/MacOS/Slay the Spire 2` |
 | Game assemblies (arm64) | `SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/` (`sts2.dll`, `GodotSharp.dll`, `0Harmony.dll`) |
 | Steam app ID | 2868840 |
-| Branch / version | Was `public-beta`, v0.113.1, as of 2026-11-18. **Target: main branch v0.107.1. To confirm after the Player switches branch.** |
+| Branch / version | Was `public-beta`, v0.113.1, as of 2026-11-18. **Target: main branch, now v0.111.1 (since 2026-11-16; was v0.107.1). To confirm after the Player switches branch.** |
 | Save data | `~/Library/Application Support/SlayTheSpire2/` (`steam/<id>/profile1`, `steam/<id>/modded/profile1`, `steam/back_prof1`, `logs/`, `mods/config/`) |
 | Logs | `~/Library/Application Support/SlayTheSpire2/logs/godot*.log` (contains `release=vX.Y.Z` and save schema versions) |
 | Acts seen in v0.107.1 data | Act 1: `ACT.OVERGROWTH` or `ACT.UNDERDOCKS`; Act 2: `ACT.HIVE`; Act 3: `ACT.GLORY` |

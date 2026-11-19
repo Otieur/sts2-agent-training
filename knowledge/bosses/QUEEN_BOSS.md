@@ -65,6 +65,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - Ironclad benchmark: median 41, p75 47.5. **Arrival HP matters a lot here:** survived fights started at a median 79% HP and fatal ones at 54% (all characters). **Rest if HP is below about 60.**
 
 ### First three turns
+- **Turn 1 (v0.111.1): the Torch Head Amalgam opens with a new Strong Tackle, 26 (32)** `[COMMUNITY]` patch notes. Block 26+ on turn 1.
 - Turn 1: expect the debuff setup. If you have Artifact, keep it for You're Mine. Block the Amalgam's Tackle 18.
 - Follow the chosen target line. Never let Off With Your Head (3×5, which is 7×5 under Vulnerable) land unblocked.
 

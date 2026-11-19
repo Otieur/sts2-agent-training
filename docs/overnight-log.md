@@ -36,3 +36,4 @@ Block K (morning report) starts no later than 09:52 EST.
 | X11: Upgrade table | 01:09 | 01:10 | tools/build_upgrade_table.py → knowledge/cards/ironclad-upgrades.md; playbook §2.3 pointer | Heuristic mapping with ambiguity flags; cost upgrades are not in the extract |
 | X12: Rule backtests | 01:10 | 01:11 | tools/backtest_rules.py → reports/phase2/rule-backtests.md; playbook H4/H5 rows | H4 supported at A5+ among runs with the chance to remove; H5 holds in every band |
 | X13: Gaps file | 01:11 | 01:11 | knowledge/gaps.md | 20 gaps ranked by impact, plus resolved items |
+| X14: Main is v0.111.1 | 01:11 | 01:15 | knowledge/version-delta-v0.111.1.md; decision 0001 revised (STS2-Agent first); target-version edits in TRAINING_PLAN, the project instructions, environment, phase-0, runbook, playbook v2.4, boss and elite notes, exam seeds warning | Found while checking which build the extract matches |

@@ -28,6 +28,14 @@ Accessed 2026-11-19 unless noted. **Quality** reflects version match with v0.107
 | slay-the-spire-2.pages.dev Ironclad builds | https://slay-the-spire-2.pages.dev/guides/ironclad-builds | Names "Limit Break" and the relic "Calipers", neither of which exists in the game data. Looks recycled from Slay the Spire 1. Not used. |
 | dood.gg builds (via search summary) | https://dood.gg/sts2/ironclad/builds | Names "Immolate", which is not in the game data. Not used. |
 
+## Patch notes
+| Source | URL | Used for |
+|---|---|---|
+| Wiki: V0.111.1 – Major Update 3 (main branch, 2026-11-16) | https://slaythespire.wiki.gg/wiki/Slay_the_Spire_2:V0.111.1_-_Major_Update_3 | `knowledge/version-delta-v0.111.1.md` |
+| Wiki: V0.111.0 – Beta Patch | https://slaythespire.wiki.gg/wiki/Slay_the_Spire_2:V0.111.0_-_Beta_Patch | Same |
+
+Note: the community tier sources above predate v0.111.1. Re-check the changed cards.
+
 ## Bosses and mechanics
 | Source | URL | Version | Used for |
 |---|---|---|---|

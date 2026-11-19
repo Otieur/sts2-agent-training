@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.3 · Game version: v0.107.1 · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.4 · Knowledge base: v0.107.1 (the Player's history, the extract) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -57,6 +57,12 @@ From `knowledge/community/ironclad-tiers.md` `[COMMUNITY]`. † marks cards wher
 - **C:** Break†, Armaments†, Ashen Strike, Drum of Battle†, Evil Eye, Headbutt†, Howl from Beyond†, Inferno†, Juggling†, Pillage, Rage, Stomp†, Stone Armor, Taunt†, Uppercut†, Vicious
 - **D:** Anger, Blood Wall, Bludgeon†, Dismantle†, Fight Me†, Inflame, Molten Fist, Primal Force†, Spite, Sword Boomerang, Tremble, Unrelenting, Whirlwind†, Breakthrough, Hemokinesis, Infernal Blade, Perfected Strike, Rampage, Setup Strike, Twin Strike, Cinder, Havoc, Iron Wave, Thunderclap
 - **Multiplayer-only value:** Tank, Demonic Shield. Rate them low solo.
+
+**Changed on v0.111.1** (`knowledge/version-delta-v0.111.1.md`), adjust the tiers above:
+- **Buffs:** Demon Form (3 Strength per turn, was 2), Mangle (20, was 15), Pact's End (18), Howl from Beyond (18), Rampage (10), Setup Strike (3 Strength), Forgotten Ritual (no exhaust needed).
+- **Nerfs:** Colossus (4 block), Crimson Mantle (7 block), Taunt (6 block).
+- **Expect a Fight** is a new card: 3 cost, 15 block + 5 per Strength. Rate it B in Strength decks, C otherwise `[HYPOTHESIS]`.
+- **Rarity:** Dominate is now Rare, so expect it less often. Bloodletting is now Uncommon, Cruelty Uncommon, Taunt Common.
 
 **Context overrides** (tier is a default, not a rule):
 - **Vantom is the Act 1 boss:** raise cheap and multi-hit attacks (Anger, Twin Strike, Sword Boomerang, Thrash, Fight Me). They clear Slippery. Lower hit-all single-hit cards (Breakthrough, Thunderclap). `[GAME-EXTRACT]` mechanics, `[HYPOTHESIS]` value
@@ -224,13 +230,14 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 | H9 | Boss survival depends more on block and scaling than on raw damage: targets in section 2.1 | Raw-damage terciles: Act 1 fatal 18% / 28% / 29% (low to high). Block: 30% / 24% / 21%. Scaling 2–3 cards: 17% against 28% (n=173 Act 1 boss fights) `[PLAYER-DATA, observational]` | Track the deck metrics at every boss arrival in Phase 4 | New (v2.2) |
 
 ## 13. Open questions and conflicts
-- The extract's build version is unverified. Re-check card numbers against live `/data` on v0.107.1 (P2.E1).
+- The extract shows pre-v0.111 values (it matches v0.107.x–v0.110). On v0.111.1, the cards and enemies in `knowledge/version-delta-v0.111.1.md` differ. Re-check numbers against live data (P2.E1).
 - Not Yet (card) and Aeonglass (boss) are missing from the extract.
 - **Cards where sources disagree** (†): Feel No Pain, One-Two Punch, Pyre, Barricade, Juggernaut, Aggression, Dark Embrace, Body Slam and others. Nat 1 Gaming is v0.113 beta. Spire Codex (main) is partial.
 - Bygone Effigy's Slow multiplier, the Colossus power and Infested Prism's Vital Spark: effects to verify in game.
 - Whether killing the Kin Priest ends that fight; whether Lagavulin Matriarch wakes when damaged.
 
 ## 14. Changelog
+- **v2.4 (2026-11-19, overnight):** main branch is now v0.111.1. Added the v0.111.1 card changes to §2.2; target version noted in the header.
 - **v2.3 (2026-11-19, overnight):** pre-boss rest threshold uses the ascension-band median; curse removal added to the shop priority. Both from the practice post-mortems in `runs/examples/`.
 - **v2.2 (2026-11-19, overnight):** numeric corner targets for deck needs (section 2.1) from the deck-strength analysis (`reports/phase2/deck-strength.md`, `tools/deck_metrics.py`); H9 added.
 - **v2.1 (2026-11-19, overnight):** pre-boss rest rule split by act (Act 3 and A10: rest under 70%), from the boss arrival-HP analysis (`reports/phase2/boss-arrival-hp.md`). H1 evidence updated as mixed.

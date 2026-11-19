@@ -43,6 +43,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Block 40 on Heavy Cleave** after a Windup (Impervious 30 + more, or a block potion).
 - Remove Artifact with a cheap debuff before relying on Vulnerable or Weak.
 - Exhaust the Burns.
+- **v0.111.1:** the Flamethrower turn now also deals 8 (12) damage `[COMMUNITY]` patch notes. It is no longer a free turn.
 
 ### Ready to fight
 - Ironclad median 34, p75 43. 1 of 5 fatal. Enter with at least about 55 HP.

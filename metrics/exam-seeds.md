@@ -1,5 +1,7 @@
 # Exam Seeds (P4.E5.S2)
 
+**Warning (2026-11-19 01:15):** main is now v0.111.1, where seeds are 12 characters long. These 10-character v0.107.1 seeds may be rejected or generate different maps. Test one first; if it fails, choose new exam seeds from the first v0.111.1 runs.
+
 Five seeds from the Player's Ironclad history (v0.107.1), chosen 2026-11-19: 2 wins and 3 losses, covering the three most common Ironclad killers and both Act 1 variants. Each is replayed at the Player's original ascension, so results compare directly with the Player's.
 
 | # | Seed | Ascension | Act 1 | The Player's result | Why it is in the set |
