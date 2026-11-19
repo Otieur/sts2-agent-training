@@ -76,7 +76,10 @@ class TestSimulateFight(unittest.TestCase):
             r = sf.run_fight(deck, "THE_KIN", 80, 80, seed=4, focus_boss=focus)
             self.assertTrue(r["won"] or r["hp"] == 0 or r.get("timeout"))
         # a win can come with followers alive: they are Minions and the Priest's death ends the fight
-        wins = [sf.run_fight(deck, "THE_KIN", 80, 80, seed=s, focus_boss=True) for s in range(8)]
+        strong = expand_deck(["STRIKE_IRONCLAD:2", "DEFEND_IRONCLAD:3", "BASH", "POMMEL_STRIKE", "SHRUG_IT_OFF:2", "UPPERCUT",
+                              "ANGER", "INFLAME:2", "TWIN_STRIKE:2", "FLAME_BARRIER", "BATTLE_TRANCE", "BLUDGEON", "DEMON_FORM",
+                              "SWORD_BOOMERANG", "IMPERVIOUS", "OFFERING"], "IRONCLAD")
+        wins = [sf.run_fight(strong, "THE_KIN", 80, 80, seed=s, focus_boss=True) for s in range(12)]
         self.assertTrue(any(w["won"] for w in wins))
 
     def test_insatiable_and_entomancer_cycles(self):

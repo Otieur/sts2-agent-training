@@ -32,9 +32,10 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Key mechanics `[GAME-EXTRACT]`
 - **Territorial:** gains Strength at the end of **every** turn. Peck: 3×3. Swoop: 16. Both grow every turn.
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 81–84 (90 at A8+); Swoop 17 (19) first, then Peck 3×3 (4×3), alternating; Territorial +2 Strength per turn (raised from 1 in V0.29.0). The simulator uses these since 2026-11-19.
 
 ### Priorities and recommended answers
-- **Kill fast.** 91–94 HP. Every extra turn adds Strength to every hit, and Peck's three hits gain triple.
+- **Kill fast.** 81–84 HP (the wiki; the extract showed 91–94). Every extra turn adds Strength to every hit, and Peck's three hits gain triple.
 - Front-load damage. Vulnerable on turn 1 is worth a lot here.
 - Weak on it reduces each Peck hit.
 

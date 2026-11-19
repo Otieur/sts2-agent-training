@@ -35,7 +35,7 @@ The 15-card base deck for Act 1 fights and the 22-card Act 2 deck for Act 2 figh
 | Soul Fysh | 50% | 4/7 (57%) | yes |
 | Waterfall Giant | 14% | 3/5 (60%) | **no** |
 | The Insatiable | 2% | 4/6 (67%) | **no** |
-| The Kin | 1% | 8/8 (100%) | **no** |
+| The Kin | 0% | 8/8 (100%) | **no** |
 
 ## Calibration with the Player's own decks
 
@@ -48,11 +48,11 @@ Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1,
 | Ceremonial Beast | 6 | 0% | 0.42 | 5/6 (83%) |
 | Knowledge Demon | 12 | 4% | 0.37 | 8/12 (67%) |
 | Entomancer | 13 | 4% | 0.46 | 10/13 (77%) |
-| Byrdonis | 10 | 68% | 0.94 | 7/10 (70%) |
+| Byrdonis | 10 | 56% | 0.87 | 7/10 (70%) |
 | Soul Fysh | 7 | 0% | 0.60 | 4/7 (57%) |
 | Waterfall Giant | 5 | 3% | 0.70 | 3/5 (60%) |
 | The Insatiable | 6 | 0% | 0.38 | 4/6 (67%) |
-| The Kin | 8 | 0% | 0.54 | 8/8 (100%) |
+| The Kin | 8 | 0% | 0.49 | 8/8 (100%) |
 
 Reading: absolute win rates from the simulator mean little for real decks; use it to compare additions to the same deck. A boss whose share removed is low while the Player usually survived (Ceremonial Beast, Entomancer, Knowledge Demon) is modelled too hard.
 
@@ -94,16 +94,16 @@ From 60/80 HP, the better of the balanced and safe plans per row. Soul Fysh: Bec
 
 ## Byrdonis: which plan against an elite that scales
 
-Byrdonis (91 HP; Peck 3x3 and Swoop 16 alternating; +1 Strength each turn, order and amount `[HYPOTHESIS]`). Calibration: the base deck loses about 26–29 HP here; the Player's Ironclad decks lost 25.8 on average (10 fights).
+Byrdonis (82 HP; Swoop 17 and Peck 3x3 alternating, Swoop first; +2 Strength each turn; the wiki). Calibration: the base deck loses about 36 HP here from 56/80 (balanced); the Player's Ironclad decks lost 25.8 on average (10 fights).
 
 | Deck | Start HP | Balanced: win (HP lost) | Safe below 50% | Safe |
 |---|---|---|---|---|
-| starter + Twin Strike + Pommel Strike (12 cards) | 56/80 | 96% (50 HP) | 34% (53 HP) | 6% (56 HP) |
-| starter + Twin Strike + Pommel Strike (12 cards) | 70/80 | 100% (51 HP) | 98% (50 HP) | 36% (66 HP) |
-| base deck (15 cards) | 56/80 | 100% (29 HP) | 100% (26 HP) | 100% (26 HP) |
-| base deck (15 cards) | 70/80 | 100% (29 HP) | 100% (29 HP) | 100% (26 HP) |
+| starter + Twin Strike + Pommel Strike (12 cards) | 56/80 | 70% (53 HP) | 4% (56 HP) | 1% (56 HP) |
+| starter + Twin Strike + Pommel Strike (12 cards) | 70/80 | 88% (56 HP) | 71% (61 HP) | 3% (70 HP) |
+| base deck (15 cards) | 56/80 | 100% (36 HP) | 99% (35 HP) | 89% (39 HP) |
+| base deck (15 cards) | 70/80 | 100% (36 HP) | 100% (36 HP) | 98% (40 HP) |
 
-Reading: blocking instead of attacking lets the Strength snowball. With a weak deck the safe plan collapses; with a strong deck it saves a few HP. Against enemies that scale every turn, follow the balanced plan.
+Reading (computed, from 56/80): the 12-card deck wins 70% with the balanced plan against 1% with the safe plan; the base deck 100% against 89% (36 against 39 HP lost). Blocking instead of attacking lets the Strength grow.
 
 ## The Kin: race the Priest or clear the followers
 
@@ -111,10 +111,10 @@ Kin Priest (190 HP; Orb of Frailty 8 + Frail, Orb of Weakness 8 + Weak, Beam 3x3
 
 | Deck | Every single-target card at the Priest | The planner's own targets |
 |---|---|---|
-| base deck (15 cards) | 38% (77 HP) | 31% (78 HP) |
-| + Thunderclap, Conflagration (hit-all) | 63% (75 HP) | 77% (73 HP) |
+| base deck (15 cards) | 17% (79 HP) | 9% (79 HP) |
+| + Thunderclap, Conflagration (hit-all) | 18% (79 HP) | 57% (75 HP) |
 
-Reading (computed): single-target deck: racing the Priest 38% against 31%; with two hit-all cards: the planner's targets (clearing followers) 77% against racing 63%.
+Reading (computed): single-target deck: racing the Priest 17% against 9%; with two hit-all cards: the planner's targets (clearing followers) 57% against racing 18%.
 
 ## Knowledge Demon: which curse to take
 

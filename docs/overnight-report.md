@@ -82,4 +82,14 @@ Seventeen, each with its reason and how to reverse it: `docs/overnight-decisions
 5. Revisit H1, H9, H10 and the draft weights after 10 runs.
 
 ## 8. Time log
-See `docs/overnight-log.md` (one row per block, start and end times from `date`).
+Full record: `docs/overnight-log.md` (one row per block, start and end times from `date`). In summary (EST):
+
+| Time | Work |
+|---|---|
+| 00:22–00:24 | Start-up: log, keep-awake, reading |
+| 00:23–01:11 | Planned blocks A, F, B0, B, C, D, E, J, H, G, I and the save backup |
+| 01:11–03:52 | Stretch and never-idle work X1–X86 (version deltas, toolchain, analyses, simulator, shadowing, runbooks) |
+| 03:52–06:46 | X87–X98: new boss models, planner card and power coverage, advisor robustness, sensitivity checks, upgrades and relics in the simulator |
+| 06:46–09:00 | X99–X113: potions in the simulator, drafting speed, bosses with adds (The Kin), one-command advice, the community wiki pass (Entomancer, Byrdonis and Insatiable models), final report runs |
+| from about 09:25 | Block K: this report, the status board, the final commit |
+

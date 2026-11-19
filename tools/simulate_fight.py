@@ -125,10 +125,10 @@ def entomancer_move(b, turn):
 
 
 def byrdonis_move(b, turn):
-    """Byrdonis (elite, 91 HP): Peck 3x3 and Swoop 16 alternating; Territorial: +1 Strength at the end of each of its
-    turns. Order and Territorial amount are [HYPOTHESIS] (the extract lists the two moves and the power only)."""
-    m = _move(dmg=3, hits=3, boss_str=1) if turn % 2 == 1 else _move(dmg=16, boss_str=1)
-    return m
+    """Byrdonis (elite, 81-84 HP): Swoop 17 and Peck 3x3 alternating, Swoop first; Territorial: +2 Strength at the end of
+    each of its turns (slaythespire.wiki.gg page: raised from 1 to 2 in V0.29.0) `[COMMUNITY]`. The first model (Peck first,
+    Swoop 16, +1 Strength, 91 HP) came from the extract's move list."""
+    return _move(dmg=17, boss_str=2) if turn % 2 == 1 else _move(dmg=3, hits=3, boss_str=2)
 
 
 def fysh_move(b, turn):
@@ -176,8 +176,9 @@ def kin_priest_move(b, turn):
 
 
 def kin_follower_move(a, turn):
-    """Kin Follower (58 HP, Minion): Quick Slash 5, Boomerang 2x2, Power Dance +2 Strength, repeating `[HYPOTHESIS]` order."""
-    return [_move(dmg=5), _move(dmg=2, hits=2), _move("buff", boss_str=2)][(turn - 1) % 3]
+    """Kin Follower (58 HP, Minion): Quick Slash 5, Boomerang 2x2, Power Dance +2 Strength, repeating; the two followers are
+    offset, one starting with Quick Slash and the other with Power Dance (slaythespire.wiki.gg page) `[COMMUNITY]`."""
+    return [_move(dmg=5), _move(dmg=2, hits=2), _move("buff", boss_str=2)][(turn - 1 + a.get("offset", 0)) % 3]
 
 
 BOSSES = {
@@ -193,7 +194,7 @@ BOSSES = {
     # Vantom's (31% against 4/10); the first model (Spit first, +3 Strength) failed badly.
     "ENTOMANCER": {"hp": 145, "hive": 1, "move": entomancer_move, "validated": True, "encounter": "ENTOMANCER_ELITE", "act": 2},
     # Byrdonis: the 15-card base deck loses about 26-29 HP here, the Player's Ironclad decks lost 25.8 on average.
-    "BYRDONIS": {"hp": 91, "move": byrdonis_move, "validated": True, "encounter": "BYRDONIS_ELITE"},
+    "BYRDONIS": {"hp": 82, "move": byrdonis_move, "validated": True, "encounter": "BYRDONIS_ELITE"},
     # Soul Fysh: the model's win rate (about 50% from 60/80 with the base deck) sits close to the Player's 4/7; a small
     # sample, so this only rules out gross errors. Waterfall Giant with the full five-move cycle: 14% from 60/80 against
     # the Player's 3/5, three times too hard relative to Vantom, so not used in drafting (its plan-mode result, safe far
@@ -205,7 +206,8 @@ BOSSES = {
     # The Insatiable: cycle and Sandpit from the wiki page; calibration in report()
     "THE_INSATIABLE": {"hp": 321, "move": insatiable_move, "status_card": "FRANTIC_ESCAPE", "validated": False, "act": 2},
     "THE_KIN": {"hp": 190, "move": kin_priest_move, "validated": False, "encounter": "THE_KIN_BOSS",
-                "adds": [{"name": "KIN_FOLLOWER", "hp": 58, "move": kin_follower_move, "minion": True}] * 2},
+                "adds": [{"name": "KIN_FOLLOWER", "hp": 58, "move": kin_follower_move, "minion": True},
+                         {"name": "KIN_FOLLOWER", "hp": 58, "move": kin_follower_move, "minion": True, "offset": 2}]},
 }
 
 
@@ -284,7 +286,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     p_vuln = p_weak = p_frail = 0
     sandpit, fe_played = 0, 0  # The Insatiable's Sandpit on you, Frantic Escapes played (each costs 1 more)
     adds = [{"name": a["name"], "hp": a["hp"], "max": a["hp"], "block": 0, "strength": 0, "vuln": 0, "weak": 0,
-             "minion": a.get("minion", False), "move": a["move"], "mv": None} for a in spec.get("adds", [])]
+             "minion": a.get("minion", False), "move": a["move"], "mv": None, "offset": a.get("offset", 0)} for a in spec.get("adds", [])]
     ringing = False
     if "RED_MASK" in R:
         b["weak"] = 1
@@ -738,21 +740,26 @@ def report(runs=300):
           "guide for the full cycle). Exhaust cards remove a held Beckon (or another status or curse) first.", "",
           md_table(["Base deck + two cards", "Soul Fysh win", "HP lost", "Waterfall Giant win", "HP lost"], sw), ""]
     # Byrdonis: plan choice against an elite that gains Strength every turn
-    by = []
+    by, byr = [], {}
     weak_deck = expand_deck(["STRIKE_IRONCLAD:5", "DEFEND_IRONCLAD:4", "BASH", "TWIN_STRIKE", "POMMEL_STRIKE"], "IRONCLAD")
     for name, d in (("starter + Twin Strike + Pommel Strike (12 cards)", weak_deck), ("base deck (15 cards)", base_deck)):
         for start in (56, 70):
             cells = [name, f"{start}/80"]
             for m in ("balanced", "hybrid:0.5", "safe"):
                 r = evaluate(d, "BYRDONIS", start, 80, runs * 2 // 3, m)
+                byr[(name[:4], start, m)] = r
                 cells.append(f"{r['win_rate']:.0%} ({r['hp_lost']:.0f} HP)")
             by.append(cells)
+    wb, ws = byr[("star", 56, "balanced")], byr[("star", 56, "safe")]
+    bb, bs = byr[("base", 56, "balanced")], byr[("base", 56, "safe")]
     L += ["## Byrdonis: which plan against an elite that scales", "",
-          "Byrdonis (91 HP; Peck 3x3 and Swoop 16 alternating; +1 Strength each turn, order and amount `[HYPOTHESIS]`). "
-          "Calibration: the base deck loses about 26–29 HP here; the Player's Ironclad decks lost 25.8 on average (10 fights).", "",
+          "Byrdonis (82 HP; Swoop 17 and Peck 3x3 alternating, Swoop first; +2 Strength each turn; the wiki). "
+          f"Calibration: the base deck loses about {bb['hp_lost']:.0f} HP here from 56/80 (balanced); the Player's Ironclad decks "
+          "lost 25.8 on average (10 fights).", "",
           md_table(["Deck", "Start HP", "Balanced: win (HP lost)", "Safe below 50%", "Safe"], by), "",
-          "Reading: blocking instead of attacking lets the Strength snowball. With a weak deck the safe plan collapses; with a "
-          "strong deck it saves a few HP. Against enemies that scale every turn, follow the balanced plan.", ""]
+          f"Reading (computed, from 56/80): the 12-card deck wins {wb['win_rate']:.0%} with the balanced plan against "
+          f"{ws['win_rate']:.0%} with the safe plan; the base deck {bb['win_rate']:.0%} against {bs['win_rate']:.0%} "
+          f"({bb['hp_lost']:.0f} against {bs['hp_lost']:.0f} HP lost). Blocking instead of attacking lets the Strength grow.", ""]
     # The Kin: race the Priest or let the planner target (it clears followers with hit-all cards)
     kin = []
     hitall = expand_deck(EXPERIMENT_BASE + ["THUNDERCLAP", "CONFLAGRATION"], "IRONCLAD")
