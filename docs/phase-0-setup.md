@@ -181,7 +181,7 @@
 
 ### P0.E5: API smoke test
 
-> **P0.E5.S1: Capture state samples for every screen** · Size M · Status: Todo
+> **P0.E5.S1: Capture state samples for every screen** · Size M · Status: In progress (tools/smoke.py --save --watch and docs/runbooks/first-session.md ready; needs the live mod)
 > *As the Next Session, I want real JSON samples of each screen type, so that parsers and handlers are built against reality, not documentation.*
 >
 > **Acceptance criteria**
