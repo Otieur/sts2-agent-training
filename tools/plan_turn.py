@@ -768,13 +768,23 @@ def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALU
 
 
 # ------------------------------------------------------------------------------------------------ inputs
+def _list(x):
+    """x if it is a list, else []: live states may carry nulls or wrong types where a list is documented."""
+    return x if isinstance(x, list) else []
+
+
+def _dicts(x):
+    """The dict items of x when x is a list (other items skipped), else []."""
+    return [i for i in _list(x) if isinstance(i, dict)]
+
+
 def from_state(st):
     st = st.get("data", st)
     c = st.get("combat") or {}
     p = c.get("player") or {}
     powers = {(x.get("power_id") or x.get("id") or x.get("name") or "").upper(): x.get("amount", x.get("stacks", 1))
-              for x in p.get("powers") or []}
-    osty = sum(int(x.get("current_hp") or 0) for x in p.get("pets") or [] if (x.get("pet_id") or "").upper() == "OSTY")
+              for x in _dicts(p.get("powers"))}
+    osty = sum(int(x.get("current_hp") or 0) for x in _dicts(p.get("pets")) if (x.get("pet_id") or "").upper() == "OSTY")
     player = Player(energy=int(p.get("energy") or 0), block=int(p.get("block") or 0), osty_hp=osty,
                     strength=int(powers.get("STRENGTH_POWER", powers.get("STRENGTH", 0)) or 0),
                     dexterity=int(powers.get("DEXTERITY_POWER", powers.get("DEXTERITY", 0)) or 0),
@@ -792,8 +802,8 @@ def from_state(st):
     if limits:
         player.max_cards = min(limits)
     hand = []
-    for h in c.get("hand") or []:
-        live = {d["name"]: d.get("current_value") for d in h.get("dynamic_values") or [] if d.get("current_value") is not None}
+    for h in _dicts(c.get("hand")):
+        live = {d["name"]: d.get("current_value") for d in _dicts(h.get("dynamic_values")) if d.get("current_value") is not None}
         cost = int(h.get("energy_cost") or 0)
         idx = h.get("index")
         hand.append(card_from_extract(int(idx) if isinstance(idx, (int, float)) else len(hand), str(h.get("card_id") or "?"), live or None, cost,
@@ -801,12 +811,12 @@ def from_state(st):
         if h.get("costs_x"):
             hand[-1].x_cost = True
     enemies = []
-    for e in c.get("enemies") or []:
+    for e in _dicts(c.get("enemies")):
         if not e.get("is_alive", True):
             continue
         pw = {(x.get("power_id") or x.get("id") or x.get("name") or "").upper(): x.get("amount", x.get("stacks", 1))
-              for x in e.get("powers") or []}
-        att = [i for i in e.get("intents") or [] if i.get("damage") is not None]
+              for x in _dicts(e.get("powers"))}
+        att = [i for i in _dicts(e.get("intents")) if i.get("damage") is not None]
         dmg = sum(int(i["damage"]) for i in att[:1])
         hits = sum(int(i.get("hits") or 1) for i in att[:1])
         raw = e.get("index", len(enemies))  # an int (STS2-Agent) or an entity_id string (STS2MCP via mcp_adapter)
@@ -835,7 +845,7 @@ def from_state(st):
     for i, e in enumerate(enemies):
         e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
     run = st.get("run") or {}
-    for slot, pot in enumerate(run.get("potions") or []):
+    for slot, pot in enumerate(_list(run.get("potions"))):
         if isinstance(pot, dict) and pot.get("occupied") and isinstance(pot.get("potion_id"), str):
             pc = card_from_potion(int(pot.get("index", slot)), pot["potion_id"])
             if pc.playable:
