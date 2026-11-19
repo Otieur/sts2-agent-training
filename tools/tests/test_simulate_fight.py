@@ -79,6 +79,17 @@ class TestSimulateFight(unittest.TestCase):
         wins = [sf.run_fight(deck, "THE_KIN", 80, 80, seed=s, focus_boss=True) for s in range(8)]
         self.assertTrue(any(w["won"] for w in wins))
 
+    def test_insatiable_and_entomancer_cycles(self):
+        m1 = sf.insatiable_move({}, 1)
+        self.assertEqual((m1["sandpit"], m1["status"], m1["status_draw"]), (4, 3, 3))
+        self.assertEqual([sf.insatiable_move({}, t)["dmg"] for t in range(2, 7)], [8, 28, 0, 8, 8])
+        b = {}
+        self.assertEqual([sf.entomancer_move(b, t)["kind"] for t in (1, 2, 3)], ["attack", "attack", "buff"])
+        self.assertEqual(sf.entomancer_move(b, 3)["boss_str"], 1)     # +1 Strength while Personal Hive is under 3
+        deck = expand_deck(sf.EXPERIMENT_BASE, "IRONCLAD")
+        r = sf.run_fight(deck, "THE_INSATIABLE", 80, 80, seed=1)
+        self.assertTrue(r["won"] or r["hp"] == 0 or r.get("timeout"))
+
     def test_soul_fysh_cycle_and_beckon(self):
         b = {}
         moves = [sf.fysh_move(b, t) for t in range(1, 11)]

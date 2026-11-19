@@ -35,7 +35,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 > v0.107.1 nerfed Vantom at lower ascension (no numbers published) `[COMMUNITY]`. The extract's values below predate that; the Player's 28 fights were on v0.107.1.
 
 ### Mechanics summary
-- **Slippery** `[GAME-EXTRACT]`: each damage instance is capped at 1 and removes one stack. Starts at 9 stacks in solo `[COMMUNITY]`. Every Strike counts as one instance. Multi-hit cards count per hit.
+- **Slippery** `[GAME-EXTRACT]`: each damage instance is capped at 1 and removes one stack. Starts at 9 stacks in solo `[COMMUNITY]`; the wiki (slaythespire.wiki.gg page, accessed 2026-11-19) shows 9 and a patch note (2026-04-23) lowering it to 8 at lower ascensions, so expect 8 at A0. The wiki confirms the cycle and numbers (HP 173, 183 at A8+; Dismember 30 at higher ascension). Every Strike counts as one instance. Multi-hit cards count per hit.
 - **Cycle** `[GAME-EXTRACT]`: Ink Blot 7 → Inky Lance 6×2 → Dismember 27 + 3 Wounds → Prepare (+2 Strength), then repeat. Every hit in cycle 2 is 2 higher (Dismember 29).
 - 173 HP. A typical fight lasts 7 turns (benchmark median).
 

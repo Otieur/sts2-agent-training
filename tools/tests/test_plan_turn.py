@@ -268,7 +268,9 @@ class TestPlanTurn(unittest.TestCase):
         self.assertIn("Frantic Escape", o["plays"])                 # Sandpit 1 at the end of the turn would kill you
         self.assertFalse(o["dies"])
         o = pt.rank(pt.plans(h, pt.Player(energy=2, hp=50, sandpit=3), [pt.parse_enemy("A:300:0:5", 0)]), "balanced")[0]
-        self.assertNotIn("Frantic Escape", o["plays"])
+        self.assertIn("Frantic Escape", o["plays"])                 # builds a buffer while it is cheap
+        o = pt.rank(pt.plans(h, pt.Player(energy=2, hp=50, sandpit=4), [pt.parse_enemy("A:300:0:5", 0)]), "balanced")[0]
+        self.assertNotIn("Frantic Escape", o["plays"])              # the buffer is full
         h = ids("TOXIC", "DEFEND_IRONCLAD", "STRIKE_IRONCLAD")
         o = pt.rank(pt.plans(h, pt.Player(energy=2, hp=50), [pt.parse_enemy("A:300:0:8", 0)]), "safe")[0]
         self.assertEqual((sorted(o["plays"]), o["hp_lost"]), (["Defend", "Toxic"], 3))  # Toxic held would cost 5 more

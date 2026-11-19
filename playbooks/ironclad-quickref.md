@@ -35,7 +35,7 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 ## Bosses (§10, notes in `knowledge/bosses/`)
 | Boss | The one thing |
 |---|---|
-| Vantom | 9 Slippery stacks: cheap and multi-hit attacks; block 27 on turn 3 |
+| Vantom | 8 Slippery stacks at low ascension, 9 higher (wiki): cheap and multi-hit attacks; block 27 on turn 3 |
 | Lagavulin Matriarch | Set up while asleep; first damage on the last sleep turn (wakes stunned) |
 | Ceremonial Beast | Plow: stunned at 150 HP left (community); Ringing after Beast Cry: one card next turn |
 | Soul Fysh | Get rid of Beckons (6 HP each if held at end of turn; 1 energy to play, exhaust is better); burst outside Fade's Intangible; block De-Gas after Scream (24); safe plan |
@@ -44,7 +44,7 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 | Kaiser Crab | Focus Rocket; end the Laser turn facing Rocket; kill a claw with the turn's last attack (Crab Rage) |
 | Queen | Turn 1 Strong Tackle 26 (v0.111.1): block it; arrive high |
 | The Kin | Killing the Priest ends the fight (followers are Minions; two guides): race it with a single-target deck; with hit-all damage clear the followers first (simulated) |
-| The Insatiable | Sandpit kills you at 0: end every turn at 2 or more; Frantic Escape +1, cost rises each play |
+| The Insatiable | Sandpit (4) kills you at 0: end every turn at 2 or more, and play Frantic Escape while cheap to keep 3–4; cost rises each play |
 | Test Subject | Phase 1: each Skill gives it 2 Strength, so attack; phases 100/200/300 HP with a one-turn stun between |
 | Aeonglass | Strip its 3 Artifact before debuffs; Withers punish many small plays (guides disagree on the count) |
 

@@ -110,13 +110,18 @@ def demon_move(b, turn):
 
 
 def entomancer_move(b, turn):
-    """Entomancer (elite, 145 HP): Pheromone Spit (+1 Personal Hive, +3 Strength), Bees 3x7, Spear 18, repeating, in the
-    extract's declaration order `[HYPOTHESIS]`. Personal Hive starts at 1."""
+    """Entomancer (elite, 145 HP): Beeeees! 3x7, Spear! 18, Pheromone Spit (+1 Personal Hive and +1 Strength; +2 Strength
+    instead once Personal Hive is at 3), repeating; Personal Hive starts at 1 and adds that many Dazed to your draw pile
+    per attack hit (slaythespire.wiki.gg page, v0.111.1 history) `[COMMUNITY]`. The first model used the extract's
+    declaration order with +3 Strength and failed badly."""
     i = (turn - 1) % 3
-    if i == 0:
-        b["hive"] = b.get("hive", 1) + 1
-        return _move("buff", boss_str=3)
-    return [None, _move(dmg=3, hits=7), _move(dmg=18)][i]
+    if i == 2:
+        hive = b.get("hive", 1)
+        if hive >= 3:
+            return _move("buff", boss_str=2)
+        b["hive"] = hive + 1
+        return _move("buff", boss_str=1)
+    return [_move(dmg=3, hits=7), _move(dmg=18)][i]
 
 
 def byrdonis_move(b, turn):
@@ -154,6 +159,16 @@ def giant_move(b, turn):
     return dict([_move(dmg=15, p_weak=1), _move(dmg=10), _move("buff", heal=10), None, _move(dmg=13)][i], steam=3)
 
 
+def insatiable_move(b, turn):
+    """The Insatiable (321 HP): Liquify Ground on turn 1 (4 Sandpit on you; 6 Frantic Escape, 3 into the draw pile and 3
+    into the discard pile), then Thrash 8x2, Lunging Bite 28, Salivate +2 Strength, Thrash 8x2, repeating
+    (slaythespire.wiki.gg page) `[COMMUNITY]`. Sandpit ticks down at the start of your turn and kills you at 0; each Frantic
+    Escape adds 1 and costs 1 more each play (guides)."""
+    if turn == 1:
+        return dict(_move("status", status=3, status_draw=3), sandpit=4)
+    return [_move(dmg=8, hits=2), _move(dmg=28), _move("buff", boss_str=2), _move(dmg=8, hits=2)][(turn - 2) % 4]
+
+
 def kin_priest_move(b, turn):
     """Kin Priest (190 HP): Orb of Frailty 8 + Frail, Orb of Weakness 8 + Weak, Beam 3x3, Ritual +2 Strength, repeating, in
     the extract's declaration order `[HYPOTHESIS]`."""
@@ -174,7 +189,9 @@ BOSSES = {
     "KNOWLEDGE_DEMON": {"hp": 379, "move": demon_move, "validated": False, "act": 2},  # calibration in report()
     # Entomancer fails calibration badly (every deck loses by turn 5): the extract's Strength gains and Bees 3x7 cannot all
     # apply from turn 1 in this order; probably ascension-dependent values or another order. Not used; see gap 26.
-    "ENTOMANCER": {"hp": 145, "hive": 1, "move": entomancer_move, "validated": False, "encounter": "ENTOMANCER_ELITE", "act": 2},
+    # Entomancer with the wiki's cycle: 52% from 60/80 with the Act 2 deck against the Player's 10/13, the same ratio as
+    # Vantom's (31% against 4/10); the first model (Spit first, +3 Strength) failed badly.
+    "ENTOMANCER": {"hp": 145, "hive": 1, "move": entomancer_move, "validated": True, "encounter": "ENTOMANCER_ELITE", "act": 2},
     # Byrdonis: the 15-card base deck loses about 26-29 HP here, the Player's Ironclad decks lost 25.8 on average.
     "BYRDONIS": {"hp": 91, "move": byrdonis_move, "validated": True, "encounter": "BYRDONIS_ELITE"},
     # Soul Fysh: the model's win rate (about 50% from 60/80 with the base deck) sits close to the Player's 4/7; a small
@@ -185,6 +202,8 @@ BOSSES = {
     "SOUL_FYSH": {"hp": 211, "move": fysh_move, "status_card": "BECKON", "validated": True},
     "WATERFALL_GIANT": {"hp": 250, "move": giant_move, "explodes": True, "validated": False},
     # The Kin: the Priest with two Minion followers; killing the Priest ends the fight (two guides). Cycles [HYPOTHESIS].
+    # The Insatiable: cycle and Sandpit from the wiki page; calibration in report()
+    "THE_INSATIABLE": {"hp": 321, "move": insatiable_move, "status_card": "FRANTIC_ESCAPE", "validated": False, "act": 2},
     "THE_KIN": {"hp": 190, "move": kin_priest_move, "validated": False, "encounter": "THE_KIN_BOSS",
                 "adds": [{"name": "KIN_FOLLOWER", "hp": 58, "move": kin_follower_move, "minion": True}] * 2},
 }
@@ -263,6 +282,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
          "asleep": spec.get("asleep", 0), "plating": spec.get("plating", 0), "curse": curse, "hive": spec.get("hive", 0)}
     sloth = mind_rot = waste = disint = 0
     p_vuln = p_weak = p_frail = 0
+    sandpit, fe_played = 0, 0  # The Insatiable's Sandpit on you, Frantic Escapes played (each costs 1 more)
     adds = [{"name": a["name"], "hp": a["hp"], "max": a["hp"], "block": 0, "strength": 0, "vuln": 0, "weak": 0,
              "minion": a.get("minion", False), "move": a["move"], "mv": None} for a in spec.get("adds", [])]
     ringing = False
@@ -282,6 +302,10 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         return False
     for turn in range(1, max_turns + 1):
         strength += demon
+        if sandpit:  # ticks down at the start of your turn; at 0 you are eaten (no relic saves you)
+            sandpit -= 1
+            if sandpit <= 0:
+                return {"won": False, "hp": 0, "turns": turn, "boss_left": max(0.0, b["hp"] / spec["hp"]), "eaten": True}
         if necro:
             osty += 2 if turn == 1 else 1  # combat start + turn start
         if b.get("asleep", 0) > 0 and b.get("plating"):
@@ -305,6 +329,9 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         cards_played = 0
         for _ in range(4):  # plan, play up to a draw, re-plan with what is left
             hand = [pt.card_from_extract(i, cid) for i, cid in enumerate(hand_ids)]
+            for c in hand:
+                if c.sandpit_add:  # Frantic Escape: 1 more energy for each one already played
+                    c.cost = 1 + fe_played
             hand += [pt.card_from_potion(POTION_SLOT + n, pid) for n, pid in enumerate(pots)]
             for c in hand:  # Powers whose effect the simulator does not model earn no future value here (else the
                 if c.power and c.card_id not in MODELLED_POWERS and not c.strength and not c.dex:  # planner wastes turns)
@@ -312,7 +339,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             enemy = pt.Enemy(0, boss, 999 if exploding else b["hp"], b["block"], intent[0], intent[1], vuln=b["vuln"] > 0,
                              weak=b["weak"] > 0, slippery=b["slippery"], hive=b.get("hive", 0), intangible=b.get("intangible", 0) > 0)
             player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity, weak=p_weak > 0, fnp=fnp,
-                               frail=p_frail > 0,
+                               frail=p_frail > 0, sandpit=sandpit,
                                max_cards=(1 - cards_played) if ringing else ((3 - cards_played) if sloth else None), hp=hp, osty_hp=osty)
             foes = [enemy] + [pt.Enemy(k + 1, a["name"], max(0, a["hp"]), a["block"], a["intent"][0], a["intent"][1], vuln=a["vuln"] > 0,
                                        weak=a["weak"] > 0, minion=a["minion"]) for k, a in enumerate(adds)]
@@ -341,8 +368,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             if exploding:
                 ea = dict(ea, hp=0)
             lost = b["hp"] - ea["hp"]
-            for _ in range(out.get("hive_cards", 0)):  # Personal Hive: dead cards shuffled into the draw pile
-                draw.insert(rng.randrange(len(draw) + 1), "WOUND")
+            for _ in range(out.get("hive_cards", 0)):  # Personal Hive: Dazed (Ethereal, Unplayable) into the draw pile
+                draw.insert(rng.randrange(len(draw) + 1), "DAZED")
             b["hp"], b["block"], b["slippery"] = ea["hp"], ea["block"], ea["slippery"]
             if spec.get("on_damage"):
                 spec["on_damage"](b, lost)
@@ -373,6 +400,9 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                         dexterity += c.dex
                     continue
             pots = [x for n, x in enumerate(pots) if n not in used]
+            escapes = sum(1 for c in order if c.sandpit_add)
+            sandpit += escapes
+            fe_played += escapes
             for c in order:
                 if c.potion:
                     continue
@@ -420,7 +450,9 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 continue
             break
         hp -= sum(pt.card_from_extract(0, cid).held_loss for cid in hand_ids)  # Beckon: 6 unblockable HP each if held
-        discard.extend(hand_ids)
+        ethereal = [x for x in hand_ids if "kw-ethereal" in ((pt.CARDS.get(x.rstrip("+")) or {}).get("tags") or [])]
+        exhausted.extend(ethereal)  # Ethereal cards still in hand are exhausted at the end of the turn (Dazed, many Necrobinder cards)
+        discard.extend(x for x in hand_ids if x not in ethereal)
         ringing = False
         plating_p = max(0, plating_p - 1)
         if not survives():
@@ -457,6 +489,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         if mv["intangible"]:
             b["intangible"] = mv["intangible"]
         b["steam"] = b.get("steam", 0) + mv.get("steam", 0)
+        if mv.get("sandpit"):
+            sandpit = mv["sandpit"]
         b["strength"] += mv["boss_str"]
         if mv.get("ringing"):
             ringing = True

@@ -30,10 +30,11 @@ The 15-card base deck for Act 1 fights and the 22-card Act 2 deck for Act 2 figh
 | Lagavulin Matriarch | 36% | 6/8 (75%) | yes |
 | Ceremonial Beast | 9% | 5/6 (83%) | **no** |
 | Knowledge Demon | 19% | 8/12 (67%) | **no** |
-| Entomancer | 10% | 10/13 (77%) | **no** |
+| Entomancer | 57% | 10/13 (77%) | yes |
 | Byrdonis | 100% | 7/10 (70%) | yes |
 | Soul Fysh | 50% | 4/7 (57%) | yes |
 | Waterfall Giant | 14% | 3/5 (60%) | **no** |
+| The Insatiable | 2% | 4/6 (67%) | **no** |
 | The Kin | 1% | 8/8 (100%) | **no** |
 
 ## Calibration with the Player's own decks
@@ -42,15 +43,16 @@ Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1,
 
 | Fight | Fights | Model win | Boss HP removed (model) | The Player survived |
 |---|---|---|---|---|
-| Vantom | 10 | 2% | 0.46 | 4/10 (40%) |
-| Lagavulin Matriarch | 8 | 6% | 0.75 | 6/8 (75%) |
-| Ceremonial Beast | 6 | 0% | 0.41 | 5/6 (83%) |
-| Knowledge Demon | 12 | 3% | 0.36 | 8/12 (67%) |
-| Entomancer | 13 | 0% | 0.26 | 10/13 (77%) |
-| Byrdonis | 10 | 65% | 0.93 | 7/10 (70%) |
-| Soul Fysh | 7 | 0% | 0.57 | 4/7 (57%) |
-| Waterfall Giant | 5 | 2% | 0.69 | 3/5 (60%) |
-| The Kin | 8 | 0% | 0.53 | 8/8 (100%) |
+| Vantom | 10 | 4% | 0.46 | 4/10 (40%) |
+| Lagavulin Matriarch | 8 | 8% | 0.75 | 6/8 (75%) |
+| Ceremonial Beast | 6 | 0% | 0.42 | 5/6 (83%) |
+| Knowledge Demon | 12 | 4% | 0.37 | 8/12 (67%) |
+| Entomancer | 13 | 4% | 0.46 | 10/13 (77%) |
+| Byrdonis | 10 | 68% | 0.94 | 7/10 (70%) |
+| Soul Fysh | 7 | 0% | 0.60 | 4/7 (57%) |
+| Waterfall Giant | 5 | 3% | 0.70 | 3/5 (60%) |
+| The Insatiable | 6 | 0% | 0.38 | 4/6 (67%) |
+| The Kin | 8 | 0% | 0.54 | 8/8 (100%) |
 
 Reading: absolute win rates from the simulator mean little for real decks; use it to compare additions to the same deck. A boss whose share removed is low while the Player usually survived (Ceremonial Beast, Entomancer, Knowledge Demon) is modelled too hard.
 

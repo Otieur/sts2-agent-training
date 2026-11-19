@@ -368,6 +368,10 @@ def per_hit(card, player, enemy, strength_gained, played_before=0):
 # Damage-equivalent cost of each card Personal Hive adds to your draw pile [HYPOTHESIS]: an added dead card is likely
 # drawn about once in the rest of the fight and replaces a real card play (about a Strike's 6), slightly discounted.
 HIVE_COST = 5.0
+# Sandpit (The Insatiable): each turn of Sandpit, up to a buffer of SANDPIT_BUFFER, is worth SANDPIT_VALUE damage-equivalents,
+# so Frantic Escapes are played while cheap instead of at the last moment. Tuned in tools/simulate_fight.py (22-card Act 2
+# deck, 40 fights): eaten 30 times with 0, 21 with 10, 18 with 20, 16 with 40 [HYPOTHESIS].
+SANDPIT_VALUE, SANDPIT_BUFFER = 20.0, 4
 # Slippery (Vantom): every hit while Slippery deals 1 but removes a stack, and each stack removed lets a later hit deal
 # full damage, so the balanced plan credits each stack stripped with this many damage-equivalents (tuned in
 # tools/simulate_fight.py against Vantom; see reports/phase2/vantom-simulation.md) [HYPOTHESIS].
@@ -656,6 +660,8 @@ def plans(hand, player, enemies):
                         out["sandpit_after"] = player.sandpit + sum(c.sandpit_add for c in subset)
                         if out["sandpit_after"] <= 1 and not out["all_dead"]:
                             out["dies"] = True
+                        # a buffer of turns is worth energy: Frantic Escape may not be in hand when the counter runs low
+                        out["sandpit_bonus"] = SANDPIT_VALUE * min(out["sandpit_after"], SANDPIT_BUFFER)
                     results.append(out)
     return results
 
@@ -695,11 +701,12 @@ def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALU
     tie-break in the safe mode."""
     if mode == "safe":
         key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         o["hp_lost"] + potion_cost * o["potions"], o.get("hive_cards", 0), -o.get("powers", 0), -o["kills"],
+                         o["hp_lost"] + potion_cost * o["potions"] - o.get("sandpit_bonus", 0), o.get("hive_cards", 0),
+                         -o.get("powers", 0), -o["kills"],
                          -o["dealt"], o["draws"] == 0)
     else:
         key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         -(o["dealt"] + o.get("doom_dealt", 0) - o["hp_lost"] - potion_cost * o["potions"]
+                         -(o["dealt"] + o.get("doom_dealt", 0) + o.get("sandpit_bonus", 0) - o["hp_lost"] - potion_cost * o["potions"]
                            + power_value * o.get("powers", 0) - HIVE_COST * o.get("hive_cards", 0)
                            + SLIPPERY_VALUE * o.get("slippery_stripped", 0)),
                          o["hp_lost"], -o["kills"])

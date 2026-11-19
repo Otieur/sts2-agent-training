@@ -34,6 +34,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### Key mechanics `[GAME-EXTRACT]`
 - **Personal Hive:** every time the Entomancer takes damage, a generated card is added to **your** draw pile. Many small hits clog your deck.
 - Bees: 3×7 (21 base, plus Strength). Spear: 18. Pheromone Spit: gains Strength and more Hive.
+- **Cycle corrected** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19; history through v0.111.1): Beeeees! 3×7 (3×8 at A9), Spear! 18 (20 at A9), Pheromone Spit +1 Personal Hive and +1 Strength (+2 Strength once Personal Hive is at 3); HP 145 (165 at A8+); Personal Hive starts at 1 and adds that many Dazed per attack hit, not on the killing hit. With this cycle the simulator's Act 2 deck wins 52% from 60/80 against the Player's 10 of 13, so the model now counts as calibrated; the earlier sensitivity numbers below used the extract's order and +3 Strength.
 - Sensitivity (`tools/simulate_fight.py` model, 22-card Act 2 deck from full HP): with +3 Strength per Spit the deck wins 13%; +1 gives 63%, none 93%, Bees 3×4 57%. Read the Strength gain on the first Pheromone Spit (gap 26).
 - These extract numbers cannot all hold from turn 1 (a simulation with Spit first loses every fight by turn 5, far from the Player's record); expect some to be ascension-dependent (gap 26). `tools/plan_turn.py` charges each card Personal Hive would add (reads `PERSONAL_HIVE` from the state), so it prefers few big hits here.
 
