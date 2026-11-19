@@ -220,7 +220,7 @@
 
 ### P0.E6: the agent harness integration
 
-> **P0.E6.S1: CLI wrapper `tools/sts.py`** · Size M · Status: Todo
+> **P0.E6.S1: CLI wrapper `tools/sts.py`** · Size M · Status: In progress (tools/sts.py written against the docs, 6 offline tests; untested live)
 > *As the Agent, I want a small, token-efficient command-line interface to the mod, so that each decision costs as little context as possible.*
 >
 > **Acceptance criteria**

@@ -129,7 +129,7 @@ runs/<YYYY-MM-DD>-<seed>/
 > 6. Check `end_turn_will_kill_player` and `lethal_risks` before ending the turn.
 > 7. Record the expected HP after the enemy acts. Compare it with the actual HP next turn, to catch arithmetic mistakes.
 
-> **P4.E2.S2: Damage and block calculator** · Size M · Status: Todo
+> **P4.E2.S2: Damage and block calculator** · Size M · Status: Done (tools/calc.py, 18 tests; rules unverified until in-game checks)
 > *As the Agent, I want a calculator for damage and block with every modifier, so that arithmetic errors do not cost HP.*
 >
 > **Acceptance criteria**
@@ -186,7 +186,7 @@ runs/<YYYY-MM-DD>-<seed>/
 
 ### P4.E4: Post-mortem
 
-> **P4.E4.S1: Facts sheet** · Size M · Status: Todo
+> **P4.E4.S1: Facts sheet** · Size M · Status: Done (tools/postmortem.py; tested on three of the Player's runs)
 > *As the Agent, I want each run's facts generated automatically, so that the post-mortem starts from numbers, not memory.*
 >
 > **Acceptance criteria**
