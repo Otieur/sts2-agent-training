@@ -72,12 +72,12 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 
 | Card | Survived | Died |
 |---|---|---|
-| SUMMON_FORTH | 44% | 0% |
-| KNOW_THY_PLACE | 44% | 0% |
 | GATHER_LIGHT | 44% | 0% |
+| KNOW_THY_PLACE | 44% | 0% |
+| SUMMON_FORTH | 44% | 0% |
 | ALIGNMENT | 33% | 0% |
-| SHINING_STRIKE | 33% | 0% |
 | CRUSH_UNDER | 33% | 0% |
+| ORBIT | 67% | 33% |
 
 Cards most over-represented in fatal fights:
 
@@ -85,8 +85,8 @@ Cards most over-represented in fatal fights:
 |---|---|---|
 | GREED | 0% | 67% |
 | THINKING_AHEAD | 0% | 67% |
+| COSMIC_INDIFFERENCE | 44% | 100% |
 | HEGEMONY | 11% | 67% |
-| PARRY | 11% | 67% |
 
 ### INFESTED_PRISMS_ELITE (3 deaths, 14 fights)
 
@@ -101,10 +101,10 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 |---|---|---|
 | WROUGHT_IN_WAR | 36% | 0% |
 | COSMIC_INDIFFERENCE | 64% | 33% |
-| GREED | 27% | 0% |
-| CLOAK_OF_STARS | 27% | 0% |
-| PARRY | 27% | 0% |
 | BEGONE | 27% | 0% |
+| CLOAK_OF_STARS | 27% | 0% |
+| GAMMA_BLAST | 27% | 0% |
+| GLITTERSTREAM | 27% | 0% |
 
 Cards most over-represented in fatal fights:
 
@@ -126,12 +126,12 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 
 | Card | Survived | Died |
 |---|---|---|
+| CHARGE | 38% | 0% |
 | CLOAK_OF_STARS | 38% | 0% |
 | GLIMMER | 38% | 0% |
-| CHARGE | 38% | 0% |
-| SHINING_STRIKE | 25% | 0% |
-| PARRY | 25% | 0% |
+| CHILD_OF_THE_STARS | 25% | 0% |
 | DASH | 25% | 0% |
+| PARRY | 25% | 0% |
 
 Cards most over-represented in fatal fights:
 
@@ -139,8 +139,8 @@ Cards most over-represented in fatal fights:
 |---|---|---|
 | COSMIC_INDIFFERENCE | 0% | 100% |
 | ASTRAL_PULSE | 12% | 100% |
-| QUASAR | 0% | 50% |
-| INJURY | 0% | 50% |
+| DARK_SHACKLES | 0% | 50% |
+| GLITTERSTREAM | 0% | 50% |
 
 ### WATERFALL_GIANT_BOSS (2 deaths, 8 fights)
 
@@ -155,19 +155,19 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 |---|---|---|
 | COSMIC_INDIFFERENCE | 67% | 0% |
 | CLOAK_OF_STARS | 50% | 0% |
-| PHOTON_CUT | 50% | 0% |
-| HIDDEN_CACHE | 50% | 0% |
 | CONQUEROR | 50% | 0% |
-| GREED | 33% | 0% |
+| HIDDEN_CACHE | 50% | 0% |
+| PHOTON_CUT | 50% | 0% |
+| BEGONE | 33% | 0% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
 | CRUSH_UNDER | 17% | 100% |
-| PALE_BLUE_DOT | 0% | 50% |
 | CHARGE | 0% | 50% |
-| ORBIT | 0% | 50% |
+| DECISIONS_DECISIONS | 0% | 50% |
+| KINGLY_KICK | 0% | 50% |
 
 ### THE_KIN_BOSS (2 deaths, 7 fights)
 
@@ -180,21 +180,21 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 
 | Card | Survived | Died |
 |---|---|---|
-| SEVEN_STARS | 40% | 0% |
 | BULWARK | 40% | 0% |
-| COSMIC_INDIFFERENCE | 40% | 0% |
 | CHILD_OF_THE_STARS | 40% | 0% |
+| COSMIC_INDIFFERENCE | 40% | 0% |
+| SEVEN_STARS | 40% | 0% |
 | HIDDEN_CACHE | 80% | 50% |
-| CATASTROPHE | 20% | 0% |
+| ALIGNMENT | 20% | 0% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
-| GLIMMER | 0% | 100% |
 | CRUSH_UNDER | 0% | 100% |
+| GLIMMER | 0% | 100% |
 | KINGLY_PUNCH | 20% | 100% |
-| GREED | 0% | 50% |
+| DECISIONS_DECISIONS | 0% | 50% |
 
 ## HP trajectories
 

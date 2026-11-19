@@ -126,7 +126,7 @@ def main():
                 ps = mean([1 if x["deck"].get(c) else 0 for x in groups["survived"]])
                 pd = mean([1 if x["deck"].get(c) else 0 for x in groups["died"]])
                 diff.append((c, ps, pd))
-            diff.sort(key=lambda t: -(t[1] - t[2]))
+            diff.sort(key=lambda t: (-(t[1] - t[2]), t[0]))
         L += [f"### {short(enc)} ({k} deaths, {len(fights)} fights)", "",
               md_table(["Outcome", "Fights", "Median HP% in", "Median HP in", "Median dmg", "Median turns",
                         "Median deck", "Median upgraded", "Median relics", "Mean asc"], rows), ""]
@@ -136,7 +136,7 @@ def main():
                            [[short(c), pct(a), pct(b)] for c, a, b in diff[:6]]), "",
                   "Cards most over-represented in fatal fights:", "",
                   md_table(["Card", "Survived", "Died"],
-                           [[short(c), pct(a), pct(b)] for c, a, b in sorted(diff, key=lambda t: t[1] - t[2])[:4]]), ""]
+                           [[short(c), pct(a), pct(b)] for c, a, b in sorted(diff, key=lambda t: (t[1] - t[2], t[0]))[:4]]), ""]
         for g in ("survived", "died"):
             for x in groups[g]:
                 dive_rows.append([short(enc), g, round(x["hp_pct"], 3), x["hp"], x["dmg"], x["turns"], x["deck_size"],

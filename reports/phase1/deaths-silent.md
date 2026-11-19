@@ -74,17 +74,17 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 | ESCAPE_PLAN | 75% | 25% |
 | PINPOINT | 50% | 0% |
 | PRODUCTION | 50% | 0% |
-| INFINITE_BLADES | 25% | 0% |
-| MASTER_OF_STRATEGY | 25% | 0% |
+| ACCELERANT | 25% | 0% |
+| ACROBATICS | 75% | 50% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
+| ADRENALINE | 0% | 50% |
+| DASH | 0% | 50% |
+| EXPERTISE | 0% | 50% |
 | EXPOSE | 0% | 50% |
-| MAD_SCIENCE | 0% | 50% |
-| TACTICIAN | 25% | 75% |
-| PIERCING_WAIL | 50% | 100% |
 
 ### CEREMONIAL_BEAST_BOSS (3 deaths, 9 fights)
 
@@ -101,17 +101,17 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 | FLICK_FLACK | 50% | 0% |
 | POUNCE | 50% | 0% |
 | EXPOSE | 33% | 0% |
+| GUILTY | 33% | 0% |
 | LEG_SWEEP | 33% | 0% |
-| SCARE | 33% | 0% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
-| FOOTWORK | 0% | 67% |
 | DAGGER_THROW | 0% | 67% |
+| FOOTWORK | 0% | 67% |
 | SPOILS_MAP | 17% | 67% |
-| INFINITE_BLADES | 0% | 33% |
+| BACKSTAB | 0% | 33% |
 
 ### TEST_SUBJECT_BOSS (3 deaths, 8 fights)
 
@@ -124,21 +124,21 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 
 | Card | Survived | Died |
 |---|---|---|
+| FLICK_FLACK | 60% | 0% |
 | LEG_SWEEP | 60% | 0% |
 | PRECISE_CUT | 60% | 0% |
-| FLICK_FLACK | 60% | 0% |
 | TOOLS_OF_THE_TRADE | 60% | 0% |
-| METAMORPHOSIS | 40% | 0% |
-| REFLEX | 40% | 0% |
+| ASSASSINATE | 40% | 0% |
+| FINESSE | 40% | 0% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
 | BACKFLIP | 0% | 67% |
+| BACKSTAB | 0% | 67% |
 | DEADLY_POISON | 0% | 67% |
 | HAND_TRICK | 0% | 67% |
-| BACKSTAB | 0% | 67% |
 
 ### PHROG_PARASITE_ELITE (2 deaths, 9 fights)
 
@@ -152,20 +152,20 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 | Card | Survived | Died |
 |---|---|---|
 | RICOCHET | 43% | 0% |
-| SCARE | 29% | 0% |
-| GUILTY | 29% | 0% |
 | ESCAPE_PLAN | 29% | 0% |
+| GUILTY | 29% | 0% |
 | PIERCING_WAIL | 29% | 0% |
-| CLOAK_AND_DAGGER | 14% | 0% |
+| SCARE | 29% | 0% |
+| ABRASIVE | 14% | 0% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
+| CLUMSY | 0% | 50% |
+| DARK_SHACKLES | 0% | 50% |
 | LEG_SWEEP | 0% | 50% |
 | MALAISE | 0% | 50% |
-| PRODUCTION | 0% | 50% |
-| DARK_SHACKLES | 0% | 50% |
 
 ### THE_KIN_BOSS (2 deaths, 7 fights)
 
@@ -178,21 +178,21 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 
 | Card | Survived | Died |
 |---|---|---|
-| TACTICIAN | 60% | 0% |
 | DAGGER_THROW | 60% | 0% |
 | DASH | 60% | 0% |
-| DAGGER_SPRAY | 40% | 0% |
-| SPORE_MIND | 40% | 0% |
+| TACTICIAN | 60% | 0% |
 | ABRASIVE | 40% | 0% |
+| DAGGER_SPRAY | 40% | 0% |
+| RICOCHET | 40% | 0% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
 | FLICK_FLACK | 20% | 100% |
-| LEADING_STRIKE | 0% | 50% |
-| EXPOSE | 0% | 50% |
 | ALCHEMIZE | 0% | 50% |
+| ANTICIPATE | 0% | 50% |
+| EXPOSE | 0% | 50% |
 
 ## HP trajectories
 

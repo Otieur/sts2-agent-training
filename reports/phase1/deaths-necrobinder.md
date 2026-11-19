@@ -81,9 +81,9 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 | BORROWED_TIME | 57% | 0% |
 | NEGATIVE_PULSE | 57% | 0% |
 | PUTREFY | 43% | 0% |
-| FRIENDSHIP | 29% | 0% |
-| SHROUD | 29% | 0% |
 | DEATHS_DOOR | 29% | 0% |
+| FRIENDSHIP | 29% | 0% |
+| GRAVEBLAST | 29% | 0% |
 
 Cards most over-represented in fatal fights:
 
@@ -91,8 +91,8 @@ Cards most over-represented in fatal fights:
 |---|---|---|
 | RATTLE | 0% | 75% |
 | INVOKE | 0% | 50% |
-| FLATTEN | 14% | 50% |
 | COUNTDOWN | 14% | 50% |
+| DIRGE | 14% | 50% |
 
 ### TEST_SUBJECT_BOSS (4 deaths, 6 fights)
 
@@ -110,16 +110,16 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 | DIRGE | 100% | 25% |
 | NEUROSURGE | 100% | 25% |
 | BONE_SHARDS | 50% | 0% |
-| VEILPIERCER | 50% | 0% |
+| CAPTURE_SPIRIT | 50% | 0% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
 | DRAIN_POWER | 0% | 100% |
-| FLATTEN | 0% | 50% |
-| FETCH | 50% | 100% |
-| WISP | 0% | 50% |
+| BLIGHT_STRIKE | 0% | 50% |
+| CLEANSE | 0% | 50% |
+| CLUMSY | 0% | 50% |
 
 ### VANTOM_BOSS (3 deaths, 5 fights)
 
@@ -133,11 +133,11 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 | Card | Survived | Died |
 |---|---|---|
 | DRAIN_POWER | 100% | 33% |
-| INVOKE | 50% | 0% |
-| SNAP | 50% | 0% |
-| PARSE | 50% | 0% |
-| FLATTEN | 50% | 0% |
 | CAPTURE_SPIRIT | 50% | 0% |
+| DEATHBRINGER | 50% | 0% |
+| DEATH_MARCH | 50% | 0% |
+| FETCH | 50% | 0% |
+| FLATTEN | 50% | 0% |
 
 Cards most over-represented in fatal fights:
 
@@ -145,8 +145,8 @@ Cards most over-represented in fatal fights:
 |---|---|---|
 | SEVERANCE | 0% | 67% |
 | SHROUD | 0% | 67% |
-| DIRGE | 0% | 33% |
 | BONE_SHARDS | 0% | 33% |
+| BORROWED_TIME | 0% | 33% |
 
 ### SOUL_FYSH_BOSS (3 deaths, 7 fights)
 
@@ -161,10 +161,10 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 |---|---|---|
 | FRIENDSHIP | 50% | 0% |
 | PRODUCTION | 50% | 0% |
-| POKE | 25% | 0% |
-| PARSE | 25% | 0% |
-| MOMENTUM_STRIKE | 25% | 0% |
-| HIGH_FIVE | 25% | 0% |
+| BORROWED_TIME | 25% | 0% |
+| COUNTDOWN | 25% | 0% |
+| END_OF_DAYS | 25% | 0% |
+| FEEDING_FRENZY | 25% | 0% |
 
 Cards most over-represented in fatal fights:
 
@@ -172,7 +172,7 @@ Cards most over-represented in fatal fights:
 |---|---|---|
 | DEATH_MARCH | 0% | 67% |
 | GRAVE_WARDEN | 25% | 67% |
-| ENFEEBLING_TOUCH | 0% | 33% |
+| CLUMSY | 0% | 33% |
 | DEFY | 0% | 33% |
 
 ### AEONGLASS_BOSS (3 deaths, 10 fights)
@@ -189,9 +189,9 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 | FLATTEN | 71% | 0% |
 | SENTRY_MODE | 57% | 0% |
 | WISP | 86% | 33% |
-| MELANCHOLY | 43% | 0% |
-| ENFEEBLING_TOUCH | 43% | 0% |
 | DEATHS_DOOR | 43% | 0% |
+| ENFEEBLING_TOUCH | 43% | 0% |
+| MELANCHOLY | 43% | 0% |
 
 Cards most over-represented in fatal fights:
 
@@ -200,7 +200,7 @@ Cards most over-represented in fatal fights:
 | PUTREFY | 29% | 100% |
 | HAUNT | 0% | 67% |
 | BORROWED_TIME | 14% | 67% |
-| END_OF_DAYS | 14% | 67% |
+| CALL_OF_THE_VOID | 14% | 67% |
 
 ## HP trajectories
 

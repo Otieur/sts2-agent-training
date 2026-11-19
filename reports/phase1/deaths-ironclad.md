@@ -79,19 +79,19 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 |---|---|---|
 | TAUNT | 40% | 0% |
 | SHRUG_IT_OFF | 60% | 33% |
-| MOLTEN_FIST | 40% | 17% |
 | DOMINATE | 40% | 17% |
+| MOLTEN_FIST | 40% | 17% |
 | BATTLE_TRANCE | 20% | 0% |
-| BURNING_PACT | 20% | 0% |
+| BEAM_CELL | 20% | 0% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
 | BREAKTHROUGH | 20% | 83% |
-| TRUE_GRIT | 0% | 50% |
 | BLOODLETTING | 0% | 50% |
-| RAGE | 0% | 33% |
+| TRUE_GRIT | 0% | 50% |
+| ANGER | 0% | 33% |
 
 ### KNOWLEDGE_DEMON_BOSS (4 deaths, 12 fights)
 
@@ -108,8 +108,8 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 | VICIOUS | 62% | 0% |
 | BLOODLETTING | 50% | 0% |
 | FIGHT_ME | 50% | 0% |
-| PRODUCTION | 38% | 0% |
 | COLOSSUS | 38% | 0% |
+| FIEND_FIRE | 38% | 0% |
 
 Cards most over-represented in fatal fights:
 
@@ -118,7 +118,7 @@ Cards most over-represented in fatal fights:
 | BATTLE_TRANCE | 0% | 50% |
 | FLASH_OF_STEEL | 0% | 50% |
 | UNRELENTING | 0% | 50% |
-| SHRUG_IT_OFF | 38% | 75% |
+| ONE_TWO_PUNCH | 12% | 50% |
 
 ### BYRDONIS_ELITE (3 deaths, 10 fights)
 
@@ -133,8 +133,8 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 |---|---|---|
 | MOLTEN_FIST | 43% | 0% |
 | TRUE_GRIT | 43% | 0% |
-| CLUMSY | 29% | 0% |
 | BREAKTHROUGH | 29% | 0% |
+| CLUMSY | 29% | 0% |
 | FIGHT_ME | 29% | 0% |
 | ARMAMENTS | 86% | 67% |
 
@@ -144,8 +144,8 @@ Cards most over-represented in fatal fights:
 |---|---|---|
 | TREMBLE | 14% | 100% |
 | AUTOMATION | 0% | 33% |
-| DRUM_OF_BATTLE | 0% | 33% |
 | BURNING_PACT | 0% | 33% |
+| CINDER | 0% | 33% |
 
 ### SOUL_FYSH_BOSS (3 deaths, 7 fights)
 
@@ -159,20 +159,20 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 | Card | Survived | Died |
 |---|---|---|
 | DOMINATE | 75% | 0% |
-| STAMPEDE | 50% | 0% |
 | INFERNAL_BLADE | 50% | 0% |
+| STAMPEDE | 50% | 0% |
+| AGGRESSION | 25% | 0% |
+| FIGHT_ME | 25% | 0% |
 | FLAME_BARRIER | 25% | 0% |
-| FLASH_OF_STEEL | 25% | 0% |
-| TEAR_ASUNDER | 25% | 0% |
 
 Cards most over-represented in fatal fights:
 
 | Card | Survived | Died |
 |---|---|---|
-| THUNDERCLAP | 25% | 67% |
 | BLOODLETTING | 25% | 67% |
 | COLOSSUS | 25% | 67% |
-| NOT_YET | 0% | 33% |
+| THUNDERCLAP | 25% | 67% |
+| AFTERLIFE | 0% | 33% |
 
 ### ENTOMANCER_ELITE (3 deaths, 13 fights)
 
@@ -187,10 +187,10 @@ Cards most over-represented in survived fights compared with fatal ones (share o
 |---|---|---|
 | FIGHT_ME | 70% | 0% |
 | BREAKTHROUGH | 50% | 0% |
-| THRASH | 30% | 0% |
 | EVIL_EYE | 30% | 0% |
+| THRASH | 30% | 0% |
 | BLOODLETTING | 60% | 33% |
-| PACTS_END | 20% | 0% |
+| BURNING_PACT | 20% | 0% |
 
 Cards most over-represented in fatal fights:
 
