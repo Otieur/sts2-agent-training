@@ -45,7 +45,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: powers at least 1 (the longest Act 1 fight; survived 1.0, fatal 0.4); hit-all attacks at least 1 (followers stack Strength (plan)).
 - **Hit-all damage is good here** (unlike against Vantom): Breakthrough, Thunderclap, Whirlwind, Conflagration, Pact's End, Stomp, Howl from Beyond.
-- **Kill order** `[HYPOTHESIS]`: followers first if hit-all damage can clear them in 2–3 turns (they stack Strength). Otherwise race the Priest. The followers carry **Minion** (`MINION_POWER`: their deaths are not "fatal" for the encounter) `[GAME-EXTRACT]`, which strongly suggests that **killing the Priest ends the fight**, as with minions in the first game `[HYPOTHESIS]`, to confirm. If it holds, racing the Priest (190 HP) is usually right unless hit-all damage clears all followers within 2 turns.
+- **Kill order** `[HYPOTHESIS]`: followers first if hit-all damage can clear them in 2–3 turns (they stack Strength). Otherwise race the Priest. The followers carry **Minion** (`MINION_POWER`: their deaths are not "fatal" for the encounter) `[GAME-EXTRACT]`, which strongly suggests that **killing the Priest ends the fight**, as with minions in the first game `[HYPOTHESIS]`, to confirm. If it holds, racing the Priest (190 HP) is usually right unless hit-all damage clears all followers within 2 turns. `tools/plan_turn.py` treats a plan that kills every non-minion (here the Priest) as lethal, so it will show the race when it is on (gap 12 confirms or refutes this).
 - Frail and Weak come every cycle. Expect lower block and damage on those turns.
 
 ### HP target on arrival

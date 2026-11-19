@@ -14,7 +14,7 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 | `draft.py` | Card reward: tier, v0.111.1 changes, boss fit, corner-target needs, engines, skip bar | `draft.py --from-state state.json` |
 | `deck_check.py` | Act start and before the boss: corner targets and the boss's countable checklist | `deck_check.py --state state.json` |
 | `calc.py` | Single damage, block and incoming-damage calculations | `calc.py attack 6 --hits 2 --vulnerable` |
-| `simulate_fight.py` | Monte Carlo boss fight with the turn planner as policy (validated: Vantom, Lagavulin Matriarch, Soul Fysh, Byrdonis; modelled but not validated: Waterfall Giant, Ceremonial Beast, Knowledge Demon, Entomancer): compare draft options against the boss | `simulate_fight.py --deck ... --vs TWIN_STRIKE --vs SHRUG_IT_OFF` |
+| `simulate_fight.py` | Monte Carlo boss fight with the turn planner as policy (validated: Vantom, Lagavulin Matriarch, Soul Fysh, Byrdonis; modelled but not validated: Waterfall Giant, Ceremonial Beast, Knowledge Demon, Entomancer): compare draft options against the boss; `--report` writes the simulation report, `--beast-sensitivity` the gap 25 variants | `simulate_fight.py --deck ... --vs TWIN_STRIKE --vs SHRUG_IT_OFF` |
 | `journal.py` | Run journal: new, active, status, floor, fight (with benchmark), budget, summary | `journal.py fight runs/<run> --floor 7 --encounter vantom --turns 7 --damage 30` |
 | `postmortem.py` | Facts sheet for a finished run (works on the Player's `.run` files too) | `postmortem.py runs/<run>/` |
 | `smoke.py` | Phase 0: read-only check of every field the tools use; saves live fixtures | `smoke.py --save --watch` |
@@ -49,7 +49,7 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 | `build_card_reference.py` | `knowledge/cards/<character>.md` (v0.111.1 values, patched cards marked) |
 | `build_upgrade_table.py` | `knowledge/cards/ironclad-upgrades.md` |
 | `build_community_tiers.py` | `knowledge/community/<character>-tiers.md`, discrepancy files |
-| `build_encounter_notes.py` | Data blocks of `knowledge/bosses/` and `knowledge/enemies/` notes |
+| `build_encounter_notes.py` | Data blocks of `knowledge/bosses/` and `knowledge/enemies/` notes (bosses, elites, the 15 most frequent hallway fights, and hallway fights with 2+ deaths) |
 | `build_misc_reference.py` | `knowledge/events.md`, `relics.md`, `potions.md` |
 
 ## Shared

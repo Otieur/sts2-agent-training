@@ -29,6 +29,8 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 - **Boss fights and enemies that scale every turn (Byrdonis): follow the balanced plan** (simulation: the safe plan collapsed against Byrdonis with a weak deck). **Exceptions: Waterfall Giant and Soul Fysh, safe plan** (simulated). Other hallways and elites: safe when HP is below the act plan.
 - Against Slippery (Vantom), each stack stripped counts about 3 damage in the balanced plan: strip early.
 - Potions: hold them in hallways unless they decide the fight; use freely in elites and bosses.
+- Statuses that cost HP when held (Beckon 6, Toxic 5, Wither): get rid of them when energy allows. **Sandpit (The Insatiable): end every turn at 2 or more** (Frantic Escape +1, cost rises each play).
+- Under Tender, every card costs 1 Strength and 1 Dexterity this turn: fewer, bigger cards. Kaiser Crab: kill a claw with the turn's last attack (Crab Rage gives the other 99 Block).
 
 ## Bosses (§10, notes in `knowledge/bosses/`)
 | Boss | The one thing |

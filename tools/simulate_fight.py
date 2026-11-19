@@ -179,6 +179,22 @@ BOSSES = {
 MODELLED_POWERS = {"DEMON_FORM", "PYRE", "FEEL_NO_PAIN"}  # plus any Power that gives Strength or Dexterity when played
 
 
+def models_card(card_id):
+    """True if the simulator can see what the card does. For other cards a simulated value only measures a dead card
+    (unmodelled Powers such as Hellraiser or Stampede, cards whose numbers the extract shows as ?), so drafting skips it."""
+    c = pt.card_from_extract(0, card_id)
+    rec = pt.CARDS.get(c.card_id) or {}
+    if not rec or rec.get("type") in ("Status", "Curse"):
+        return False
+    if c.power:
+        return c.card_id in MODELLED_POWERS or bool(c.strength or c.dex)
+    special = pt.BLOCK_DAMAGE | pt.EXHAUST_HAND | pt.HITS_TWICE_IF_VULNERABLE
+    if "?" in (rec.get("effect") or "") and c.card_id not in special:
+        return False
+    return bool(c.dmg or c.block or c.vuln or c.weak or c.strength or c.energy or c.draw or c.temp_str or c.rage
+                or c.free_attacks or c.str_down or c.retaliate or c.card_id in special)
+
+
 def draw_cards(n, draw, discard, rng):
     out = []
     for _ in range(n):

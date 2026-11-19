@@ -19,7 +19,8 @@ Barrier (damage back per enemy hit), Body Slam (damage = Block, played after blo
 Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); boosters are played first. Slippery stacks
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
-Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (first damage stuns), Crab Rage (a claw's death: +5 Strength, 99 Block); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing.
+Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (first damage stuns), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
+non-minion ends the fight); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender.
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
 until the arithmetic is confirmed in game (knowledge/mechanics.md checklist).
@@ -85,6 +86,7 @@ class Card:
     power: bool = False         # a Power card: its value comes in later turns (POWER_VALUE)
     held_loss: int = 0          # HP lost at the end of the turn if still in hand (Beckon 6; unblockable)
     exhausts: bool = False      # playing it exhausts a card (itself or another): enables Forgotten Ritual
+    changes_hand: bool = False  # exhausts another card or adds cards to the hand: later hand indexes are unknown
     needs_exhaust: bool = False # its energy needs an exhaust earlier this turn (Forgotten Ritual before v0.111.1)
     str_down: int = 0           # the target loses this much Strength this turn (Mangle): its attack drops per hit
     retaliate: int = 0          # damage dealt back to each enemy hit this turn (Flame Barrier)
@@ -120,6 +122,7 @@ class Enemy:
     hit_cap: Optional[int] = None  # Hard to Kill (Exoskeletons): each hit deals at most this much
     shriek: bool = False        # Shriek (Terror Eel): the first damage it takes stuns it (its attack this turn is cancelled)
     crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
+    minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
 
 
 @dataclass
@@ -137,6 +140,7 @@ class Player:
     sandpit: int = 0            # The Insatiable's Sandpit on you: you die when it runs out (0 = none)
     end_turn_dmg: int = 0       # damage at the end of your turn from a power on you (Disintegration), blockable
     max_hp: Optional[int] = None
+    tender: int = 0             # Tender (Hunter Killer): each card played costs 1 Strength and 1 Dexterity for the turn
 
 
 def parse_effect(c):
@@ -201,6 +205,8 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
         setattr(card, attr, int(m.group(1)) if m else 0)
     card.needs_exhaust = cid in CONDITIONAL_ENERGY and "no card needs to be exhausted" not in (c.get("effect") or "")
     card.exhausts = bool({"kw-exhaust", "exhaust-other"} & set(c.get("tags") or [])) or "Exhaust a card" in (c.get("effect") or "")
+    card.changes_hand = ("exhaust-other" in (c.get("tags") or []) or "Exhaust a card" in (c.get("effect") or "")
+                         or "to your hand" in (c.get("effect") or ""))
     unplayable = "Unplayable" in (c.get("effect") or "") or "unplayable" in (c.get("tags") or [])
     if c["type"] == "Status" and c.get("cost") is not None and c["cost"] >= 0 and not unplayable:
         # Playable statuses (game data: Beckon, Debris, Frantic Escape, Slimed, Toxic) follow the game's playable flag
@@ -306,6 +312,12 @@ HIVE_COST = 5.0
 # full damage, so the balanced plan credits each stack stripped with this many damage-equivalents (tuned in
 # tools/simulate_fight.py against Vantom; see reports/phase2/vantom-simulation.md) [HYPOTHESIS].
 SLIPPERY_VALUE = 3.0
+
+
+def fight_over(es):
+    """Every enemy dead, or every non-minion dead (minions flee or die with their leader) [GAME-EXTRACT] + [HYPOTHESIS]."""
+    leaders = [e for e in es if not e.minion]
+    return all(e.hp <= 0 for e in (leaders or es))
 
 
 def hit(enemy, dmg):
@@ -452,6 +464,9 @@ def simulate(cards, targets, player, enemies):
             osty = 0
         if not card.potion:
             played += 1
+        if player.tender and not card.potion:  # Tender: later cards this turn hit and block for less
+            strength_gained -= player.tender
+            dex_gained -= player.tender
         if card.exhausts:
             exhausted = True
             block += fnp * ((card.hits + 1) if card.card_id in EXHAUST_HAND else 1)  # Feel No Pain, flat
@@ -472,7 +487,9 @@ def simulate(cards, targets, player, enemies):
     inc = calc.incoming_hp_loss(intents, player_block=block, weak_enemies=weak)
     to_osty = min(osty, inc.hp_lost)  # Osty takes the unblocked damage first while alive [GAME-EXTRACT] DIE_FOR_YOU_POWER
     lost = inc.hp_lost - to_osty + hp_cost
-    all_dead = all(e.hp <= 0 for e in es)
+    all_dead = fight_over(es)
+    if all_dead:  # the fight ends now: no enemy turn (minions flee with their leader)
+        lost = hp_cost
     dies = player.hp is not None and lost >= player.hp and not all_dead
     if retaliate:  # Flame Barrier hits back on every enemy hit (assumed even when blocked) [HYPOTHESIS]
         for e in es:
@@ -486,7 +503,7 @@ def simulate(cards, targets, player, enemies):
             "hive_cards": sum(getattr(e, "hive_added", 0) for e in es),
             "slippery_stripped": sum(o.slippery - e.slippery for e, o in zip(es, enemies) if e.hp > 0),
             "enemies_after": [{"hp": max(0, e.hp), "block": e.block, "slippery": e.slippery, "vuln": e.vuln, "weak": e.weak} for e in es],
-            "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all(e.hp <= 0 for e in es),
+            "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all_dead,
             "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
 
 
@@ -579,7 +596,7 @@ def commands(o, hand, log="runs/<run>/decisions.jsonl", mode="safe", mod="sts2ag
             cmd = f"act play_card card_index={pos}{tgt}"
         prefix = "# after re-planning: " if drawn else ""
         out.append(f'{prefix}python3 -I tools/sts.py --mod {mod} --log {log} {cmd} --reason "{reason}"')
-        if card.draw:
+        if card.draw or card.changes_hand:  # the hand changes in ways the plan cannot index: re-read the state
             drawn = True
     if not drawn:
         out.append(f'python3 -I tools/sts.py --mod {mod} --log {log} act end_turn --reason "Turn plan ({mode}) complete"')
@@ -624,7 +641,7 @@ def from_state(st):
                     hp=p.get("current_hp"), fnp=int(powers.get("FEEL_NO_PAIN_POWER", powers.get("FEEL_NO_PAIN", 0)) or 0),
                     sandpit=int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0),
                     end_turn_dmg=int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0),
-                    max_hp=p.get("max_hp"))
+                    max_hp=p.get("max_hp"), tender=1 if any(k.startswith("TENDER") for k in powers) else 0)
     # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
     # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])
     limits = [int(powers[k] or 3) for k in powers if k.startswith("SLOTH")] + [1 for k in powers if k.startswith("RINGING")]
@@ -660,7 +677,8 @@ def from_state(st):
                              thorns=int(next((v for k, v in pw.items() if k.startswith("THORNS")), 0) or 0),
                              artifact=int(next((v for k, v in pw.items() if k.startswith("ARTIFACT")), 0) or 0),
                              hit_cap=next((int(v) for k, v in pw.items() if k.startswith("HARD_TO_KILL") and v is not None), None),
-                             shriek=any(k.startswith("SHRIEK") for k in pw), crab_rage=any(k.startswith("CRAB_RAGE") for k in pw)))
+                             shriek=any(k.startswith("SHRIEK") for k in pw), crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
+                             minion=any(k.startswith("MINION") for k in pw)))
     for i, e in enumerate(enemies):
         e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
     run = st.get("run") or {}

@@ -22,15 +22,15 @@ Built by `tools/simulate_fight.py --report` (300 simulated fights per row and mo
 
 ## Calibration against the Player's record
 
-The 15-card base deck for Act 1 bosses and the 22-card Act 2 deck for Knowledge Demon, at 60/80 HP, the better plan; the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and have relics, potions and upgrades, so the model is expected to be pessimistic; what matters is the ratio between bosses). A boss marked **no** is not used by `tools/draft.py`.
+The 15-card base deck for Act 1 fights and the 22-card Act 2 deck for Act 2 fights (Knowledge Demon, Entomancer), at 60/80 HP, the better plan; the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and have relics, potions and upgrades, so the model is expected to be pessimistic; what matters is the ratio between bosses). A boss marked **no** is not used by `tools/draft.py`.
 
 | Boss | Model win | The Player survived | Used in drafting |
 |---|---|---|---|
 | Vantom | 31% | 4/10 (40%) | yes |
 | Lagavulin Matriarch | 36% | 6/8 (75%) | yes |
 | Ceremonial Beast | 9% | 5/6 (83%) | **no** |
-| Knowledge Demon | 33% | 8/12 (67%) | **no** |
-| Entomancer | 0% | 10/13 (77%) | **no** |
+| Knowledge Demon | 19% | 8/12 (67%) | **no** |
+| Entomancer | 10% | 10/13 (77%) | **no** |
 | Byrdonis | 100% | 7/10 (70%) | yes |
 | Soul Fysh | 50% | 4/7 (57%) | yes |
 | Waterfall Giant | 14% | 3/5 (60%) | **no** |
@@ -44,7 +44,7 @@ Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1,
 | Vantom | 10 | 0% | 0.28 | 4/10 (40%) |
 | Lagavulin Matriarch | 8 | 0% | 0.57 | 6/8 (75%) |
 | Ceremonial Beast | 6 | 0% | 0.31 | 5/6 (83%) |
-| Knowledge Demon | 12 | 1% | 0.26 | 8/12 (67%) |
+| Knowledge Demon | 12 | 0% | 0.21 | 8/12 (67%) |
 | Entomancer | 13 | 0% | 0.11 | 10/13 (77%) |
 | Byrdonis | 10 | 51% | 0.88 | 7/10 (70%) |
 | Soul Fysh | 7 | 0% | 0.49 | 4/7 (57%) |

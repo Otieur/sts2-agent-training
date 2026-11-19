@@ -44,6 +44,8 @@ Use only actions the state offers. Recompute every index from the latest state. 
 | Combat `is_play_phase: false` | Enemy turn in progress: `wait`. |
 | `cannot reach` (mod down) | Tell the Player. Once the game is relaunched, continue the run from the menu (`continue`) and resume from the journal. |
 | Context was summarized mid-run | Read the project instructions, then the run journal, then state. Continue the plan in the journal. |
+| `advise.py` prints `[ADVICE FAILED] ...` | The state had a shape the advisor did not expect. Keep the saved state (`runs/<run>/state.json` under a new name), decide by the playbook section for the screen, and add the line to the post-mortem's problems so the tool gets a fix and a fixture. |
+| A warning line in combat advice (Sandpit, Steam Eruption, Withering Presence) or a `note:` line about a card | Read it before acting: Sandpit at 1 at the end of a turn kills you; Waterfall Giant explodes for its Steam Eruption the turn after its stun; a card marked not modelled needs your own arithmetic. |
 
 ## Logging
 - Every action is logged in `runs/<run>/decisions.jsonl`: time, screen, floor, action, parameters, reason, result.

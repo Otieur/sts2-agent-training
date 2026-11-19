@@ -79,7 +79,7 @@ BOSS_CHECKS = {
     "KAISER_CRAB": [("single-hit hit-all attacks", SINGLE_AOE, -1, "focus one claw; survived 0.7, fatal 1.4"),
                     ("energy cards", ENERGY, 1, "survived 1.2, fatal 0.6")],
     "LAGAVULIN_MATRIARCH": [("powers to set up during sleep", POWERS, 1, "survived 0.9, fatal 0.5")],
-    "SOUL_FYSH": [("exhaust outlets", tagged("exhaust-other"), 1, "exhaust the Beckon cards (plan; no data signal)")],
+    "SOUL_FYSH": [("exhaust outlets", tagged("exhaust-other"), 1, "exhaust the Beckon cards (plan; no data signal; simulated value small)")],
     "WATERFALL_GIANT": [("block cards", tagged("block"), 6, "bank block for the death explosion (plan; no data signal)")],
     "THE_INSATIABLE": [("energy or draw cards", lambda d: count(d, lambda c: "energy" in c.get("tags", []) or "draw" in c.get("tags", [])), 2,
                         "play the Frantic Escape cards and still fight (plan; no data signal)")],

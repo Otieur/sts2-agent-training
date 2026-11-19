@@ -150,7 +150,7 @@ def boss_fit(c, boss):
         add(attack and (dm.card_numbers("CARD." + c["id"]) or {}).get("dmg", 0) >= 10, +0.5, "Ceremonial Beast: front-loaded damage breaks Plow")
         add("vulnerable" in tags, +0.5, "Ceremonial Beast: Vulnerable (survived 1.2, fatal 0.5)")
     elif "SOUL_FYSH" in b:
-        add("exhaust-other" in tags, +0.5, "Soul Fysh: exhaust the Beckon cards")
+        add("exhaust-other" in tags, +0.25, "Soul Fysh: exhaust the Beckon cards (simulated: worth little more than a filler card)")
     elif "WATERFALL_GIANT" in b:
         add("block" in tags, +0.5, "Waterfall Giant: bank block for the death explosion")
     elif "AEONGLASS" in b:
@@ -260,7 +260,11 @@ def score_offer(deck, offer_ids, character, act, floor, boss, simulate=False, hp
     sim = simulated_boss_value(deck, offer_ids, boss, hp, max_hp) if simulate else None
     if sim:
         base_rate, deltas = sim
+        import simulate_fight as sf
         for r in rows:
+            if not sf.models_card(r["id"]):
+                r["reasons"].append(f"{boss} simulation skipped: the simulator does not model this card's effect")
+                continue
             d = deltas.get("CARD." + r["id"], 0.0)
             # +/-0.1 win-equivalent -> +/-1 tier, capped: in the decision-point analysis one tier is worth roughly
             # 10-15 points of act survival (A-tier picks +17, B about 0).

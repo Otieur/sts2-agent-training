@@ -330,6 +330,27 @@ class TestPlanTurn(unittest.TestCase):
         self.assertEqual(pt.simulate([pt.card_from_potion(0, "POTION_SHAPED_ROCK")], [0], pt.Player(energy=0),
                                      e("A:100:0:0:vuln"))["dealt"], 15)  # flat: Vulnerable does not apply
 
+    def test_commands_stop_after_hand_changes(self):
+        h = [pt.card_from_extract(i, c) for i, c in enumerate(("DEFEND_IRONCLAD", "TRUE_GRIT", "STRIKE_IRONCLAD"))]
+        self.assertTrue(h[1].changes_hand)                         # True Grit exhausts a card: later indexes are unknown
+        o = pt.simulate(h, [None, None, 0], pt.Player(energy=3), [pt.parse_enemy("A:50:0:0", 0)])
+        cmds = pt.commands(o, h)
+        self.assertFalse(cmds[1].startswith("#"))
+        self.assertTrue(cmds[2].startswith("# after re-planning"))  # the Strike after True Grit waits for a fresh state
+
+    def test_minions_flee_with_their_leader(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        es = [pt.parse_enemy("Priest:6:0:8", 0), pt.parse_enemy("Follower:58:0:5", 1)]
+        es[1].minion = True
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1), es)
+        self.assertTrue(o["all_dead"])                                # the Priest dead ends the fight
+        self.assertEqual(o["hp_lost"], 0)                             # no enemy turn after the fight ends
+
+    def test_tender(self):
+        h = [pt.card_from_extract(i, c) for i, c in enumerate(("STRIKE_IRONCLAD", "STRIKE_IRONCLAD", "DEFEND_IRONCLAD"))]
+        o = pt.simulate(h, [0, 0, None], pt.Player(energy=3, tender=1), [pt.parse_enemy("A:100:0:0", 0)])
+        self.assertEqual((o["dealt"], o["block"]), (11, 3))  # 6, then 5; Defend after two cards: 5 - 2
+
     def test_beckon_held_loss(self):
         h = [pt.card_from_extract(0, "BECKON"), pt.card_from_extract(1, "STRIKE_IRONCLAD")]
         self.assertEqual((h[0].held_loss, h[0].cost, h[0].playable), (6, 1, True))

@@ -57,7 +57,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Artifact or debuff resistance** is the single biggest swing. Each Artifact charge blocks one debuff. After You're Mine without Artifact, you deal 25% less, block 25% less and take 50% more for the rest of the fight.
 - **Draw.** In the history, fatal decks had much less draw (2.2 against 3.9 cards, n=24) `[PLAYER-DATA, weak]`. Bound cards make draw more valuable.
 - **Target choice** `[COMMUNITY]`, two lines:
-  1. Kill the Queen: the minion flees, but she blocks 20 per turn while the Amalgam lives.
+  1. Kill the Queen: the minion flees, but she blocks 20 per turn while the Amalgam lives. `tools/plan_turn.py` counts killing the Queen as lethal (the Amalgam carries Minion).
   2. Kill the Amalgam first: less incoming damage, but the Queen turns aggressive (multi-hit, Execution, Strength).
   - Default `[HYPOTHESIS]`: kill the Amalgam first with a defensive deck, and race the Queen with a burst deck.
 - Hit-all damage hits both bodies.

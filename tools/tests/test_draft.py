@@ -25,6 +25,18 @@ class TestDraft(unittest.TestCase):
         with self.assertRaises(SystemExit):
             draft.expand_deck(["NOT_A_CARD"], "IRONCLAD")
 
+    def test_simulation_skips_unmodelled_cards(self):
+        saved = draft.simulated_boss_value
+        draft.simulated_boss_value = lambda *a, **k: (0.1, {"CARD.HELLRAISER": -0.5, "CARD.TWIN_STRIKE": 0.05})
+        try:
+            deck = draft.expand_deck(["STRIKE_IRONCLAD:5", "DEFEND_IRONCLAD:4", "BASH"], "IRONCLAD")
+            res = draft.score_offer(deck, ["CARD.HELLRAISER", "CARD.TWIN_STRIKE"], "IRONCLAD", 1, 5, "VANTOM_BOSS", simulate=True)
+        finally:
+            draft.simulated_boss_value = saved
+        why = {r["id"]: " ".join(r["reasons"]) for r in res["rows"]}
+        self.assertIn("simulation skipped", why["HELLRAISER"])   # an unmodelled Power is not marked down as a dead card
+        self.assertIn("+0.5)", why["TWIN_STRIKE"])
+
     def test_vantom_fit(self):
         res = draft.score_offer(STARTER, offer("Twin Strike", "Breakthrough"), "IRONCLAD", 1, 3, "VANTOM_BOSS")
         rows = {r["id"]: r for r in res["rows"]}
