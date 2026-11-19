@@ -793,6 +793,14 @@ def _int(x):
     return _num(x) or 0
 
 
+def _enemy_sandpit(c):
+    """The Insatiable's Sandpit counter. In the live state it is a power on the boss, not on the player (seen on
+    v0.111.1, 2026-11-19: 4 after Liquify, +1 per Frantic Escape, -1 at the end of each player turn)."""
+    return max((_int(x.get("amount", x.get("stacks", 1))) for e in _dicts(c.get("enemies")) if e.get("is_alive", True)
+                for x in _dicts(e.get("powers")) if str(x.get("power_id") or x.get("id") or "").upper().startswith("SANDPIT")),
+               default=0)
+
+
 def from_state(st):
     st = st.get("data", st)
     c = st.get("combat") or {}
@@ -805,7 +813,7 @@ def from_state(st):
                     dexterity=_int(powers.get("DEXTERITY_POWER", powers.get("DEXTERITY", 0)) or 0),
                     weak=any(k.startswith("WEAK") for k in powers), frail=any(k.startswith("FRAIL") for k in powers),
                     hp=_num(p.get("current_hp")), fnp=_int(powers.get("FEEL_NO_PAIN_POWER", powers.get("FEEL_NO_PAIN", 0)) or 0),
-                    sandpit=_int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0),
+                    sandpit=max(_int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0), _enemy_sandpit(c)),
                     end_turn_dmg=_int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0),
                     max_hp=_num(p.get("max_hp")), tender=1 if any(k.startswith("TENDER") for k in powers) else 0,
                     colossus=any(k.startswith("COLOSSUS") for k in powers), hexed=any(k.startswith("HEX") for k in powers),

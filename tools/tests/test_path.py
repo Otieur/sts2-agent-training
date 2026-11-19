@@ -94,7 +94,7 @@ class TestPath(unittest.TestCase):
         paths = pathmod.enumerate_paths(n, s, b)
         res = pathmod.rank(paths, n, self.model, 1, 70, 80, "VANTOM_BOSS", 12)
         self.assertGreater(len(paths), 1000)
-        self.assertLess(time.time() - t0, 5.0)
+        self.assertLess(time.time() - t0, 15.0)  # guards the old minutes-per-map slowdown; 5 s failed once with the game running
         self.assertTrue(res)
 
 

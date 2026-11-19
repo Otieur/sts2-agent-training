@@ -281,6 +281,16 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.rank(pt.plans([w], pt.Player(energy=1, hp=30), [pt.parse_enemy("Aeon:500:0:0", 0)]), "safe")[0]
         self.assertEqual((o["plays"], o["hp_lost"]), (["Wither"], 0))
 
+    def test_sandpit_read_from_the_boss(self):
+        # live 2026-11-19 (v0.111.1, A10): SANDPIT_POWER sits on The Insatiable, not on the player
+        st = {"combat": {"player": {"current_hp": 30, "energy": 4, "block": 0, "powers": []},
+                         "hand": [{"index": 0, "card_id": "STRIKE_IRONCLAD", "energy_cost": 1, "playable": True}],
+                         "enemies": [{"index": 0, "enemy_id": "THE_INSATIABLE", "current_hp": 81, "block": 0, "is_alive": True,
+                                      "powers": [{"power_id": "SANDPIT_POWER", "amount": 2}],
+                                      "intents": [{"intent_type": "Attack", "damage": 35, "hits": 1}]}]}}
+        hand, player, enemies = pt.from_state(st)
+        self.assertEqual(player.sandpit, 2)
+
     def test_powers_from_state_limits_enrage_disintegration(self):
         st = {"combat": {"player": {"current_hp": 40, "energy": 3, "block": 0,
                                     "powers": [{"power_id": "DISINTEGRATION_POWER", "amount": 6}, {"power_id": "RINGING_POWER", "amount": 1}]},

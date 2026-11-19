@@ -189,7 +189,7 @@ def combat_snapshot(st):
     for h in c.get("hand") if isinstance(c.get("hand"), list) else []:
         if isinstance(h, dict) and isinstance(h.get("card_id"), str):
             vals = {v.get("name"): v.get("current_value") for v in h.get("dynamic_values") or [] if isinstance(v, dict)}
-            hand.append([h["card_id"] + ("+" if h.get("upgraded") else ""), vals])
+            hand.append([h["card_id"] + ("+" if h.get("upgraded") else ""), vals, h.get("energy_cost")])
     enemies = [{"i": e.get("index"), "id": e.get("enemy_id"), "hp": e.get("current_hp"), "block": e.get("block"),
                 "powers": _powers(e.get("powers")),
                 "intents": [[i.get("intent_type"), i.get("damage"), i.get("hits")] for i in e.get("intents") or []
