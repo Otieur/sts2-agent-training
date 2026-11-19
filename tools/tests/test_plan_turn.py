@@ -129,6 +129,25 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.simulate(hand("Strike", "Strike", "Strike"), [0, 0, 0], pt.Player(energy=3), e)
         self.assertEqual(o["dealt"], 6 + 6 + 7)  # 6, 6x1.1=6.6->6, 6x1.2=7.2->7
 
+    def test_osty(self):
+        poke = hand("Poke")[0]
+        self.assertTrue(poke.osty)
+        self.assertEqual(poke.dmg, 6)
+        e = [pt.parse_enemy("A:50:0:10:vuln", 0)]
+        o = pt.simulate([poke], [0], pt.Player(energy=3, strength=5, osty_hp=5), e)
+        self.assertEqual(o["dealt"], 9)          # 6 x 1.5; your Strength does not apply
+        self.assertEqual(o["hp_lost"], 5)        # 10 unblocked: Osty takes 5, you take 5
+        self.assertEqual(o["osty_hp_after"], 0)
+        o = pt.simulate([poke], [0], pt.Player(energy=3, osty_hp=0), e)
+        self.assertEqual(o["dealt"], 0)          # no Osty, no damage
+        o = pt.simulate(hand("Bodyguard", "Poke"), [None, 0], pt.Player(energy=3, osty_hp=0), e)
+        self.assertEqual(o["dealt"], 9)          # Summon 5 brings Osty back
+        self.assertEqual(o["hp_lost"], 5)        # Osty (5) absorbs half of 10
+        best_plan = best(hand("Poke", "Bodyguard"), pt.Player(energy=3, osty_hp=0), e, "balanced")
+        self.assertEqual(best_plan["dealt"], 9)  # the planner orders Summon before the Osty attack
+        bs = hand("Bone Shards")[0]
+        self.assertTrue(bs.kills_osty)
+
 
 if __name__ == "__main__":
     unittest.main()

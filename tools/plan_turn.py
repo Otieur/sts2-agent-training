@@ -69,6 +69,9 @@ class Card:
     potion: bool = False        # a potion slot (index = slot); costs nothing but is spent
     flat: bool = False          # unpowered damage/block: no Strength, Vulnerable, Weak, Dexterity or Frail
     dex: int = 0                # Dexterity gained (applies to later block cards)
+    osty: bool = False          # Necrobinder: "Your Osty deals X damage" (not modified by your Strength or Weak)
+    summon: int = 0             # Necrobinder: Summon N (adds N to Osty's HP)
+    kills_osty: bool = False    # "Kill your own Osty" (Bone Shards, Sacrifice)
 
 
 @dataclass
@@ -95,6 +98,7 @@ class Player:
     weak: bool = False
     frail: bool = False
     hp: Optional[int] = None
+    osty_hp: int = 0            # Necrobinder's Osty: takes the unblocked damage aimed at you (DIE_FOR_YOU_POWER)
 
 
 def parse_effect(c):
@@ -105,6 +109,13 @@ def parse_effect(c):
     m = re.search(r"Deal (\d+) damage", e)
     if m:
         out["dmg"] = int(m.group(1))
+    m = re.search(r"Your Osty deals (\d+) damage", e)
+    out["osty"] = bool(m)
+    if m:
+        out["dmg"] = int(m.group(1))
+    m = re.search(r"Summon (\d+)", e)
+    out["summon"] = int(m.group(1)) if m else 0
+    out["kills_osty"] = "Kill your own Osty" in e
     m = re.search(r"damage (\d+) times", e)
     if m:
         out["hits"] = int(m.group(1))
@@ -130,7 +141,8 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
     name = re.sub(r" (Ironclad|Silent|Necrobinder|Regent|Defect)$", "", name)
     card = Card(index, cid, name, cost if cost is not None else base_cost,
                 c.get("target") or "Self", p["dmg"], p["hits"], p["block"], p["vuln"], p["weak"], p["strength"], p["energy"],
-                p["draw"], p["hp_cost"], p["x_cost"], playable=playable)
+                p["draw"], p["hp_cost"], p["x_cost"], playable=playable, osty=p["osty"], summon=p["summon"],
+                kills_osty=p["kills_osty"])
     if c["type"] in ("Status", "Curse") or "Unplayable" in (c.get("effect") or ""):
         card.playable = False
     if live:
@@ -178,6 +190,11 @@ def card_from_potion(slot, potion_id):
 def per_hit(card, player, enemy, strength_gained, played_before=0):
     base = card.dmg
     slow = 1 + 0.1 * played_before if enemy.slow else 1.0
+    if card.osty and not card.live:
+        d = math.floor(base * (calc.VULNERABLE if enemy.vuln else 1.0) * slow + 1e-9)
+        if enemy.slippery > 0 or enemy.intangible:
+            d = min(d, 1)
+        return max(0, d)
     if card.flat:
         d = base
         if enemy.slippery > 0 or enemy.intangible:
@@ -212,8 +229,8 @@ ORDER = {"energy": 0, "strength": 1, "debuff": 2, "attack": 3, "block": 4, "othe
 def phase(card):
     if card.energy and not card.dmg:
         return "energy"
-    if (card.strength or card.dex) and not card.dmg:
-        return "strength"
+    if (card.strength or card.dex or card.summon) and not card.dmg:
+        return "strength"  # setup before attacks (Summon must come before Osty attacks)
     if (card.vuln or card.weak) and card.target in ("AnyEnemy", "AllEnemies"):
         return "debuff"
     if card.dmg:
@@ -228,6 +245,7 @@ def simulate(cards, targets, player, enemies):
     es = [Enemy(**vars(e)) for e in enemies]
     energy, block, strength_gained, hp_cost, dealt, draws = player.energy, player.block, 0, 0, 0, 0
     dex_gained, potions = 0, 0
+    osty = player.osty_hp
     log = []
     played = 0
     for card, tgt in zip(cards, targets):
@@ -243,6 +261,9 @@ def simulate(cards, targets, player, enemies):
         potions += card.potion
         alive = [e for e in es if e.hp > 0]
         hits = card.hits * (cost if card.x_cost else 1)
+        if card.osty and osty <= 0:
+            hits = 0  # Osty is dead: its attacks do nothing
+        osty += card.summon
         if card.target == "AllEnemies":
             victims = alive
         elif card.target == "AnyEnemy":
@@ -272,6 +293,8 @@ def simulate(cards, targets, player, enemies):
                 block += card.block + dex_gained
             else:
                 block += calc.block_gain(card.block, player.dexterity + dex_gained, player.frail)
+        if card.kills_osty:
+            osty = 0
         if not card.potion:
             played += 1
         label = (f"potion {card.name} (use_potion slot={card.index})" if card.potion else card.name)
@@ -279,7 +302,9 @@ def simulate(cards, targets, player, enemies):
     intents = [(e.intent_per_hit, e.intent_hits) for e in es if e.hp > 0 and e.intent_hits]
     weak = [e.weak for e in es if e.hp > 0 and e.intent_hits]
     inc = calc.incoming_hp_loss(intents, player_block=block, weak_enemies=weak)
-    return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": inc.hp_lost + hp_cost,
+    to_osty = min(osty, inc.hp_lost)  # Osty takes the unblocked damage first while alive [GAME-EXTRACT] DIE_FOR_YOU_POWER
+    return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": inc.hp_lost - to_osty + hp_cost,
+            "osty_hp_after": osty - to_osty,
             "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all(e.hp <= 0 for e in es),
             "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
 
@@ -337,7 +362,8 @@ def from_state(st):
     p = c.get("player") or {}
     powers = {(x.get("power_id") or x.get("id") or x.get("name") or "").upper(): x.get("amount", x.get("stacks", 1))
               for x in p.get("powers") or []}
-    player = Player(energy=int(p.get("energy") or 0), block=int(p.get("block") or 0),
+    osty = sum(int(x.get("current_hp") or 0) for x in p.get("pets") or [] if (x.get("pet_id") or "").upper() == "OSTY")
+    player = Player(energy=int(p.get("energy") or 0), block=int(p.get("block") or 0), osty_hp=osty,
                     strength=int(powers.get("STRENGTH_POWER", powers.get("STRENGTH", 0)) or 0),
                     dexterity=int(powers.get("DEXTERITY_POWER", powers.get("DEXTERITY", 0)) or 0),
                     weak=any(k.startswith("WEAK") for k in powers), frail=any(k.startswith("FRAIL") for k in powers),
@@ -430,6 +456,7 @@ def main(argv=None):
     ap.add_argument("--player-weak", action="store_true")
     ap.add_argument("--player-frail", action="store_true")
     ap.add_argument("--hp", type=int)
+    ap.add_argument("--osty", type=int, default=0, help="Necrobinder: Osty's current HP")
     ap.add_argument("--top", type=int, default=3)
     ap.add_argument("--potion", action="append", default=[], help="potion id held, e.g. FIRE_POTION (repeatable)")
     ap.add_argument("--fight", choices=list(POTION_COST), default="elite", help="sets the cost of spending a potion")
@@ -438,7 +465,8 @@ def main(argv=None):
         hand, player, enemies = from_state(json.loads(Path(args.state).read_text()))
     else:
         hand = [card_from_extract(i, resolve_card(n)) for i, n in enumerate(args.hand or [])]
-        player = Player(args.energy, args.player_block, args.strength, args.dexterity, args.player_weak, args.player_frail, args.hp)
+        player = Player(args.energy, args.player_block, args.strength, args.dexterity, args.player_weak, args.player_frail, args.hp,
+                        osty_hp=args.osty)
         enemies = [parse_enemy(s, i) for i, s in enumerate(args.enemy)]
         hand += [card_from_potion(i, pid) for i, pid in enumerate(args.potion)]
     if not enemies:

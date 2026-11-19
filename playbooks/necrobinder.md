@@ -1,6 +1,6 @@
 # Necrobinder Playbook
 
-Version: v0.2 (draft) · Knowledge base: v0.107.1 · Target game: v0.111.1 · Last updated: 2026-11-19 · Status: groundwork for Phase 5, written overnight before any Necrobinder study. Not ready to play from.
+Version: v0.3 (draft) · Knowledge base: v0.107.1 · Target game: v0.111.1 · Last updated: 2026-11-19 · Status: groundwork for Phase 5, written overnight before any Necrobinder study. Not ready to play from.
 
 Same rules and labels as `playbooks/ironclad.md`. Everything general there (path planning, the elite HP rule, pre-boss rest rule, corner targets, potion policy, combat checklist, boss plans) applies here too, unless this file says otherwise.
 
@@ -13,8 +13,14 @@ Same rules and labels as `playbooks/ironclad.md`. Everything general there (path
 
 ## 1. Overview
 - **Start:** 66 HP (the lowest of the four characters), 99 gold, relic Bound Phylactery. Deck: 4 Strike, 4 Defend, Bodyguard (Summon 5), Unleash. `[GAME-EXTRACT]`
-- **Osty:** a companion that Summon cards build up and that some attacks act through: "Your Osty deals X damage" (Poke, Snap, Flatten). It appears in fights as a separate creature with its own HP. `[GAME-EXTRACT]` cards; the exact Summon and Osty rules are to be documented in Phase 5 (P5.E2.S2).
-- **Doom:** an enemy dies at the end of its turn if its HP is at or below its Doom. Sources include Blight Strike, Negative Pulse (7), Scourge (13), End of Days (29). `[GAME-EXTRACT]`
+- **Osty** `[GAME-EXTRACT]` unless noted:
+  - An allied creature (`OSTY`, 1 base HP) shown under `combat.player.pets` in STS2-Agent. **Summon N adds N to Osty's HP** (`OstyCmd.Summon`), and Bound Phylactery summons 1 at the start of each combat and each turn.
+  - **Osty takes the unblocked damage aimed at you while it lives** (`DIE_FOR_YOU_POWER`: unblocked damage is redirected to its owner, Osty). Your effective HP is your HP plus Osty's, and block still applies first. Community guides call Osty a meat shield and the Phylactery the real HP bar `[COMMUNITY]`.
+  - Osty attacks through cards ("Your Osty deals X damage": Poke 6, Fetch 3, Snap 7, Flatten 12, High Five 11 to all, Bone Shards 9 to all). They do nothing while Osty is dead. Your Strength probably does not apply (the damage is Osty's) `[HYPOTHESIS]`; Cruelty applies to Osty attacks since v0.111.1 `[COMMUNITY]`.
+  - Some cards kill your own Osty for value (Bone Shards: 9 to all + 9 block; Sacrifice: block equal to 3× Osty's max HP since v0.111.1). Summon again afterwards.
+  - `tools/plan_turn.py` models Osty: Summon before Osty attacks, Osty absorbing unblocked damage, kill-own-Osty cards.
+- **Doom:** a debuff; at the end of the enemy's turn it dies if its HP is at or below its Doom (`DOOM_POWER`: `CurrentHp <= Amount`) `[GAME-EXTRACT]`. Sources include Blight Strike, Negative Pulse (7), Scourge (13), End of Days (29), Countdown (Doom each turn) and Reaper Form (Doom on every damage dealt).
+- **Energy and draw engines:** Demesne (+draw and +energy each turn), Friendship (+energy) `[GAME-EXTRACT]`.
 - **Ethereal and Retain** are common card keywords (9 and 6 cards). Ethereal cards are lost if not played; Retain cards stay in hand.
 - **The Player's record** (v0.107.1): 59 runs, 11 wins of 52 finished.
   - By band: A0–4 5/12, A5–9 5/28, A10 1/12.
@@ -80,12 +86,13 @@ Draft by the consensus tier, but treat † cards as one tier lower when the sour
 - Elite deaths under 50% HP: 2 of 9, against 3 of 63 at 50% or more. The general rule holds: avoid elites under 50%.
 
 ## 5. Open questions for Phase 5
-- Exact Summon and Osty rules: how Osty's HP works, what happens when Osty dies, whether Osty blocks for you.
+- Osty: does Osty keep its HP between fights, and does block or Strength apply to it? (Summon and the damage redirect are answered by the game data, §1.)
 - Doom interactions with bosses (Test Subject revives; Knowledge Demon heals).
 - Necrobinder archetypes (Doom, Osty and Summon, Ethereal and Retain) and their commit signals.
 - Whether the corner targets (block per turn, scaling cards) need adjusting for a character whose damage partly comes through Osty. `tools/deck_metrics.py` does not count Osty damage yet.
 
 ## 6. Changelog
+- **v0.3 (2026-11-19, overnight):** Osty, Summon and Doom rules from the power data (§1); the turn planner models Osty.
 - **v0.2 (2026-11-19, overnight):** decision-point check of the tiers (§3.2b): they do not predict the Player's Necrobinder outcomes.
 - **v0.1 (2026-11-19, overnight):** community tiers from three sources (§3.1), habit discrepancies with the Player's outcomes (§3.2), a starting draft rule (§3.3).
 - **v0 (2026-11-19):** groundwork from the extracted game data and the Player's history.
