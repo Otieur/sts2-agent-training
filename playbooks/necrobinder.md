@@ -88,7 +88,7 @@ Draft by the consensus tier, but treat † cards as one tier lower when the sour
 ## 5. Open questions for Phase 5
 - Osty: does Osty keep its HP between fights, and does block or Strength apply to it? (Summon and the damage redirect are answered by the game data, §1.)
 - Doom interactions with bosses (Test Subject revives; Knowledge Demon heals).
-- Necrobinder archetypes (Doom, Osty and Summon, Ethereal and Retain) and their commit signals.
+- Necrobinder archetypes: drafted in `knowledge/community/archetypes-necrobinder.md` (Doom, Osty, Souls, with commit signals); to test in Phase 5.
 - Whether the corner targets (block per turn, scaling cards) need adjusting for a character whose damage partly comes through Osty. `tools/deck_metrics.py` does not count Osty damage yet.
 
 ## 6. Changelog

@@ -74,7 +74,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P5.E1 | Rerun the history pipeline | Done | All characters; cross-character report |
-| P5.E2 | Necrobinder knowledge | In progress | S3 tiers and discrepancies done (tiers fail the decision-point check); S2 Osty, Summon and Doom from the power data; archetypes to do |
+| P5.E2 | Necrobinder knowledge | In progress | S3 done (tiers, discrepancies, archetypes; tiers fail the decision-point check); S2 Osty, Summon and Doom from the power data |
 | P5.E3 | Playbook v1 (Necrobinder) | In progress | playbooks/necrobinder.md v0.3 (groundwork) |
 | P5.E4 | Light shadowing | Todo | |
 | P5.E5 | Solo ladder | Todo | |
