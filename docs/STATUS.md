@@ -2,7 +2,7 @@
 
 Update this file whenever a story changes status. Story-level status lives in each phase document; this board tracks epics.
 
-**Active phase:** Phase 0 (waiting on the Player: security verdict, branch switch to main v0.111.1, mod and SDK choice; then `docs/runbooks/first-session.md`). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live.
+**Active phase:** Phase 0 (waiting on the Player: security verdict, branch switch to main v0.111.1, mod and SDK choice; then `docs/runbooks/first-session.md`). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md` (Needs-the-Player checklist in section 5).
 **Last updated:** 2026-11-19
 
 ---
@@ -61,7 +61,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P4.E1 | Run harness | In progress | Runbooks written; resume test (S5) needs a live run |
+| P4.E1 | Run harness | In progress | Runbooks written (start, decision loop with STS2-Agent screen table, end of run with STS2-Agent game-over actions); `advise.py --live` gives state and advice in one command; resume test (S5) needs a live run |
 | P4.E2 | Combat procedure | In progress | S1, S3, S4 done (plan_turn.py, journal.py); planner covers the common Ironclad cards whose text the extract leaves incomplete, playable statuses (Sandpit guard), 17 potions and the boss and elite powers in the notes; S2 calculator awaits in-game verification |
 | P4.E3 | Strategy procedures | Done (tooling) | path.py, draft.py, advise.py, deck_check.py; advise.py never raises on damaged states (fuzz test); untested live |
 | P4.E4 | Post-mortem | In progress | S1 facts sheet done (postmortem.py, tested on the Player's runs) |
