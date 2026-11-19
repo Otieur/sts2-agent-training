@@ -52,3 +52,8 @@ Everything still unverified, ranked by how much it affects play (S6, written 202
 | 2026-11-19 | Act boss lists per act variant | From run data (`knowledge/mechanics.md`) |
 | 2026-11-19 | A2 Ancient heal, A3 gold, A4 potion slots, A10 double boss | Confirmed in run data (`knowledge/ascension.md`) |
 | 2026-11-19 | Which game build is the extract from? | **Pre-v0.107.1** (corrected at 01:42 from an earlier "v0.107.x–v0.110"): eleven v0.107.1 changes show old values and Aeonglass is missing. Exact build unknown. Replaced by gap 3 |
+| 2026-11-19 | Does killing The Kin's Priest end the fight? | Yes per two guides (followers are Minions); the planner treats it as lethal. Still to see once in game (gap 12) |
+| 2026-11-19 | Test Subject's Enrage: every card or only Skills? | Skills, 2 Strength each (several guides); the planner counts Skills only |
+| 2026-11-19 | What does Colossus do? | Half damage from Vulnerable enemies for the turn (two card pages); modelled |
+| 2026-11-19 | Forgotten Ritual's exhaust condition | Removed on v0.111.1 (patch notes); the planner follows the patched card text |
+| 2026-11-19 | Knowledge Demon curse offers and Ponder heal | Disintegration or Mind Rot, then Sloth, then Waste Away; heal 30 per player (two guides) |
