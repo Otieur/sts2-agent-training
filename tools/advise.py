@@ -189,6 +189,11 @@ def map_screen(st, top=3):
     res = pathmod.rank(paths, nodes, model, act, hp, mx, run.get("boss_id"), w, pathmod.deck_metrics_from(_deck(st)))
     idx = {(n.get("row"), n.get("col")): n.get("index") for n in m.get("available_nodes") or []}
     out = [f"{len(res)} distinct routes, risk weight {w:g}"] + ([f"note: {note}"] if note else [])
+    if start in idx and not any(o["first"] in idx for o in res[:top]):
+        # act start (seen live 2026-11-19): the only available node is the act's starting room (the Ancient), and the
+        # routes below begin after it
+        out.append(f"First: choose_map_node option_index={idx[start]} {start} (the act's starting room, the Ancient); "
+                   "the routes below start after it")
     for o in res[:top]:
         out.append(f"  score {o['score']:5.2f}  choose_map_node option_index={idx.get(o['first'], '?')} {o['first']}  {o['seq']}  "
                    f"boss arrival {o['boss_hp']}%, P(run ends) {100 * o['p_end']:.0f}%" + (f"  ! {'; '.join(o['notes'])}" if o["notes"] else ""))

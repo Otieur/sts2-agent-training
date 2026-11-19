@@ -39,14 +39,29 @@ def ready(d):
     return bool(set(acts) - {"save_and_quit", "discard_potion"})
 
 
-def settle(timeout=15.0, poll=0.2):
+def _hand_key(d):
+    return [(h.get("card_id"), h.get("index")) for h in (d.get("combat") or {}).get("hand") or []]
+
+
+def settle(timeout=20.0, poll=0.3):
+    """Poll until the game accepts the next decision. In combat the hand must also be the same on two reads in a row:
+    play_card becomes available while the turn's draw is still animating (seen live 2026-11-19)."""
     t0 = time.time()
-    d = None
+    d, prev, same = None, None, 0
     while time.time() - t0 < timeout:
         try:
             d = read_state()
             if ready(d):
-                return d, time.time() - t0
+                if d.get("screen") != "COMBAT":
+                    return d, time.time() - t0
+                rd = (d.get("combat") or {}).get("action_readiness") or {}
+                key = (_hand_key(d), (d.get("combat") or {}).get("player", {}).get("energy"))
+                same = same + 1 if key == prev else 0
+                if rd.get("actions_settled", True) and same >= 2:  # unchanged across three reads: a reshuffle pauses the draw
+                    return d, time.time() - t0
+                prev = key
+            else:
+                prev, same = None, 0
         except Exception:
             pass
         time.sleep(poll)

@@ -207,6 +207,14 @@ class TestAdvise(unittest.TestCase):
 
 
 class TestLiveStates(unittest.TestCase):
+    def test_act_start_points_to_the_ancient(self):
+        # live 2026-11-19: at the start of Act 2 the only available node is the Ancient at row 0
+        import json
+        from pathlib import Path
+        st = json.loads((Path(__file__).parent / "fixtures" / "live" / "map-act-start-20261119.json").read_text())
+        out = advise.advise(st)
+        self.assertIn("First: choose_map_node option_index=0 (0, 3)", out)
+
     def test_map_with_stale_combat_object(self):
         # live 2026-11-19: on the map after a fight the mod still sends the last combat (dead enemy)
         import json
