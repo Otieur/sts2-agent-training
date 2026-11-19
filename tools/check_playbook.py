@@ -127,6 +127,15 @@ def checks(con):
     out.append(("draft backtest", f"agreed with the Player on {m.group(1)}%, and the act was survived in {m2.group(1)}% of screens where the "
                                   f"Player's choice matched the tool against {m2.group(2)}% where it did not (p = {m2.group(3)};"
                 if m and m2 else "<pattern not found in draft-backtest-ironclad.md>"))
+    # Death review (tools/death_review.py)
+    dr = (PROJECT / "reports" / "phase2" / "death-review-ironclad.md").read_text()
+    m = re.search(r"\*\*(\d+) of (\d+) deaths", dr)
+    out.append(("death review", f"flagged {m.group(1)} of the Player's {m.group(2)} Ironclad deaths" if m else "<pattern not found>"))
+    def base(check):
+        mm = re.search(rf"\| {re.escape(check)} \| (\d+%) \| (\d+%) \|", dr)
+        return (mm.group(1), mm.group(2)) if mm else ("?", "?")
+    out.append(("death review H1", "(H1) in {} of fatal against {} of survived".format(*base("H1"))))
+    out.append(("death review H9", "(H9) in {} against {}".format(*base("H9"))))
     return out
 
 

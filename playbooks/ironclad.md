@@ -245,6 +245,8 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
   - Rates lower: Cascade, Demon Form, Battle Trance, Shrug It Off, Bully, Expect a Fight, Pommel Strike, Rupture
 - The Player's implied card order (Phase 1 head-to-head scores): `reports/phase1/card-ranking-ironclad.md`.
 
+**Death review** (`reports/phase2/death-review-ironclad.md`): the playbook's checks flagged 27 of the Player's 40 Ironclad deaths beforehand (22 of 24 boss deaths, 5 of 10 elite deaths, no hallway deaths). Against the base rate at bosses: a broken rest rule (H1) in 38% of fatal against 21% of survived boss fights, missed corner targets (H9) in 88% against 69%; the countable boss checklists in `tools/deck_check.py` flagged 38% of both, so their thresholds do not discriminate yet. `[PLAYER-DATA, observational]`
+
 ## 12. Hypotheses to test (Phase 4 experiments)
 
 | ID | Hypothesis | Evidence so far | Test | Status |

@@ -37,6 +37,8 @@ def cheap(c):
 
 
 # Boss checklist items that can be counted (from knowledge/bosses/*.md "Deck checklist"). [HYPOTHESIS] thresholds.
+# Death review (reports/phase2/death-review-ironclad.md): these flagged 38% of fatal and 38% of survived Ironclad boss
+# fights, so as thresholded they do not discriminate yet. The corner targets (H9) did: 88% against 69%.
 BOSS_CHECKS = {
     "VANTOM": [
         ("cheap (0-1 cost) or multi-hit attack cards", lambda d: count(d, lambda c: is_attack(c) and ("multi-hit" in c.get("tags", []) or cheap(c))), 6,
