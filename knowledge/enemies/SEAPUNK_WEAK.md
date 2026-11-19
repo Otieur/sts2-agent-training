@@ -26,7 +26,7 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
-- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 44–46 (47–49 at A8+); Sea Kick 11, Spinning Kick 2×4, Bubble Burp +7 Block and +1 Strength, repeating (Spinning Kick gains 4 per Strength point). Multi-hit damage on its Burp turn cuts through the 7 Block poorly; Weak halves the value of Spinning Kick's hits.
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 44–46 (47–49 at A8+); Sea Kick 11, Spinning Kick 2×4, Bubble Burp +7 Block and +1 Strength, repeating (Spinning Kick gains 4 per Strength point). Weak on it cuts each Spinning Kick hit by a quarter; kill it before its Strength builds over several Burps.
 
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - Sea Kick 11, Spinning Kick 2×4 (each hit gains from its Strength), Bubble Burp 7 block + 1 Strength.
