@@ -483,7 +483,8 @@ def main(argv=None, opener=None):
                 st = adapter.state()
                 scr = adapter.screen(st)
                 battle = st.get("battle") or {}
-                if scr != first or battle.get("is_play_phase") is True:
+                agent_ready = bool(st.get("combat")) and "play_card" in (st.get("available_actions") or [])  # STS2-Agent
+                if scr != first or battle.get("is_play_phase") is True or agent_ready:
                     print(brief(st))
                     return
                 time.sleep(0.5)

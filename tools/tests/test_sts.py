@@ -221,6 +221,14 @@ class TestCoop(unittest.TestCase):
         with self.assertRaises(SystemExit):
             sts.main(["--instance", "teammate", "state"], opener=FakeOpener(COMBAT))
 
+    def test_wait_on_sts2agent_play_phase(self):
+        st = {"screen": "COMBAT", "combat": {"hand": []}, "available_actions": ["play_card", "end_turn"], "run": {"floor": 3}}
+        op = RoutingOpener({8080: {"health": {"instance_role": "human"}, "state": st}})
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            sts.main(["--mod", "sts2agent", "wait", "--timeout", "2"], opener=op)
+        self.assertIn("[COMBAT]", buf.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
