@@ -72,6 +72,7 @@ class Card:
     osty: bool = False          # Necrobinder: "Your Osty deals X damage" (not modified by your Strength or Weak)
     summon: int = 0             # Necrobinder: Summon N (adds N to Osty's HP)
     kills_osty: bool = False    # "Kill your own Osty" (Bone Shards, Sacrifice)
+    power: bool = False         # a Power card: its value comes in later turns (POWER_VALUE)
 
 
 @dataclass
@@ -139,10 +140,11 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
     base_cost = c["cost"] if c["cost"] is not None and c["cost"] >= 0 else 0
     name = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", c["name"])
     name = re.sub(r" (Ironclad|Silent|Necrobinder|Regent|Defect)$", "", name)
+    is_power = c["type"] == "Power"
     card = Card(index, cid, name, cost if cost is not None else base_cost,
                 c.get("target") or "Self", p["dmg"], p["hits"], p["block"], p["vuln"], p["weak"], p["strength"], p["energy"],
                 p["draw"], p["hp_cost"], p["x_cost"], playable=playable, osty=p["osty"], summon=p["summon"],
-                kills_osty=p["kills_osty"])
+                kills_osty=p["kills_osty"], power=is_power)
     if c["type"] in ("Status", "Curse") or "Unplayable" in (c.get("effect") or ""):
         card.playable = False
     if live:
@@ -174,6 +176,11 @@ POTIONS = {
     "SWIFT_POTION": dict(target="Self", draw=3),
 }
 POTION_COST = {"hallway": 8.0, "elite": 3.0, "boss": 2.0}  # HP-equivalent cost of spending a potion [HYPOTHESIS]
+# Value of playing a Power now, per energy it costs, in damage-or-HP equivalents for the turns still to come
+# [HYPOTHESIS]. A Strike deals 6 per energy now; a Power pays back over the rest of the fight: bosses last 6-10 turns
+# (playbook section 1), elites about 4-5, hallway fights about 3, and the fight model finds scaling cards cost HP in
+# Act 1 hallways but save it at the Act 2 boss. Hence about 10 per energy in bosses, 5 in elites, 1 in hallways.
+POWER_VALUE = {"hallway": 1.0, "elite": 5.0, "boss": 10.0}
 
 
 def card_from_potion(slot, potion_id):
@@ -244,7 +251,7 @@ def simulate(cards, targets, player, enemies):
     """Play cards in order with the given targets. Returns the outcome dict, or None if energy runs out."""
     es = [Enemy(**vars(e)) for e in enemies]
     energy, block, strength_gained, hp_cost, dealt, draws = player.energy, player.block, 0, 0, 0, 0
-    dex_gained, potions = 0, 0
+    dex_gained, potions, powers = 0, 0, 0
     osty = player.osty_hp
     log = []
     played = 0
@@ -259,6 +266,7 @@ def simulate(cards, targets, player, enemies):
         strength_gained += card.strength
         dex_gained += card.dex
         potions += card.potion
+        powers += max(1, cost) if card.power else 0  # energy spent on Powers
         alive = [e for e in es if e.hp > 0]
         hits = card.hits * (cost if card.x_cost else 1)
         if card.osty and osty <= 0:
@@ -304,7 +312,7 @@ def simulate(cards, targets, player, enemies):
     inc = calc.incoming_hp_loss(intents, player_block=block, weak_enemies=weak)
     to_osty = min(osty, inc.hp_lost)  # Osty takes the unblocked damage first while alive [GAME-EXTRACT] DIE_FOR_YOU_POWER
     return {"plays": log, "dealt": dealt, "block": block, "incoming": inc.total, "hp_lost": inc.hp_lost - to_osty + hp_cost,
-            "osty_hp_after": osty - to_osty,
+            "osty_hp_after": osty - to_osty, "powers": powers,  # energy spent on Powers
             "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all(e.hp <= 0 for e in es),
             "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
 
@@ -337,15 +345,17 @@ def plans(hand, player, enemies):
     return results
 
 
-def rank(results, mode, potion_cost=POTION_COST["elite"]):
-    """Lethal first (with the fewest potions); then the mode's objective, where each potion spent counts as
-    potion_cost HP lost."""
+def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALUE["elite"]):
+    """Lethal first (with the fewest potions); then the mode's objective. Each potion spent counts as potion_cost HP
+    lost; each energy spent on Powers counts as power_value (future damage or HP) in the balanced mode and as a
+    tie-break in the safe mode."""
     if mode == "safe":
         key = lambda o: (not o["all_dead"], o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         o["hp_lost"] + potion_cost * o["potions"], -o["kills"], -o["dealt"], o["draws"] == 0)
+                         o["hp_lost"] + potion_cost * o["potions"], -o.get("powers", 0), -o["kills"], -o["dealt"], o["draws"] == 0)
     else:
         key = lambda o: (not o["all_dead"], o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         -(o["dealt"] - o["hp_lost"] - potion_cost * o["potions"]), o["hp_lost"], -o["kills"])
+                         -(o["dealt"] - o["hp_lost"] - potion_cost * o["potions"] + power_value * o.get("powers", 0)),
+                         o["hp_lost"], -o["kills"])
     seen, out = set(), []
     for o in sorted(results, key=key):
         sig = tuple(sorted(o["plays"]))
@@ -438,7 +448,8 @@ def resolve_card(name):
 def fmt(o, hp):
     after = f", HP after {hp - o['hp_lost']}" if hp is not None else ""
     flags = (" · LETHAL" if o["all_dead"] else "") + (f" · re-plan after drawing {o['draws']}" if o["draws"] else "") \
-        + (f" · spends {o['potions']} potion(s)" if o.get("potions") else "")
+        + (f" · spends {o['potions']} potion(s)" if o.get("potions") else "") \
+        + (f" · {o['powers']} energy on Powers" if o.get("powers") else "")
     return (f"{' + '.join(o['plays']) or '(play nothing)'}\n      deal {o['dealt']}, kills {o['kills']}, block {o['block']} "
             f"vs incoming {o['incoming']}, HP lost {o['hp_lost']}{after}, energy left {o['energy_left']}, "
             f"enemy HP {o['enemy_hp']}{flags}")
@@ -459,7 +470,8 @@ def main(argv=None):
     ap.add_argument("--osty", type=int, default=0, help="Necrobinder: Osty's current HP")
     ap.add_argument("--top", type=int, default=3)
     ap.add_argument("--potion", action="append", default=[], help="potion id held, e.g. FIRE_POTION (repeatable)")
-    ap.add_argument("--fight", choices=list(POTION_COST), default="elite", help="sets the cost of spending a potion")
+    ap.add_argument("--fight", choices=list(POTION_COST), default="elite",
+                    help="hallway, elite or boss: sets the cost of spending a potion and the value of playing a Power")
     args = ap.parse_args(argv)
     if args.state:
         hand, player, enemies = from_state(json.loads(Path(args.state).read_text()))
@@ -477,7 +489,7 @@ def main(argv=None):
     res = plans(hand, player, enemies)
     for mode in ("safe", "balanced"):
         print(f"{mode}:")
-        for o in rank(res, mode, POTION_COST[args.fight])[:args.top]:
+        for o in rank(res, mode, POTION_COST[args.fight], POWER_VALUE[args.fight])[:args.top]:
             print("  " + fmt(o, player.hp))
     return 0
 

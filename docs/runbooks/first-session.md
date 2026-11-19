@@ -55,6 +55,7 @@ Check: the card is played, `runs/smoke/decisions.jsonl` has the line, and `GET /
 | 23 | Kaiser Crab facing: target each claw and read the intent numbers (×1.5 from behind?) | `knowledge/bosses/KAISER_CRAB_BOSS.md` |
 | — | Infested Prism's current moves and Tainted duration (reworked after the extract) | `knowledge/enemies/INFESTED_PRISMS_ELITE.md` |
 | — | Test Subject's Enrage: every card or only Skills? | `knowledge/bosses/TEST_SUBJECT_BOSS.md` |
+| — | Does the combat state say whether the fight is a hallway, elite or boss room? (`tools/advise.py` `fight_type` guesses from the boss name, else assumes elite) | `tools/advise.py` |
 
 ## Step 5: Live data export (P2.E1.S2)
 STS2-Agent serves `/data/{collection}`. Export cards, monsters, relics, potions and powers for v0.111.1 into `knowledge/data/v0.111.1/` and compare them with the extract plus `knowledge/data/card-patches.json`. Every difference not in the two delta files is a new entry for the delta files and the patches.

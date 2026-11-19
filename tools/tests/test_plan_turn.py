@@ -148,6 +148,15 @@ class TestPlanTurn(unittest.TestCase):
         bs = hand("Bone Shards")[0]
         self.assertTrue(bs.kills_osty)
 
+    def test_power_value(self):
+        e = [pt.parse_enemy("Boss:300:0:10", 0)]
+        h = hand("Demon Form", "Strike", "Strike", "Strike")
+        res = pt.plans(h, pt.Player(energy=3), e)
+        boss = pt.rank(res, "balanced", pt.POTION_COST["boss"], pt.POWER_VALUE["boss"])[0]
+        hall = pt.rank(res, "balanced", pt.POTION_COST["hallway"], pt.POWER_VALUE["hallway"])[0]
+        self.assertEqual(boss["powers"], 3)   # Demon Form (3 energy) in a boss fight
+        self.assertEqual(hall["powers"], 0)   # three Strikes in a hallway
+
 
 if __name__ == "__main__":
     unittest.main()

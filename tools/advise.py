@@ -50,8 +50,22 @@ def _character(st):
 
 
 # ------------------------------------------------------------------------------------------------ screens
+def fight_type(st):
+    """boss / elite / hallway from the STS2-Agent state, for potion cost and Power value."""
+    c = st.get("combat") or {}
+    names = " ".join(str(e.get("enemy_id") or e.get("name") or "") for e in c.get("enemies") or []).upper()
+    room = str((st.get("run") or {}).get("room_type") or st.get("room_type") or "").lower()
+    boss = (_run(st).get("boss_id") or "").upper().replace("_BOSS", "").replace("ENCOUNTER.", "")
+    if "boss" in room or (boss and boss in names):
+        return "boss"
+    if "elite" in room:
+        return "elite"
+    return "hallway" if room else "elite"
+
+
 def combat(st, top=2):
     hand, player, enemies = plan_turn.from_state(st)
+    ft = fight_type(st)
     if not enemies:
         return "combat: no live enemies in the state"
     res = plan_turn.plans(hand, player, enemies)
@@ -59,9 +73,10 @@ def combat(st, top=2):
     for c in hand:
         if c.note:
             out.append(f"note: {c.name}: {c.note}")
+    out.append(f"fight type: {ft} (potion cost {plan_turn.POTION_COST[ft]:g} HP, Powers {plan_turn.POWER_VALUE[ft]:g} per energy)")
     for mode in ("safe", "balanced"):
         out.append(f"{mode}:")
-        out += ["  " + plan_turn.fmt(o, player.hp) for o in plan_turn.rank(res, mode)[:top]]
+        out += ["  " + plan_turn.fmt(o, player.hp) for o in plan_turn.rank(res, mode, plan_turn.POTION_COST[ft], plan_turn.POWER_VALUE[ft])[:top]]
     c = st.get("combat") or {}
     if c.get("end_turn_will_kill_player"):
         out.append("WARNING: ending the turn now is lethal (mod's lethal check)")
