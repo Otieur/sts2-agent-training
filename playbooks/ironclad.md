@@ -217,7 +217,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 | Act | Boss | Median / p75 | Fatal (Ironclad) | Rest if HP below | The one thing to prepare `[GAME-EXTRACT]` mechanics |
 |---|---|---|---|---|---|
 | 1 Overgrowth | [Vantom](../knowledge/bosses/VANTOM_BOSS.md) | 48 / 57.5 | 6/11 | ~58 | 9 hit instances to clear Slippery; block 27 on turn 3 |
-| 1 Overgrowth | [Ceremonial Beast](../knowledge/bosses/CEREMONIAL_BEAST_BOSS.md) | 39 / 45.5 | 1/7 | ~49 | Front-load damage to break 150 Plow (stuns it, resets its Strength) |
+| 1 Overgrowth | [Ceremonial Beast](../knowledge/bosses/CEREMONIAL_BEAST_BOSS.md) | 39 / 45.5 | 1/7 | ~49 | Plow stuns it and wipes its Strength when its HP drops to 150 (community): get it there, ideally just before Beast Cry; after that, Beast Cry's Ringing allows one card the next turn |
 | 1 Overgrowth | [The Kin](../knowledge/bosses/THE_KIN_BOSS.md) | 34.5 / 41.2 | 0/8 | ~45 | Followers are Minions: killing the Priest probably ends the fight, so race it unless hit-all damage clears the followers in 2 turns |
 | 1 Underdocks | [Waterfall Giant](../knowledge/bosses/WATERFALL_GIANT_BOSS.md) | 38 / 41 | 2/5 | ~48 | Fast kill; bank block for the death explosion |
 | 1 Underdocks | [Soul Fysh](../knowledge/bosses/SOUL_FYSH_BOSS.md) | 33 / 41 | 3/7 | ~43 | Exhaust Beckon cards; burst outside Intangible |

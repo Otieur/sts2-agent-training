@@ -34,7 +34,7 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 |---|---|
 | Vantom | 9 Slippery stacks: cheap and multi-hit attacks; block 27 on turn 3 |
 | Lagavulin Matriarch | Set up while asleep; first damage on the last sleep turn (wakes stunned) |
-| Ceremonial Beast | Front-load damage to break Plow (rule unverified, gap 25) |
+| Ceremonial Beast | Plow: stunned at 150 HP left (community); Ringing after Beast Cry: one card next turn |
 | Knowledge Demon | Curse choice: Sloth > Mind Rot > Waste Away > Disintegration (simulated) |
 | Kaiser Crab | Focus Rocket; end the Laser turn facing Rocket; kill a claw with the turn's last attack (Crab Rage) |
 | Queen | Turn 1 Strong Tackle 26 (v0.111.1): block it; arrive high |
