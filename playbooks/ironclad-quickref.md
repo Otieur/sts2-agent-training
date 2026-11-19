@@ -49,7 +49,7 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 | Aeonglass | Strip its 3 Artifact before debuffs; a Wither every 6 cards (3 damage at end of turn if held, 6 once upgraded): fewer, bigger plays; Ebb 22 + 33 Block |
 
 ## Elites (§4)
-Infested Prisms: few Skills (Tainted). Entomancer: few big hits (Personal Hive). Byrdonis: kill fast. Skulking Colony: about 20 a turn (cap). Bygone Effigy: big attack last (Slow).
+Infested Prisms: few Skills (each Skill makes its hits stronger). Entomancer: few big hits (Personal Hive adds Dazed). Byrdonis: kill fast (+2 Strength a turn). Skulking Colony: at most 20 damage a turn counts (Hardened Shell). Bygone Effigy: big attack last (Slow). Terror Eel: at 70 HP it is stunned, then puts 99 Vulnerable on you: be ready to finish it after the threshold. Phantasmal Gardeners: the first attack on each Gardener gives it 6 Block, so one hit per Gardener or hit-all.
 
 ## Before trusting a number
 Gaps 22–28 list the assumptions still unverified in game (live card values, flat potion damage, Kaiser facing, Ceremonial Beast Plow, Entomancer's Dazed count, the simulated boss cycles, Sandpit timing). `docs/runbooks/first-session.md` checks them.
