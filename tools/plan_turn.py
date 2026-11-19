@@ -164,7 +164,7 @@ def parse_effect(c):
     if m:
         out["hits"] = int(m.group(1))
     for key, pat in (("block", r"Gain (\d+) Block"), ("vuln", r"Apply (\d+) Vulnerable"), ("weak", r"Apply (\d+) Weak"),
-                     ("strength", r"Gain (\d+) Strength"), ("energy", r"Gain (\d+) Energy"), ("draw", r"Draw (\d+) card"),
+                     ("strength", r"Gain (\d+) Strength(?! Next)"), ("energy", r"Gain (\d+) Energy(?! Next Turn)"), ("draw", r"Draw (\d+) card"),
                      ("hp_cost", r"Lose (\d+) HP")):
         m = re.search(pat, e)
         if m:
@@ -206,6 +206,8 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
         m = re.search(pat, eff)
         setattr(card, attr, int(m.group(1)) if m else 0)
     card.colossus = bool(re.search(r"Gain \d+ Colossus", eff))
+    if cid in OSTY_HP_DAMAGE:  # Unleash: an Osty attack whose damage grows with Osty's HP (set when played)
+        card.osty, card.dmg, card.live = True, OSTY_HP_DAMAGE[cid], False
     card.needs_exhaust = cid in CONDITIONAL_ENERGY and "no card needs to be exhausted" not in (c.get("effect") or "")
     card.exhausts = bool({"kw-exhaust", "exhaust-other"} & set(c.get("tags") or [])) or "Exhaust a card" in (c.get("effect") or "")
     card.changes_hand = ("exhaust-other" in (c.get("tags") or []) or "Exhaust a card" in (c.get("effect") or "")
@@ -346,6 +348,7 @@ def hit(enemy, dmg):
 ORDER = {"energy": 0, "strength": 1, "debuff": 2, "attack": 3, "block": 4, "after_block": 4.5, "other": 5, "last": 6}
 
 
+OSTY_HP_DAMAGE = {"UNLEASH": 6}  # Osty deals this plus his current HP (community card pages; v0.107.1 page)
 EXTRA_STATUSES = {  # not in the extract: unplayable, damage at the end of the turn while held (whisperofthehouse, 2026-11-16)
     "WITHER": {"held_dmg": 3, "note": "Wither: unplayable, 3 damage at end of turn while held (more if upgraded)"},
 }
@@ -407,6 +410,8 @@ def simulate(cards, targets, player, enemies):
         alive = [e for e in es if e.hp > 0]
         if card.card_id in BLOCK_DAMAGE:  # damage = Block now (Strength, Vulnerable and Weak still apply)
             card = Card(**{**vars(card), "dmg": block, "live": False})
+        if card.card_id in OSTY_HP_DAMAGE:  # Unleash: base plus Osty's HP at this moment (after earlier Summons)
+            card = Card(**{**vars(card), "dmg": OSTY_HP_DAMAGE[card.card_id] + max(0, osty), "live": False})
         hits = card.hits * (cost if card.x_cost else 1)
         if card.osty and osty <= 0:
             hits = 0  # Osty is dead: its attacks do nothing

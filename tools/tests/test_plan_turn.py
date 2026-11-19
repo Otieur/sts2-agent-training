@@ -357,6 +357,14 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.simulate(h, [None], pt.Player(energy=1), [pt.parse_enemy("A:50:0:20:vuln", 0), pt.parse_enemy("B:50:0:10", 1)])
         self.assertEqual(o["incoming"], 20)                 # 20 halved to 10 (Vulnerable), plus 10 from B
 
+    def test_unleash_and_next_turn_energy(self):
+        h = [pt.card_from_extract(0, "BODYGUARD"), pt.card_from_extract(1, "UNLEASH")]
+        o = pt.simulate(h, [None, 0], pt.Player(energy=2, osty_hp=3), [pt.parse_enemy("A:100:0:0", 0)])
+        self.assertEqual(o["dealt"], 14)                                  # 6 + Osty 3 + Summon 5
+        o = pt.simulate([pt.card_from_extract(0, "UNLEASH")], [0], pt.Player(energy=1, osty_hp=0), [pt.parse_enemy("A:100:0:0", 0)])
+        self.assertEqual(o["dealt"], 0)                                   # Osty dead: the attack fizzles
+        self.assertEqual(pt.card_from_extract(0, "INVOKE").energy, 0)     # "Gain 2 Energy Next Turn" is not this turn's
+
     def test_beckon_held_loss(self):
         h = [pt.card_from_extract(0, "BECKON"), pt.card_from_extract(1, "STRIKE_IRONCLAD")]
         self.assertEqual((h[0].held_loss, h[0].cost, h[0].playable), (6, 1, True))
