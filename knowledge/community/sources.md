@@ -5,7 +5,7 @@ Accessed 2026-11-19 unless noted. **Quality** reflects version match with v0.107
 ## Data sources (game data)
 | Source | Kind | Version | Quality | Notes |
 |---|---|---|---|---|
-| STS2-Agent `docs/game-knowledge` index (vendor/STS2-Agent @ 5d7c306) | Decompiled game data: 577 cards, 121 monsters, 289 relics, 64 potions, 257 powers, 68 events | Generated 2026-09-21; build not stated (the project targeted v0.111 beta then) | High for mechanics; version unverified | Imported as `[GAME-EXTRACT]` into `knowledge/data/extract-2026-09-21/`. Missing: Not Yet (card), Aeonglass (boss). |
+| STS2-Agent `docs/game-knowledge` index (vendor/STS2-Agent @ 5d7c306) | Decompiled game data: 577 cards, 121 monsters, 289 relics, 64 potions, 257 powers, 68 events | Generated 2026-09-21; build not stated; **predates v0.107.1** (eleven v0.107.1 changes show old values; see `knowledge/version-delta-extract-to-v0.107.1.md`) | High for mechanics; numbers two updates behind the target | Imported as `[GAME-EXTRACT]` into `knowledge/data/extract-2026-09-21/`. Missing: Not Yet (card), Aeonglass (boss). |
 
 ## Aggregated statistics
 | Source | URL | Kind | Version | Quality | Notes |

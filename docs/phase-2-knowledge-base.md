@@ -1,6 +1,6 @@
 # Phase 2: Knowledge Base
 
-**Goal:** a verified, version-tagged reference for the game version the Agent plays (main branch, v0.111.1 since 2026-11-16; the Player's history and the decompiled extract are v0.107.x–v0.110, see `knowledge/version-delta-v0.111.1.md`), covering cards, relics, potions, mechanics, enemies, encounters and bosses. Community strategy is merged into Ironclad playbook v2 with clear provenance.
+**Goal:** a verified, version-tagged reference for the game version the Agent plays (main branch, v0.111.1 since 2026-11-16; the Player's history is v0.107.1; the decompiled extract is older, pre-v0.107.1; see `knowledge/version-delta-extract-to-v0.107.1.md` and `knowledge/version-delta-v0.111.1.md`), covering cards, relics, potions, mechanics, enemies, encounters and bosses. Community strategy is merged into Ironclad playbook v2 with clear provenance.
 
 **Depends on:** Phase 0 for game data exported through the mod; Phase 1 for encounter lists and the Player's habits. Community research (E4) can start at any time.
 **Unblocks:** Phases 3 and 4.

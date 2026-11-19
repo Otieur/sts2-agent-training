@@ -7,7 +7,7 @@ Everything still unverified, ranked by how much it affects play (S6, written 202
 |---|---|---|---|---|
 | 1 | Does the mod work on v0.111.1 (main since 2026-11-16) on this Mac? Which mods folder is scanned? | Nothing live happens without it | Phase 0: build, install and run the smoke tests | OQ0.1, OQ0.2 |
 | 2 | Damage order and rounding (Strength before multipliers? floor per hit?) | Every turn's arithmetic and `tools/calc.py` | Checklist items 1–7 in the first fights | `knowledge/mechanics.md` |
-| 3 | The extract is pre-v0.111 (matches v0.107.x–v0.110). Which of its numbers are wrong on v0.111.1? | Card and monster numbers in `knowledge/` come from it; the known changes are listed in `knowledge/version-delta-v0.111.1.md`, but patch notes may be incomplete | Compare live `/data` exports (STS2-Agent) or in-game card text against the extract; start with the cards and enemies named in the delta | P2.E1 |
+| 3 | The extract predates v0.107.1 (`knowledge/version-delta-extract-to-v0.107.1.md`). Which of its numbers are wrong on v0.111.1 beyond the two delta files? | Card and monster numbers in `knowledge/` come from it; the known changes are listed in `knowledge/version-delta-v0.111.1.md`, but patch notes may be incomplete | Compare live `/data` exports (STS2-Agent) or in-game card text against the extract; start with the cards and enemies named in the delta | P2.E1 |
 | 4 | Vantom's Slippery stack count (9 in solo) and cycle order on v0.111.1 | The Act 1 plan for the top Ironclad killer | Read state on turn 1 of the first Vantom fight | `knowledge/bosses/VANTOM_BOSS.md` |
 | 5 | Is the boss shown on the map at act start? | Act planning, boss-fit drafting | Read `map.boss` on floor 1 | OQ2.3 (likely yes) |
 | 6 | STS2MCP state field names (hand, intents, map) as documented? | `tools/sts.py`, `watch.py`, `record.py` all depend on them | Capture real samples (P0.E5.S1); fix the tools | `docs/api-notes.md` |
@@ -43,4 +43,4 @@ Everything still unverified, ranked by how much it affects play (S6, written 202
 | 2026-11-19 | Which ascension adds Ascender's Bane? | A5 (100% of A5+ runs) |
 | 2026-11-19 | Act boss lists per act variant | From run data (`knowledge/mechanics.md`) |
 | 2026-11-19 | A2 Ancient heal, A3 gold, A4 potion slots, A10 double boss | Confirmed in run data (`knowledge/ascension.md`) |
-| 2026-11-19 | Which game build is the extract from? | Pre-v0.111: Expect a Fight is the old card and Rampage deals 9 (v0.111.1 changed both). Matches the history's version (v0.107.x–v0.110). Replaced by gap 3 |
+| 2026-11-19 | Which game build is the extract from? | **Pre-v0.107.1** (corrected at 02:00 from an earlier "v0.107.x–v0.110"): eleven v0.107.1 changes show old values and Aeonglass is missing. Exact build unknown. Replaced by gap 3 |

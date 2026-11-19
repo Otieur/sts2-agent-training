@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.5 · Knowledge base: v0.107.1 (the Player's history, the extract) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.5 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -239,7 +239,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 | H9 | Boss survival depends more on block and scaling than on raw damage: targets in section 2.1 | Raw-damage terciles: Act 1 fatal 18% / 28% / 29% (low to high). Block: 30% / 24% / 21%. Scaling 2–3 cards: 17% against 28% (n=173 Act 1 boss fights) `[PLAYER-DATA, observational]` | Track the deck metrics at every boss arrival in Phase 4 | New (v2.2) |
 
 ## 13. Open questions and conflicts
-- The extract shows pre-v0.111 values (it matches v0.107.x–v0.110). On v0.111.1, the cards and enemies in `knowledge/version-delta-v0.111.1.md` differ. Re-check numbers against live data (P2.E1).
+- The extract predates v0.107.1 (`knowledge/version-delta-extract-to-v0.107.1.md`): Conflagration, Drum of Battle and Unrelenting changed in v0.107.1, and Infested Prism and Skulking Colony were reworked. On v0.111.1, the cards and enemies in `knowledge/version-delta-v0.111.1.md` differ as well. Re-check numbers against live data (P2.E1).
 - Not Yet (card) and Aeonglass (boss) are missing from the extract.
 - **Cards where sources disagree** (†, 29 cards): One-Two Punch, Pyre, Tear Asunder, Barricade, Bloodletting, Juggernaut, Shrug It Off, Aggression, Thrash, Bully and others (full list in §2.2). Nat 1 Gaming is v0.113 beta. Spire Codex (main) is partial.
 - Bygone Effigy's Slow multiplier, the Colossus power and Infested Prism's Vital Spark: effects to verify in game.

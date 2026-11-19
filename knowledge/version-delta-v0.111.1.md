@@ -9,7 +9,7 @@ Sources: [wiki: V0.111.1 – Major Update 3](https://slaythespire.wiki.gg/wiki/S
 |---|---|
 | **Target game version** | Switching Steam off the beta now gives **v0.111.1**, not v0.107.1. Phase 0 targets v0.111.1. |
 | **The Player's history (227 runs on v0.107.1)** | Still the best available data: most content is unchanged. Benchmarks and pick rates are one patch cycle old. Buffed or nerfed cards and enemies below are flagged. |
-| **Extracted game data** | Shows pre-v0.111 values (Expect a Fight is the old energy card; Rampage deals 9), so it matches v0.107.x–v0.110, i.e. the Player's history, better than the new main. Cards and enemies below differ on v0.111.1. |
+| **Extracted game data** | Older still: it predates v0.107.1 (`knowledge/version-delta-extract-to-v0.107.1.md`). Apply that delta first, then this one. Corrected 2026-11-19 02:00; the rest of this row is the earlier, wrong reading: it matches v0.107.x–v0.110, i.e. the Player's history, better than the new main. Cards and enemies below differ on v0.111.1. |
 | **Mod choice (decision 0001)** | STS2-Agent's docs reference v0.111.0, the base of the new main. STS2MCP's latest fix targets v0.107. **STS2-Agent is now the better version match.** See the revised `docs/decisions/0001-mod-and-branch.md`. |
 | **Exam seeds** | **Seeds are now 12 characters long.** The five exam seeds (10 characters, from v0.107.1) may be rejected or generate different maps. Test one; if it fails, pick new exam seeds from the first v0.111.1 runs. |
 | **Community tiers** | Spire Codex (July, v0.107) and MetaBot predate v0.111.1. Nat 1 Gaming rates the v0.113 beta. Re-check tiers for the changed cards below. |
