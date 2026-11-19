@@ -68,7 +68,7 @@
 > **Acceptance criteria**
 > - [ ] 5–8 cases chosen with the P1.E8.S1 criteria, focused on character-specific choices. Answers are added to `knowledge/player-reasoning.md`.
 
-> **P5.E3.S2: Write the playbook** · Size M · Status: Todo
+> **P5.E3.S2: Write the playbook** · Size M · Status: In progress (v0 groundwork draft, 2026-11-19)
 > *As the Next Session, I want `playbooks/necrobinder.md` built on the same template, so that switching characters is seamless.*
 >
 > **Acceptance criteria**
