@@ -46,12 +46,12 @@ def load_benchmark(character, ascension):
     return bench
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("path", type=Path)
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--character", default=None)
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
     folder = None
     if args.path.is_dir():
         folder = args.path
