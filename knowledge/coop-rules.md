@@ -34,7 +34,7 @@ Everything below is unverified in our own game until Phase 6 confirms it. Change
 | Turns are simultaneous; the turn ends when every player has ended theirs (an end-turn vote) | A, B, `[MOD]` (STS2MCP `end_turn` is a vote; `undo_end_turn` retracts it) | Yes |
 | **Enemy attacks hit every player** ("an attack of 12 hits each player for 12"); enemies have no individual targeting | B (explicit), A ("no individual targeting") | Consistent, **to verify**: it changes block planning completely |
 | Buffs and debuffs from enemies apply to all players | A | Single source |
-| Potions can target other players | A | Single source. Potions with `target_type` AnyAlly or AnyPlayer exist `[MOD]` |
+| Potions can target other players | A, C | Confirmed by the v0.111.1 patch notes: nearly any potion can now be used on another player `[COMMUNITY]`. Potions with `target_type` AnyAlly or AnyPlayer exist `[MOD]` |
 | Enemy HP (and damage, per B) grows with party size; no numbers given | A, B | Yes, amount unknown. Measure it (P6.E1.S2) |
 | Some boss mechanics scale with players: Vantom's Slippery stacks rise with more players (`[COMMUNITY]` Vantom guide); Knowledge Demon's Ponder heals 30 **per player** (`[COMMUNITY]` KD guide) | Boss guides | Single sources |
 | A player at 0 HP is out for the rest of the fight and returns at 1 HP after it; the run ends only when the whole party falls | A (B: "the run ends when the party falls apart") | Consistent |
@@ -45,7 +45,7 @@ Cards that target allies (multiplayer value):
 | Owner | Card | Effect (base) |
 |---|---|---|
 | Ironclad | Demonic Shield | Lose 1 HP; give an ally ? block; exhaust |
-| Ironclad | Tank | Gain Tank (applies Guarded to an ally; community: allies take half damage) |
+| Ironclad | Tank | Gain Tank. **v0.111.1:** you take +50% damage and allies take −50% (was double and half) `[COMMUNITY]` patch notes |
 | Colorless | Believe in You | Ally gains 3 energy |
 | Colorless | Coordinate | Apply 5 Coordinate to an ally |
 | Colorless | Huddle Up | All allies draw 2 |
@@ -59,6 +59,15 @@ Cards that target allies (multiplayer value):
 | Regent | Largesse | Gives an ally a generated card |
 
 Community tier data from MetaBot rates Tank and Demonic Shield highly (S on its list), which reflects multiplayer runs. Rate them low in solo play.
+
+## Changed on v0.111.1 (main since 2026-11-16) `[COMMUNITY]`
+Source: wiki V0.111.1 – Major Update 3 (`knowledge/version-delta-v0.111.1.md`), accessed 2026-11-19.
+- **Enemy block scaling is lower in 2-player runs.** Multiplayer scaling of Artifact, Slippery (Vantom) and Skittish was already reduced in v0.107.1.
+- **Nearly any potion can be used on another player.** A Block Potion or a heal on the teammate about to take the big hit is a real option; the turn planner does not model ally targets yet.
+- **New Ironclad multiplayer cards:** Midnight (Rare; 60 (72) damage, cheaper for each card exhausted by anyone), Blaze (gives another player 5 (7) Strength), Outrage (0 cost, 9 (13) damage, copies itself into every player's discard pile).
+- **New Necrobinder multiplayer cards:** Underworld (Doom equal to the attack damage other players deal this turn), Soulbound (Souls you create also go to an ally's draw pile), Cacophony (every 33 cards drawn by all players: 66 (99) damage to a random enemy).
+- **Tank** rebalanced (above). Legion of Bone no longer exhausts.
+- Ghost Seed no longer makes other players' generated Strikes and Defends Ethereal (bug fix).
 
 ## Progression
 | Rule | Sources | Agree? |
