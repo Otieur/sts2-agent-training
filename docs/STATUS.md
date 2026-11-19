@@ -2,7 +2,7 @@
 
 Update this file whenever a story changes status. Story-level status lives in each phase document; this board tracks epics.
 
-**Active phase:** Phase 2 (community research can start now) and Phase 0 (waiting on the Player for the branch switch). Phase 1 is complete.
+**Active phase:** Phase 2 (in progress overnight) and Phase 0 (waiting on the Player for the branch switch). Phase 1 is complete.
 **Last updated:** 2026-11-19
 
 ---
@@ -38,10 +38,10 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P2.E1 | Game data export | Todo | Needs Phase 0 |
+| P2.E1 | Game data export | In progress | Decompiled extract imported (577 cards, 121 monsters…); live /data export needs Phase 0 |
 | P2.E2 | Mechanics reference | Todo | |
 | P2.E3 | Enemies and encounters | Todo | |
-| P2.E4 | Community strategy | Todo | Can start any time |
+| P2.E4 | Community strategy | Done | sources.md, ironclad-tiers.md, archetypes-ironclad.md, discrepancies.md |
 | P2.E5 | Boss plans | Todo | |
 | P2.E6 | Playbook v2 | Todo | |
 | P2.E7 | Knowledge maintenance | Todo | |

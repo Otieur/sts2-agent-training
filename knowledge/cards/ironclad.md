@@ -101,7 +101,7 @@ Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, a
 | Tank | 1 | Power | Rare | Gain 1 Tank | power | - | - | - |
 | Unmovable | 2 | Power | Rare | Gain 1 Unmovable | power | 0/9 | 0% | -1.50 ▼ |
 | Brand | 0 | Skill | Rare | Lose 1 HP; Choose a card in your hand; Exhaust a card; Gain 1 Strength | exhaust-other, self-damage, strength, zero-cost | 4/6 | 67% | +2.47 ▲ |
-| Cascade | — | Skill | Rare | Auto-play a card from your draw pile | unplayable | 2/13 | 15% | +0.14 ▲ |
+| Cascade | X | Skill | Rare | Auto-play a card from your draw pile | x-cost | 2/13 | 15% | +0.14 ▲ |
 | Colossus | 1 | Skill | Rare | Gain 5 Block; Gain 1 Colossus | block | 10/19 | 53% | +0.75 ▲ |
 | Impervious | 2 | Skill | Rare | Gain 30 Block; keywords: Exhaust | block | 4/7 | 57% | +1.52 ▲ |
 | Offering | 0 | Skill | Rare | Lose 6 HP; Gain 2 Energy; Draw 3 cards; keywords: Exhaust | draw, energy, self-damage, zero-cost | 4/4 | 100% | +2.69 ▲ |
@@ -121,7 +121,7 @@ Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, a
 - **Multi-hit attacks:** Sword Boomerang (10/58), Twin Strike (9/47), Dismantle (3/14), Fight Me (11/14), Whirlwind (0/13), Fiend Fire (4/5), Tear Asunder (2/7), Thrash (6/7)
 - **Hits all enemies:** Breakthrough (21/62), Thunderclap (7/46), Howl From Beyond (3/19), Stomp (3/16), Whirlwind (0/13), Conflagration (4/7), Pacts End (3/5)
 - **0-cost cards:** Anger (2/53), Bloodletting (22/55), Bully (3/13), Spite (2/26), Drum Of Battle (9/21), Battle Trance (3/16), Demonic Shield, Rage (4/19), Pacts End (3/5), Brand (4/6), Offering (4/4), Primal Force (1/4)
-- **X-cost cards:** Whirlwind (0/13)
+- **X-cost cards:** Whirlwind (0/13), Cascade (2/13)
 - **Card draw:** Pommel Strike (7/47), Shrug It Off (21/73), Pillage (4/16), Spite (2/26), Drum Of Battle (9/21), Battle Trance (3/16), Burning Pact (11/18), Offering (4/4), Stoke (3/7)
 - **Energy:** Bloodletting (22/55), Expect A Fight (0/14), Forgotten Ritual (7/18), Offering (4/4)
 - **Strength:** Fight Me (11/14), Inflame (2/14), Dominate (19/20), Brand (4/6)

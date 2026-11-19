@@ -60,11 +60,12 @@ def card_tags(c):
     e = c.get("Effect", "")
     t = set()
     cost = num(c.get("Cost"))
-    if "X (energy spent)" in e or " X " in e:
-        t.add("x-cost")
+    playable_type = c.get("Type") in ("Attack", "Skill", "Power")
+    if "X (energy spent)" in e or " X " in e or (cost is not None and cost < 0 and playable_type):
+        t.add("x-cost")  # the extract records X-cost cards such as Cascade with cost -1
     elif cost == 0:
         t.add("zero-cost")
-    if cost is not None and cost < 0:
+    if cost is not None and cost < 0 and not playable_type:
         t.add("unplayable")
     if re.search(r"damage (\d+|\?|X[^;]*) times", e):
         t.add("multi-hit")

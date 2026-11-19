@@ -49,13 +49,13 @@ Every file starts with a header: game version, date, sources, and the labels use
 > - [ ] The collection names are listed in `docs/api-notes.md`, from the API docs and by probing `GET /data/<name>` for: cards, relics, potions, monsters, encounters, events, powers, keywords, characters, acts.
 > - [ ] Unavailable collections are noted with their error codes (`collection_not_found`, `game_data_unavailable`).
 
-> **P2.E1.S2: Export the raw data** · Size S · Status: Todo
+> **P2.E1.S2: Export the raw data** · Size S · Status: In progress (extract imported to knowledge/data/extract-2026-09-21/; live /data export on v0.107.1 pending)
 > *As the Next Session, I want raw exports saved by version, so that a game patch can be diffed rather than re-researched.*
 >
 > **Acceptance criteria**
 > - [ ] `knowledge/data/v0.107.1/<collection>.json`, each with a sidecar `.meta.json` (export time, mod version, game version, record count).
 
-> **P2.E1.S3: Readable card references** · Size M · Status: Todo
+> **P2.E1.S3: Readable card references** · Size M · Status: Done (from the extract, knowledge/cards/ironclad.md; re-verify numbers against live /data)
 > *As the Agent, I want a compact card reference per pool, so that I can read a card's full text and role without calling the API mid-decision.*
 >
 > **Acceptance criteria**
@@ -68,7 +68,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 > **Acceptance criteria**
 > - [ ] `knowledge/relics.md` and `potions.md`. Each entry has its effect text, rarity or source, character restriction and role tags. The Player's pick and purchase counts are added where they exist.
 
-> **P2.E1.S5: Fallback sources** · Size S · Status: Todo (only if E1.S1 shows gaps)
+> **P2.E1.S5: Fallback sources** · Size S · Status: Done (the decompiled extract served as the fallback source)
 > *As the Agent, I want a fallback for missing collections, so that gaps do not block the knowledge base.*
 >
 > **Acceptance criteria**
@@ -150,26 +150,26 @@ Every file starts with a header: game version, date, sources, and the labels use
 
 ### P2.E4: Community strategy
 
-> **P2.E4.S1: Source collection** · Size M · Status: Todo
+> **P2.E4.S1: Source collection** · Size M · Status: Done
 > *As the Agent, I want a list of reputable sources with their version and date, so that outdated advice is easy to spot.*
 >
 > **Acceptance criteria**
 > - [ ] `knowledge/community/sources.md`: title, URL, author type (guide site, high-ascension player, wiki), game version covered, date, and a quality note. Sources older than v0.107.0 are flagged.
 > - [ ] Aggregated statistics sites are included with their sample sizes. Example: MetaBot (metabot.gg) lists card pick and win rates from a few hundred tracked runs across all characters (519 as seen on 2026-11-19), which is small, and its pages can disagree with each other.
 
-> **P2.E4.S2: Normalised community tier list** · Size M · Status: Todo
+> **P2.E4.S2: Normalised community tier list** · Size M · Status: Done (three sources, weighted by version match)
 > *As the Agent, I want a single community view of Ironclad cards, so that it can be compared with the Player's priorities.*
 >
 > **Acceptance criteria**
 > - [ ] `knowledge/community/ironclad-tiers.md`: each card's tier (S, A, B, C, D) as a consensus across at least 2 sources where possible, with source counts and notes where they disagree.
 
-> **P2.E4.S3: Archetype guides** · Size S · Status: Todo
+> **P2.E4.S3: Archetype guides** · Size S · Status: Done (knowledge/community/archetypes-ironclad.md)
 > *As the Agent, I want the known Ironclad archetypes summarised, so that the playbook covers builds the Player has not tried.*
 >
 > **Acceptance criteria**
 > - [ ] Each archetype: key cards, key relics, commit signals, weaknesses. These are compared with the Phase 1 archetype clusters.
 
-> **P2.E4.S4: Discrepancy report** · Size S · Status: Todo
+> **P2.E4.S4: Discrepancy report** · Size S · Status: Done (23 discrepancies; to discuss or test)
 > *As the Player, I want to see where my habits differ from community consensus, so that we can discuss which view is right.*
 >
 > **Acceptance criteria**
