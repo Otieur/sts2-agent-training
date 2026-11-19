@@ -24,7 +24,7 @@ def make_map():
 class TestPath(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.model = pathmod.Model("IRONCLAD", 0)
+        cls.model = pathmod.get_model("IRONCLAD", 0)
         cls.nodes, cls.start, cls.boss = pathmod.load_map(make_map())
 
     def test_enumerate(self):

@@ -52,6 +52,7 @@ def norm_type(t):
 class Model:
     def __init__(self, character="IRONCLAD", ascension=0, con=None):
         self.character, self.ascension = character.upper(), ascension
+        own_con = con is None
         con = con or connect()
         rows = [dict(r) for r in con.execute("""
             SELECT f.run_id, f.floor, f.act, f.map_point_type AS t, f.room_type, f.hp_before, f.hp_after, f.max_hp,
@@ -93,6 +94,8 @@ class Model:
             pts = [(x["hp_before"] / x["max_hp"], x["died"]) for x in rows if x["room_type"] == "boss" and x["act"] == act]
             self.boss_curve[act] = _fit(pts) if len(pts) >= 10 else (lambda h: 0.25)
         self.elite_p75 = self._elite_p75()
+        if own_con:
+            con.close()
 
     def _elite_p75(self):
         path = DATA / "benchmarks" / f"{self.character.lower()}-encounters-v0.107.1.csv"
@@ -121,6 +124,17 @@ class Model:
                     if r["encounter"].endswith(boss.replace("ENCOUNTER.", "")) and r["band"] == band and int(r["n"]) >= 5:
                         med = float(r["median_dmg"])
         return (med if med is not None else 40.0) + 10
+
+
+_MODELS = {}
+
+
+def get_model(character="IRONCLAD", ascension=0):
+    """Cached Model: building one reads the whole history and fits three curves."""
+    key = (character.upper(), int(ascension))
+    if key not in _MODELS:
+        _MODELS[key] = Model(*key)
+    return _MODELS[key]
 
 
 def _fit(points, iters=4000, lr=0.5):
@@ -255,7 +269,7 @@ def main(argv=None):
     paths = enumerate_paths(nodes, start, boss_rc)
     if not paths:
         raise SystemExit("no route from the current node to the boss")
-    model = Model(args.character, asc)
+    model = get_model(args.character, asc)
     args.risk_weight = args.risk_weight or DEFAULT_RISK_WEIGHT.get(act, 16.0)
     res = rank(paths, nodes, model, act, hp, max_hp, boss, args.risk_weight)
     print(f"{len(paths)} routes, {len(res)} distinct · act {act} · HP {hp}/{max_hp} · A{asc} · boss {boss or '?'} · "

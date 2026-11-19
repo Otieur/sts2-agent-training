@@ -1,12 +1,12 @@
 # Runbook: The Decision Loop (P4.E1.S2–S4)
 
-The same loop for every decision. The interface is `tools/sts.py` (STS2MCP by default). Field names follow STS2MCP's documentation and must be confirmed in Phase 0.
+The same loop for every decision. The interface is `tools/sts.py` (`--mod sts2agent` is the first choice since decision 0001 was revised; STS2MCP is the fallback). Field names follow the mods' documentation and must be confirmed in Phase 0.
 
 ## The loop
 1. **Read** `python3 -I tools/sts.py state` (brief view). Use `--raw` only when a field you need is missing.
 2. **Classify** the screen (`state_type`). Resolve overlays first (`hand_select`, `card_select`, `relic_select`, `bundle_select`, `overlay`).
 3. **Load** only the playbook section the screen needs (section numbers in `playbooks/ironclad.md`). Use the current boss plan and the encounter note for fights.
-4. **Decide.** Big decisions (rare cards, relics, elite paths, boss turns) get explicit reasoning in the journal. Routine ones stay short.
+4. **Advise, then decide.** With STS2-Agent, save the state (`tools/sts.py --mod sts2agent state --raw > runs/<run>/state.json`) and run `python3 -I tools/advise.py --state runs/<run>/state.json`. It routes to the turn planner, path planner, draft scorer, rest rule, event table or shop scoring. Follow it unless you can name a reason it misses (a relic, a synergy, a boss mechanic), and put that reason in the decision log. Big decisions (rare cards, relics, elite paths, boss turns) get explicit reasoning in the journal. Routine ones stay short.
 5. **Act** with a one-sentence reason: `python3 -I tools/sts.py --log runs/<run>/decisions.jsonl act <action> key=value ... --reason "..."`.
 6. **Verify** the state moved as expected (`state`, or `wait` across animations). If not, use the error table below.
 7. **On every new floor:** update the journal (floor log line; HP and budget; plan changes):

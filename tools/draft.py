@@ -191,7 +191,10 @@ def score_offer(deck, offer_ids, character, act, floor, boss):
 
 def from_state(path):
     """STS2-Agent full /state: run.deck[].card_id, reward card options, run.floor, run.boss_id."""
-    st = json.loads(Path(path).read_text())
+    return from_state_obj(json.loads(Path(path).read_text()))
+
+
+def from_state_obj(st):
     st = st.get("data", st)
     run = st.get("run") or {}
     deck = ["CARD." + d["card_id"] for d in run.get("deck") or [] if d.get("card_id")]
