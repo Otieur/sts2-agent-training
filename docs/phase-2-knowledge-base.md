@@ -114,7 +114,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 
 ### P2.E3: Enemies and encounters
 
-> **P2.E3.S1: Encounter catalogue** · Size M · Status: Todo
+> **P2.E3.S1: Encounter catalogue** · Size M · Status: Done (knowledge/encounters.md, 83 encounters)
 > *As the Agent, I want every encounter listed with its pool, act, enemies and danger, so that path planning can look ahead.*
 >
 > **Acceptance criteria**
@@ -180,7 +180,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 
 ### P2.E5: Boss plans
 
-> **P2.E5.S1: One plan per boss** · Size L · Status: Todo
+> **P2.E5.S1: One plan per boss** · Size L · Status: Done (12 boss plans in knowledge/bosses/, data blocks auto-generated)
 > *As the Agent, I want a written plan for every boss, so that the deck is built toward the fight from Act start, not improvised on arrival.*
 >
 > **Acceptance criteria:** `knowledge/bosses/<BOSS_ID>.md` exists for every boss in the history (including Vantom, Knowledge Demon, Soul Fysh, Aeonglass, Test Subject, Ceremonial Beast and Waterfall Giant), using `templates/boss-plan.md`:

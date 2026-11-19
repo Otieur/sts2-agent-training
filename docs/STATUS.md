@@ -40,9 +40,9 @@ Update this file whenever a story changes status. Story-level status lives in ea
 |---|---|---|---|
 | P2.E1 | Game data export | In progress | Decompiled extract imported (577 cards, 121 monsters…); live /data export needs Phase 0 |
 | P2.E2 | Mechanics reference | Done | mechanics.md, ascension.md; verification checklist for Phase 4 |
-| P2.E3 | Enemies and encounters | Todo | |
+| P2.E3 | Enemies and encounters | In progress | Catalogue done; elite and hallway plans in progress |
 | P2.E4 | Community strategy | Done | sources.md, ironclad-tiers.md, archetypes-ironclad.md, discrepancies.md |
-| P2.E5 | Boss plans | Todo | |
+| P2.E5 | Boss plans | Done | All 12 bosses; Aeonglass community-only |
 | P2.E6 | Playbook v2 | Todo | |
 | P2.E7 | Knowledge maintenance | Todo | |
 
