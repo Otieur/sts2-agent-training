@@ -1,6 +1,6 @@
 # Entomancer (ENTOMANCER_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -29,14 +29,22 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- **Personal Hive:** every time the Entomancer takes damage, a generated card is added to **your** draw pile. Many small hits clog your deck.
+- Bees: 3×7 (21 base, plus Strength). Spear: 18. Pheromone Spit: gains Strength and more Hive.
 
 ### Priorities and recommended answers
-- TODO
+- **Few, big hits.** Use single big attacks (Bludgeon, Hemokinesis, Uppercut, Strength-boosted single hits). Avoid multi-hit cards (Sword Boomerang, Twin Strike, Fiend Fire, Whirlwind) here. Each hit adds a card.
+- **Block the Bees turn:** 21 or more, rising with each Pheromone Spit. Weak on it cuts each bee hit.
+- **Kill before it stacks Strength:** 145 HP.
+- This replaces hypothesis H3 ("needs multi-target damage"). The data shows it is a single enemy that punishes hit count.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median damage 30, p75 38 (all characters: median 17). 3 of 13 Ironclad fights fatal.
+- Enter with at least about 45 HP (p75 plus margin). Avoid it under 50% HP (playbook rule).
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

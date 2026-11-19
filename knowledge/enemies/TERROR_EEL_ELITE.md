@@ -1,6 +1,6 @@
 # Terror Eel (TERROR_EEL_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -30,14 +30,22 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- **Shriek:** the first damage it takes **stuns it** (the power then goes away).
+- **Terror:** 99 Vulnerable on you, which lasts the whole fight.
+- Crash: 17. Thrash: 3×3 + 7 Vigor (the next attack hits harder).
 
 ### Priorities and recommended answers
-- TODO
+- **Deal damage on turn 1** to use the free stun.
+- After Terror you take ×1.5 damage for the rest of the fight: Crash 17 becomes 25. Block accordingly, or end it fast (140 HP).
+- An Artifact charge would block Terror.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 29, p75 39 (all characters: median 11). 0 of 5 fatal.
+- Enter with at least about 45 HP.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

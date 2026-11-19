@@ -1,6 +1,6 @@
 # Tunneler (TUNNELER_WEAK)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -29,14 +29,12 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
 
-### Priorities and recommended answers
-- TODO
-
-### Ready to fight (elites)
-- TODO
+### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
+- **Burrow:** 32 block. **Burrowed:** its block is not cleared; breaking the block stuns it and removes the burrow.
+- Below hits for 23. Either break the 32 block (stun) or block the 23.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

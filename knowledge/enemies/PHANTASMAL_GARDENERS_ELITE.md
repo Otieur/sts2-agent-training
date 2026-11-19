@@ -1,6 +1,6 @@
 # Phantasmal Gardeners (PHANTASMAL_GARDENERS_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -30,14 +30,19 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- Several Gardeners (28–32 HP each). Bite 5, Lash 7, Flail 1×3, Enlarge +2 Strength.
+- **Skittish:** gains block (exact trigger unconfirmed).
 
 ### Priorities and recommended answers
-- TODO
+- **Hit-all damage** clears several bodies at once.
+- Kill one at a time if there's no hit-all damage. They grow with Enlarge.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 12, the easiest Act 1 elite. 0 of 8 fatal. A good elite to take at moderate HP.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

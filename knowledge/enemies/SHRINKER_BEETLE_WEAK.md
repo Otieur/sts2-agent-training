@@ -1,6 +1,6 @@
 # Shrinker Beetle (SHRINKER_BEETLE_WEAK)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -24,14 +24,12 @@ Status: data only; plan not written yet. Game version target v0.107.1.
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
 
-### Priorities and recommended answers
-- TODO
-
-### Ready to fight (elites)
-- TODO
+### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
+- **Shrink:** your damage × 0.7 while it lasts. Chomp 7, Stomp 13.
+- Expect less damage after Shrinker. Plan burst before it lands, or block through it.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

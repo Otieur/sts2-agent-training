@@ -1,6 +1,6 @@
 # Skulking Colony (SKULKING_COLONY_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -30,14 +30,20 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- **Hardened Shell:** caps the HP it can lose **per turn**, so you can't burst it down.
+- Inertia: 10 block + 3 Strength. Zoom: 16. Super Crab: 6×2. Smash: 9 + 4 Dazed.
 
 ### Priorities and recommended answers
-- TODO
+- **Steady damage each turn** beats burst (79 HP, but capped per turn). Don't waste a big turn's damage above the cap.
+- Use extra energy on block and setup once the turn's cap is reached.
+- Exhaust the Dazed cards or draw past them.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 19, p75 35, p90 43 (wide spread). 1 of 9 fatal.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

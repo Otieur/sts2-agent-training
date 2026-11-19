@@ -1,6 +1,6 @@
 # Seapunk (SEAPUNK_WEAK)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -24,14 +24,12 @@ Status: data only; plan not written yet. Game version target v0.107.1.
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
 
-### Priorities and recommended answers
-- TODO
-
-### Ready to fight (elites)
-- TODO
+### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
+- Sea Kick 11, Spinning Kick 2×4 (each hit gains from its Strength), Bubble Burp 7 block + 1 Strength.
+- Kill before Strength piles onto the 4-hit move.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

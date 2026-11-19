@@ -1,6 +1,6 @@
 # Bowlbugs (BOWLBUGS_WEAK)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -34,14 +34,13 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
 
-### Priorities and recommended answers
-- TODO
-
-### Ready to fight (elites)
-- TODO
+### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
+- Bowlbug Rock hits 15 then **stuns itself** (Imbalanced): free turn after its Headbutt.
+- **Bowlbug Nectar gains 15 Strength** on its Buff move. Kill it before its next attack, or block its 3-damage Thrash, which becomes 18.
+- Ironclad median 12 (highest in this group): the Nectar buff is the danger.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

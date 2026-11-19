@@ -1,6 +1,6 @@
 # Decimillipede (DECIMILLIPEDE_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -42,14 +42,20 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- Three segments (front, middle, back; 42–48 HP each). Writhe 5×2, Bulk 6 + 2 Strength, Constrict 8 + Weak.
+- A killed segment can **reattach** (it heals).
 
 ### Priorities and recommended answers
-- TODO
+- **Kill all segments close together** so none come back. Hit-all damage is ideal. Otherwise bring segments low, then finish them in the same turn.
+- Weak from Constrict cuts your damage. Plan burst turns around it.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 36.5, p75 39.2: the highest elite median in Act 2. 0 of 8 fatal.
+- Enter with at least about 50 HP.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

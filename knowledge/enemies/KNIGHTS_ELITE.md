@@ -1,6 +1,6 @@
 # Knights (KNIGHTS_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -38,14 +38,20 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- **Flail Knight** (101 HP): War Chant +3 Strength, Flail 9×2, Ram 15.
+- **Spectral Knight** (93 HP): Hex, Soul Slash 15, Soul Flame 3×3.
+- **Magi Knight** (82 HP): Power Shield 6 + 5 block, Dampen, Prep 5 block, **Magic Bomb 35**, Spear 10.
 
 ### Priorities and recommended answers
-- TODO
+- **Watch the Magi Knight's Magic Bomb (35):** kill it first, or block fully on that turn.
+- Hit-all damage helps against three bodies.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 19 (only 3 fights). All characters: median 19, p90 41.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

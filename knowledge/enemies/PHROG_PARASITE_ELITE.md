@@ -1,6 +1,6 @@
 # Phrog Parasite (PHROG_PARASITE_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -32,14 +32,23 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- Phrog Parasite (61–64 HP).
+  - **Infested:** on death it spawns more (combat continues).
+  - Infect: adds 3 Infection cards (unplayable status) to your piles.
+  - Lash: 4×4.
+- Wrigglers (17–21 HP): Nasty Bite 6. Wriggle: +2 Strength and adds an Infection.
 
 ### Priorities and recommended answers
-- TODO
+- Expect a second wave after the Parasite dies. Keep hit-all damage for the Wrigglers.
+- Exhaust or draw past the Infection cards.
+- Block Lash (16 base).
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 19, p75 30, a long fight (median 6 turns). 1 of 9 fatal.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

@@ -1,6 +1,6 @@
 # Soul Nexus (SOUL_NEXUS_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -24,14 +24,20 @@ Status: data only; plan not written yet. Game version target v0.107.1.
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- 234 HP.
+  - Soul Burn: 29
+  - Maelstrom: 6×4
+  - Drain Life: 18 + 2 Vulnerable on you
 
 ### Priorities and recommended answers
-- TODO
+- Heavy single hits every turn. After Drain Life you are Vulnerable, so Soul Burn becomes 43. Block hard on the turn after Drain Life.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 29 (only 2 fights). Enter with at least about 50 HP.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

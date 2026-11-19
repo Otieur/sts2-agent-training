@@ -1,6 +1,6 @@
 # Exoskeletons (EXOSKELETONS_WEAK)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -25,14 +25,12 @@ Status: data only; plan not written yet. Game version target v0.107.1.
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
 
-### Priorities and recommended answers
-- TODO
-
-### Ready to fight (elites)
-- TODO
+### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
+- **Hard to Kill:** damage per hit is capped at its amount. Many small hits beat one big hit.
+- Skitter 1×3, Mandible 8, Enrage +2 Strength.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

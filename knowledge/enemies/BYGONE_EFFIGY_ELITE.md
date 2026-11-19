@@ -1,6 +1,6 @@
 # Bygone Effigy (BYGONE_EFFIGY_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -30,14 +30,21 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- Starts asleep. Wake: +10 Strength. Slashes: 15 base, so 25 after waking. Goes back to sleep between slashes.
+- **Slow:** it takes more damage for each card you play in a turn (the multiplier is computed at play time; +10% per card is the Slay the Spire 1 convention `[HYPOTHESIS]`).
 
 ### Priorities and recommended answers
-- TODO
+- **Use the opening sleep turns** for setup and for long turns with many cheap cards. Slow rewards card count.
+- **Block 25 or more on slash turns.**
+- 127 HP. Burst on the turns it sleeps.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 29, p75 39.5 (the highest Act 1 elite median, tied with Terror Eel). 1 of 12 fatal.
+- Enter with at least about 45 HP.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

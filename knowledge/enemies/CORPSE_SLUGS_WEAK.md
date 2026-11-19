@@ -1,6 +1,6 @@
 # Corpse Slugs (CORPSE_SLUGS_WEAK)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -25,14 +25,12 @@ Status: data only; plan not written yet. Game version target v0.107.1.
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
 
-### Priorities and recommended answers
-- TODO
-
-### Ready to fight (elites)
-- TODO
+### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
+- **Ravenous:** when one slug dies, the others are stunned and gain Strength. Kill them in the same turn if possible, or accept a Strength-boosted survivor while it is stunned.
+- Goop applies 2 Frail. Block less effectively for 2 turns.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

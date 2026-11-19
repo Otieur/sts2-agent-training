@@ -1,6 +1,6 @@
 # Infested Prisms (INFESTED_PRISMS_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -30,14 +30,23 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- 200 HP.
+  - Jab: 22
+  - Radiate: 16 + 16 block
+  - Whirlwind: 9×3
+  - Pulsate: 20 block + 4 Strength
+- **Vital Spark:** gains energy when damaged (the effect on you is unconfirmed; to verify).
 
 ### Priorities and recommended answers
-- TODO
+- **Big damage and big block.** It hits for 22–27 most turns and gains 4 Strength per Pulsate.
+- Don't attack into Pulsate's 20 block. Use that turn to block and set up.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 27, p75 38.8. 0 of 8 fatal (all characters: 3 of 47).
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

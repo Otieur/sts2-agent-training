@@ -120,7 +120,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 > **Acceptance criteria**
 > - [ ] `knowledge/encounters.md`: encounter ID, act, pool, monster IDs, HP ranges (from `/data/monsters` `min_hp` and `max_hp`), the Player's median and p90 damage (Phase 1 benchmark), and a link to its note.
 
-> **P2.E3.S2: Hallway encounter notes** · Size L · Status: Todo
+> **P2.E3.S2: Hallway encounter notes** · Size L · Status: Done (15 most frequent hallway encounters)
 > *As the Agent, I want a short note for each common hallway encounter, so that I know the dangerous turn and the right answer before the fight starts.*
 >
 > **Acceptance criteria:** one note per encounter with n ≥ 5 in the history, using `templates/enemy-note.md`.
@@ -132,7 +132,7 @@ Every file starts with a header: game version, date, sources, and the labels use
 > - [ ] The Player's median damage.
 > - [ ] Sources with labels.
 
-> **P2.E3.S3: Elite notes** · Size M · Status: Todo
+> **P2.E3.S3: Elite notes** · Size M · Status: Done (all 12 elites, with ready-to-fight checklists)
 > *As the Agent, I want detailed notes for every elite, so that elite pathing decisions account for deck readiness.*
 >
 > **Acceptance criteria**

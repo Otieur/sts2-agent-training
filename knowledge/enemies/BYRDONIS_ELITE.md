@@ -1,6 +1,6 @@
 # Byrdonis (BYRDONIS_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -28,14 +28,20 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- **Territorial:** gains Strength at the end of **every** turn. Peck: 3×3. Swoop: 16. Both grow every turn.
 
 ### Priorities and recommended answers
-- TODO
+- **Kill fast.** 91–94 HP. Every extra turn adds Strength to every hit, and Peck's three hits gain triple.
+- Front-load damage. Vulnerable on turn 1 is worth a lot here.
+- Weak on it reduces each Peck hit.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 22.5, p75 32.8. **All 3 fatal Ironclad fights started at about 29% HP.** Don't take it under 50% HP.
+- Needs about 30 damage per turn to finish in 3 turns.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

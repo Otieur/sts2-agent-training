@@ -1,6 +1,6 @@
 # Mecha Knight (MECHA_KNIGHT_ELITE)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -30,14 +30,23 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
+
+### Key mechanics `[GAME-EXTRACT]`
+- 300 HP, starts with Artifact.
+  - Charge: 25
+  - Flamethrower: 4 Burns into your piles
+  - Windup: 15 block + 5 Strength
+  - **Heavy Cleave: 35** (40 after Windup)
 
 ### Priorities and recommended answers
-- TODO
+- **Block 40 on Heavy Cleave** after a Windup (Impervious 30 + more, or a block potion).
+- Remove Artifact with a cheap debuff before relying on Vulnerable or Weak.
+- Exhaust the Burns.
 
-### Ready to fight (elites)
-- TODO
+### Ready to fight
+- Ironclad median 34, p75 43. 1 of 5 fatal. Enter with at least about 55 HP.
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`

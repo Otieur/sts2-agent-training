@@ -1,6 +1,6 @@
 # Thieving Hopper (THIEVING_HOPPER_WEAK)
 
-Status: data only; plan not written yet. Game version target v0.107.1.
+Status: Plan v1, 2026-11-19.
 
 <!-- AUTO:BEGIN -->
 
@@ -27,14 +27,14 @@ Status: data only; plan not written yet. Game version target v0.107.1.
 
 <!-- AUTO:END -->
 
-## Plan (hand-written)
+## Plan
 
-### Priorities and recommended answers
-- TODO
-
-### Ready to fight (elites)
-- TODO
+### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
+- **Thievery: 17 damage and removes one of your cards from combat.** Nab 14, Hat Trick 21.
+- **Flutter:** halves damage it takes; each hit removes a stack and stuns it.
+- **Escape Artist:** it **escapes** after a few turns (a counter ticks down). Kill it before it leaves with your card.
+- Ironclad median 13 (high for Act 2 weak).
 
 ## Sources
-- Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
+- Monster and power data: `knowledge/data/extract-2026-09-21/` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db` `[PLAYER-DATA]`
