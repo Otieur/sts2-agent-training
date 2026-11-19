@@ -19,7 +19,7 @@ Barrier (damage back per enemy hit), Body Slam (damage = Block, played after blo
 Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); boosters are played first. Slippery stacks
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
-Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Infested (its death is not the end), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
+Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Infested (its death is not the end), Ravenous (a death stuns the slugs), Imbalanced (a full block stuns it), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
 non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Hex (held cards are lost), Doom (fatal at the end of your turn if HP is at or below it).
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
@@ -130,6 +130,8 @@ class Enemy:
     taint: int = 0              # Vital Spark (Infested Prism): each Skill you play makes its attacks deal this much more per hit
     skittish: int = 0           # Skittish (Phantasmal Gardener): Block gained after the first Attack that hits it this turn
     infested: bool = False      # Infested (Phrog Parasite): its death summons Wrigglers, so the fight goes on
+    ravenous: bool = False      # Ravenous (Corpse Slug): when another enemy dies it eats it and is stunned (attack cancelled)
+    imbalanced: bool = False    # Imbalanced (Bowlbug Rock): stunned next turn if its attack is fully blocked
     crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
     minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
     doom: int = 0               # Doom on it: it dies at the end of its own turn (after attacking) if its HP is at or below it
@@ -449,7 +451,9 @@ def phase(card):
 
 def simulate(cards, targets, player, enemies):
     """Play cards in order with the given targets. Returns the outcome dict, or None if energy runs out."""
-    es = [Enemy(**vars(e)) for e in enemies]
+    es = [Enemy(**{k: v for k, v in vars(e).items() if k != "eaten"}) for e in enemies]
+    for e in es:
+        e.eaten = e.hp <= 0  # already dead before this plan: not a new death for Ravenous
     energy, block, strength_gained, hp_cost, dealt, draws = player.energy, player.block, 0, 0, 0, 0
     dex_gained, potions, powers = 0, 0, 0
     osty = player.osty_hp
@@ -514,6 +518,13 @@ def simulate(cards, targets, player, enemies):
                     if e.skittish and e.hp > 0:  # Skittish: Block after the first Attack that hits it this turn (the wiki)
                         e.block += e.skittish
                         e.skittish = 0
+        if any(e.hp <= 0 and not getattr(e, "eaten", False) for e in es):  # Ravenous: slugs eat the dead and are stunned
+            for e in es:
+                if e.hp <= 0:
+                    e.eaten = True
+            for o in es:
+                if o.ravenous and o.hp > 0:
+                    o.intent_hits = 0
         for e in es:  # Crab Rage: a claw that died this card gives the others 5 Strength and 99 Block (this turn)
             if e.crab_rage and e.hp <= 0:
                 e.crab_rage = False
@@ -592,6 +603,10 @@ def simulate(cards, targets, player, enemies):
     if inc.hp_lost > 0 and not all_dead:
         cuts = sum(e.paper_cuts * e.intent_hits for e in es if e.hp > 0 and e.paper_cuts and e.intent_hits)
         lost += cuts
+    # Imbalanced (Bowlbug Rock): fully blocking every attack (with at least 1 Block) stuns it next turn, worth its next attack
+    stun_bonus = 0
+    if not all_dead and block > 0 and inc.hp_lost == 0:
+        stun_bonus = sum(e.intent_per_hit * e.intent_hits for e in es if e.hp > 0 and e.imbalanced and e.intent_hits)
     # Doom on an enemy: it still attacks this turn, then dies at the end of its turn (most guides) [COMMUNITY]
     doomed = [e for e in es if e.hp > 0 and e.doom and e.hp <= e.doom]
     doom_dealt = sum(e.hp for e in doomed)
@@ -606,7 +621,7 @@ def simulate(cards, targets, player, enemies):
             "seq": seq,
             "hive_cards": sum(getattr(e, "hive_added", 0) for e in es),
             "slippery_stripped": sum(o.slippery - e.slippery for e, o in zip(es, enemies) if e.hp > 0),
-            "doomed": len(doomed), "doom_dealt": doom_dealt, "doom_on_you": my_doom,
+            "doomed": len(doomed), "doom_dealt": doom_dealt, "doom_on_you": my_doom, "stun_bonus": stun_bonus,
             "enemies_after": [{"hp": max(0, e.hp), "block": e.block, "slippery": e.slippery, "vuln": e.vuln, "weak": e.weak} for e in es],
             "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all_dead,
             "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
@@ -724,7 +739,8 @@ def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALU
                          -o["dealt"], o["draws"] == 0)
     else:
         key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         -(o["dealt"] + o.get("doom_dealt", 0) + o.get("sandpit_bonus", 0) - o.get("hex_loss", 0) - o["hp_lost"] - potion_cost * o["potions"]
+                         -(o["dealt"] + o.get("doom_dealt", 0) + o.get("sandpit_bonus", 0) + o.get("stun_bonus", 0) - o.get("hex_loss", 0)
+                           - o["hp_lost"] - potion_cost * o["potions"]
                            + power_value * o.get("powers", 0) - HIVE_COST * o.get("hive_cards", 0)
                            + SLIPPERY_VALUE * o.get("slippery_stripped", 0)),
                          o["hp_lost"], -o["kills"])
@@ -793,7 +809,8 @@ def from_state(st):
                              shriek=int(next((v for k, v in pw.items() if k.startswith("SHRIEK")), 0) or 0),
                              taint=int(next((v for k, v in pw.items() if k.startswith("VITAL_SPARK")), 0) or 0),
                              skittish=int(next((v for k, v in pw.items() if k.startswith("SKITTISH")), 0) or 0),
-                             infested=any(k.startswith("INFESTED") for k in pw),
+                             infested=any(k.startswith("INFESTED") for k in pw), ravenous=any(k.startswith("RAVENOUS") for k in pw),
+                             imbalanced=any(k.startswith("IMBALANCED") for k in pw),
                              crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
                              minion=any(k.startswith("MINION") for k in pw),
                              doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0),

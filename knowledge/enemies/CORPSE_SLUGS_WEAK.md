@@ -27,6 +27,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): 2–3 Corpse Slugs of 25–27 HP, each on a different step of Whip Slap 3×2, Glomp 8, Goop (2 Frail); **Ravenous**: when an enemy dies, each slug eats it, is stunned and gains Strength (4 at base). So a kill early in your turn cancels the other slugs' next attacks but makes them stronger later; `tools/plan_turn.py` counts the stun.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - **Ravenous:** when one slug dies, the others are stunned and gain Strength. Kill them in the same turn if possible, or accept a Strength-boosted survivor while it is stunned.
 - Goop applies 2 Frail. Block less effectively for 2 turns.

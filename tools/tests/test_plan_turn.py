@@ -336,6 +336,14 @@ class TestPlanTurn(unittest.TestCase):
         h = ids("DEFEND_IRONCLAD", "STRIKE_IRONCLAD")
         o = pt.rank(pt.plans(h, pt.Player(energy=2, hp=50, hexed=True), [pt.parse_enemy("A:100:0:0", 0)]), "balanced")[0]
         self.assertEqual(len(o["plays"]), 2)        # Hex: play the Defend too rather than lose it
+        slugs = [pt.parse_enemy("Slug:6:0:8", 0), pt.parse_enemy("Slug:26:0:3x2", 1)]
+        slugs[1].ravenous = True
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1), slugs)
+        self.assertEqual(o["incoming"], 0)          # the first slug dies; the other eats it and is stunned
+        rock = pt.parse_enemy("Rock:46:0:15", 0)
+        rock.imbalanced = True
+        o = pt.simulate(ids("DEFEND_IRONCLAD", "DEFEND_IRONCLAD", "DEFEND_IRONCLAD"), [None] * 3, pt.Player(energy=3), [rock])
+        self.assertEqual(o["stun_bonus"], 15)       # Headbutt fully blocked: it is stunned next turn
 
     def test_crab_rage(self):
         ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731

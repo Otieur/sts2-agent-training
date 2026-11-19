@@ -38,6 +38,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - Bowlbug Rock hits 15 then **stuns itself** (Imbalanced): free turn after its Headbutt.
+- **Corrected by the wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): the Rock is stunned only when its Headbutt 15 (16) is **fully blocked** with at least 1 Block (Osty taking it, or Mangle reducing it to 0 without Block, does not count); otherwise it Headbutts every turn. So block all 15 to win a free turn; `tools/plan_turn.py` credits a full block with the skipped attack.
 - **Bowlbug Nectar gains 15 Strength** on its Buff move. Kill it before its next attack, or block its 3-damage Thrash, which becomes 18.
 - Ironclad median 12 (highest in this group): the Nectar buff is the danger.
 
