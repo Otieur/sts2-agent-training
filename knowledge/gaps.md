@@ -25,7 +25,7 @@ Everything still unverified, ranked by how much it affects play (S6, written 202
 | 23 | Kaiser Crab facing: does Surrounded make the claw behind you deal ×1.5, and does targeting a claw turn you to face it? Does Crab Rage's 99 Block last one turn? | Laser 31 against 46; the kill-turn plan | First Kaiser Crab fight: target each claw and read the intent numbers |
 | 24 | Does unpowered potion damage (Fire Potion 20, Explosive Ampoule 10) ignore Vulnerable and Strength? | `tools/plan_turn.py` assumes it ignores both | Use a Fire Potion on a Vulnerable enemy and read the HP change |
 | 12 | Boss details: Lagavulin Matriarch: damage wakes it stunned per the power data (which power is removed with it?). Kin Priest: the followers are Minions, so killing the Priest probably ends the fight (confirm). Knowledge Demon curse choice mechanics; Insatiable Sandpit timer length; Waterfall Giant explosion vs Weak | Boss plans | First encounters; update `knowledge/bosses/` |
-| 13 | Ascension effects not visible in data: A1 (more elites), A6 (one fewer rest site), A7 (fewer rares), A8 and A9 exact numbers | HP budgets at higher ascension | Read `run.ascension_effects` (STS2-Agent) or the in-game list |
+| 13 | Ascension effects not visible in data: A1 (more elites), A6 (one fewer rest site), A8 and A9 exact numbers (A7 checked 2026-11-19: upgraded rewards halve, Rares drop from 14% to 12%) | HP budgets at higher ascension | Read `run.ascension_effects` (STS2-Agent) or the in-game list |
 | 14 | Hypotheses H1–H9 | Core strategy rules | Phase 4 experiments with logging (`playbooks/ironclad.md` §12) |
 | 15 | Co-op: do enemy attacks hit every player? Enemy HP scaling per player | All co-op block planning | Phase 6 first co-op fight (P6.E1.S2) |
 
