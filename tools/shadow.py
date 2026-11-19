@@ -91,8 +91,9 @@ def make_call(st):
                 "agent_pick": "HEAL" if choice == "rest" else ("SMITH" if choice == "smith" else "EITHER"), "confidence": "n/a",
                 "reason": why, "rule": "playbook 5"}
     if scr in ("EVENT", "SHOP", "CARD_SELECTION", "CHEST"):
+        lines = advise.advise(st).splitlines()  # once: advice can be slow
         return {**base, "kind": scr.lower(), "options": None, "agent_pick": None, "confidence": "n/a",
-                "reason": advise.advise(st).splitlines()[1] if len(advise.advise(st).splitlines()) > 1 else "", "rule": None}
+                "reason": lines[1] if len(lines) > 1 else (lines[0] if lines else ""), "rule": None}
     return None
 
 

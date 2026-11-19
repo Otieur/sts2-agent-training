@@ -39,6 +39,16 @@ class TestSmoke(unittest.TestCase):
         self.assertEqual(scr, "COMBAT")
         self.assertEqual(issues, [])
 
+    def test_advice_failure_is_a_problem(self):
+        import advise
+        saved = advise._advise
+        advise._advise = lambda *a, **k: 1 / 0  # any handler failure
+        try:
+            scr, issues, notes = smoke.check_state(COMBAT)
+        finally:
+            advise._advise = saved
+        self.assertTrue(any("advise.py failed: [ADVICE FAILED]" in i for i in issues))
+
     def test_missing_field_and_unknown_card(self):
         bad = json.loads(json.dumps(COMBAT))
         del bad["data"]["combat"]["hand"][0]["energy_cost"]

@@ -14,7 +14,7 @@ python3 -I tools/smoke.py --save --watch --minutes 30
 ```
 With the STS2MCP fallback, add `--mod sts2mcp` (it checks the raw fields `tools/mcp_adapter.py` converts; there is no `/health` version check). While it runs, click through: main menu, start a standard Ironclad run at A0, the Ancient, the map, the first fight (play a few cards), the card reward, and any rest site, shop or event on the way. The tool:
 - checks `/health`: service name, `game_version` v0.111.x, `status` ready (a `degraded` status lists the missing members);
-- checks every state field the tools read, per screen, and runs `tools/advise.py` on each screen;
+- checks every state field the tools read, per screen, and runs `tools/advise.py` on each screen (an `[ADVICE FAILED]` answer counts as a problem);
 - lists card IDs that are not in the extract (new cards since it was made);
 - saves one fixture per screen under `tools/tests/fixtures/live/`.
 

@@ -6,7 +6,7 @@ It never sends an action. For STS2-Agent it:
   2. reads GET /state and checks the field paths that tools/plan_turn.py, path.py, draft.py, advise.py,
      deck_check.py and journal.py read, for the current screen;
   3. lists card IDs in the deck, hand, rewards and shop that are not in the extract (new on v0.107.1+);
-  4. runs tools/advise.py on the state and reports any exception;
+  4. runs tools/advise.py on the state and reports any exception or [ADVICE FAILED] answer;
   5. with --save, stores the state under tools/tests/fixtures/live/<screen>-<time>.json so the offline tests
      can be rerun on real data.
 With --watch it polls (read-only) and checks each new screen once, so the Player can click through a run.
@@ -117,7 +117,9 @@ def check_state(st):
                 break
     try:
         import advise
-        advise.advise(st)
+        out = advise.advise(st)
+        if str(out).startswith("[ADVICE FAILED]"):  # advise() reports handler failures instead of raising
+            issues.append(f"advise.py failed: {out}")
     except Exception as ex:  # report, never crash the smoke test
         issues.append(f"advise.py raised {type(ex).__name__}: {ex}\n" + traceback.format_exc(limit=3))
     return scr, issues, notes
@@ -138,7 +140,9 @@ def check_mcp_state(st, deck_cache=None):
             (notes if path in ("player.potions", "player.status", "map.boss") else issues).append(f"missing: {path}")
     try:
         import advise
-        advise.advise(st, deck_cache=deck_cache)  # default: runs/current/deck.json (mcp_adapter)
+        out = advise.advise(st, deck_cache=deck_cache)  # default: runs/current/deck.json (mcp_adapter)
+        if str(out).startswith("[ADVICE FAILED]"):
+            issues.append(f"advise.py failed: {out}")
     except Exception as ex:
         issues.append(f"advise.py raised {type(ex).__name__}: {ex}\n" + traceback.format_exc(limit=3))
     return t, issues, notes
