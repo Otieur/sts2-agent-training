@@ -49,6 +49,14 @@ class TestSimulateFight(unittest.TestCase):
         ms = sf.evaluate(deck, "KNOWLEDGE_DEMON", 80, 80, 10, "safe", ("MIND_ROT", "SLOTH", "WASTE_AWAY"))
         self.assertLessEqual(dd["turns"], ms["turns"])
 
+    def test_relics_and_upgrades_help(self):
+        deck = expand_deck(sf.EXPERIMENT_BASE, "IRONCLAD")
+        plain = sf.evaluate(deck, "VANTOM", 60, 80, 20, "balanced")
+        relic = sf.evaluate(deck, "VANTOM", 60, 80, 20, "balanced", relics=("RELIC.VAJRA", "ANCHOR", "LIZARD_TAIL"))
+        upgraded = sf.evaluate([c + "+" for c in deck], "VANTOM", 60, 80, 20, "balanced")
+        self.assertGreaterEqual(relic["win_rate"], plain["win_rate"])
+        self.assertGreater(upgraded["win_rate"], plain["win_rate"])
+
     def test_soul_fysh_cycle_and_beckon(self):
         b = {}
         moves = [sf.fysh_move(b, t) for t in range(1, 11)]

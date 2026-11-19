@@ -123,6 +123,16 @@ def combat(st, top=2):
     fysh = any("SOUL_FYSH" in i for i in ids_up)
     steam = max((int(x.get("amount") or 0) for e in raw_enemies for x in e.get("powers") or []
                  if str(x.get("power_id") or x.get("name") or "").upper().startswith("STEAM_ERUPTION")), default=0)
+    party = [x for x in (st.get("combat") or {}).get("players") or [] if isinstance(x, dict)]
+    if len(party) > 1:  # co-op: the team's health lines (combat.players[]; target_index is the position in this list)
+        cells = []
+        for i, x in enumerate(party):
+            hp_, mx_ = x.get("current_hp"), x.get("max_hp")
+            low = isinstance(hp_, (int, float)) and isinstance(mx_, (int, float)) and mx_ and hp_ < 0.3 * mx_
+            cells.append(f"[{i}] {x.get('character_name') or x.get('character_id') or '?'}{' (you)' if x.get('is_local') else ''} "
+                         f"HP {hp_}/{mx_} block {x.get('block', 0)}" + (" DOWN" if x.get("is_alive") is False else " LOW" if low else ""))
+        out.append("party: " + " | ".join(cells) + " · a Block or heal potion can go to a teammate: use_potion option_index=<slot> "
+                   "target_index=<their [n]> (v0.111.1)")
     if any(str(x.get("power_id") or x.get("name") or "").upper().startswith("WITHERING") for e in raw_enemies for x in e.get("powers") or []):
         out.append("Withering Presence: every 6th card you play adds a Wither to your hand (3 damage at the end of each turn "
                    "it is held); prefer fewer, bigger plays and exhaust Withers")
@@ -183,7 +193,8 @@ def card_reward(st):
     deck, offer, act, floor, boss = draft.from_state_obj(st)
     run = _run(st)
     res = draft.score_offer(deck, offer, _character(st), act or 1, floor, boss, simulate=(act or 1) == 1,
-                            hp=run.get("current_hp"), max_hp=run.get("max_hp") or 80)
+                            hp=run.get("current_hp"), max_hp=run.get("max_hp") or 80, sim_deck=draft.sim_deck_from_state(st),
+                            sim_relics=draft.sim_relics_from_state(st))
     idx = {"CARD." + str(c.get("card_id")): c.get("index") for c in (st.get("reward") or {}).get("card_options") or [] if c.get("card_id")}
     out = [f"deck {res['base']['size']} cards, damage/turn {res['base']['dmg']:.1f}, block/turn {res['base']['block']:.1f}, "
            f"scaling {res['base']['scaling']}"]

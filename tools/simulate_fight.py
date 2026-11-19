@@ -211,14 +211,28 @@ def draw_cards(n, draw, discard, rng):
 BEST_CURSES = ("MIND_ROT", "SLOTH", "WASTE_AWAY")  # Knowledge Demon: the best combination in report(); the default
 
 
-def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", max_turns=25, curse=BEST_CURSES):
+SIM_RELICS = {"VAJRA", "ODDLY_SMOOTH_STONE", "ANCHOR", "BAG_OF_PREPARATION", "RED_MASK", "GORGET", "BLOOD_VIAL",
+              "FESTIVE_POPPER", "HAPPY_FLOWER", "LIZARD_TAIL", "RED_SKULL"}  # relics the simulator applies (see run_fight)
+
+
+def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", max_turns=25, curse=BEST_CURSES, relics=()):
+    """relics: relic IDs held; those in SIM_RELICS are applied with their plainest reading of the game data
+    [GAME-EXTRACT] + [HYPOTHESIS] (once per fight unless the data says otherwise): Vajra +1 Strength, Oddly Smooth Stone +1
+    Dexterity, Anchor 10 Block on turn 1, Bag of Preparation +2 cards on turn 1, Red Mask 1 Weak on the boss at the start,
+    Gorget 4 Plating (Block each turn, one less each turn), Blood Vial heal 2 at the start, Festive Popper 9 damage at the
+    start, Happy Flower +1 energy every third turn, Lizard Tail revives once at half HP, Red Skull +3 Strength at half HP
+    or less."""
     spec = BOSSES[boss]
+    R = {str(r).split(".", 1)[-1].upper() for r in relics or ()}
     rng = random.Random(seed)
     draw = [c.split(".", 1)[-1] for c in deck]
     rng.shuffle(draw)
     discard, exhausted = [], []
-    strength, demon, dexterity = 0, 0, 0
+    strength, demon, dexterity = int("VAJRA" in R), 0, int("ODDLY_SMOOTH_STONE" in R)
     pyre = fnp = 0  # Pyre: +1 energy each turn; Feel No Pain: Block per exhaust (both persist)
+    plating_p, lizard = (4 if "GORGET" in R else 0), "LIZARD_TAIL" in R
+    if "BLOOD_VIAL" in R:
+        hp = min(max_hp, hp + 2)
     # Necrobinder: Bound Phylactery summons 1 at combat start and each turn; Osty absorbs unblocked damage. NOT VALIDATED:
     # a 14-card Necrobinder deck wins 0% against Lagavulin here while the Player survived 15 of 15, so the Osty rules
     # are incomplete (Unleash's damage, revival, what the redirect really covers). Do not use Necrobinder results yet.
@@ -229,6 +243,20 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     sloth = mind_rot = waste = disint = 0
     p_vuln = p_weak = 0
     ringing = False
+    if "RED_MASK" in R:
+        b["weak"] = 1
+    if "FESTIVE_POPPER" in R:
+        b["hp"] -= 9
+
+    def survives():
+        """False if the run ends; Lizard Tail turns the first death into half HP."""
+        nonlocal hp, lizard
+        if hp > 0:
+            return True
+        if lizard:
+            lizard, hp = False, max_hp // 2
+            return True
+        return False
     for turn in range(1, max_turns + 1):
         strength += demon
         if necro:
@@ -241,8 +269,10 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         raw_intent = intent
         if intent[1] and (b["weak"] > 0 or p_vuln > 0):  # like the game, the shown intent includes Weak and your Vulnerable
             intent = (calc.hit_damage(intent[0], attacker_weak=b["weak"] > 0, target_vulnerable=p_vuln > 0), intent[1])
-        hand_ids = draw_cards(max(1, 5 - mind_rot), draw, discard, rng)
-        energy, block, gained_this_turn = max(1, 3 + pyre - waste), 0, 0
+        hand_ids = draw_cards(max(1, 5 - mind_rot) + (2 if turn == 1 and "BAG_OF_PREPARATION" in R else 0), draw, discard, rng)
+        energy = max(1, 3 + pyre - waste) + (1 if "HAPPY_FLOWER" in R and turn % 3 == 0 else 0)
+        block = (10 if turn == 1 and "ANCHOR" in R else 0) + plating_p
+        gained_this_turn = 3 if "RED_SKULL" in R and hp <= max_hp // 2 else 0  # Red Skull, recounted each turn
         cards_played = 0
         for _ in range(4):  # plan, play up to a draw, re-plan with what is left
             hand = [pt.card_from_extract(i, cid) for i, cid in enumerate(hand_ids)]
@@ -289,9 +319,11 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             osty = out.get("osty_before_enemy", osty)
             cards_played += sum(1 for c in order if not c.potion)
             hp -= sum(c.hp_cost for c in order)
+            names = {c.index: hand_ids[c.index] for c in order}  # the hand entries played (keeps the '+' of upgrades)
+            hand_ids = [x for i, x in enumerate(hand_ids) if i not in names]
             for c in order:
                 gained_this_turn += c.strength
-                hand_ids.remove(c.card_id)
+                name = names[c.index]
                 rec = pt.CARDS.get(c.card_id) or {}
                 if c.strength:  # "Gain N Strength" lasts the fight (Inflame, Fight Me, Brand); Setup Strike's is temp_str
                     strength += c.strength
@@ -303,9 +335,9 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                     pyre += c.card_id == "PYRE"
                     fnp += c.fnp
                 elif "Exhaust" in (rec.get("effect") or ""):
-                    exhausted.append(c.card_id)
+                    exhausted.append(name)
                 else:
-                    discard.append(c.card_id)
+                    discard.append(name)
                 if c.card_id == "ANGER":
                     discard.append("ANGER")
             # Exhausts from hand, after the planned cards have left it: Fiend Fire takes the rest of the hand; True Grit,
@@ -336,7 +368,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         hp -= sum(pt.card_from_extract(0, cid).held_loss for cid in hand_ids)  # Beckon: 6 unblockable HP each if held
         discard.extend(hand_ids)
         ringing = False
-        if hp <= 0:
+        plating_p = max(0, plating_p - 1)
+        if not survives():
             return {"won": False, "hp": 0, "turns": turn, "boss_left": max(0.0, b["hp"] / spec["hp"])}
         b["intangible"] = max(0, b.get("intangible", 0) - 1)
         if b.get("exploding") == 1:  # Waterfall Giant: stunned the turn after it reaches 0 HP
@@ -382,7 +415,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 disint += 6 + k  # 6, 7, 8 by offer; a Counter power, so taking it twice deals 6 + 7 [GAME-EXTRACT]
         if disint:
             hp -= disint  # at the end of your turn
-        if hp <= 0:
+        if not survives():
             return {"won": False, "hp": 0, "turns": turn, "boss_left": max(0.0, b["hp"] / spec["hp"])}
         b["vuln"] = max(0, b["vuln"] - 1)
         b["weak"] = max(0, b["weak"] - 1)
@@ -390,8 +423,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     return {"won": False, "hp": hp, "turns": max_turns, "timeout": True, "boss_left": max(0.0, b["hp"] / spec["hp"])}
 
 
-def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse=BEST_CURSES):
-    rs = [run_fight(deck, boss, hp, max_hp, seed=s, mode=mode, curse=curse) for s in range(runs)]
+def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse=BEST_CURSES, relics=()):
+    rs = [run_fight(deck, boss, hp, max_hp, seed=s, mode=mode, curse=curse, relics=relics) for s in range(runs)]
     wins = [r for r in rs if r["won"]]
     return {"win_rate": len(wins) / runs, "hp_lost": statistics.mean(hp - r["hp"] for r in rs),
             "hp_lost_wins": statistics.mean(hp - r["hp"] for r in wins) if wins else float("nan"),
@@ -401,8 +434,8 @@ def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse=BEST_CURSES):
 
 def calibrate_real(runs=40, character="IRONCLAD", bosses=None):
     """The Player's own decks on arrival at each modelled fight (v0.107.1, solo, finished runs), simulated from the
-    arrival HP with the better of the two plans. Returns {boss: (mean simulated win rate, survived, fights, mean share of
-    the boss's HP removed)}. No relics,
+    arrival HP with the better of the two plans, the deck's upgrades and the relics in SIM_RELICS. Returns {boss: (mean
+    simulated win rate, survived, fights, mean share of the boss's HP removed)}. Other relics,
     potions or upgrades, so the model should be pessimistic by a similar amount for every boss."""
     from deck_metrics import deck_at
     from stslib import connect
@@ -415,9 +448,11 @@ def calibrate_real(runs=40, character="IRONCLAD", bosses=None):
                               AND r.n_players = 1 AND NOT r.abandoned AND f.model_id = ?""", (character, enc)).fetchall()
         sims, prog = [], []
         for r in rows:
-            deck = deck_at(con, r["run_id"], r["floor"])
+            deck = deck_at(con, r["run_id"], r["floor"], upgrades=True)
+            rel = [x["relic_id"] for x in con.execute("SELECT relic_id FROM relic_events WHERE run_id = ? AND floor < ? AND picked = 1",
+                                                      (r["run_id"], r["floor"]))]
             hp, mx = r["hp_before"] or r["max_hp"], r["max_hp"] or 80
-            best = max((evaluate(deck, key, hp, mx, runs, m) for m in ("balanced", "safe")),
+            best = max((evaluate(deck, key, hp, mx, runs, m, relics=rel) for m in ("balanced", "safe")),
                        key=lambda x: (x["win_rate"], x["progress"]))
             sims.append(best["win_rate"])
             prog.append(best["progress"])
@@ -544,14 +579,15 @@ def report(runs=300):
     rc = [[k.replace("_", " ").title(), n, f"{m:.0%}", f"{pr:.2f}", f"{s}/{n} ({s / n:.0%})"] for k, (m, s, n, pr) in real.items()]
     L += ["## Calibration with the Player's own decks", "",
           "Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1, solo, finished runs), replayed with "
-          "the deck the run had on arrival and its arrival HP, the better of the two plans. The model has no relics, potions or "
-          "upgrades and models only the card effects `tools/plan_turn.py` reads (Powers other than Strength, Dexterity, "
-          "Demon Form, Pyre and Feel No Pain do nothing), so its win rates for real decks are far too low; the share of the boss's HP removed is the "
-          "more useful comparison between bosses.", "",
+          "the deck the run had on arrival (with its upgrades), its arrival HP and the relics the simulator applies (`SIM_RELICS`: "
+          "Vajra, Anchor, Gorget and others), the better of the two plans. It has no potions, no other relics, and only the card "
+          "effects `tools/plan_turn.py` reads (Powers other than Strength, Dexterity, Demon Form, Pyre and Feel No Pain do "
+          "nothing), so its win rates for real decks are far too low; the share of the boss's HP removed is the more useful "
+          "comparison between bosses.", "",
           md_table(["Fight", "Fights", "Model win", "Boss HP removed (model)", "The Player survived"], rc), "",
-          "Reading: absolute win rates from the simulator mean nothing for real decks; use it only to compare additions to the "
-          "same deck. A boss whose share removed is low while the Player usually survived (Ceremonial Beast, Entomancer) is "
-          "modelled too hard.", ""]
+          "Reading: absolute win rates from the simulator mean little for real decks; use it to compare additions to the same "
+          "deck. A boss whose share removed is low while the Player usually survived (Ceremonial Beast, Entomancer, Knowledge "
+          "Demon) is modelled too hard.", ""]
     # Plan mode: balanced, a switch to safe below half HP, or safe, with the survival guard in plan_turn.rank
     pm = []
     base_deck = expand_deck(EXPERIMENT_BASE, "IRONCLAD")

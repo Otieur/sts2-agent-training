@@ -122,10 +122,11 @@ def scaling_count(deck):
     return n
 
 
-def deck_at(con, run_id, floor):
+def deck_at(con, run_id, floor, upgrades=False):
+    """The deck at the start of a floor. upgrades=True marks upgraded cards with a trailing '+' (for the simulator)."""
     deck = []
-    for r in con.execute("SELECT card_id, count FROM deck_snapshots WHERE run_id=? AND floor=?", (run_id, floor - 1)):
-        deck += [r["card_id"]] * r["count"]
+    for r in con.execute("SELECT card_id, upgrade_level, count FROM deck_snapshots WHERE run_id=? AND floor=?", (run_id, floor - 1)):
+        deck += [r["card_id"] + ("+" if upgrades and (r["upgrade_level"] or 0) > 0 else "")] * r["count"]
     return deck
 
 

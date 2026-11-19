@@ -44,7 +44,9 @@ def replay(run_ref):
         boss = (bosses.get(act) or "").replace("ENCOUNTER.", "")
         fl = floors.get(floor, {})
         res = draft.score_offer(deck, ids, ch, act, floor, boss, simulate=(act == 1),  # as advise.py does in Act 1
-                                hp=fl.get("hp_after"), max_hp=fl.get("max_hp") or 80)
+                                hp=fl.get("hp_after"), max_hp=fl.get("max_hp") or 80, sim_deck=deck_at(con, rid, floor, upgrades=True),
+                                sim_relics=[x["relic_id"] for x in con.execute(
+                                    "SELECT relic_id FROM relic_events WHERE run_id = ? AND floor < ? AND picked = 1", (rid, floor))])
         tool = res["pick"]["card"] if res["pick"] else "skip"
         player = next((o["card_id"].split(".", 1)[-1].replace("_", " ").title() for o in offers if o["picked"]), "skip")
         same = tool.replace(" ", "").lower() == player.replace(" ", "").lower()

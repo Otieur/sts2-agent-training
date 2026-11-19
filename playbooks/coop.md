@@ -87,6 +87,7 @@ Each command gets one short confirmation. If a command would be fatal for either
 - `tools/sts.py --mod sts2agent --instance teammate ...` acts only on the Agent's window; acting on the host or on a multiplayer run without `--instance teammate` is refused.
 - `tools/sts.py --mod sts2agent party` shows both players, both hands and the enemies, and checks that both instances agree (desync check).
 - Never use the game's Load button for a co-op save; use the mod's Continue (`docs/phase-6-coop.md`).
+- `tools/advise.py` on a co-op combat state adds a party line (each player's HP and block, LOW under 30%, DOWN when out) and the command shape for a potion on a teammate (`use_potion option_index=<slot> target_index=<position>`). The turn planner still plans the Agent's own turn only; it does not choose ally targets.
 
 ## 10. Changelog
 - **v0 (2026-11-19, overnight):** first draft from the co-op rules and the v0.111.1 patch notes, before any co-op play.

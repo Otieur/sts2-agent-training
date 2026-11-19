@@ -169,6 +169,18 @@ class TestAdvise(unittest.TestCase):
         out = advise.advise(s)
         self.assertIn("Sandpit 2:", out)
 
+    def test_coop_party_line(self):
+        s = st("COMBAT", combat={"player": {"current_hp": 40, "energy": 3, "block": 0, "powers": []},
+                                 "players": [{"player_id": "1", "is_local": False, "character_name": "Necrobinder", "current_hp": 12,
+                                              "max_hp": 66, "block": 0, "is_alive": True},
+                                             {"player_id": "2", "is_local": True, "character_name": "Ironclad", "current_hp": 40,
+                                              "max_hp": 80, "block": 0, "is_alive": True}],
+                                 "hand": [{"index": 0, "card_id": "DEFEND_IRONCLAD", "energy_cost": 1, "playable": True}],
+                                 "enemies": [{"index": 0, "enemy_id": "NIBBIT", "name": "Nibbit", "current_hp": 40, "block": 0,
+                                              "is_alive": True, "powers": [], "intents": [{"damage": 12, "hits": 1}]}]})
+        out = advise.advise(s)
+        self.assertIn("party: [0] Necrobinder HP 12/66 block 0 LOW | [1] Ironclad (you) HP 40/80", out)
+
     def test_waterfall_giant_safe_and_steam(self):
         s = st("COMBAT", combat={"player": {"current_hp": 40, "energy": 3, "block": 0, "powers": []},
                                  "hand": [{"index": 0, "card_id": "DEFEND_IRONCLAD", "energy_cost": 1, "playable": True}],

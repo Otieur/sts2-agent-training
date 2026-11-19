@@ -2,6 +2,8 @@
 
 Effects from the extracted game data `[GAME-EXTRACT]` (hook names kept: `AfterSideTurnStart` = at the start of your turn, `AfterObtained` = when picked up). The Player's offer, pick and purchase counts, Ancient pick rates and final-relic win rates come from solo runs on v0.107.1 `[PLAYER-DATA]`. Win rates are survivorship-biased (relics obtained late appear only in long runs). Baseline win rate of finished runs: 23%.
 
+**Applied by the fight simulator** (`tools/simulate_fight.py` `SIM_RELICS`, plainest reading of the game data, once per fight unless the data says otherwise `[HYPOTHESIS]`): Vajra +1 Strength, Oddly Smooth Stone +1 Dexterity, Anchor 10 Block on turn 1, Bag of Preparation +2 cards on turn 1, Red Mask 1 Weak on the enemy, Gorget 4 Plating, Blood Vial heal 2, Festive Popper 9 damage, Happy Flower +1 energy every third turn, Lizard Tail revives once at half HP, Red Skull +3 Strength at half HP or less. Live play does not need these: the mod's state already shows their effects (Strength, Block, energy).
+
 ## Starter (10)
 
 | Relic | Owner | Effect | Picked/offered | Bought | Final-relic win rate |

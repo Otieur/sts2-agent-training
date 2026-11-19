@@ -37,20 +37,20 @@ The 15-card base deck for Act 1 fights and the 22-card Act 2 deck for Act 2 figh
 
 ## Calibration with the Player's own decks
 
-Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1, solo, finished runs), replayed with the deck the run had on arrival and its arrival HP, the better of the two plans. The model has no relics, potions or upgrades and models only the card effects `tools/plan_turn.py` reads (Powers other than Strength, Dexterity, Demon Form, Pyre and Feel No Pain do nothing), so its win rates for real decks are far too low; the share of the boss's HP removed is the more useful comparison between bosses.
+Each of the Player's Ironclad fights against a modelled boss or elite (v0.107.1, solo, finished runs), replayed with the deck the run had on arrival (with its upgrades), its arrival HP and the relics the simulator applies (`SIM_RELICS`: Vajra, Anchor, Gorget and others), the better of the two plans. It has no potions, no other relics, and only the card effects `tools/plan_turn.py` reads (Powers other than Strength, Dexterity, Demon Form, Pyre and Feel No Pain do nothing), so its win rates for real decks are far too low; the share of the boss's HP removed is the more useful comparison between bosses.
 
 | Fight | Fights | Model win | Boss HP removed (model) | The Player survived |
 |---|---|---|---|---|
-| Vantom | 10 | 0% | 0.28 | 4/10 (40%) |
-| Lagavulin Matriarch | 8 | 0% | 0.57 | 6/8 (75%) |
-| Ceremonial Beast | 6 | 0% | 0.31 | 5/6 (83%) |
-| Knowledge Demon | 12 | 0% | 0.21 | 8/12 (67%) |
-| Entomancer | 13 | 0% | 0.11 | 10/13 (77%) |
-| Byrdonis | 10 | 51% | 0.88 | 7/10 (70%) |
-| Soul Fysh | 7 | 0% | 0.49 | 4/7 (57%) |
-| Waterfall Giant | 5 | 0% | 0.53 | 3/5 (60%) |
+| Vantom | 10 | 2% | 0.39 | 4/10 (40%) |
+| Lagavulin Matriarch | 8 | 4% | 0.71 | 6/8 (75%) |
+| Ceremonial Beast | 6 | 0% | 0.37 | 5/6 (83%) |
+| Knowledge Demon | 12 | 3% | 0.34 | 8/12 (67%) |
+| Entomancer | 13 | 0% | 0.21 | 10/13 (77%) |
+| Byrdonis | 10 | 61% | 0.90 | 7/10 (70%) |
+| Soul Fysh | 7 | 0% | 0.54 | 4/7 (57%) |
+| Waterfall Giant | 5 | 1% | 0.66 | 3/5 (60%) |
 
-Reading: absolute win rates from the simulator mean nothing for real decks; use it only to compare additions to the same deck. A boss whose share removed is low while the Player usually survived (Ceremonial Beast, Entomancer) is modelled too hard.
+Reading: absolute win rates from the simulator mean little for real decks; use it to compare additions to the same deck. A boss whose share removed is low while the Player usually survived (Ceremonial Beast, Entomancer, Knowledge Demon) is modelled too hard.
 
 ## Which plan to follow in a boss fight
 

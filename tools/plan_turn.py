@@ -95,6 +95,7 @@ class Card:
     free_attacks: int = 0       # the next Attack costs 0 (Unrelenting's Free Attack)
     fnp: int = 0                # Feel No Pain gained: Block for each card exhausted later this turn
     held_dmg: int = 0           # damage (blockable) at the end of the turn if still in hand (Toxic 5)
+    upgraded: bool = False
     sandpit_add: int = 0        # adds to the Sandpit counter on you (Frantic Escape +1)
     heal_pct: int = 0           # heals this percent of max HP, at most the HP missing (Blood Potion 20)
     colossus: bool = False      # Colossus: half damage from Vulnerable enemies this turn
@@ -177,10 +178,31 @@ def parse_effect(c):
     return out
 
 
+def _upgrade(card, c):
+    """Apply an upgrade to base numbers (not live ones) where the extract is unambiguous: one UpgradeValueBy on a card
+    whose first variable is Damage, Block or Strength, or two values applied in variable order. [GAME-EXTRACT]"""
+    ups = [int(x) for x in re.findall(r"UpgradeValueBy\((\d+)m?\)", c.get("on_upgrade") or "")]
+    kinds = re.findall(r"(DamageVar|BlockVar|PowerVar<StrengthPower>|PowerVar<VulnerablePower>|PowerVar<WeakPower>|\w+Var|DynamicVar)",
+                       c.get("vars") or "")
+    attr = {"DamageVar": "dmg", "BlockVar": "block", "PowerVar<StrengthPower>": "strength",
+            "PowerVar<VulnerablePower>": "vuln", "PowerVar<WeakPower>": "weak"}
+    pairs = zip(kinds, ups) if len(ups) > 1 else ([(kinds[0], ups[0])] if ups and kinds else [])
+    for kind, v in pairs:
+        if kind in attr and getattr(card, attr[kind]):
+            setattr(card, attr[kind], getattr(card, attr[kind]) + v)
+    card.upgraded = True
+    return card
+
+
 def card_from_extract(index, card_id, live=None, cost=None, playable=True):
-    """live: dict of dynamic value name -> current value (STS2-Agent)."""
+    """live: dict of dynamic value name -> current value (STS2-Agent). A trailing '+' on the ID means upgraded
+    (applied to base numbers only; live numbers already include it)."""
     cid = str(card_id or "?").split(".", 1)[-1]
+    plus = cid.endswith("+")
+    cid = cid.rstrip("+")
     c = CARDS.get(cid)
+    if plus and c and not live:
+        return _upgrade(card_from_extract(index, cid, None, cost, playable), c)
     if not c:
         if cid in EXTRA_STATUSES:  # statuses newer than the extract (Aeonglass's Wither) [COMMUNITY]
             # playable only if the state says so (one guide gives Wither Retain and Exhaust); its cost comes from the state
