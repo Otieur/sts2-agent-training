@@ -52,7 +52,7 @@ block = floor( (base + Dexterity) × (0.75 if Frail) × (2 if Unmovable active) 
 | No Draw (Battle Trance) | Debuff | No more draws this turn; removed at end of turn | `[GAME-EXTRACT]` |
 | Rage | Buff | Gain its amount of block per card played this turn | `[GAME-EXTRACT]` |
 | Flame Barrier | Buff | Deals its amount back when you are hit; removed at end of turn | `[GAME-EXTRACT]` |
-| Colossus | Buff, duration | Damage multiplier 0.5 (presumably halves damage taken; to verify) | `[GAME-EXTRACT]` |
+| Colossus | Buff, duration | Half damage from **Vulnerable** enemies this turn (multiplier 0.5) | `[GAME-EXTRACT]` + `[COMMUNITY]` (two card pages, accessed 2026-11-19); modelled in `tools/plan_turn.py` |
 | One-Two Punch | Buff | Your next card is played one extra time; removed at end of turn | `[GAME-EXTRACT]` |
 | Free Attack (Unrelenting) | Buff, counter | Your next attack costs 0 | `[GAME-EXTRACT]` |
 | Mangle | Debuff | Target loses Strength temporarily (this turn) | `[GAME-EXTRACT]` |

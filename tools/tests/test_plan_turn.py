@@ -351,6 +351,12 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.simulate(h, [0, 0, None], pt.Player(energy=3, tender=1), [pt.parse_enemy("A:100:0:0", 0)])
         self.assertEqual((o["dealt"], o["block"]), (11, 3))  # 6, then 5; Defend after two cards: 5 - 2
 
+    def test_colossus(self):
+        h = [pt.card_from_extract(0, "COLOSSUS")]
+        self.assertTrue(h[0].colossus)
+        o = pt.simulate(h, [None], pt.Player(energy=1), [pt.parse_enemy("A:50:0:20:vuln", 0), pt.parse_enemy("B:50:0:10", 1)])
+        self.assertEqual(o["incoming"], 20)                 # 20 halved to 10 (Vulnerable), plus 10 from B
+
     def test_beckon_held_loss(self):
         h = [pt.card_from_extract(0, "BECKON"), pt.card_from_extract(1, "STRIKE_IRONCLAD")]
         self.assertEqual((h[0].held_loss, h[0].cost, h[0].playable), (6, 1, True))

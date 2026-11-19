@@ -20,7 +20,7 @@ Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); booste
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
 Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (first damage stuns), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
-non-minion ends the fight); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender.
+non-minion ends the fight); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus.
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
 until the arithmetic is confirmed in game (knowledge/mechanics.md checklist).
@@ -97,6 +97,7 @@ class Card:
     held_dmg: int = 0           # damage (blockable) at the end of the turn if still in hand (Toxic 5)
     sandpit_add: int = 0        # adds to the Sandpit counter on you (Frantic Escape +1)
     heal_pct: int = 0           # heals this percent of max HP, at most the HP missing (Blood Potion 20)
+    colossus: bool = False      # Colossus: half damage from Vulnerable enemies this turn
 
 
 @dataclass
@@ -141,6 +142,7 @@ class Player:
     end_turn_dmg: int = 0       # damage at the end of your turn from a power on you (Disintegration), blockable
     max_hp: Optional[int] = None
     tender: int = 0             # Tender (Hunter Killer): each card played costs 1 Strength and 1 Dexterity for the turn
+    colossus: bool = False      # Colossus already played this turn
 
 
 def parse_effect(c):
@@ -203,6 +205,7 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
                       ("free_attacks", r"Gain (\d+) Free Attack"), ("fnp", r"Gain (\d+) Feel No Pain")):
         m = re.search(pat, eff)
         setattr(card, attr, int(m.group(1)) if m else 0)
+    card.colossus = bool(re.search(r"Gain \d+ Colossus", eff))
     card.needs_exhaust = cid in CONDITIONAL_ENERGY and "no card needs to be exhausted" not in (c.get("effect") or "")
     card.exhausts = bool({"kw-exhaust", "exhaust-other"} & set(c.get("tags") or [])) or "Exhaust a card" in (c.get("effect") or "")
     card.changes_hand = ("exhaust-other" in (c.get("tags") or []) or "Exhaust a card" in (c.get("effect") or "")
@@ -381,6 +384,7 @@ def simulate(cards, targets, player, enemies):
     exhausted = False  # a card exhausted earlier this turn (cards exhausted before the state was read are not known)
     retaliate = 0      # Flame Barrier: damage back per enemy hit
     rage, free, fnp = 0, 0, player.fnp  # Rage block per Attack, free Attacks, Feel No Pain block per exhaust
+    colossus = player.colossus
     for card, tgt in zip(cards, targets):
         cost = energy if card.x_cost else card.cost
         is_attack = bool(card.dmg) or card.card_id in BLOCK_DAMAGE
@@ -453,6 +457,7 @@ def simulate(cards, targets, player, enemies):
             block += rage  # Rage: flat Block for each Attack after it (assumed unaffected by Dexterity) [HYPOTHESIS]
         rage += card.rage
         free += card.free_attacks
+        colossus = colossus or card.colossus
         if card.block:
             if card.flat:
                 block += card.block
@@ -480,6 +485,8 @@ def simulate(cards, targets, player, enemies):
     pairs = [(e, o) for e, o in zip(es, enemies) if e.hp > 0 and e.intent_hits]
     # Enrage (Test Subject): Strength for every card played this turn raises each hit (assumed every card; gap note)
     intents = [(e.intent_per_hit + e.enrage * played, e.intent_hits) for e, o in pairs]
+    if colossus:  # half damage from Vulnerable enemies this turn [GAME-EXTRACT] + [COMMUNITY]
+        intents = [(d // 2 if e.vuln else d, h) for (d, h), (e, o) in zip(intents, pairs)]
     weak = [e.weak and not o.weak for e, o in pairs]
     if player.end_turn_dmg:  # Disintegration hits at the end of your turn, before the enemies, and uses up block first
         intents.append((player.end_turn_dmg, 1))
@@ -641,7 +648,8 @@ def from_state(st):
                     hp=p.get("current_hp"), fnp=int(powers.get("FEEL_NO_PAIN_POWER", powers.get("FEEL_NO_PAIN", 0)) or 0),
                     sandpit=int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0),
                     end_turn_dmg=int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0),
-                    max_hp=p.get("max_hp"), tender=1 if any(k.startswith("TENDER") for k in powers) else 0)
+                    max_hp=p.get("max_hp"), tender=1 if any(k.startswith("TENDER") for k in powers) else 0,
+                    colossus=any(k.startswith("COLOSSUS") for k in powers))
     # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
     # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])
     limits = [int(powers[k] or 3) for k in powers if k.startswith("SLOTH")] + [1 for k in powers if k.startswith("RINGING")]
