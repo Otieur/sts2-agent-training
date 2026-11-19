@@ -59,7 +59,7 @@ class TestPath(unittest.TestCase):
         self.assertEqual(o["loot"]["upgrade"], 1)
 
     def test_state_input(self):
-        st = {"data": {"map": make_map(), "run": {"current_hp": 60, "max_hp": 80, "act_id": "1", "ascension": 0,
+        st = {"data": {"map": make_map(), "run": {"current_hp": 60, "max_hp": 80, "act_id": "0", "ascension": 0,
                                                   "boss_id": "VANTOM_BOSS"}}}
         import json
         import tempfile

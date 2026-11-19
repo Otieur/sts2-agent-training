@@ -306,7 +306,8 @@ def main(argv=None):
         st = st.get("data", st)
         m, run = st.get("map") or {}, st.get("run") or {}
         hp, max_hp = args.hp or run.get("current_hp"), args.max_hp or run.get("max_hp")
-        act = args.act or int(run.get("act_id") or 1)
+        from stslib import act_number
+        act = args.act or act_number(run.get("act_id"))
         asc = args.ascension or int(run.get("ascension") or 0)
         boss = args.boss or run.get("boss_id")
         deck_ids = ["CARD." + d["card_id"] for d in run.get("deck") or [] if d.get("card_id")]

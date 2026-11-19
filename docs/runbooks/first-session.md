@@ -48,7 +48,7 @@ Check: the card is played, `runs/smoke/decisions.jsonl` has the line, and `GET /
 | Gap | What to look at | Note to update |
 |---|---|---|
 | 4 | Vantom's Slippery stacks on turn 1 (expected 9) | `knowledge/bosses/VANTOM_BOSS.md` |
-| 5 | The boss shows on the map at act start (`run.boss_id`, `map.boss_node`) | `knowledge/gaps.md` |
+| 5 | The boss shows at act start (`run.boss_id`; the mod source says yes) and **`act_id` is "0" in Act 1** (0-based; the tools assume this) | `stslib.act_number` if it differs |
 | 7 | Seeded start: does standard mode accept a seed? Do 10-character v0.107.1 exam seeds work on v0.111.1? | `metrics/exam-seeds.md` |
 | 12 | Lagavulin Matriarch wakes stunned when hit; which power goes with Asleep. Kin Priest's death ends the fight? | boss notes |
 | 13 | `run.ascension_effects` lists the ascension rules | `knowledge/ascension.md` |

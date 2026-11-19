@@ -8,7 +8,7 @@ import advise  # noqa: E402
 
 DECK = [{"card_id": "STRIKE_IRONCLAD", "upgraded": False}] * 5 + [{"card_id": "DEFEND_IRONCLAD", "upgraded": False}] * 4 + \
        [{"card_id": "BASH", "upgraded": False}, {"card_id": "FEEL_NO_PAIN", "upgraded": False}]
-RUN = {"floor": 8, "act_id": "1", "ascension": 0, "current_hp": 50, "max_hp": 80, "gold": 160, "boss_id": "VANTOM_BOSS",
+RUN = {"floor": 8, "act_id": "0", "ascension": 0, "current_hp": 50, "max_hp": 80, "gold": 160, "boss_id": "VANTOM_BOSS",
        "deck": DECK, "potions": [{"potion_id": "FIRE_POTION", "name": "Fire Potion", "occupied": True},
                                  {"potion_id": None, "name": None, "occupied": False}]}
 
@@ -118,6 +118,14 @@ class TestAdvise(unittest.TestCase):
         self.assertIn("Ascender", lines[-1])
         out = advise.advise(st("CARD_SELECTION", selection={"kind": "deck_upgrade_select", "prompt": "Choose a card to upgrade", "cards": cards}))
         self.assertIn("Feel No Pain", [l for l in out.splitlines() if "select_deck_card" in l][0])
+
+    def test_act_number(self):
+        from stslib import act_number
+        self.assertEqual(act_number("0"), 1)     # the mod's act_id is 0-based
+        self.assertEqual(act_number("2"), 3)
+        self.assertEqual(act_number("ACT_1"), 1)
+        self.assertEqual(act_number(None), 1)
+        self.assertEqual(advise._act({"run": {"act_id": "1"}}), 2)
 
 
 if __name__ == "__main__":

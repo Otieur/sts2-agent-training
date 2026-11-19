@@ -45,6 +45,7 @@ Everything still unverified, ranked by how much it affects play (S6, written 202
 |---|---|---|
 | 2026-11-18 | Do run files log every deck change? | Yes: 232/232 decks reconstruct exactly (OQ1.1) |
 | 2026-11-19 | Which ascension adds Ascender's Bane? | A5 (100% of A5+ runs) |
+| 2026-11-19 | Gap 5: is the boss known at act start? | Yes on STS2-Agent: `run.boss_id` comes from the current act's boss encounter (mod source) |
 | 2026-11-19 | Act boss lists per act variant | From run data (`knowledge/mechanics.md`) |
 | 2026-11-19 | A2 Ancient heal, A3 gold, A4 potion slots, A10 double boss | Confirmed in run data (`knowledge/ascension.md`) |
 | 2026-11-19 | Which game build is the extract from? | **Pre-v0.107.1** (corrected at 01:42 from an earlier "v0.107.x–v0.110"): eleven v0.107.1 changes show old values and Aeonglass is missing. Exact build unknown. Replaced by gap 3 |

@@ -86,7 +86,7 @@ class TestRecordAndReconstruct(unittest.TestCase):
 class TestAgentFormat(unittest.TestCase):
     def test_compact_agent_combat(self):
         st = {"ok": True, "data": {"screen": "COMBAT", "turn": 1, "available_actions": ["play_card", "end_turn"],
-              "run": {"floor": 17, "act_id": "1", "current_hp": 50, "max_hp": 80, "gold": 99, "boss_id": "VANTOM_BOSS",
+              "run": {"floor": 17, "act_id": "0", "current_hp": 50, "max_hp": 80, "gold": 99, "boss_id": "VANTOM_BOSS",
                       "potions": [{"potion_id": "FIRE_POTION", "occupied": True}, {"potion_id": None, "occupied": False}]},
               "combat": {"player": {"current_hp": 50, "max_hp": 80, "block": 0, "energy": 3,
                                     "powers": [{"power_id": "STRENGTH_POWER", "amount": 2}]},

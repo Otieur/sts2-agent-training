@@ -17,6 +17,17 @@ STARTER_CARDS = {
 }
 
 
+def act_number(act_id, default=1):
+    """STS2-Agent's run.act_id is CurrentActIndex.ToString(): 0-based ("0" = Act 1; the mod's live-validation log shows
+    act_id 0 with Vantom and act_id 1 at floor 17 before The Insatiable). Returns the 1-based act number."""
+    try:
+        return int(act_id) + 1
+    except (TypeError, ValueError):
+        s = str(act_id or "")
+        digits = "".join(ch for ch in s if ch.isdigit())
+        return int(digits) if digits and s.upper().startswith("ACT") else default  # "ACT_1"-style ids are 1-based
+
+
 def connect():
     if not DB_PATH.exists():
         raise SystemExit(f"{DB_PATH} not found; run tools/extract_runs.py first")

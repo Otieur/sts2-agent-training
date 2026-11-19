@@ -62,10 +62,8 @@ def compact_agent(st):
             return i.get("intent_type")
         return f"{i['damage']}x{i.get('hits') or 1}" if (i.get("hits") or 1) > 1 else str(i["damage"])
     acts = st.get("available_actions") or []
-    try:
-        act = int(run.get("act_id")) if run.get("act_id") is not None else None
-    except (TypeError, ValueError):
-        act = run.get("act_id")
+    from stslib import act_number
+    act = act_number(run.get("act_id"), default=None) if run.get("act_id") is not None else None
     return {
         "screen": screen, "fight": fight, "act": act, "floor": run.get("floor"),
         "hp": p.get("current_hp", run.get("current_hp")), "max_hp": p.get("max_hp", run.get("max_hp")),

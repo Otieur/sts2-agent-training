@@ -58,7 +58,7 @@ class TestDraft(unittest.TestCase):
         self.assertTrue(draft.engines(STARTER + offer("Feel No Pain"))["exhaust"])
 
     def test_from_state(self):
-        st = {"ok": True, "data": {"run": {"floor": 7, "act_id": "1", "boss_id": "VANTOM_BOSS",
+        st = {"ok": True, "data": {"run": {"floor": 7, "act_id": "0", "boss_id": "VANTOM_BOSS",
                                            "deck": [{"card_id": "STRIKE_IRONCLAD"}] * 5 + [{"card_id": "BASH"}]},
                                    "reward": {"card_options": [{"card_id": "TWIN_STRIKE"}, {"card_id": "INFLAME"}]}}}
         with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:

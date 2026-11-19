@@ -44,7 +44,8 @@ def _run(st):
 
 def _act(st):
     try:
-        return int(_run(st).get("act_id") or 1)
+        from stslib import act_number
+        return act_number(_run(st).get("act_id"))
     except (TypeError, ValueError):
         return 1
 

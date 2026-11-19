@@ -13,7 +13,7 @@ DECK = [{"card_id": "STRIKE_IRONCLAD", "upgraded": False}] * 5 + [{"card_id": "D
 
 
 def state(screen, deck=DECK, hp=50, **kw):
-    return {"screen": screen, "run": {"floor": 3, "act_id": "1", "ascension": 0, "current_hp": hp, "max_hp": 80, "gold": 99,
+    return {"screen": screen, "run": {"floor": 3, "act_id": "0", "ascension": 0, "current_hp": hp, "max_hp": 80, "gold": 99,
                                       "boss_id": "VANTOM_BOSS", "deck": deck, "potions": []}, **kw}
 
 

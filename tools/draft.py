@@ -273,11 +273,8 @@ def from_state_obj(st):
     deck = ["CARD." + d["card_id"] for d in run.get("deck") or [] if d.get("card_id")]
     rew = st.get("reward") or {}
     offer = [c.get("card_id") for c in (rew.get("card_options") or rew.get("cards") or (st.get("selection") or {}).get("cards") or [])]
-    act = run.get("act_id")
-    try:
-        act = int(act)
-    except (TypeError, ValueError):
-        act = None
+    from stslib import act_number
+    act = act_number(run.get("act_id"), default=None) if run.get("act_id") is not None else None  # act_id is 0-based
     return deck, ["CARD." + o for o in offer if o], act, run.get("floor"), run.get("boss_id")
 
 

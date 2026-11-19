@@ -99,3 +99,10 @@ Full reference: `vendor/STS2-Agent/docs/api.md` (about 2,000 lines) and the mach
 - Both instances simulate the whole run (lockstep), so `run.players[]` (deck, relics, potions) and `combat.players[]` (HP, block, energy) are fresh on either. Only the local hand is exposed: the Player's hand needs the host's `/state` (`sts.py --instance host state`, read-only).
 - `target_index` for ally-targeting cards and potions uses the position in `combat.players[]` / `run.players[]`, not `player_id`.
 - `sts.py party` compares floor, run_id, enemy HP and player HP between the two instances and prints any mismatch (P6.E5 desync check).
+
+## Field facts from the STS2-Agent source (read-only, 2026-11-19)
+- **`run.act_id` is 0-based** (`CurrentActIndex.ToString()`): "0" is Act 1. The mod's live-validation log shows `act_id: "0"` with Vantom and `act_id=1` at floor 17 before The Insatiable. All tools convert with `stslib.act_number()`; `tools/mcp_adapter.py` emits the same 0-based value for STS2MCP (whose `run.act` is 1-based).
+- **`run.boss_id`** is the current act's boss encounter id entry (`Act.BossEncounter.Id.Entry`, for example `VANTOM_BOSS`), so the boss is known from the first floor of each act.
+- **Card `dynamic_values[].current_value`** is the game's normal card preview against `card.CurrentTarget`: your own modifiers included, the target's only while targeting.
+- **Intent `damage` / `total_damage`** come from the game's `GetSingleDamage` / `GetTotalDamage` against the players: they already include the enemy's Strength and Weak and your Vulnerable.
+- **Map `node_type`** is the game's `PointType.ToString()` (PascalCase names such as `RestSite`).

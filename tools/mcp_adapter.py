@@ -82,7 +82,7 @@ def mcp_to_agent(st, deck_cache=DEFAULT_CACHE):
         except ValueError:
             deck = None
     boss = ((st.get("map") or {}).get("boss") or {}).get("id")
-    out["run"] = {"floor": run_in.get("floor"), "act_id": str(run_in.get("act")) if run_in.get("act") is not None else None,
+    out["run"] = {"floor": run_in.get("floor"), "act_id": str(run_in.get("act") - 1) if isinstance(run_in.get("act"), int) else None,  # 0-based like STS2-Agent
                   "ascension": run_in.get("ascension"), "current_hp": p.get("hp"), "max_hp": p.get("max_hp"),
                   "gold": p.get("gold"), "boss_id": (boss or "").replace("ENCOUNTER.", "") or None, "deck": deck or [],
                   "potions": [{"index": x.get("slot", i), "potion_id": x.get("id"), "name": x.get("name"), "occupied": True}
