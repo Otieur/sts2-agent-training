@@ -450,7 +450,9 @@ def _advise(st, nxt=None, deck_cache=None):
     st = st.get("data", st) if isinstance(st.get("data", st), dict) else st
     st = _clean(st)
     scr = str(st.get("screen") or "").upper()
-    if scr == "COMBAT" or st.get("combat"):
+    # route by the screen: the mod keeps the last fight's combat object after the fight (seen live on the map,
+    # 2026-11-19), so a combat object alone only counts when the screen is missing
+    if scr == "COMBAT" or (scr in ("", "UNKNOWN") and st.get("combat")):
         return "[COMBAT]\n" + combat(st)
     if scr == "MAP":
         return "[MAP]\n" + map_screen(st)

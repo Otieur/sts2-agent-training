@@ -206,5 +206,17 @@ class TestAdvise(unittest.TestCase):
         self.assertIn("Steam Eruption 33", out)
 
 
+class TestLiveStates(unittest.TestCase):
+    def test_map_with_stale_combat_object(self):
+        # live 2026-11-19: on the map after a fight the mod still sends the last combat (dead enemy)
+        import json
+        from pathlib import Path
+        st = json.loads((Path(__file__).parent / "fixtures" / "live" / "map-floor-later-20261119-134129.json").read_text())
+        self.assertIsNotNone(st["data"]["combat"])
+        out = advise.advise(st)
+        self.assertTrue(out.startswith("[MAP]"), out[:80])
+        self.assertIn("option_index=1 (8, 2)", out)
+
+
 if __name__ == "__main__":
     unittest.main()
