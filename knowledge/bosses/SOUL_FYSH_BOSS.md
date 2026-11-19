@@ -39,7 +39,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - De-Gas: 16
   - Gaze: 7 + a status card
   - Fade: +2 Intangible
-  - Scream: 11 + 3 Vulnerable on you
+  - Scream: 11 + 3 Vulnerable on you (extract). **13 (15) since v0.107.1** `[COMMUNITY]` wiki patch notes
 - Beckon cards deal **unblockable** damage `[COMMUNITY]`. A 5-turn pattern, with the second rotation from turn 6 `[COMMUNITY]`.
 - While Intangible, every hit is capped (1 damage) `[GAME-EXTRACT]`.
 

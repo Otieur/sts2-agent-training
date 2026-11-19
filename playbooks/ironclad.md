@@ -122,11 +122,11 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 | 1 | Terror Eel | 29 / 39 | 0/5 | First damage stuns it; then 99 Vulnerable on you | Hit it on turn 1; block ×1.5 hits |
 | 1 | Byrdonis | 22.5 / 32.8 | 3/10 | +Strength every turn (Territorial) | Kill fast; never under 50% HP |
 | 1 | Phrog Parasite | 19 / 30 | 1/9 | Spawns Wrigglers on death; Infection cards | Save hit-all damage for wave 2 |
-| 1 | Skulking Colony | 19 / 35 | 1/9 | Caps HP lost per turn | Steady damage; no burst |
+| 1 | Skulking Colony | 19 / 35 | 1/9 | Loses at most 20 HP per turn (v0.107.1); 75 HP; no block | About 20 damage a turn for 4 turns; block Zoom 16 on turns 1–2 |
 | 1 | Phantasmal Gardeners | 12 / 19 | 0/8 | Several small bodies | Hit-all damage; safest elite |
 | 2 | Decimillipede | 36.5 / 39.2 | 0/8 | Segments reattach | Kill segments together; hit-all damage |
 | 2 | Entomancer | 30 / 38 | 3/13 | **Each damage instance adds a card to your draw pile** | Few big hits, not multi-hit; block Bees 3×7 |
-| 2 | Infested Prisms | 27 / 38.8 | 0/8 | Hits 22–27, Pulsate +4 Strength and 20 block | Block big; don't attack into Pulsate |
+| 2 | Infested Prisms | 27 / 38.8 | 0/8 | Reworked (v0.106): each Skill you play gives you Tainted, +3 damage per hit of its attacks, growing over the fight | Play few Skills; block with big ones; prefer Attacks and Powers |
 | 3 | Mecha Knight | 34 / 43 | 1/5 | Artifact; Heavy Cleave 35 (40 after Windup) | Block 40; strip Artifact first |
 
 **v0.111.1 changes** (benchmarks above are v0.107.1): Mecha Knight's Flamethrower turn now also deals 8 (12); Entomancer has 165 HP at A8+ (was 155). `knowledge/version-delta-v0.111.1.md`

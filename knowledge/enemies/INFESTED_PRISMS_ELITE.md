@@ -32,7 +32,14 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ## Plan
 
-### Key mechanics `[GAME-EXTRACT]`
+> **Outdated move list (2026-11-19).** The extract predates the rework of this elite (v0.106.0 beta, on main since v0.107.1; `knowledge/version-delta-extract-to-v0.107.1.md`). The Player's 47 fights were against the reworked version, so the record above is current; the moves below may not be. Read the moves from the live state in the first fight and rewrite this section.
+
+### The rework `[COMMUNITY]` (Kotaku, 2026-05-22, v0.106.0 beta)
+- **Tainted goes on you:** each Skill you play against it gives you 3 Tainted. The amount per Skill rises by 3 every few turns. Duration not stated.
+- **Tainted adds to each hit** of its attacks, like Strength for the Prism (6 Tainted = +6 per hit).
+- **Answer** `[HYPOTHESIS]`: count Skills. A Skill is worth playing only if its block beats the Tainted it adds across the Prism's hits next turn (a 5-block Defend against a 3-hit attack with +3 per hit is a net loss). Prefer Attacks and Powers, and block with few, large Skills. Re-check once the duration is known.
+
+### Key mechanics, pre-rework `[GAME-EXTRACT]` (may be outdated)
 - 200 HP.
   - Jab: 22
   - Radiate: 16 + 16 block
@@ -41,8 +48,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Vital Spark:** gains energy when damaged (the effect on you is unconfirmed; to verify).
 
 ### Priorities and recommended answers
-- **Big damage and big block.** It hits for 22–27 most turns and gains 4 Strength per Pulsate.
-- Don't attack into Pulsate's 20 block. Use that turn to block and set up.
+- Pre-rework advice (may be outdated): big damage and big block; it hit for 22–27 most turns and gained 4 Strength per Pulsate. Don't attack into Pulsate's 20 block.
+- Current advice: limit Skills (Tainted), see above.
 
 ### Ready to fight
 - Ironclad median 27, p75 38.8. 0 of 8 fatal (all characters: 3 of 47).

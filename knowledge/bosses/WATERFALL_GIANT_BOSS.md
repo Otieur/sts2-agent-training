@@ -42,7 +42,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Pressurize: +15 Steam Eruption
   - Stomp: 15 + Weak on you, +3 Steam
   - Ram: 10 + 3 Steam
-  - Siphon: heals, +3 Steam
+  - Siphon: heals, +3 Steam. Heal is 10 at lower ascension (15 at higher) since v0.107.1 `[COMMUNITY]` wiki patch notes
+  - **Explosion damage grows with Steam Eruption:** 15 from Pressurize plus 3 for every later move `[GAME-EXTRACT]` (`EXPLODE_MOVE` deals `SteamEruptionDamage`). A long fight means a bigger explosion; the turn before, it shows a stun (`ABOUT_TO_BLOW_MOVE`).
   - Pressure Gun: ? damage + 3 Steam
   - Pressure Up: 13 + 3 Steam
   - About to Blow: stun

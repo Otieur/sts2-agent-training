@@ -32,14 +32,16 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ## Plan
 
-### Key mechanics `[GAME-EXTRACT]`
-- **Hardened Shell:** caps the HP it can lose **per turn**, so you can't burst it down.
-- Inertia: 10 block + 3 Strength. Zoom: 16. Super Crab: 6×2. Smash: 9 + 4 Dazed.
+### Key mechanics (current, v0.107.1+) `[COMMUNITY]` wiki patch notes; the extract shows the older version
+- **Hardened Shell 20:** it loses at most 20 HP per turn (was 15). Hardened Shell's per-turn cap is confirmed by the power definition `[GAME-EXTRACT]`.
+- HP 75 (80 at higher ascension), was 70 (75).
+- Smash (9 + 4 Dazed) was **removed**; it uses Zoom (16) on turns 1 and 2. It **no longer gains block** (Inertia's 10 block is gone). It gains +1 more Strength at high ascension.
+- Pre-v0.107.1 extract values for reference: Inertia 10 block + 3 Strength, Zoom 16, Super Crab 6×2, Smash 9 + 4 Dazed.
 
 ### Priorities and recommended answers
-- **Steady damage each turn** beats burst (79 HP, but capped per turn). Don't waste a big turn's damage above the cap.
-- Use extra energy on block and setup once the turn's cap is reached.
-- Exhaust the Dazed cards or draw past them.
+- **Steady damage each turn** beats burst: 75 HP at 20 per turn means at least 4 turns. Deal about 20 a turn and spend the rest on block and setup.
+- Block Zoom (16) on turns 1 and 2.
+- No Dazed any more (Smash removed).
 
 ### Ready to fight
 - Ironclad median 19, p75 35, p90 43 (wide spread). 1 of 9 fatal.
