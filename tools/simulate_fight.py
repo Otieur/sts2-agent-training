@@ -161,6 +161,9 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             b["block"] = b["plating"]
         mv = spec["move"](b, turn)
         intent = (mv["dmg"] + b["strength"], mv["hits"]) if mv["kind"] == "attack" else (0, 0)
+        raw_intent = intent
+        if intent[1] and b["weak"] > 0:  # like the game, the shown intent already includes Weak on the boss
+            intent = (calc.hit_damage(intent[0], attacker_weak=True), intent[1])
         hand_ids = draw_cards(max(1, 5 - mind_rot), draw, discard, rng)
         energy, block, gained_this_turn = max(1, 3 - waste), 0, 0
         cards_played = 0
@@ -227,7 +230,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
         discard.extend(hand_ids)
         # boss turn
         if mv["kind"] == "attack":
-            per = calc.hit_damage(intent[0], attacker_weak=b["weak"] > 0)
+            per = calc.hit_damage(raw_intent[0], attacker_weak=b["weak"] > 0)
             unblocked = max(0, per * intent[1] - block)
             to_osty = min(osty, unblocked)  # Osty takes the unblocked damage first (DIE_FOR_YOU_POWER)
             osty -= to_osty

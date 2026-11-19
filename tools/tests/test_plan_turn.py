@@ -192,6 +192,15 @@ class TestPlanTurn(unittest.TestCase):
         res = pt.plans(hand("Twin Strike", "Strike"), pt.Player(energy=1), [e2])
         self.assertEqual(pt.rank(res, "balanced")[0]["plays"][0].split(" →")[0], "Strike")  # Strike 6 - 5 beats Twin Strike 10 - 2 x 5
 
+    def test_existing_weak_not_counted_twice(self):
+        # An enemy already Weak shows 9 (from 12); the planner must not reduce it again
+        e = pt.parse_enemy("A:50:0:9:weak", 0)
+        o = pt.simulate(hand("Strike"), [0], pt.Player(energy=3), [e])
+        self.assertEqual(o["incoming"], 9)
+        # Weak applied this turn does reduce the shown intent
+        o = pt.simulate(hand("Uppercut"), [0], pt.Player(energy=3), [pt.parse_enemy("A:50:0:12", 0)])
+        self.assertEqual(o["incoming"], 9)
+
 
 if __name__ == "__main__":
     unittest.main()

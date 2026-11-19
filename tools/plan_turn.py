@@ -24,7 +24,8 @@ Usage:
   python3 -I tools/plan_turn.py --hand Strike Strike Bash Defend Defend --energy 3 \\
       --enemy "Jaw Worm:40:0:11" --enemy "Louse:12:0:6x2:weak" [--strength 2] [--player-block 0] [--player-weak]
   Enemy spec: name:hp:block:intent[:flags], intent = total or per_hit x hits (0 if not attacking),
-  flags = vuln, weak, slippery=N, intangible, slow (comma-free, separated by ':').
+  flags = vuln, weak (already Weak: give the shown, already reduced intent), slippery=N, intangible, slow
+  (separated by ':').
 """
 import argparse
 import itertools
@@ -323,8 +324,11 @@ def simulate(cards, targets, player, enemies):
                     else (tgt if card.target == "AnyEnemy" else None)))
         label = (f"potion {card.name} (use_potion slot={card.index})" if card.potion else card.name)
         log.append(label + (f" → {es[tgt].name}[{tgt}]" if card.target == "AnyEnemy" and tgt is not None else ""))
-    intents = [(e.intent_per_hit, e.intent_hits) for e in es if e.hp > 0 and e.intent_hits]
-    weak = [e.weak for e in es if e.hp > 0 and e.intent_hits]
+    # Intent numbers already include Weak that was on the enemy when the state was read (the game computes them), so
+    # only Weak applied during this turn reduces them further.
+    pairs = [(e, o) for e, o in zip(es, enemies) if e.hp > 0 and e.intent_hits]
+    intents = [(e.intent_per_hit, e.intent_hits) for e, o in pairs]
+    weak = [e.weak and not o.weak for e, o in pairs]
     inc = calc.incoming_hp_loss(intents, player_block=block, weak_enemies=weak)
     to_osty = min(osty, inc.hp_lost)  # Osty takes the unblocked damage first while alive [GAME-EXTRACT] DIE_FOR_YOU_POWER
     lost = inc.hp_lost - to_osty + hp_cost

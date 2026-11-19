@@ -39,7 +39,7 @@ Check: the card is played, `runs/smoke/decisions.jsonl` has the line, and `GET /
 | 5 | Frail | Defend while Frail | 3 | `tools/calc.py` `block_gain` |
 | 6 | Block before HP | 10 damage into 6 block | lose 4 | — |
 | 7 | **Live values include your modifiers** (gap 22) | With Strength 2, read a Strike's `dynamic_values` Damage; then target a Vulnerable enemy | 8, still 8 (Vulnerable not included) | `plan_turn.py` `per_hit` (live branch) |
-| 8 | **Intent numbers include your Vulnerable?** | Read an intent before and after you become Vulnerable | Changes if included | `plan_turn.py` `from_state`, `calc.incoming_hp_loss` docstring |
+| 8 | **Intent numbers include your Vulnerable and the enemy's Weak?** (the mod's source says yes: `GetSingleDamage` against the players) | Read an intent before and after you become Vulnerable, and after you Weaken the enemy | Both change the shown number | `plan_turn.py` `simulate` (existing Weak is not applied again) |
 | 9 | **Potion damage is flat** (gap 24) | Fire Potion on a Vulnerable enemy | 20 | `plan_turn.py` `POTIONS` (`flat`) |
 | 10 | Burning Blood | After a won fight | +6 HP | `path.py` assumes it is in the history's net HP |
 | 11 | Rest heal | Rest at a site | floor(30% of max) | `path.py` `REST_HEAL`, playbook section 5 |
