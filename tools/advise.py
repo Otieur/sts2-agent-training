@@ -85,7 +85,7 @@ def fight_type(st):
     """boss / elite / hallway / unknown from the STS2-Agent state: an explicit room type if the state has one,
     else the act boss's name, else the room each enemy appeared in during the Player's history."""
     c = st.get("combat") or {}
-    ids = [str(e.get("enemy_id") or "").split(".", 1)[-1].upper() for e in c.get("enemies") or []]
+    ids = [str(e.get("enemy_id") or "").split(".", 1)[-1].upper() for e in plan_turn._dicts(c.get("enemies"))]
     room = str((st.get("run") or {}).get("room_type") or st.get("room_type") or "").lower()
     boss = (_run(st).get("boss_id") or "").upper().replace("_BOSS", "").replace("ENCOUNTER.", "")
     if "boss" in room or (boss and any(boss in i for i in ids)):
@@ -114,7 +114,7 @@ def combat(st, top=2):
             out.append(f"note: {c.name}: {c.note}")
     scaling_powers = ("TERRITORIAL", "RITUAL", "DEMON_FORM", "ENRAGE")  # enemies that gain Strength every turn
     scaling = any(str(x.get("power_id") or x.get("name") or "").upper().startswith(scaling_powers)
-                  for e in (st.get("combat") or {}).get("enemies") or [] for x in e.get("powers") or [])
+                  for e in plan_turn._dicts((st.get("combat") or {}).get("enemies")) for x in plan_turn._dicts(e.get("powers")))
     pc = plan_turn.POTION_COST.get(ft, plan_turn.POTION_COST["hallway"])  # unknown: hold potions
     pv = plan_turn.POWER_VALUE.get(ft, plan_turn.POWER_VALUE["elite"])
     raw_enemies = (st.get("combat") or {}).get("enemies") or []
@@ -266,7 +266,7 @@ def rest(st, nxt=None):
     run = _run(st)
     cases = rest_rule(run.get("current_hp"), run.get("max_hp"), _act(st), int(run.get("ascension") or 0), run.get("boss_id"),
                       _character(st), nxt)
-    opts = {o.get("option_id"): o for o in (st.get("rest") or {}).get("options") or []}
+    opts = {o.get("option_id"): o for o in plan_turn._dicts((st.get("rest") or {}).get("options"))}
     out = []
     for k, (choice, why) in cases.items():
         o = opts.get("HEAL" if choice == "rest" else "SMITH")
@@ -360,7 +360,7 @@ def selection(st):
     """Card selection screens: upgrade, remove, transform, exhaust, duplicate (playbook sections 2.3 and 6)."""
     sel = st.get("selection") or {}
     kind, prompt = (sel.get("kind") or "").lower(), (sel.get("prompt") or "").lower()
-    cards = [c for c in sel.get("cards") or [] if c.get("card_id")]
+    cards = [c for c in plan_turn._dicts(sel.get("cards")) if isinstance(c.get("card_id"), str) and c["card_id"]]
     tiers = draft.load_tiers(_character(st))
 
     def is_curse(c):

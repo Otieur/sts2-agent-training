@@ -52,7 +52,7 @@ Planned blocks (A–J) were finished by 01:11; everything after is extra work fr
 | X122–X123 | Planner: Burrowed (breaking the Tunneler's Block stuns it) and Shrink (attacks 30% weaker); hallway notes from the wiki for Turret Operator (kill the Living Shield first), Devoted Sculptor (9 Ritual: kill within about 4 turns), Sludge Spinner, Fuzzy Wurm Crawler, Seapunk, Tunneler, Shrinker Beetle |
 | X124–X125 | Wiki notes for Exoskeletons (9 per hit cap), Toadpoles, Scrolls of Biting (Paper Cuts 2), Slimes (no splits) and the lone Nibbit; every enemy note now has the wiki's move table |
 | X126 | Playbook v2.17 (Aeonglass, Test Subject and Queen rows from the wiki); the wiki confirms the Osty rules; Doom kills in the simulator (Necrobinder decks still fail calibration) |
-| X127 | Wrong-type fuzz of the advisor (2,100 states): nothing raised; the deck, potion, planner and map readers now skip malformed items, which cut wrapped `[ADVICE FAILED]` answers from 305 to 109 (the rest are scalar wrong types, unlikely from a typed mod) |
+| X127 | Wrong-type fuzz of the advisor (2,100 states): nothing raised; the deck, potion, planner, map, rest and card-selection readers now skip malformed items, which cut wrapped `[ADVICE FAILED]` answers from 305 to 79 (the rest are scalar wrong types, unlikely from a typed mod) |
 
 ## 3. Stories whose status changed
 - P0: E8 done; E1 backup done; E5.S1 in progress (smoke test ready); E5 and E6 in progress (smoke test for both mods; sts.py).
