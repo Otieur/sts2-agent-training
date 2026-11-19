@@ -49,6 +49,19 @@ def norm_type(t):
 
 
 # ------------------------------------------------------------------------------------------------ model
+def fight_adjust(act, room, ascension, deck_metrics=None):
+    """Change in expected HP lost (share of max HP) for this ascension and deck, relative to the average fight in the
+    history, from the significant coefficients of tools/fight_model.py. 0 when the model file is missing."""
+    path = DATA / "tables" / "fight_model.json"
+    if not path.exists():
+        return 0.0
+    m = json.loads(path.read_text()).get(f"{act}:{room}")
+    if not m:
+        return 0.0
+    x = {"ascension": ascension, **(deck_metrics or {})}
+    return sum(m[k] * (x[k] - m["means"][k]) for k in m.get("significant", []) if k in x)
+
+
 class Model:
     def __init__(self, character="IRONCLAD", ascension=0, con=None):
         self.character, self.ascension = character.upper(), ascension
@@ -181,8 +194,9 @@ def enumerate_paths(nodes, start, boss):
     return out
 
 
-def simulate(path, nodes, model, act, hp, max_hp, boss_id):
-    """Walk the path (excluding the start node). Returns the outcome dict."""
+def simulate(path, nodes, model, act, hp, max_hp, boss_id, deck_metrics=None):
+    """Walk the path (excluding the start node). Returns the outcome dict. deck_metrics ({dmg, blk, scaling}) and the
+    model's ascension adjust fight HP costs via tools/fight_model.py when available."""
     types = [nodes[p]["type"] for p in path[1:]]
     hp = float(hp)
     loot = collections.Counter()
@@ -215,7 +229,8 @@ def simulate(path, nodes, model, act, hp, max_hp, boss_id):
         elif t in ("monster", "elite", "unknown", "shop", "treasure"):
             rv = model.room.get((act, t))
             if rv:
-                hp = max(1.0, min(max_hp, hp + rv["hp"] * max_hp))
+                adj = fight_adjust(act, t, model.ascension, deck_metrics) if t in ("monster", "elite") else 0.0
+                hp = max(1.0, min(max_hp, hp + (rv["hp"] - adj) * max_hp))
                 for k in ("card", "relic", "potion", "gold"):
                     loot[k] += rv[k]
     value = sum(VALUE[k] * loot[k] for k in VALUE)
@@ -225,10 +240,10 @@ def simulate(path, nodes, model, act, hp, max_hp, boss_id):
             "elites": types.count("elite"), "first": path[1] if len(path) > 1 else None}
 
 
-def rank(paths, nodes, model, act, hp, max_hp, boss_id, risk_weight):
+def rank(paths, nodes, model, act, hp, max_hp, boss_id, risk_weight, deck_metrics=None):
     res, seen = [], set()
     for p in paths:
-        o = simulate(p, nodes, model, act, hp, max_hp, boss_id)
+        o = simulate(p, nodes, model, act, hp, max_hp, boss_id, deck_metrics)
         key = (o["first"], o["seq"])
         if key in seen:
             continue
@@ -237,6 +252,15 @@ def rank(paths, nodes, model, act, hp, max_hp, boss_id, risk_weight):
         res.append(o)
     res.sort(key=lambda o: -o["score"])
     return res
+
+
+def deck_metrics_from(deck_ids):
+    if not deck_ids:
+        return None
+    import deck_metrics as dm
+    dm.apply_patches("v0.111.1")
+    return {"dmg": dm.simulate(deck_ids, "damage", sims=200), "blk": dm.simulate(deck_ids, "block", sims=200),
+            "scaling": dm.scaling_count(deck_ids)}
 
 
 def main(argv=None):
@@ -260,9 +284,11 @@ def main(argv=None):
         act = args.act or int(run.get("act_id") or 1)
         asc = args.ascension or int(run.get("ascension") or 0)
         boss = args.boss or run.get("boss_id")
+        deck_ids = ["CARD." + d["card_id"] for d in run.get("deck") or [] if d.get("card_id")]
     else:
         m = json.loads(Path(args.map_file).read_text())
         hp, max_hp, act, asc, boss = args.hp, args.max_hp, args.act or 1, args.ascension, args.boss
+        deck_ids = []
     if not (hp and max_hp):
         raise SystemExit("need --hp and --max-hp (or a state with run.current_hp/max_hp)")
     nodes, start, boss_rc = load_map(m)
@@ -271,7 +297,8 @@ def main(argv=None):
         raise SystemExit("no route from the current node to the boss")
     model = get_model(args.character, asc)
     args.risk_weight = args.risk_weight or DEFAULT_RISK_WEIGHT.get(act, 16.0)
-    res = rank(paths, nodes, model, act, hp, max_hp, boss, args.risk_weight)
+    metrics = deck_metrics_from(deck_ids)
+    res = rank(paths, nodes, model, act, hp, max_hp, boss, args.risk_weight, metrics)
     print(f"{len(paths)} routes, {len(res)} distinct · act {act} · HP {hp}/{max_hp} · A{asc} · boss {boss or '?'} · "
           f"risk weight {args.risk_weight:g}")
     print("Legend: M monster, E elite, ? unknown, $ shop, R rest, T treasure, B boss")

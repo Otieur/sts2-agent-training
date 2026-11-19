@@ -6,6 +6,7 @@ Each check computes a value and the exact text the playbook should contain. Run 
 editing the playbook:  python3 -I tools/check_playbook.py   (exit code 1 if anything is missing)
 """
 import csv
+import json
 import sqlite3
 import statistics
 import sys
@@ -113,6 +114,12 @@ def checks(con):
     m = re.search(r"\| Breakthrough \| \w \| (\d+) \| \d+ \| (\d+)% \(\d+/\d+\) \| (\d+)% \(\d+/\d+\) \| [+-]\d+ pts \| ([\d.]+)", cc)
     out.append(("Breakthrough", f"picked {m.group(1)} times, survived the act {m.group(2)}% against {m.group(3)}% when passed (p = {m.group(4)})"
                 if m else "<pattern not found in card-choices-ironclad.md>"))
+    # Section 4: fight model coefficients (tools/fight_model.py)
+    fm = json.loads((DATA / "tables" / "fight_model.json").read_text())
+    e1, b2, m1 = fm["1:elite"], fm["2:boss"], fm["1:monster"]
+    out.append(("fight model block", f"each point of block per turn saves about {abs(100 * e1['blk']):.1f} points in Act 1 elites"))
+    out.append(("fight model scaling", f"each scaling card saves about {abs(100 * b2['scaling']):.1f} points at the Act 2 boss but costs about "
+                                       f"{100 * m1['scaling']:.1f} points in Act 1 hallways"))
     return out
 
 

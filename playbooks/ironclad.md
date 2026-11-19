@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.8 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.9 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -110,6 +110,8 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
    | ? room | −1% / −1% / −2% (a fight about 20% of the time) | 0.5–0.8 cards, 0.2–0.4 relics, 8–22 gold |
    | Shop | +1% to +4% | 0.6–1 card and 0.6–1 relic bought |
    | Treasure | 0 | 1 relic, gold |
+
+   **Deck and ascension adjust these costs** (`reports/phase2/fight-model.md`, regression of HP lost on deck metrics and ascension; low R², so small adjustments only) `[PLAYER-DATA, observational]`: each ascension level adds about 0.4–1.8 points of max HP lost per fight; each point of block per turn saves about 1.3 points in Act 1 elites; each scaling card saves about 3.9 points at the Act 2 boss but costs about 2.3 points in Act 1 hallways (powers are slow in short fights). `tools/path.py` applies the significant coefficients relative to the average deck.
 
    **Path heuristics** `[HYPOTHESIS]`:
    - ? rooms are the cheapest source of value. Prefer them over monsters when HP is below plan.
@@ -265,6 +267,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.9 (2026-11-19, overnight):** fight model (`tools/fight_model.py`): deck metrics and ascension adjust room HP costs in section 4 and in `tools/path.py`.
 - **v2.8 (2026-11-19, overnight):** card tiers checked against the Player's outcomes at the decision point (`tools/analyze_card_choices.py`): the consensus predicts act survival for Ironclad; Breakthrough flagged.
 - **v2.7 (2026-11-19, overnight):** Ancient choices from `tools/analyze_ancients.py` (picked against passed at the same decision point): avoid Hefty Tablet (H10), prefer Fishing Rod; warning against raw relic win rates.
 - **v2.6 (2026-11-19, overnight):** coherence pass. Section 2.1 points to `tools/deck_check.py`; section 5 adds the H8 exception for Vantom and Waterfall Giant; section 8 describes potion search in `tools/plan_turn.py`; boss rows for Lagavulin Matriarch and The Kin use the power data; section 13 updated.

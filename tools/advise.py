@@ -78,7 +78,7 @@ def map_screen(st, top=3):
     act, hp, mx = _act(st), run.get("current_hp"), run.get("max_hp")
     model = pathmod.get_model(_character(st), int(run.get("ascension") or 0))
     w = pathmod.DEFAULT_RISK_WEIGHT.get(act, 16.0)
-    res = pathmod.rank(paths, nodes, model, act, hp, mx, run.get("boss_id"), w)
+    res = pathmod.rank(paths, nodes, model, act, hp, mx, run.get("boss_id"), w, pathmod.deck_metrics_from(_deck(st)))
     idx = {(n["row"], n["col"]): n.get("index") for n in m.get("available_nodes") or []}
     out = [f"{len(res)} distinct routes, risk weight {w:g}"]
     for o in res[:top]:
