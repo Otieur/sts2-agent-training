@@ -39,6 +39,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Priorities and recommended answers
 - **Three enemies:** Slumbering Beetle (86 HP, Plating, asleep), Bowlbug Rock (Headbutt 15, then stuns itself: Imbalanced) and Bowlbug Silk (4×2, Weak) `[GAME-EXTRACT]`.
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 86 (89 at A8+); Slumber starts at 3 and goes down each turn and each time it loses HP (blocked damage does not count); when it wakes it loses its Plating (15, 18 at A8+; Block equal to Plating at the end of each turn, Plating down 1 a turn) and uses Roll Out 16 (18) + 2 Strength every turn.
 - **Leave the Beetle asleep and kill the Bowlbugs first.** Slumber counts down when the Beetle takes damage `[GAME-EXTRACT]`, so hitting it wakes it sooner; awake, it rolls out for 16 and gains 2 Strength every time (16, 18, 20...). Avoid hit-all attacks while the Bowlbugs are alive if they would wake it early `[HYPOTHESIS]`.
 - Once it is awake, it is a race against +2 Strength a turn: burst it down, block each Roll Out.
 - **The deaths came from low arrival HP** `[PLAYER-DATA]`: fatal fights started at a median 11% HP (survived 70%), all characters; Ironclad 2 of 5 fatal. This is H11 (no hallway fight under 40% HP when there is a choice).
