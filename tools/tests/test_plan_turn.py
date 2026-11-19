@@ -328,6 +328,11 @@ class TestPlanTurn(unittest.TestCase):
         e.skittish = 6
         o = pt.simulate(ids("STRIKE_IRONCLAD", "STRIKE_IRONCLAD"), [0, 0], pt.Player(energy=2), [e])
         self.assertEqual(o["dealt"], 6)                                    # the second Strike hits 6 Block
+        e = pt.parse_enemy("Phrog:6:0:4x4", 0)
+        e.infested = True
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1), [e])
+        self.assertFalse(o["all_dead"])                                    # Wrigglers come next
+        self.assertEqual((ids("BURN")[0].held_dmg, ids("INFECTION")[0].held_dmg, ids("TOXIC")[0].held_dmg), (2, 3, 5))
 
     def test_crab_rage(self):
         ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731

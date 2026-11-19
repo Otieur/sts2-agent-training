@@ -32,6 +32,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 300 (320 at A8+), Artifact 3; Charge 25 (30) first, then Flamethrower 8 (12) + 4 Burns into your hand, Windup +15 Block and +5 Strength, Heavy Cleave 35 (40), repeating from Flamethrower. Block the Charge and every Heavy Cleave; Burns deal 2 each at the end of your turn while held (the planner counts them).
+
 ### Key mechanics `[GAME-EXTRACT]`
 - 300 HP, starts with Artifact.
   - Charge: 25

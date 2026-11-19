@@ -19,7 +19,7 @@ Barrier (damage back per enemy hit), Body Slam (damage = Block, played after blo
 Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); boosters are played first. Slippery stacks
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
-Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
+Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Infested (its death is not the end), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
 non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Doom (fatal at the end of your turn if HP is at or below it).
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
@@ -129,6 +129,7 @@ class Enemy:
     shriek: int = 0             # Shriek (Terror Eel): stunned the first time its HP drops to this or below (70; the wiki)
     taint: int = 0              # Vital Spark (Infested Prism): each Skill you play makes its attacks deal this much more per hit
     skittish: int = 0           # Skittish (Phantasmal Gardener): Block gained after the first Attack that hits it this turn
+    infested: bool = False      # Infested (Phrog Parasite): its death summons Wrigglers, so the fight goes on
     crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
     minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
     doom: int = 0               # Doom on it: it dies at the end of its own turn (after attacking) if its HP is at or below it
@@ -265,6 +266,11 @@ def _card_from_extract(index, card_id, live=None, cost=None, playable=True):
     card.changes_hand = ("exhaust-other" in (c.get("tags") or []) or "Exhaust a card" in (c.get("effect") or "")
                          or "to your hand" in (c.get("effect") or ""))
     unplayable = "Unplayable" in (c.get("effect") or "") or "unplayable" in (c.get("tags") or [])
+    m = re.search(r"DamageVar\((\d+)m?, ValueProp\.Unpowered", c.get("vars") or "")
+    if c["type"] == "Status" and m and "no OnPlay effect" in (c.get("effect") or ""):
+        # Burn 2, Infection 3, Toxic 5: damage at the end of your turn while held (blockable) [GAME-EXTRACT]
+        card.held_dmg = int(m.group(1))
+        card.note = f"{card.held_dmg} damage at end of turn if held"
     if c["type"] == "Status" and c.get("cost") is not None and c["cost"] >= 0 and not unplayable:
         # Playable statuses (game data: Beckon, Debris, Frantic Escape, Slimed, Toxic) follow the game's playable flag
         card.playable = playable
@@ -382,6 +388,8 @@ SLIPPERY_VALUE = 3.0
 
 def fight_over(es):
     """Every enemy dead, or every non-minion dead (minions flee or die with their leader) [GAME-EXTRACT] + [HYPOTHESIS]."""
+    if any(e.infested and e.hp <= 0 for e in es):
+        return False  # Infested: Wrigglers appear and the fight continues (the wiki)
     leaders = [e for e in es if not e.minion]
     return all(e.hp <= 0 for e in (leaders or es))
 
@@ -780,6 +788,7 @@ def from_state(st):
                              shriek=int(next((v for k, v in pw.items() if k.startswith("SHRIEK")), 0) or 0),
                              taint=int(next((v for k, v in pw.items() if k.startswith("VITAL_SPARK")), 0) or 0),
                              skittish=int(next((v for k, v in pw.items() if k.startswith("SKITTISH")), 0) or 0),
+                             infested=any(k.startswith("INFESTED") for k in pw),
                              crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
                              minion=any(k.startswith("MINION") for k in pw),
                              doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0),

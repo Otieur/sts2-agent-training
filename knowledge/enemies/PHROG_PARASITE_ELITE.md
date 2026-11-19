@@ -34,6 +34,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 61–64 (66–68 at A8+); Infect (3 Infection into your discard pile; Infection deals 3 at the end of your turn if held) and Lash 4×4 alternating; on death, **Infested** summons 4 Wrigglers (17–21 HP; stunned on their first turn; Nasty Bite 6, Wriggle +1 Infection and +2 Strength), and the fight goes on until they are dead. Keep hit-all damage for the Wrigglers; `tools/plan_turn.py` does not count the Parasite's death as the end of the fight.
+
 ### Key mechanics `[GAME-EXTRACT]`
 - Phrog Parasite (61–64 HP).
   - **Infested:** on death it spawns more (combat continues).
