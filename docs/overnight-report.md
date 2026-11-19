@@ -87,6 +87,7 @@ Seventeen, each with its reason and how to reverse it: `docs/overnight-decisions
 3. First practice runs at A0 with `tools/advise.py --live --save runs/<run>/state.json` in the loop; log tool picks against final choices (`--tool-pick`).
 4. In the first fights against Ceremonial Beast, Entomancer, Soul Fysh, Waterfall Giant, Knowledge Demon and The Insatiable, read the items in gaps 25–28 and update the models.
 5. Revisit H1, H9, H10 and the draft weights after 10 runs.
+6. Save every live state that gets an `[ADVICE FAILED]` answer as a fixture. `tools/fuzz_advise.py` lists the remaining fragile sites (79 wrapped failures in 2,100 damaged states, none raised).
 
 ## 8. Time log
 Full record: `docs/overnight-log.md` (one row per block, start and end times from `date`). In summary (EST):
@@ -99,5 +100,5 @@ Full record: `docs/overnight-log.md` (one row per block, start and end times fro
 | 03:52–06:46 | X87–X98: new boss models, planner card and power coverage, advisor robustness, sensitivity checks, upgrades and relics in the simulator |
 | 06:46–09:09 | X99–X113: potions in the simulator, drafting speed, bosses with adds (The Kin), one-command advice, the community wiki pass (Entomancer, Byrdonis and Insatiable models), final report runs |
 | 09:09–09:12 | Block K: this report, the status board, the final commit |
-| 09:12–10:22 | Third wiki pass and planner fixes (X114–X126), final report run (09:09–09:12), wrong-type fuzz and reader guards (X127), final touch-up |
+| 09:12–10:22 | Third wiki pass and planner fixes (X114–X126), wrong-type fuzz, reader guards and `tools/fuzz_advise.py` (X127), final touch-up |
 
