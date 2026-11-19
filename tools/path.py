@@ -52,7 +52,7 @@ MAX_PATHS = 60000
 
 
 def norm_type(t):
-    return TYPE_MAP.get((t or "").replace(" ", "").lower(), "unknown")
+    return TYPE_MAP.get(t.replace(" ", "").lower(), "unknown") if isinstance(t, str) else "unknown"
 
 
 # ------------------------------------------------------------------------------------------------ model
@@ -190,14 +190,15 @@ def _fit(points, iters=4000, lr=0.5):
 # ------------------------------------------------------------------------------------------------ map
 def load_map(m):
     nodes = {}
-    for n in m.get("nodes") or []:
-        if n.get("row") is None or n.get("col") is None:
+    nodes_in = m.get("nodes")
+    for n in nodes_in if isinstance(nodes_in, list) else []:
+        if not isinstance(n, dict) or n.get("row") is None or n.get("col") is None:
             continue  # a node without coordinates cannot be placed
         nodes[(n["row"], n["col"])] = {"type": norm_type(n.get("node_type")),
-                                       "children": [(c["row"], c["col"]) for c in n.get("children") or []
-                                                    if c.get("row") is not None and c.get("col") is not None]}
+                                       "children": [(c["row"], c["col"]) for c in (n.get("children") if isinstance(n.get("children"), list) else [])
+                                                    if isinstance(c, dict) and c.get("row") is not None and c.get("col") is not None]}
     def rc(x):
-        return (x["row"], x["col"]) if x and x.get("row") is not None and x.get("col") is not None else None
+        return (x["row"], x["col"]) if isinstance(x, dict) and x.get("row") is not None and x.get("col") is not None else None
     start = rc(m.get("current_node")) or rc(m.get("starting_node"))
     boss = rc(m.get("boss_node"))
     if boss and boss not in nodes:
