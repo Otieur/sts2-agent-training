@@ -20,7 +20,7 @@ Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); booste
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
 Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (first damage stuns), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
-non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Doom (fatal at the end of your turn if HP is at or below it).
+non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Doom (fatal at the end of your turn if HP is at or below it).
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
 until the arithmetic is confirmed in game (knowledge/mechanics.md checklist).
@@ -130,6 +130,7 @@ class Enemy:
     crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
     minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
     doom: int = 0               # Doom on it: it dies at the end of its own turn (after attacking) if its HP is at or below it
+    paper_cuts: int = 0         # Paper Cuts (Scrolls of Biting): you lose this much max HP each time it damages you
 
 
 @dataclass
@@ -561,6 +562,11 @@ def simulate(cards, targets, player, enemies):
     dies = player.hp is not None and lost >= player.hp and not all_dead
     if my_doom and player.hp is not None and player.hp - hp_cost <= my_doom and not all_dead:
         dies = True  # Doom on you is checked at the end of your turn [GAME-EXTRACT] DOOM_POWER
+    # Paper Cuts: if attacks get through, each hit of an enemy with it also costs max HP (block is pooled, so this assumes
+    # its hits are among those that land) [GAME-EXTRACT]; counted as HP lost because it is permanent
+    if inc.hp_lost > 0 and not all_dead:
+        cuts = sum(e.paper_cuts * e.intent_hits for e in es if e.hp > 0 and e.paper_cuts and e.intent_hits)
+        lost += cuts
     # Doom on an enemy: it still attacks this turn, then dies at the end of its turn (most guides) [COMMUNITY]
     doomed = [e for e in es if e.hp > 0 and e.doom and e.hp <= e.doom]
     doom_dealt = sum(e.hp for e in doomed)
@@ -756,7 +762,8 @@ def from_state(st):
                              hit_cap=next((int(v) for k, v in pw.items() if k.startswith("HARD_TO_KILL") and v is not None), None),
                              shriek=any(k.startswith("SHRIEK") for k in pw), crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
                              minion=any(k.startswith("MINION") for k in pw),
-                             doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0)))
+                             doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0),
+                             paper_cuts=int(next((v for k, v in pw.items() if k.startswith("PAPER_CUTS")), 0) or 0)))
     for i, e in enumerate(enemies):
         e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
     run = st.get("run") or {}

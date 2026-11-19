@@ -376,6 +376,15 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.simulate(ids("BORROWED_TIME"), [None], pt.Player(energy=1, hp=3), [pt.parse_enemy("A:50:0:0", 0)])
         self.assertTrue(o["dies"])                                     # 3 Doom on you at 3 HP: dead at the end of your turn
 
+    def test_paper_cuts(self):
+        e = pt.parse_enemy("Scroll:30:0:4x2", 0)
+        e.paper_cuts = 1
+        o = pt.simulate([pt.card_from_extract(0, "STRIKE_IRONCLAD")], [0], pt.Player(energy=1), [e])
+        self.assertEqual(o["hp_lost"], 8 + 2)                  # 8 damage plus 1 max HP for each of its 2 hits
+        o = pt.simulate([pt.card_from_extract(0, "DEFEND_IRONCLAD"), pt.card_from_extract(1, "DEFEND_IRONCLAD")], [None, None],
+                        pt.Player(energy=2), [e])
+        self.assertEqual(o["hp_lost"], 0)                      # fully blocked: no cuts
+
     def test_beckon_held_loss(self):
         h = [pt.card_from_extract(0, "BECKON"), pt.card_from_extract(1, "STRIKE_IRONCLAD")]
         self.assertEqual((h[0].held_loss, h[0].cost, h[0].playable), (6, 1, True))

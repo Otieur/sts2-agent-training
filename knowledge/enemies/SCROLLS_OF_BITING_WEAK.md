@@ -28,7 +28,7 @@ Status: Plan v1, 2026-11-19.
 ## Plan
 
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
-- **Paper Cuts:** when it deals damage to you, **you lose max HP**. Block its attacks fully; unblocked damage costs max HP permanently.
+- **Paper Cuts:** when it deals damage to you, **you lose max HP**. Block its attacks fully; unblocked damage costs max HP permanently. `tools/plan_turn.py` adds the max HP lost to a plan's cost when its hits get through.
 - Chomp 14, Chew 5×2, More Teeth +2 Strength.
 
 ## Sources
