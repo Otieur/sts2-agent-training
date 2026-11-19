@@ -32,6 +32,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Priorities and recommended answers
 - **One enemy, 121 HP:** Tenderizing Goop (applies Tender), Bite 17, Puncture 7×3 `[GAME-EXTRACT]`. Tender: each card you play costs 1 Strength and 1 Dexterity until the end of the turn `[GAME-EXTRACT]`, so under Tender play the big attack and the main block card first, and fewer cards; `tools/plan_turn.py` models it.
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 121 (126 at A8+); it always opens with Tenderizing Goop (1 Tender: each card you play costs 1 Strength and 1 Dexterity for the turn, after the card resolves), then picks Bite 17 or Puncture 7×3 at random (Puncture twice as likely; never Bite twice in a row).
 - Block Bite and Puncture (21 total before Strength); Weak cuts each Puncture hit.
 - **The deaths came from low arrival HP** `[PLAYER-DATA]`: fatal fights started at a median 28% HP (survived 70%), all characters; Ironclad 0 of 9 fatal (H11).
 

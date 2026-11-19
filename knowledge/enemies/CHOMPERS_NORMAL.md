@@ -32,6 +32,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Priorities and recommended answers
 - **Two Chompers (60–64 HP each, Artifact):** Clamp 8×2, Screech adds 3 Dazed to your piles `[GAME-EXTRACT]`. Artifact cancels the first debuff on each (`tools/plan_turn.py` reads it), so Bash's Vulnerable is wasted on a fresh Chomper; strip it with a cheap debuff first or just attack.
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 60–64 (63–67 at A8+), **Artifact 2** each; Clamp 8×2 and Screech (3 Dazed into your discard pile) alternating, one Chomper opening with each. Two debuffs are spent before Vulnerable sticks on a Chomper.
 - Kill one Chomper fast: each Clamp is 16 before Strength, and the Dazed clog later turns.
 - **The deaths came from low arrival HP** `[PLAYER-DATA]`: fatal fights started at a median 18% HP (survived 71%), all characters; Ironclad 1 of 9 fatal (H11).
 
