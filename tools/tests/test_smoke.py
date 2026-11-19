@@ -112,7 +112,7 @@ class TestSmoke(unittest.TestCase):
 
     def test_watch_waits_for_the_game(self):
         import sts
-        calls = {"n": 0}
+        calls = {"n": 0, "h": 0}
         clock = iter(range(0, 10_000, 100))
 
         class Ad(sts.Sts2AgentAdapter):  # keeps the class's static helpers (screen) that advise.py uses
@@ -120,6 +120,9 @@ class TestSmoke(unittest.TestCase):
                 pass
 
             def health(self):
+                calls["h"] += 1
+                if calls["h"] == 1:  # the game is not started yet
+                    raise sts.ModError("connection refused")
                 return {"data": {"service": "sts2-ai-agent", "game_version": "v0.111.1", "status": "ready"}}
 
             def state(self):
@@ -138,6 +141,7 @@ class TestSmoke(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertIn("waiting for the game", out.getvalue())
         self.assertIn("mod reachable again", out.getvalue())
+        self.assertEqual(calls["h"], 2)
 
 
 if __name__ == "__main__":

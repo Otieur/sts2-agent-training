@@ -197,20 +197,29 @@ def main(argv=None, opener=None, sleep=time.sleep, clock=time.time):
     mcp = args.mod == "sts2mcp"
     ad = sts.Sts2McpAdapter(args.port or 15526, opener=opener) if mcp else sts.Sts2AgentAdapter(args.port or 8080, opener=opener)
     hissues = []
-    try:
-        if mcp:
-            print(f"health: {json.dumps(ad.health())[:200]}")
-        else:
-            d, hissues = check_health(ad.health())
-            print(f"health: {d.get('service')} {d.get('mod_version')} · game {d.get('game_version')} · {d.get('status')} · "
-                  f"role {d.get('instance_role')} · port {d.get('api_port')}")
-    except sts.ModError as e:
-        print(f"cannot reach the mod: {e}")
-        return 2
+    deadline = clock() + args.minutes * 60
+    waiting = False
+    while True:
+        try:
+            h = ad.health()
+            break
+        except sts.ModError as e:
+            if not args.watch or clock() > deadline:
+                print(f"cannot reach the mod: {e}")
+                return 2
+            if not waiting:  # with --watch, wait for the game to be started
+                print(f"mod not reachable ({e}); waiting for the game")
+                waiting = True
+            sleep(3.0)
+    if mcp:
+        print(f"health: {json.dumps(h)[:200]}")
+    else:
+        d, hissues = check_health(h)
+        print(f"health: {d.get('service')} {d.get('mod_version')} · game {d.get('game_version')} · {d.get('status')} · "
+              f"role {d.get('instance_role')} · port {d.get('api_port')}")
     for i in hissues:
         print("  PROBLEM " + i)
     seen, bad = set(), bool(hissues)
-    deadline = clock() + args.minutes * 60
     away = False
     while True:
         try:
