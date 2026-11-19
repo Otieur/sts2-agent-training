@@ -26,6 +26,8 @@ Status: Plan v1, 2026-11-19.
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): the lone Nibbit (42–46 HP) opens with Butt 12, then Hesitant Slice 6 + 5 Block, Hiss +2 Strength, repeating. Block the opening Butt; kill it before the second Hiss.
+
 ### Priorities and recommended answers (mechanics `[GAME-EXTRACT]`)
 - Butt 12, Slice 6 + 5 block, Hiss +2 Strength.
 - Straightforward. Block the Butt turns.
