@@ -106,6 +106,19 @@ class TestAdvise(unittest.TestCase):
         self.assertEqual(advise.fight_type(combat_with("NIBBIT")), "hallway")
         self.assertEqual(advise.fight_type(combat_with("SOMETHING_NEW")), "unknown")
 
+    def test_selection(self):
+        cards = [{"index": 0, "card_id": "STRIKE_IRONCLAD", "name": "Strike"},
+                 {"index": 1, "card_id": "INJURY", "name": "Injury", "card_type": "Curse"},
+                 {"index": 2, "card_id": "ASCENDERS_BANE", "name": "Ascender's Bane", "card_type": "Curse"},
+                 {"index": 3, "card_id": "FEEL_NO_PAIN", "name": "Feel No Pain"}]
+        out = advise.advise(st("CARD_SELECTION", selection={"kind": "deck_card_select", "prompt": "Choose a card to remove", "cards": cards}))
+        lines = [l for l in out.splitlines() if "select_deck_card" in l]
+        self.assertIn("Injury", lines[0])
+        self.assertIn("Strike", lines[1])
+        self.assertIn("Ascender", lines[-1])
+        out = advise.advise(st("CARD_SELECTION", selection={"kind": "deck_upgrade_select", "prompt": "Choose a card to upgrade", "cards": cards}))
+        self.assertIn("Feel No Pain", [l for l in out.splitlines() if "select_deck_card" in l][0])
+
 
 if __name__ == "__main__":
     unittest.main()

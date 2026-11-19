@@ -294,6 +294,58 @@ def shop(st):
     return "\n".join(out)
 
 
+def _tier_score(cid, tiers):
+    c = draft.dm.CARDS.get(cid)
+    tr = tiers.get(draft.norm(c["name"])) if c else None
+    return draft.TIER_SCORE.get(tr[0], 2) if tr else 2
+
+
+def selection(st):
+    """Card selection screens: upgrade, remove, transform, exhaust, duplicate (playbook sections 2.3 and 6)."""
+    sel = st.get("selection") or {}
+    kind, prompt = (sel.get("kind") or "").lower(), (sel.get("prompt") or "").lower()
+    cards = [c for c in sel.get("cards") or [] if c.get("card_id")]
+    tiers = draft.load_tiers(_character(st))
+
+    def is_curse(c):
+        rec = draft.dm.CARDS.get(c["card_id"]) or {}
+        return rec.get("type") in ("Curse", "Status") or (c.get("card_type") or "") in ("Curse", "Status")
+
+    def badness(c):  # higher = worse card to keep
+        cid = c["card_id"]
+        if is_curse(c):
+            return 100 if cid != "ASCENDERS_BANE" else -100  # Eternal: cannot be removed
+        if cid.startswith("STRIKE"):
+            return 50
+        if cid.startswith("DEFEND"):
+            return 40
+        return 10 - 2 * _tier_score(cid, tiers) - (3 if c.get("upgraded") else 0)
+
+    if "upgrade" in kind or "upgrade" in prompt:
+        def up_score(c):
+            cid = c["card_id"]
+            s = 3 * _tier_score(cid, tiers)
+            if cid in ENGINE_UPGRADES:
+                s += 20
+            elif cid in FUNCTION_UPGRADES:
+                s += 10
+            if c.get("upgrade_energy_cost") is not None and c.get("energy_cost") is not None and c["upgrade_energy_cost"] < c["energy_cost"]:
+                s += 6
+            if cid.startswith(("STRIKE", "DEFEND")):
+                s -= 10
+            return s
+        ranked, why = sorted(cards, key=lambda c: -up_score(c)), "upgrade: engine pieces, then function-changing upgrades and cost cuts, then tier (playbook 2.3)"
+    elif "remove" in prompt or "transform" in kind or "transform" in prompt or "exhaust" in prompt:
+        ranked, why = sorted(cards, key=lambda c: -badness(c)), "remove / transform / exhaust: curses (not Ascender's Bane, which is Eternal), then Strikes, Defends, lowest tier (playbook 6, H4)"
+    else:
+        ranked, why = sorted(cards, key=lambda c: -_tier_score(c["card_id"], tiers)), "best card by tier (copy, enchant or other)"
+    out = [f"Selection: {sel.get('prompt') or kind} ({why})"]
+    for c in ranked[:5]:
+        out.append(f"  select_deck_card option_index={c.get('index')}: {c.get('name') or c['card_id']}{'+' if c.get('upgraded') else ''}"
+                   + (f" -> {c['upgrade_rules_text']}" if c.get("upgrade_rules_text") else ""))
+    return "\n".join(out)
+
+
 def advise(st, nxt=None):
     st = st.get("data", st)
     scr = (st.get("screen") or "").upper()
@@ -312,6 +364,8 @@ def advise(st, nxt=None):
         return "[EVENT]\n" + event(st)
     if scr == "SHOP":
         return "[SHOP]\n" + shop(st)
+    if st.get("selection") and (st["selection"].get("cards")):
+        return "[CARD SELECTION]\n" + selection(st)
     return sts.brief_sts2agent(st)
 
 
