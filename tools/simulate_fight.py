@@ -339,7 +339,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 if c.power and c.card_id not in MODELLED_POWERS and not c.strength and not c.dex:  # planner wastes turns)
                     c.power = False
             enemy = pt.Enemy(0, boss, 999 if exploding else b["hp"], b["block"], intent[0], intent[1], vuln=b["vuln"] > 0,
-                             weak=b["weak"] > 0, slippery=b["slippery"], hive=b.get("hive", 0), intangible=b.get("intangible", 0) > 0)
+                             weak=b["weak"] > 0, slippery=b["slippery"], hive=b.get("hive", 0), intangible=b.get("intangible", 0) > 0,
+                             doom=b.get("doom", 0))
             player = pt.Player(energy=energy, block=block, strength=strength + gained_this_turn, dexterity=dexterity, weak=p_weak > 0, fnp=fnp,
                                frail=p_frail > 0, sandpit=sandpit,
                                max_cards=(1 - cards_played) if ringing else ((3 - cards_played) if sloth else None), hp=hp, osty_hp=osty)
@@ -380,6 +381,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
                 a["hp"], a["block"] = eak["hp"], eak["block"]
             for c, t_ in zip(order, targets):
                 hit_all = c.target == "AllEnemies"
+                if c.doom and (hit_all or t_ == 0):  # Doom on the boss (Necrobinder): it dies at the end of its turn if HP <= Doom
+                    b["doom"] = b.get("doom", 0) + c.doom
                 for k, st_ in enumerate([b] + adds):
                     if hit_all or t_ == k:
                         if c.vuln:
@@ -481,6 +484,8 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
             if hp > 0:
                 return {"won": True, "hp": hp, "turns": turn, "boss_left": 0.0}
             return {"won": False, "hp": 0, "turns": turn, "boss_left": 0.0}
+        if b.get("doom") and 0 < b["hp"] <= b["doom"] and all(a["minion"] or a["hp"] <= 0 for a in adds):
+            return {"won": True, "hp": max(hp, 0), "turns": turn, "boss_left": 0.0, "doom": True}  # after its attack (most guides)
         p_vuln, p_weak = max(0, p_vuln - 1) + mv["p_vuln"], max(0, p_weak - 1) + mv["p_weak"]
         p_frail = max(0, p_frail - 1) + mv["p_frail"]
         for a in adds:
