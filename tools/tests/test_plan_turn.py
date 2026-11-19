@@ -365,6 +365,13 @@ class TestPlanTurn(unittest.TestCase):
         self.assertEqual(o["dealt"], 0)                                   # Osty dead: the attack fizzles
         self.assertEqual(pt.card_from_extract(0, "INVOKE").energy, 0)     # "Gain 2 Energy Next Turn" is not this turn's
 
+    def test_doom(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        o = pt.simulate(ids("SCOURGE"), [0], pt.Player(energy=1, hp=40), [pt.parse_enemy("A:12:0:5", 0)])
+        self.assertEqual((o["doomed"], o["doom_dealt"], o["all_dead"], o["incoming"]), (1, 12, False, 5))  # attacks, then dies
+        o = pt.simulate(ids("BORROWED_TIME"), [None], pt.Player(energy=1, hp=3), [pt.parse_enemy("A:50:0:0", 0)])
+        self.assertTrue(o["dies"])                                     # 3 Doom on you at 3 HP: dead at the end of your turn
+
     def test_beckon_held_loss(self):
         h = [pt.card_from_extract(0, "BECKON"), pt.card_from_extract(1, "STRIKE_IRONCLAD")]
         self.assertEqual((h[0].held_loss, h[0].cost, h[0].playable), (6, 1, True))

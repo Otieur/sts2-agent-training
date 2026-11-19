@@ -20,7 +20,7 @@ Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); booste
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
 Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (first damage stuns), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
-non-minion ends the fight); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus.
+non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Doom (fatal at the end of your turn if HP is at or below it).
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
 until the arithmetic is confirmed in game (knowledge/mechanics.md checklist).
@@ -98,6 +98,8 @@ class Card:
     sandpit_add: int = 0        # adds to the Sandpit counter on you (Frantic Escape +1)
     heal_pct: int = 0           # heals this percent of max HP, at most the HP missing (Blood Potion 20)
     colossus: bool = False      # Colossus: half damage from Vulnerable enemies this turn
+    doom: int = 0               # Doom applied to the target (Scourge 13, End of Days 29)
+    self_doom: int = 0          # Doom on yourself (Borrowed Time 3)
 
 
 @dataclass
@@ -124,6 +126,7 @@ class Enemy:
     shriek: bool = False        # Shriek (Terror Eel): the first damage it takes stuns it (its attack this turn is cancelled)
     crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
     minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
+    doom: int = 0               # Doom on it: it dies at the end of its own turn (after attacking) if its HP is at or below it
 
 
 @dataclass
@@ -143,6 +146,7 @@ class Player:
     max_hp: Optional[int] = None
     tender: int = 0             # Tender (Hunter Killer): each card played costs 1 Strength and 1 Dexterity for the turn
     colossus: bool = False      # Colossus already played this turn
+    doom: int = 0               # Doom on you: you die at the end of your turn if your HP is at or below it
 
 
 def parse_effect(c):
@@ -206,6 +210,10 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
         m = re.search(pat, eff)
         setattr(card, attr, int(m.group(1)) if m else 0)
     card.colossus = bool(re.search(r"Gain \d+ Colossus", eff))
+    m = re.search(r"Apply (\d+) Doom", eff)
+    card.doom = int(m.group(1)) if m else 0
+    m = re.search(r"Gain (\d+) Doom", eff)
+    card.self_doom = int(m.group(1)) if m else 0
     if cid in OSTY_HP_DAMAGE:  # Unleash: an Osty attack whose damage grows with Osty's HP (set when played)
         card.osty, card.dmg, card.live = True, OSTY_HP_DAMAGE[cid], False
     card.needs_exhaust = cid in CONDITIONAL_ENERGY and "no card needs to be exhausted" not in (c.get("effect") or "")
@@ -388,6 +396,7 @@ def simulate(cards, targets, player, enemies):
     retaliate = 0      # Flame Barrier: damage back per enemy hit
     rage, free, fnp = 0, 0, player.fnp  # Rage block per Attack, free Attacks, Feel No Pain block per exhaust
     colossus = player.colossus
+    my_doom = player.doom
     for card, tgt in zip(cards, targets):
         cost = energy if card.x_cost else card.cost
         is_attack = bool(card.dmg) or card.card_id in BLOCK_DAMAGE
@@ -463,6 +472,10 @@ def simulate(cards, targets, player, enemies):
         rage += card.rage
         free += card.free_attacks
         colossus = colossus or card.colossus
+        my_doom += card.self_doom
+        for e in victims:
+            if card.doom and e.hp > 0:
+                e.doom += card.doom
         if card.block:
             if card.flat:
                 block += card.block
@@ -503,6 +516,11 @@ def simulate(cards, targets, player, enemies):
     if all_dead:  # the fight ends now: no enemy turn (minions flee with their leader)
         lost = hp_cost
     dies = player.hp is not None and lost >= player.hp and not all_dead
+    if my_doom and player.hp is not None and player.hp - hp_cost <= my_doom and not all_dead:
+        dies = True  # Doom on you is checked at the end of your turn [GAME-EXTRACT] DOOM_POWER
+    # Doom on an enemy: it still attacks this turn, then dies at the end of its turn (most guides) [COMMUNITY]
+    doomed = [e for e in es if e.hp > 0 and e.doom and e.hp <= e.doom]
+    doom_dealt = sum(e.hp for e in doomed)
     if retaliate:  # Flame Barrier hits back on every enemy hit (assumed even when blocked) [HYPOTHESIS]
         for e in es:
             if e.hp > 0 and e.intent_hits:
@@ -514,6 +532,7 @@ def simulate(cards, targets, player, enemies):
             "seq": seq,
             "hive_cards": sum(getattr(e, "hive_added", 0) for e in es),
             "slippery_stripped": sum(o.slippery - e.slippery for e, o in zip(es, enemies) if e.hp > 0),
+            "doomed": len(doomed), "doom_dealt": doom_dealt, "doom_on_you": my_doom,
             "enemies_after": [{"hp": max(0, e.hp), "block": e.block, "slippery": e.slippery, "vuln": e.vuln, "weak": e.weak} for e in es],
             "kills": sum(1 for e, o in zip(es, enemies) if e.hp <= 0 < o.hp), "all_dead": all_dead,
             "energy_left": energy, "draws": draws, "enemy_hp": [max(0, e.hp) for e in es], "potions": potions}
@@ -626,8 +645,9 @@ def rank(results, mode, potion_cost=POTION_COST["elite"], power_value=POWER_VALU
                          -o["dealt"], o["draws"] == 0)
     else:
         key = lambda o: (not o["all_dead"], o.get("dies", False), o["potions"] if o["all_dead"] else 0,  # noqa: E731
-                         -(o["dealt"] - o["hp_lost"] - potion_cost * o["potions"] + power_value * o.get("powers", 0)
-                           - HIVE_COST * o.get("hive_cards", 0) + SLIPPERY_VALUE * o.get("slippery_stripped", 0)),
+                         -(o["dealt"] + o.get("doom_dealt", 0) - o["hp_lost"] - potion_cost * o["potions"]
+                           + power_value * o.get("powers", 0) - HIVE_COST * o.get("hive_cards", 0)
+                           + SLIPPERY_VALUE * o.get("slippery_stripped", 0)),
                          o["hp_lost"], -o["kills"])
     seen, out = set(), []
     for o in sorted(results, key=key):
@@ -654,7 +674,8 @@ def from_state(st):
                     sandpit=int(powers.get("SANDPIT_POWER", powers.get("SANDPIT", 0)) or 0),
                     end_turn_dmg=int(powers.get("DISINTEGRATION_POWER", powers.get("DISINTEGRATION", 0)) or 0),
                     max_hp=p.get("max_hp"), tender=1 if any(k.startswith("TENDER") for k in powers) else 0,
-                    colossus=any(k.startswith("COLOSSUS") for k in powers))
+                    colossus=any(k.startswith("COLOSSUS") for k in powers),
+                    doom=int(powers.get("DOOM_POWER", powers.get("DOOM", 0)) or 0))
     # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
     # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])
     limits = [int(powers[k] or 3) for k in powers if k.startswith("SLOTH")] + [1 for k in powers if k.startswith("RINGING")]
@@ -691,7 +712,8 @@ def from_state(st):
                              artifact=int(next((v for k, v in pw.items() if k.startswith("ARTIFACT")), 0) or 0),
                              hit_cap=next((int(v) for k, v in pw.items() if k.startswith("HARD_TO_KILL") and v is not None), None),
                              shriek=any(k.startswith("SHRIEK") for k in pw), crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
-                             minion=any(k.startswith("MINION") for k in pw)))
+                             minion=any(k.startswith("MINION") for k in pw),
+                             doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0)))
     for i, e in enumerate(enemies):
         e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
     run = st.get("run") or {}
@@ -741,7 +763,8 @@ def fmt(o, hp):
     after = f", HP after {hp - o['hp_lost']}" if hp is not None else ""
     flags = (" · LETHAL" if o["all_dead"] else "") + (f" · re-plan after drawing {o['draws']}" if o["draws"] else "") \
         + (f" · spends {o['potions']} potion(s)" if o.get("potions") else "") \
-        + (f" · {o['powers']} energy on Powers" if o.get("powers") else "")
+        + (f" · {o['powers']} energy on Powers" if o.get("powers") else "") \
+        + (f" · Doom kills {o['doomed']} after its attack" if o.get("doomed") else "")
     return (f"{' + '.join(o['plays']) or '(play nothing)'}\n      deal {o['dealt']}, kills {o['kills']}, block {o['block']} "
             f"vs incoming {o['incoming']}, HP lost {o['hp_lost']}{after}, energy left {o['energy_left']}, "
             f"enemy HP {o['enemy_hp']}{flags}")
