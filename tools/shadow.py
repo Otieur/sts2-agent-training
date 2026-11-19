@@ -177,14 +177,19 @@ def shadow(adapter, out_dir, interval=1.0, max_seconds=4 * 3600, clock=time.time
                 pending_combat = None
         if key not in seen:
             seen.add(key)
-            call = make_call(st)
-            if call:
-                call["_state"] = st
-                pending = call
-            if (st.get("screen") or "").upper() == "COMBAT":
-                cc = combat_call(st)
-                if cc:
-                    pending_combat = cc
+            try:  # one decision the tools cannot handle must not end a long shadowing session
+                call = make_call(st)
+                if call:
+                    call["_state"] = st
+                    pending = call
+                if (st.get("screen") or "").upper() == "COMBAT":
+                    cc = combat_call(st)
+                    if cc:
+                        pending_combat = cc
+            except Exception as e:  # noqa: BLE001
+                with open(calls_f, "a") as f:
+                    f.write(json.dumps({"screen": st.get("screen"), "error": f"{type(e).__name__}: {e}",
+                                        "floor": (st.get("run") or {}).get("floor")}) + "\n")
         prev = st
         if max_states and n >= max_states:
             break

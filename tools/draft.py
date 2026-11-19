@@ -221,7 +221,13 @@ def score_offer(deck, offer_ids, character, act, floor, boss, simulate=False, hp
     target = TARGETS.get(act, {})
     rows = []
     for cid in offer_ids:
-        c = dm.CARDS[cid.split(".", 1)[-1]]
+        c = dm.CARDS.get(cid.split(".", 1)[-1])
+        if c is None:  # newer than the game data extract (seen live: NOT_YET on v0.111.1): neutral score, judge by its text
+            raw = cid.split(".", 1)[-1]
+            rows.append({"card": raw.replace("_", " ").title(), "id": raw, "score": UNKNOWN_TIER,
+                         "reasons": ["not in the game data (newer card): neutral score, judge it from the card text"],
+                         "d_dmg": 0.0, "d_block": 0.0, "d_scaling": 0})
+            continue
         reasons = []
         t = tiers.get(norm(c["name"]))
         if c["id"] in REWORKED:

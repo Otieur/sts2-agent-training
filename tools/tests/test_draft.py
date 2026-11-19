@@ -87,6 +87,14 @@ class TestDraft(unittest.TestCase):
         self.assertGreater(deltas["CARD.TWIN_STRIKE"], deltas["CARD.BREAKTHROUGH"])
         self.assertIsNone(draft.simulated_boss_value(deck, ["CARD.TWIN_STRIKE"], "KNOWLEDGE_DEMON_BOSS"))
 
+    def test_unknown_card_scores_neutral(self):
+        # live 2026-11-19: NOT_YET (v0.111.1) is not in the game data extract; scoring must not crash
+        deck = ["CARD.STRIKE_IRONCLAD"] * 5 + ["CARD.DEFEND_IRONCLAD"] * 4 + ["CARD.BASH"]
+        res = draft.score_offer(deck, ["CARD.NOT_YET", "CARD.POMMEL_STRIKE"], "IRONCLAD", 2, 25, "THE_INSATIABLE_BOSS")
+        row = next(r for r in res["rows"] if r["id"] == "NOT_YET")
+        self.assertEqual(row["score"], draft.UNKNOWN_TIER)
+        self.assertIn("not in the game data", row["reasons"][0])
+
     def test_deck_ids_skip_wrong_types(self):
         items = [{"card_id": "BASH", "upgraded": True}, None, 3, {"card_id": 1.5}, {"card_id": ""}, {"card_id": "STRIKE_IRONCLAD"}]
         self.assertEqual(draft.deck_ids_from_state(items), ["CARD.BASH", "CARD.STRIKE_IRONCLAD"])
