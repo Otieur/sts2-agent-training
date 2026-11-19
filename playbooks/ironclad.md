@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.6 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.7 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -163,7 +163,11 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 - Observed costly `[PLAYER-DATA]`:
   - Slippery Bridge: −6.8 HP on average
   - Whispering Hollow: −6 HP
-- **Ancients:** relic text in `relics.json` `[GAME-EXTRACT]`. Rate by boss fit and scaling.
+- **Ancients:** relic text in `relics.json` `[GAME-EXTRACT]` (Neow relics added after the extract are described in `reports/phase2/ancient-relics.md`). Rate by boss fit and scaling. Outcomes at the same decision point (picked against passed, all characters) `[PLAYER-DATA, weak]`:
+  - **Avoid Hefty Tablet** (a Rare card plus an Injury curse): survived Act 1 in 8 of 21 runs when picked, 6 of 6 when passed (p = 0.016, the only clear signal among 90 options). Consistent with H4: a curse in a small Act 1 deck costs more than a Rare card gives. `[HYPOTHESIS H10]`
+  - **Prefer Fishing Rod** (upgrade a random card every 3 normal fights): 16 of 17 against 8 of 13 (p = 0.06), positive for every character.
+  - Neow's Bones (two random Neow relics) leaned negative: 4 of 8 against 11 of 12 (p = 0.11).
+  - Raw relic win rates (MetaBot) are biased by when the relic is obtained (Burning Blood, carried from floor 1, shows 14%); do not use them for Ancient choices.
 
 ## 8. Potion policy
 - **Use freely in elites and bosses.** The Player's baseline is good: about 1.1 per boss fight and 0.8 per elite, and only 4 of 40 deaths with an unused potion. `[PLAYER-DATA]` outcome
@@ -246,6 +250,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 | H6 | Raising cheap and multi-hit attacks when Vantom is the boss fixes the Vantom problem | Mechanics support it; history can't test it (decks held about 0.7 multi-hit cards) | Phase 4 Vantom fights | Open |
 | H7 | Knowledge Demon needs a scaling engine (powers, energy, Strength) by the end of Act 2 | Fatal decks: powers 1.7 against 2.7, energy 0.8 against 1.6 (n=40) `[PLAYER-DATA, weak]` | Track engine presence on arrival | New (v2) |
 | H8 | Arrival HP matters most for Queen, The Kin and Aeonglass, and hardly at all for Vantom and Waterfall Giant | Median arrival HP, survived against fatal (all characters, abandoned runs excluded): Queen 79% / 54%, The Kin 64% / 41%, Aeonglass 87% / 65%; Vantom 57% / 58%, Waterfall Giant 57% / 59%. Fatal n is 5–12 per boss | Higher rest thresholds for the first three; for Vantom and Waterfall Giant, prefer a smith that fixes the deck's answer when HP is above the median damage | Refined (v2.5) |
+| H10 | Curses from Ancient relics (Hefty Tablet's Injury) cost more Act 1 survival than the relic's upside gives | Hefty Tablet picked: 8/21 survived Act 1; passed: 6/6 (p = 0.016, all characters; Ironclad 2/3, too few) `[PLAYER-DATA, weak]` | Pass Hefty Tablet in Phase 4; compare Act 1 survival | New (v2.7) |
 | H9 | Boss survival depends more on block and scaling than on raw damage: targets in section 2.1 | Raw-damage terciles: Act 1 fatal 18% / 29% / 28% (low to high). Block: 30% / 24% / 21%. Scaling 2–3 cards: 17% against 28% (n=173 Act 1 boss fights) `[PLAYER-DATA, observational]` | Track the deck metrics at every boss arrival in Phase 4 | New (v2.2) |
 
 ## 13. Open questions and conflicts
@@ -257,6 +262,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.7 (2026-11-19, overnight):** Ancient choices from `tools/analyze_ancients.py` (picked against passed at the same decision point): avoid Hefty Tablet (H10), prefer Fishing Rod; warning against raw relic win rates.
 - **v2.6 (2026-11-19, overnight):** coherence pass. Section 2.1 points to `tools/deck_check.py`; section 5 adds the H8 exception for Vantom and Waterfall Giant; section 8 describes potion search in `tools/plan_turn.py`; boss rows for Lagavulin Matriarch and The Kin use the power data; section 13 updated.
 - **v2.5 (2026-11-19, overnight):** consistency pass against the data: rest heal is 30% of max HP rounded down (was "about 29%"); room economics ranges per act; the elite HP-band sample excludes abandoned runs (stated); H8 widened to The Kin and narrowed for Vantom and Waterfall Giant; v0.111.1 elite and boss changes noted under the tables. Deck-strength figures recomputed with v0.107.1 card values (the extract predates v0.107.1): Act 1 raw-damage tercile 28% (was 29%), Ironclad fatal decks 16.8 against 15.1 (was 14.7); corner targets unchanged. Also fixed the quintile buckets in `tools/build_community_tiers.py` (the top bucket had absorbed the remainder). Consensus moved for four cards: Feel No Pain A→B, Body Slam B→C, Evil Eye C→D, Headbutt C→D. Habit discrepancies 23 → 19. Tier lists in §2.2 and §11 regenerated from the tier file.
 - **v2.4 (2026-11-19, overnight):** main branch is now v0.111.1. Added the v0.111.1 card changes to §2.2; target version noted in the header.

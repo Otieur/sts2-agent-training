@@ -90,6 +90,14 @@ class TestAdvise(unittest.TestCase):
         out = advise.advise(st("MAIN_MENU"))
         self.assertIn("MAIN_MENU", out)
 
+    def test_ancient_record(self):
+        s = st("EVENT", event={"event_id": "NEOW", "title": "Neow", "options": [
+            {"index": 0, "text_key": "NEOW.pages.INITIAL.options.HEFTY_TABLET", "title": "Hefty Tablet"},
+            {"index": 1, "text_key": "NEOW.pages.INITIAL.options.FISHING_ROD", "title": "Fishing Rod"}]})
+        out = advise.advise(s)
+        self.assertIn("Ancient record", out)
+        self.assertIn("p=0.016", out)
+
 
 if __name__ == "__main__":
     unittest.main()

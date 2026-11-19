@@ -177,6 +177,11 @@ def event(st):
     eid = (ev.get("event_id") or "").upper()
     table = {(e["Event"], e["Option"]): e for e in json.loads((PROJECT / "knowledge/data/extract-2026-09-21/event_options.json").read_text())}
     con = connect()
+    ancients = {}
+    afile = PROJECT / "data" / "tables" / "ancient_relics.csv"
+    if afile.exists():
+        import csv
+        ancients = {r["relic"]: r for r in csv.DictReader(open(afile))}
     out = [f"Event {eid}: {ev.get('title', '')}"]
     for o in ev.get("options") or []:
         key = re.sub(r"^[A-Z_]+\.pages\.", "", o.get("text_key") or "")
@@ -186,6 +191,10 @@ def event(st):
         flag = " LOCKED" if o.get("is_locked") else ""
         flag += " WILL KILL YOU" if o.get("will_kill_player") else ""
         past = f"; the Player chose it {hist[0]}x (HP {hist[1]:+.1f}, gold {hist[2]:+.0f}, max HP {hist[3]:+.1f})" if hist and hist[0] else ""
+        anc = ancients.get(key.rsplit(".", 1)[-1].upper())
+        if anc and anc["survive_act_chosen"] and anc["survive_act_passed"]:
+            past += (f"; Ancient record (all characters): survived the act {float(anc['survive_act_chosen']):.0%} picked vs "
+                     f"{float(anc['survive_act_passed']):.0%} passed, p={anc['p_survive']} (reports/phase2/ancient-relics.md)")
         out.append(f"  [{o.get('index')}] {o.get('title')}{flag}: {info.get('Effect', o.get('description', ''))} | cost: "
                    f"{info.get('Cost', '?')} | risk: {info.get('Risk', '?')}{past}")
     con.close()

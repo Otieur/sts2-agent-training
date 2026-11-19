@@ -37,6 +37,13 @@ Accessed 2026-11-19 unless noted. **Quality** reflects version match with v0.107
 | BrokenBuilds: Necrobinder card tier list (Major Update 2) | https://brokenbuilds.gg/slay-the-spire-2/tier-lists/slay-the-spire-2-necrobinder-card-tier-list | Tier list | v0.107.1 per search summary | Not used | 403. The search summary says Capture Spirit tops the list after the v0.107 reworks; unverified. |
 | Dygamelab blog posts (April 30, May 7) | https://dygamelab.blogspot.com/2026/05/slay-spire-2-necrobinder-card-tier-list.html | Blog tier list | Pre-v0.107 | Low (old) | Not used. |
 
+## Relic sources (accessed 2026-11-19)
+| Source | URL | Kind | Quality | Notes |
+|---|---|---|---|---|
+| MetaBot Ironclad relic tier list | https://metabot.gg/en/slay-the-spire-2/relics/tier-list/ironclad | Win rate of runs carrying the relic | **Unusable for choices**: biased by acquisition time (Burning Blood, carried by every Ironclad from floor 1, 14%; Act 3 relics 50–80%) | Not imported. The Player's Ancient choices are analysed at the decision point instead (`reports/phase2/ancient-relics.md`). |
+| Mobalytics relic tier list | https://mobalytics.gg/slay-the-spire-2/tier-lists/relics | Editorial | Not read (403) | |
+| BrokenBuilds Neow relic guide; search summaries | https://brokenbuilds.gg/slay-the-spire-2/guides/slay-the-spire-2-act-1-neow-boss-relic-guide | Relic effects | Effects only | Hefty Tablet: choose 1 of 3 Rare cards and add an Injury. Fishing Rod: every 3 normal combats, upgrade a random card (v0.107.1 wording; one database says every combat). |
+
 ## Patch notes
 | Source | URL | Used for |
 |---|---|---|
