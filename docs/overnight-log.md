@@ -35,3 +35,4 @@ Block K (morning report) starts no later than 09:52 EST.
 | X10: Practice post-mortems | 01:07 | 01:09 | runs/examples/player-1791247295-vantom/, runs/examples/player-1791336980-knowledge-demon/ (facts + postmortem); playbook v2.3 | Both deaths would likely have been avoided by v2.3 rules; both died with HP = A10 band boss median |
 | X11: Upgrade table | 01:09 | 01:10 | tools/build_upgrade_table.py → knowledge/cards/ironclad-upgrades.md; playbook §2.3 pointer | Heuristic mapping with ambiguity flags; cost upgrades are not in the extract |
 | X12: Rule backtests | 01:10 | 01:11 | tools/backtest_rules.py → reports/phase2/rule-backtests.md; playbook H4/H5 rows | H4 supported at A5+ among runs with the chance to remove; H5 holds in every band |
+| X13: Gaps file | 01:11 | 01:11 | knowledge/gaps.md | 20 gaps ranked by impact, plus resolved items |
