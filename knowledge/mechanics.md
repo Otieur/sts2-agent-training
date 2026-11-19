@@ -63,7 +63,7 @@ block = floor( (base + Dexterity) × (0.75 if Frail) × (2 if Unmovable active) 
 | Power | On | Behaviour | Play implication |
 |---|---|---|---|
 | Territorial | Byrdonis | Gains Strength at the end of every turn | Byrdonis gets more dangerous every turn. Kill it fast; never enter at low HP (all 3 fatal Ironclad fights started at about 29%). |
-| Slow | Bygone Effigy | Damage taken rises with cards played (the multiplier is computed at play time) | Long turns with many cards hurt more. Plan big single turns carefully. |
+| Slow | Bygone Effigy | Damage taken × (1 + 0.1 × count) `[GAME-EXTRACT]`; the count is most likely cards played this turn | Play cheap cards first and the big attack last in the turn |
 | Plow | Ceremonial Beast | Enough damage removes its Strength and stuns it | Burst it to trigger the stun. |
 | Ravenous | Corpse Slugs | When one dies, the others are stunned and gain Strength | Kill order matters. |
 | Imbalanced | Bowlbug Rock | Stuns itself after dealing damage | Its big hit is followed by a free turn. |
@@ -100,7 +100,7 @@ block = floor( (base + Dexterity) × (0.75 if Frail) × (2 if Unmovable active) 
 | 7 | Block absorbs before HP | 10 damage into 6 block | Lose 4 HP |
 | 8 | Burning Blood heal | After any won fight | +6 HP |
 | 9 | Heal amount at rest | Rest at 40/80 | +24 (30% of max, rounded down) |
-| 10 | Colossus power effect | Play Colossus, then take a hit | Damage halved? |
+| 10 | Colossus power effect | Play Colossus, then take a hit | Damage halved for its duration: `COLOSSUS_POWER` multiplies damage taken by 0.5 and ticks down each turn `[GAME-EXTRACT]` (confirm the duration) |
 | 11 | Ascender's Bane removable? | Try removal at a shop with A5+ | Expect refused (Eternal) |
 
 ## Facing (Surrounded)

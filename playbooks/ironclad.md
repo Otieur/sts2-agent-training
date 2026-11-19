@@ -124,7 +124,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 
 | Act | Elite | Median / p75 | Fatal | Key mechanic `[GAME-EXTRACT]` | Answer |
 |---|---|---|---|---|---|
-| 1 | Bygone Effigy | 29 / 39.5 | 1/12 | Sleeps; wakes with +10 Strength (slash 25); Slow (takes more per card played) | Burst during sleep with many cards; block 25 |
+| 1 | Bygone Effigy | 29 / 39.5 | 1/12 | Sleeps; wakes with +10 Strength (slash 25); Slow: +10% damage taken per unit (likely per card played this turn) | Burst during sleep with many cards, big attack last; block 25 |
 | 1 | Terror Eel | 29 / 39 | 0/5 | First damage stuns it; then 99 Vulnerable on you | Hit it on turn 1; block ×1.5 hits |
 | 1 | Byrdonis | 22.5 / 32.8 | 3/10 | +Strength every turn (Territorial) | Kill fast; never under 50% HP |
 | 1 | Phrog Parasite | 19 / 30 | 1/9 | Spawns Wrigglers on death; Infection cards | Save hit-all damage for wave 2 |
@@ -264,7 +264,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - The extract predates v0.107.1 (`knowledge/version-delta-extract-to-v0.107.1.md`): Conflagration, Drum of Battle and Unrelenting changed in v0.107.1, and Infested Prism and Skulking Colony were reworked. On v0.111.1, the cards and enemies in `knowledge/version-delta-v0.111.1.md` differ as well. Re-check numbers against live data (P2.E1).
 - Not Yet (card) and Aeonglass (boss) are missing from the extract.
 - **Cards where sources disagree** (†, 29 cards): One-Two Punch, Pyre, Tear Asunder, Barricade, Bloodletting, Juggernaut, Shrug It Off, Aggression, Thrash, Bully and others (full list in §2.2). Nat 1 Gaming is v0.113 beta. Spire Codex (main) is partial.
-- Bygone Effigy's Slow multiplier, the Colossus power, Infested Prism's current moves and Tainted duration: to verify in game.
+- Bygone Effigy's Slow unit (per card played?), Colossus's duration, Infested Prism's current moves and Tainted duration: to verify in game.
 - Kin Priest: the Minion power suggests its death ends the fight (confirm). Lagavulin Matriarch: the power data says damage wakes it stunned (confirm which power is removed with Asleep).
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 

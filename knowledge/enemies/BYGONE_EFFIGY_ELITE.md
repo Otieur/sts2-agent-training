@@ -34,7 +34,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Key mechanics `[GAME-EXTRACT]`
 - Starts asleep. Wake: +10 Strength. Slashes: 15 base, so 25 after waking. Goes back to sleep between slashes.
-- **Slow:** it takes more damage for each card you play in a turn (the multiplier is computed at play time; +10% per card is the Slay the Spire 1 convention `[HYPOTHESIS]`).
+- **Slow:** it takes more damage for each card you play in a turn. The power definition is `1 + 0.1 × <count>` `[GAME-EXTRACT]`, so **+10% per unit**; the count itself is computed in game (most likely cards played this turn, as in the first game) `[HYPOTHESIS]` for the unit.
 
 ### Priorities and recommended answers
 - **Use the opening sleep turns** for setup and for long turns with many cheap cards. Slow rewards card count.
