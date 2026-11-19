@@ -34,6 +34,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   1. Ebb: 22 + 33 block
   2. Eye Lasers: 11×2
   3. Increasing Intensity: adds and upgrades Withers, gains Strength; no attack
+- **A second source disagrees** (sts2-calculator.pages.dev boss guide, accessed 2026-11-19; latest patch listed on the site: V110): Ebb applies Ebb 3 (−3 Strength and Dexterity for your turn) with no damage; Eye Lasers 11×2 (12×2); Increasing Intensity gains 33 Block and 3 Strength (4), growing; a Wither comes with every **4th** non-Status card played, has Retain and Exhaust, and deals **2** at end of turn if held. The v0.111.1 patch notes give Ebb damage (22, 26 at higher ascension), which matches the first source, so that one is kept; the Wither numbers stay open (gap 29). `tools/plan_turn.py` counts 3 per held Wither and follows the game's playable flag for it.
 
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: Strength cards at least 1 (fewer, bigger hits against Wither; survived 0.8, fatal 0.3); multi-hit attacks at least 1 (damage per card played; survived 1.7, fatal 0.8).

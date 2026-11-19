@@ -42,8 +42,8 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P2.E2 | Mechanics reference | Done | mechanics.md, ascension.md; verification checklist for Phase 4 |
 | P2.E3 | Enemies and encounters | Done | 83-encounter catalogue; 12 elite + 15 hallway notes; Bestiary cross-check (S4) needs the live game |
 | P2.E4 | Community strategy | Done | sources.md, ironclad-tiers.md, archetypes-ironclad.md, discrepancies.md |
-| P2.E5 | Boss plans | Done | All 12 bosses; Aeonglass community-only |
-| P2.E6 | Playbook v2 | In progress | Now v2.10: checked against the data (tools/check_playbook.py, 51 checks), decision-point analyses, death review; optional Player skim (S2) |
+| P2.E5 | Boss plans | Done | All 12 bosses; Aeonglass community-only. Fight simulator (tools/simulate_fight.py) calibrated for Vantom, Lagavulin Matriarch, Soul Fysh, Byrdonis; Waterfall Giant, Ceremonial Beast, Knowledge Demon, Entomancer modelled but not validated (sensitivity checks name what to read in the first fight) |
+| P2.E6 | Playbook v2 | In progress | Now v2.15: checked against the data (tools/check_playbook.py, 60 checks including the quick reference), decision-point analyses, death review, boss-specific plan choice from the simulator; optional Player skim (S2) |
 | P2.E7 | Knowledge maintenance | Done | docs/runbooks/game-patch.md |
 
 ## Phase 3: Shadowing ([doc](phase-3-shadowing.md))
@@ -62,8 +62,8 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P4.E1 | Run harness | In progress | Runbooks written; resume test (S5) needs a live run |
-| P4.E2 | Combat procedure | In progress | S1, S3, S4 done (plan_turn.py, journal.py); S2 calculator awaits in-game verification |
-| P4.E3 | Strategy procedures | Done (tooling) | path.py, draft.py, advise.py, deck_check.py; untested live |
+| P4.E2 | Combat procedure | In progress | S1, S3, S4 done (plan_turn.py, journal.py); planner covers the common Ironclad cards whose text the extract leaves incomplete, playable statuses (Sandpit guard), 17 potions and the boss and elite powers in the notes; S2 calculator awaits in-game verification |
+| P4.E3 | Strategy procedures | Done (tooling) | path.py, draft.py, advise.py, deck_check.py; advise.py never raises on damaged states (fuzz test); untested live |
 | P4.E4 | Post-mortem | In progress | S1 facts sheet done (postmortem.py, tested on the Player's runs) |
 | P4.E5 | Evaluation | In progress | Scoreboard, milestones, exam seeds ready |
 | P4.E6 | Ascension ladder | In progress | Rules written |

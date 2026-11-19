@@ -275,6 +275,9 @@ class TestPlanTurn(unittest.TestCase):
         h = [pt.card_from_extract(0, "WITHER"), pt.card_from_extract(1, "DEFEND_IRONCLAD")]  # newer than the extract
         o = pt.rank(pt.plans(h, pt.Player(energy=1, hp=30), [pt.parse_enemy("Aeon:500:0:4", 0)]), "safe")[0]
         self.assertEqual((h[0].playable, o["hp_lost"]), (False, 2))      # Wither 3 + intent 4 - Defend 5
+        w = pt.card_from_extract(0, "WITHER", cost=1, playable=True)   # a live state that lets it be played
+        o = pt.rank(pt.plans([w], pt.Player(energy=1, hp=30), [pt.parse_enemy("Aeon:500:0:0", 0)]), "safe")[0]
+        self.assertEqual((o["plays"], o["hp_lost"]), (["Wither"], 0))
 
     def test_powers_from_state_limits_enrage_disintegration(self):
         st = {"combat": {"player": {"current_hp": 40, "energy": 3, "block": 0,

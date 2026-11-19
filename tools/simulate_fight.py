@@ -160,10 +160,10 @@ BOSSES = {
     "LAGAVULIN_MATRIARCH": {"hp": 222, "asleep": 3, "plating": 12, "move": lagavulin_move, "on_damage": lagavulin_damaged,
                             "validated": True},
     "CEREMONIAL_BEAST": {"hp": 252, "move": beast_move, "on_damage": beast_damaged, "validated": False},  # fails calibration
-    "KNOWLEDGE_DEMON": {"hp": 379, "move": demon_move, "validated": False},  # calibration in report()
+    "KNOWLEDGE_DEMON": {"hp": 379, "move": demon_move, "validated": False, "act": 2},  # calibration in report()
     # Entomancer fails calibration badly (every deck loses by turn 5): the extract's Strength gains and Bees 3x7 cannot all
     # apply from turn 1 in this order; probably ascension-dependent values or another order. Not used; see gap 26.
-    "ENTOMANCER": {"hp": 145, "hive": 1, "move": entomancer_move, "validated": False, "encounter": "ENTOMANCER_ELITE"},
+    "ENTOMANCER": {"hp": 145, "hive": 1, "move": entomancer_move, "validated": False, "encounter": "ENTOMANCER_ELITE", "act": 2},
     # Byrdonis: the 15-card base deck loses about 26-29 HP here, the Player's Ironclad decks lost 25.8 on average.
     "BYRDONIS": {"hp": 91, "move": byrdonis_move, "validated": True, "encounter": "BYRDONIS_ELITE"},
     # Soul Fysh: the model's win rate (about 50% from 60/80 with the base deck) sits close to the Player's 4/7; a small
@@ -192,7 +192,10 @@ def draw_cards(n, draw, discard, rng):
     return out
 
 
-def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", max_turns=25, curse="SLOTH"):
+BEST_CURSES = ("MIND_ROT", "SLOTH", "WASTE_AWAY")  # Knowledge Demon: the best combination in report(); the default
+
+
+def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", max_turns=25, curse=BEST_CURSES):
     spec = BOSSES[boss]
     rng = random.Random(seed)
     draw = [c.split(".", 1)[-1] for c in deck]
@@ -371,7 +374,7 @@ def run_fight(deck, boss="VANTOM", hp=80, max_hp=80, seed=0, mode="balanced", ma
     return {"won": False, "hp": hp, "turns": max_turns, "timeout": True, "boss_left": max(0.0, b["hp"] / spec["hp"])}
 
 
-def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse="SLOTH"):
+def evaluate(deck, boss, hp, max_hp, runs, mode="balanced", curse=BEST_CURSES):
     rs = [run_fight(deck, boss, hp, max_hp, seed=s, mode=mode, curse=curse) for s in range(runs)]
     wins = [r for r in rs if r["won"]]
     return {"win_rate": len(wins) / runs, "hp_lost": statistics.mean(hp - r["hp"] for r in rs),
@@ -506,7 +509,7 @@ def report(runs=300):
     con = sqlite3.connect(PROJECT / "data" / "runs.db")
     cal = []
     for key in BOSSES:
-        cal_deck = kd_deck if key == "KNOWLEDGE_DEMON" else expand_deck(EXPERIMENT_BASE, "IRONCLAD")
+        cal_deck = kd_deck if BOSSES[key].get("act") == 2 else expand_deck(EXPERIMENT_BASE, "IRONCLAD")
         r = max((evaluate(cal_deck, key, 60, 80, runs // 2, m) for m in ("balanced", "safe")), key=lambda x: x["win_rate"])
         s, n = con.execute("""SELECT SUM(NOT (f.is_last_floor AND NOT r.win)), COUNT(*) FROM floors f JOIN runs r USING(run_id)
                               WHERE r.build_id='v0.107.1' AND r.character='IRONCLAD' AND r.n_players=1 AND NOT r.abandoned
@@ -515,7 +518,7 @@ def report(runs=300):
                     "yes" if BOSSES[key].get("validated") else "**no**"])
     con.close()
     L += ["## Calibration against the Player's record", "",
-          "The 15-card base deck for Act 1 bosses and the 22-card Act 2 deck for Knowledge Demon, at 60/80 HP, the better plan; "
+          "The 15-card base deck for Act 1 fights and the 22-card Act 2 deck for Act 2 fights (Knowledge Demon, Entomancer), at 60/80 HP, the better plan; "
           "the Player's Ironclad boss fights on v0.107.1 (real decks are bigger and have relics, potions and upgrades, so the "
           "model is expected to be pessimistic; what matters is the ratio between bosses). A boss marked **no** is not used by "
           "`tools/draft.py`.", "",

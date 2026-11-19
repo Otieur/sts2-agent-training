@@ -173,7 +173,9 @@ def card_from_extract(index, card_id, live=None, cost=None, playable=True):
     c = CARDS.get(cid)
     if not c:
         if cid in EXTRA_STATUSES:  # statuses newer than the extract (Aeonglass's Wither) [COMMUNITY]
-            card = Card(index, cid, cid.replace("_", " ").title(), 0, "Self", playable=False, note=EXTRA_STATUSES[cid]["note"])
+            # playable only if the state says so (one guide gives Wither Retain and Exhaust); its cost comes from the state
+            card = Card(index, cid, cid.replace("_", " ").title(), cost or 0, "Self", playable=bool(playable) and cost is not None,
+                        note=EXTRA_STATUSES[cid]["note"])
             card.held_dmg = int((live or {}).get("Damage") or EXTRA_STATUSES[cid]["held_dmg"])
             return card
         return Card(index, cid, cid, cost if cost is not None else 9, "Self", playable=False, note="not in the extract")

@@ -3,8 +3,10 @@
 Last updated 2026-11-19 (P6.E1.S1).
 
 Sources:
-- `[COMMUNITY-A]`: allthings.how co-op mechanics guide (date not stated)
+- `[COMMUNITY-A]`: allthings.how co-op mechanics guide (updated 2026-03-10)
 - `[COMMUNITY-B]`: FinalBoss "How co-op works" (2026-04-29, early access)
+- `[COMMUNITY-C]`: wiki patch notes V0.111.1 – Major Update 3 (see `knowledge/version-delta-v0.111.1.md`)
+- `[COMMUNITY-D]`: Whisper of the House co-op guide (updated 2026-11-16, no version stated), accessed 2026-11-19
 - `[GAME-EXTRACT]`: the decompiled game data
 - `[MOD]`: the STS2-Agent and STS2MCP documentation
 
@@ -33,10 +35,10 @@ Everything below is unverified in our own game until Phase 6 confirms it. Change
 |---|---|---|
 | Turns are simultaneous; the turn ends when every player has ended theirs (an end-turn vote) | A, B, `[MOD]` (STS2MCP `end_turn` is a vote; `undo_end_turn` retracts it) | Yes |
 | **Enemy attacks hit every player** ("an attack of 12 hits each player for 12"); enemies have no individual targeting | B (explicit), A ("no individual targeting") | Consistent, **to verify**: it changes block planning completely |
-| Buffs and debuffs from enemies apply to all players | A | Single source |
+| Buffs and debuffs from enemies apply to all players | A, D (D implies it: the players fight "through the same state") | Consistent |
 | Potions can target other players | A, C | Confirmed by the v0.111.1 patch notes: nearly any potion can now be used on another player `[COMMUNITY]`. Potions with `target_type` AnyAlly or AnyPlayer exist `[MOD]` |
 | Enemy HP (and damage, per B) grows with party size; no numbers given | A, B | Yes, amount unknown. Measure it (P6.E1.S2) |
-| Some boss mechanics scale with players: Vantom's Slippery stacks rise with more players (`[COMMUNITY]` Vantom guide); Knowledge Demon's Ponder heals 30 **per player** (`[COMMUNITY]` KD guide) | Boss guides | Single sources |
+| Some boss mechanics scale with players: Vantom's Slippery stacks rise with more players (`[COMMUNITY]` Vantom guide); Knowledge Demon's Ponder heals 30 **per player** (two KD guides, the second selphie1999gaming 2026-03-24); Waterfall Giant's Siphon heals 15 per player (one guide) | Boss guides | Vantom: single source; Knowledge Demon: two sources |
 | A player at 0 HP is out for the rest of the fight and returns at 1 HP after it; the run ends only when the whole party falls | A (B: "the run ends when the party falls apart") | Consistent |
 
 ## Co-op cards `[GAME-EXTRACT]`
@@ -74,7 +76,7 @@ Source: wiki V0.111.1 – Major Update 3 (`knowledge/version-delta-v0.111.1.md`)
 |---|---|---|
 | Multiplayer ascension is a separate track from solo ascension | A, B | Yes |
 | The available ascension is capped by the lowest-ranked player (B), or each player must have the level unlocked (A) | A, B | Same meaning |
-| Finishing a multiplayer run unlocks the next multiplayer ascension for each character present | A | Single source |
+| Finishing a multiplayer run unlocks the next multiplayer ascension for each character present (A); co-op progress is shared across characters, and the unlock counts even if a player died before the Act 3 boss (D) | A, D | Partly: per character (A) or shared (D) |
 
 ## Implications for the Agent as teammate (feeds `playbooks/coop.md` in Phase 6)
 1. If every attack hits every player, **each player blocks for themselves**. Party block cards (Rally, Lift, Intercept, Demonic Shield) become strong. Verify this first.

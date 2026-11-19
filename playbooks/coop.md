@@ -14,7 +14,7 @@ Two unknowns change everything below. Check them before trusting any co-op rule.
 | Does an enemy attack hit every player, or one target? | If every player is hit, each player blocks for themselves and party block cards become strong. If one target, block planning is per target and Tank / Intercept decide who is hit. | Read `combat.enemies[].intents` on both instances in the first fight, and compare both players' HP after the enemy turn (`tools/sts.py party`) |
 | How do enemy HP and damage scale for 2 players? | Path costs, elite risk and the boss plans' HP targets | Compare `combat.enemies[].base_max_hp` with `max_hp` (STS2-Agent reports both) |
 
-Also note: Vantom's Slippery stacks and Knowledge Demon's Ponder heal scale with players `[COMMUNITY]`, single sources each. Since v0.111.1, enemy block scaling in 2-player runs is lower `[COMMUNITY]`.
+Also note: Vantom's Slippery stacks and Knowledge Demon's Ponder heal scale with players `[COMMUNITY]` (Vantom: one source; Knowledge Demon: two). Since v0.111.1, enemy block scaling in 2-player runs is lower `[COMMUNITY]`.
 
 ## 2. Communication protocol (P6.E4)
 ### 2.1 Turn huddle

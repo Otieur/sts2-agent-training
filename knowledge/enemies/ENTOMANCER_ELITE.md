@@ -34,6 +34,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### Key mechanics `[GAME-EXTRACT]`
 - **Personal Hive:** every time the Entomancer takes damage, a generated card is added to **your** draw pile. Many small hits clog your deck.
 - Bees: 3×7 (21 base, plus Strength). Spear: 18. Pheromone Spit: gains Strength and more Hive.
+- Sensitivity (`tools/simulate_fight.py` model, 22-card Act 2 deck from full HP): with +3 Strength per Spit the deck wins 13%; +1 gives 63%, none 93%, Bees 3×4 57%. Read the Strength gain on the first Pheromone Spit (gap 26).
 - These extract numbers cannot all hold from turn 1 (a simulation with Spit first loses every fight by turn 5, far from the Player's record); expect some to be ascension-dependent (gap 26). `tools/plan_turn.py` charges each card Personal Hive would add (reads `PERSONAL_HIVE` from the state), so it prefers few big hits here.
 
 ### Priorities and recommended answers
