@@ -324,6 +324,10 @@ class TestPlanTurn(unittest.TestCase):
         e.taint = 2
         o = pt.simulate(ids("DEFEND_IRONCLAD", "DEFEND_IRONCLAD"), [None, None], pt.Player(energy=2), [e])
         self.assertEqual(o["incoming"], 19)                                # two Skills Tainted 2: 15 + 4
+        e = pt.parse_enemy("Gardener:30:0:5", 0)
+        e.skittish = 6
+        o = pt.simulate(ids("STRIKE_IRONCLAD", "STRIKE_IRONCLAD"), [0, 0], pt.Player(energy=2), [e])
+        self.assertEqual(o["dealt"], 6)                                    # the second Strike hits 6 Block
 
     def test_crab_rage(self):
         ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731

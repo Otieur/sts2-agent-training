@@ -19,7 +19,7 @@ Barrier (damage back per enemy hit), Body Slam (damage = Block, played after blo
 Ritual (energy needs an earlier exhaust only with the pre-v0.111.1 text); boosters are played first. Slippery stacks
 stripped earn SLIPPERY_VALUE in the balanced plan.
 Enemy powers read from the state: Slippery, Intangible, Slow, Personal Hive, Enrage, Hardened Shell (per-turn cap),
-Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
+Thorns, Artifact, Hard to Kill (per-hit cap), Shriek (stunned at its HP threshold), Vital Spark (Skills Tainted: more damage per Skill played), Skittish (Block after the first Attack each turn), Crab Rage (a claw's death: +5 Strength, 99 Block), Minion (killing every
 non-minion ends the fight), Doom (it dies after its attack when its HP is at or below its Doom), Paper Cuts (max HP lost when its hits land); player powers: Strength, Dexterity, Weak, Frail, Feel No Pain, Sandpit, Disintegration, Sloth, Ringing, Tender, Colossus, Doom (fatal at the end of your turn if HP is at or below it).
 Not modelled: draw (plans with draw say "re-plan after drawing"), other exhaust synergies, powers that trigger later,
 relics, other card-specific conditions. Treat results as [HYPOTHESIS]
@@ -128,6 +128,7 @@ class Enemy:
     hit_cap: Optional[int] = None  # Hard to Kill (Exoskeletons): each hit deals at most this much
     shriek: int = 0             # Shriek (Terror Eel): stunned the first time its HP drops to this or below (70; the wiki)
     taint: int = 0              # Vital Spark (Infested Prism): each Skill you play makes its attacks deal this much more per hit
+    skittish: int = 0           # Skittish (Phantasmal Gardener): Block gained after the first Attack that hits it this turn
     crab_rage: bool = False     # Crab Rage (Kaiser Crab claws): when it dies the others gain 5 Strength and 99 Block
     minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
     doom: int = 0               # Doom on it: it dies at the end of its own turn (after attacking) if its HP is at or below it
@@ -499,6 +500,9 @@ def simulate(cards, targets, player, enemies):
                         if e.hp > 0 and e.thorns and not card.osty:
                             hp_cost += e.thorns  # Thorns hit back on each hit (counted as HP lost; block may absorb it)
                         dealt += hit(e, per_hit(card, player, e, str_before, played))
+                    if e.skittish and e.hp > 0:  # Skittish: Block after the first Attack that hits it this turn (the wiki)
+                        e.block += e.skittish
+                        e.skittish = 0
         for e in es:  # Crab Rage: a claw that died this card gives the others 5 Strength and 99 Block (this turn)
             if e.crab_rage and e.hp <= 0:
                 e.crab_rage = False
@@ -775,6 +779,7 @@ def from_state(st):
                              hit_cap=next((int(v) for k, v in pw.items() if k.startswith("HARD_TO_KILL") and v is not None), None),
                              shriek=int(next((v for k, v in pw.items() if k.startswith("SHRIEK")), 0) or 0),
                              taint=int(next((v for k, v in pw.items() if k.startswith("VITAL_SPARK")), 0) or 0),
+                             skittish=int(next((v for k, v in pw.items() if k.startswith("SKITTISH")), 0) or 0),
                              crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
                              minion=any(k.startswith("MINION") for k in pw),
                              doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0),

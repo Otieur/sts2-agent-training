@@ -34,7 +34,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Key mechanics `[GAME-EXTRACT]`
 - Several Gardeners (28–32 HP each). Bite 5, Lash 7, Flail 1×3, Enlarge +2 Strength.
-- **Skittish:** gains block (exact trigger unconfirmed).
+- **Skittish (the wiki)** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): the first Attack that hits a Gardener each turn gives it 6 Block (7 at A8+) after that attack resolves; non-Attack damage does not trigger it. Four Gardeners (26–31 HP each) start on different moves (Flail, Bite, Lash, Enlarge) of the cycle Bite 5, Lash 7, Flail 1×3, Enlarge +2 Strength. So spread single hits (one per Gardener) and use hit-all attacks; a second attack on the same Gardener meets 6 Block. `tools/plan_turn.py` models it.
 
 ### Priorities and recommended answers
 - **Hit-all damage** clears several bodies at once.

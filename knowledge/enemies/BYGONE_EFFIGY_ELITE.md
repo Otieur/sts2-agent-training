@@ -32,6 +32,8 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ## Plan
 
+- **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 127 (132 at A8+); asleep on turn 1, wakes on turn 2 gaining 10 Strength, then Slashes 13 (15) every turn. **Slow:** each card you play this turn makes it take 10% more damage from Attacks (rounded down; resets each turn; Poison, Doom and Power damage are not affected): play the cheap cards first and the big Attack last, as `tools/plan_turn.py` already does.
+
 ### Key mechanics `[GAME-EXTRACT]`
 - Starts asleep. Wake: +10 Strength. Slashes: 15 base, so 25 after waking. Goes back to sleep between slashes.
 - **Slow:** it takes more damage for each card you play in a turn. The power definition is `1 + 0.1 × <count>` `[GAME-EXTRACT]`, so **+10% per unit**; the count itself is computed in game (most likely cards played this turn, as in the first game) `[HYPOTHESIS]` for the unit.
