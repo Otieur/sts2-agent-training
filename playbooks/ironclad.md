@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.16 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.17 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -225,9 +225,9 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 | 2 Hive | [Knowledge Demon](../knowledge/bosses/KNOWLEDGE_DEMON_BOSS.md) | 45 / 59.8 | 4/12 | ~55 | Scaling and energy (about 60 damage per turn over 7 turns); curse choice, each offer Disintegration or one card: take Mind Rot, then Sloth, then Waste Away (close); never stack Disintegration (simulated: offer 1: Mind Rot (35%) over Disintegration (5%); offer 2: Sloth (35%) over Disintegration (16%); offer 3: Waste Away (35%) over Disintegration (31%)) |
 | 2 Hive | [Kaiser Crab](../knowledge/bosses/KAISER_CRAB_BOSS.md) | 43.5 / 48.5 | 2/6 | ~54 | Focus Rocket; block 31+ on the Laser and end that turn facing Rocket (back attacks ×1.5); kill a claw with the turn's last attack (Crab Rage: the other gets 99 Block and 5 Strength) |
 | 2 Hive | [The Insatiable](../knowledge/bosses/THE_INSATIABLE_BOSS.md) | 31.5 / 45.8 | 2/6 | ~42 | Sandpit starts at 4 and kills you at 0: end every turn at 2 or more; each Frantic Escape adds 1 and costs 1 more each play, so play them while cheap (community; the planner marks plans that end at 1 as fatal) |
-| 3 Glory | [Aeonglass](../knowledge/bosses/AEONGLASS_BOSS.md) | 48 / 70 | 0/5 | ~58 (arrive high) | Fewer, bigger cards (Wither every 6 cards); strip 3 Artifact |
-| 3 Glory | [Test Subject](../knowledge/bosses/TEST_SUBJECT_BOSS.md) | 44 / 44 | 0/5 | ~54 | Three phases: attacks in phase 1, full block in 2, burst on tangible turns in 3 |
-| 3 Glory | [Queen](../knowledge/bosses/QUEEN_BOSS.md) | 41 / 47.5 | 2/7 | ~60 (arrive high) | Artifact against You're Mine (99 Weak, Vulnerable, Frail); draw |
+| 3 Glory | [Aeonglass](../knowledge/bosses/AEONGLASS_BOSS.md) | 48 / 70 | 0/5 | ~58 (arrive high) | Fewer, bigger cards (a Wither every 6 cards; 3 damage at end of turn if held, 6 once upgraded); strip 3 Artifact; Ebb 22 + 33 Block, then Eye Lasers 11×2, then Increasing Intensity (more Withers and Strength) (the wiki) |
+| 3 Glory | [Test Subject](../knowledge/bosses/TEST_SUBJECT_BOSS.md) | 44 / 44 | 0/5 | ~54 | Three phases (100/200/300 HP, the wiki): attacks in phase 1 (each Skill gives it 2 Strength), full block in 2 (each unblocked hit adds Wounds; Multi-Claw gains a hit each use), burst on the turns without Intangible in 3 and block Big Pounce 45 |
+| 3 Glory | [Queen](../knowledge/bosses/QUEEN_BOSS.md) | 41 / 47.5 | 2/7 | ~60 (arrive high) | Artifact against You're Mine (99 Weak, Vulnerable, Frail, turn 2); block the Amalgam's Strong Tackle 26 on turn 1; she blocks 20 a turn and only attacks once the Amalgam (a Minion) dies (the wiki); draw |
 
 At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for both. `[PLAYER-DATA]`
 
@@ -276,6 +276,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.17 (2026-11-19, after the morning report):** boss rows for Aeonglass, Test Subject and Queen from the community wiki's move tables; the planner reads the elite and hallway powers the wiki explained (Terror Eel's threshold, Skittish, Hex, Ravenous, Imbalanced, Flutter, Burrowed, Shrink).
 - **v2.16 (2026-11-19, overnight):** The Insatiable: end every turn at Sandpit 2 or more (community numbers); The Kin: killing the Priest ends the fight (two guides), and in the simulator racing it pays with single-target decks while hit-all decks should clear the followers; Test Subject's Enrage counts Skills only; simulated drafting uses the run's upgrades and common relics and skips cards the simulator does not model.
 - **v2.15 (2026-11-19, overnight):** Knowledge Demon curse rule rebuilt around the real offers (Disintegration or Mind Rot, Sloth, Waste Away; Disintegration stacks); Soul Fysh and Waterfall Giant added to the simulator (cycles from community guides; Soul Fysh calibrated loosely against 4/7 and used in drafting, Waterfall Giant too hard in the model and not used): follow the safe plan against both; Slippery stacks credited in the balanced plan; turn planner reads Beckon, Mangle, Flame Barrier, Body Slam, Fiend Fire, Dismantle and the old Forgotten Ritual condition; real-deck calibration shows the simulator's absolute win rates mean nothing for real decks.
 - **v2.14 (2026-11-19, overnight):** simulated Byrdonis: follow the balanced plan against enemies that scale every turn.
