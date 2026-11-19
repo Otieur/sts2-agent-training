@@ -38,6 +38,7 @@ Usage:
   (separated by ':').
 """
 import argparse
+import copy
 import itertools
 import json
 import math
@@ -194,15 +195,31 @@ def _upgrade(card, c):
     return card
 
 
+_PROTOTYPES = {}
+
+
 def card_from_extract(index, card_id, live=None, cost=None, playable=True):
     """live: dict of dynamic value name -> current value (STS2-Agent). A trailing '+' on the ID means upgraded
-    (applied to base numbers only; live numbers already include it)."""
+    (applied to base numbers only; live numbers already include it). Cards built from the extract alone are parsed
+    once and copied (the simulator builds thousands per draft)."""
+    if live is None and cost is None and playable is True:
+        key = str(card_id)
+        proto = _PROTOTYPES.get(key)
+        if proto is None:
+            proto = _PROTOTYPES[key] = _card_from_extract(0, card_id)
+        card = copy.copy(proto)
+        card.index = index
+        return card
+    return _card_from_extract(index, card_id, live, cost, playable)
+
+
+def _card_from_extract(index, card_id, live=None, cost=None, playable=True):
     cid = str(card_id or "?").split(".", 1)[-1]
     plus = cid.endswith("+")
     cid = cid.rstrip("+")
     c = CARDS.get(cid)
     if plus and c and not live:
-        return _upgrade(card_from_extract(index, cid, None, cost, playable), c)
+        return _upgrade(_card_from_extract(index, cid, None, cost, playable), c)
     if not c:
         if cid in EXTRA_STATUSES:  # statuses newer than the extract (Aeonglass's Wither) [COMMUNITY]
             # playable only if the state says so (one guide gives Wither Retain and Exhaust); its cost comes from the state
