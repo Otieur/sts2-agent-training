@@ -293,7 +293,7 @@
 
 ### P0.E8: Project scaffolding
 
-> **P0.E8.S1: Folder structure** · Size XS · Status: Todo
+> **P0.E8.S1: Folder structure** · Size XS · Status: Done
 > *As the Next Session, I want a predictable layout, so that I know where everything lives.*
 >
 > **Acceptance criteria:** the following exist.
@@ -305,7 +305,7 @@
 > playbooks/  runs/  metrics/  reports/  templates/  tools/  vendor/  backups/  logs/
 > ```
 
-> **P0.E8.S2: Project instructions** · Size S · Status: Todo
+> **P0.E8.S2: Project instructions** · Size S · Status: Done
 > *As the Next Session, I want standing instructions loaded automatically, so that I follow the same rules every time.*
 >
 > **Acceptance criteria:** The project instructions contain:
@@ -318,7 +318,7 @@
 >   - Personal details stay out of files.
 > - [ ] Pointers to `docs/STATUS.md`, `docs/environment.md`, `playbooks/` and `tools/sts.py`.
 
-> **P0.E8.S3: Version control** · Size XS · Status: Todo
+> **P0.E8.S3: Version control** · Size XS · Status: Done
 > *As the Player, I want playbook history in git, so that a bad change can be found and reverted.*
 >
 > **Acceptance criteria**
@@ -326,7 +326,7 @@
 > - [ ] `.gitignore` covers `backups/`, `vendor/`, `logs/`, `data/raw/` and large state captures.
 > - [ ] A first commit with the docs and scaffolding.
 
-> **P0.E8.S4: Templates** · Size S · Status: Todo
+> **P0.E8.S4: Templates** · Size S · Status: Done
 > *As the Agent, I want templates for recurring documents, so that every run, note and decision has the same shape.*
 >
 > **Acceptance criteria**

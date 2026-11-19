@@ -18,7 +18,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P0.E5 | API smoke test | Todo | |
 | P0.E6 | The agent harness integration | Todo | |
 | P0.E7 | Fallback path | Todo | Only if E4/E5 fail |
-| P0.E8 | Project scaffolding | Todo | |
+| P0.E8 | Project scaffolding | Done | Folders, the project instructions, git (local), templates (2026-11-19 overnight) |
 
 ## Phase 1: History analysis ([doc](phase-1-history-analysis.md))
 

@@ -10,4 +10,5 @@ Block K (morning report) starts no later than 09:52 EST.
 
 | Block | Start | End | Output | Notes |
 |---|---|---|---|---|
-| Start-up | 00:22 | | log, keep-awake | Keep-awake requested (session_idle) |
+| Start-up | 00:22 | 00:24 | log, keep-awake | Keep-awake requested (session_idle) |
+| A: Scaffolding | 00:24 | 00:31 | The project instructions, .gitignore, templates/*.md, folders, git init + first commit | P0.E8 done |
