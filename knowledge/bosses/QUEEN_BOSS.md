@@ -50,14 +50,14 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - Execution: 15
   - Enrage: +2 Strength
 - **Amalgam** `[GAME-EXTRACT]`: Tackle 18, 18, Beam 8×3, Tackle 14, 14.
-- Artifact blocks You're Mine's debuffs `[COMMUNITY]`.
+- **The player has no way to get Artifact** `[GAME-EXTRACT]`: no relic, potion or card in the game data grants it (it exists only on enemies; Expose removes it), and the Player confirms `[PLAYER-SAID]`. So You're Mine always lands. An older guide's claim that Artifact blocks it (from the first game) does not apply.
 - **The wiki** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): Queen 400 HP (419 at A8+); she opens with Puppet Strings (3 Chains of Binding: the first cards drawn each turn are Bound, only one Bound card can be played a turn) and You're Mine (99 Frail, 99 Weak, 99 Vulnerable on every player), then repeats Burn Bright for Me (+1 Strength to the Amalgam, 20 Block for her) while the Amalgam lives; once it dies she loops Off With Your Head 3×5 (4×5), Execution 15 (18), Enrage +2 Strength. Torch Head Amalgam 199 HP (211), Minion: Strong Tackle 26 (32), Tackle 18 (22), then Beam 8×3, Weak Tackle 14 (16), Weak Tackle 14, looping from Beam. So the damage comes from the Amalgam first and from the Queen only after it dies; with 99 Vulnerable on you every hit counts ×1.5 (Artifact can block You're Mine).
-- **Seen in game** `[OBS]` (v0.111.1, A10, seven attempts by the Player on 2026-11-19, recorded in `runs/smoke/combat-trace-2026-11-19.jsonl`): the wiki's A8+ numbers and order hold. Queen 419 HP, Amalgam 211 HP (Minion). Queen: Puppet Strings on turn 1 (3 Chains of Binding), You're Mine on turn 2 (99 Frail, Weak, Vulnerable), then Burn Bright every turn (20 Block for her, +1 Strength to the Amalgam). Amalgam as shown on the intents: 33, 23, then 13×3, 27, 28, 18×3 (Strong Tackle 32, Tackle 22, Beam 8×3, Weak Tackle 16 twice, plus its growing Strength, ×1.5 from the 99 Vulnerable). Every attempt kept the Amalgam Vulnerable and used Colossus on two big turns, and still went from 69 to about 22 HP by turn 6, when the Amalgam was nearly dead and the Queen (399 HP, still untouched behind her Block) had not attacked yet. One attempt hit the Queen first (100 damage in two turns) and was abandoned at 51 HP. Reading: with 99 Weak and Frail on you, the Queen phase (about 30 damage a turn: Off With Your Head 4×5 and Execution 18 plus Strength, ×1.5) needs far more HP than the Amalgam phase leaves, so without Artifact this fight is decided by the deck's damage before You're Mine and its block after it `[HYPOTHESIS]`.
+- **Seen in game** `[OBS]` (v0.111.1, A10, seven attempts by the Player on 2026-11-19, recorded in `runs/smoke/combat-trace-2026-11-19.jsonl`): the wiki's A8+ numbers and order hold. Queen 419 HP, Amalgam 211 HP (Minion). Queen: Puppet Strings on turn 1 (3 Chains of Binding), You're Mine on turn 2 (99 Frail, Weak, Vulnerable), then Burn Bright every turn (20 Block for her, +1 Strength to the Amalgam). Amalgam as shown on the intents: 33, 23, then 13×3, 27, 28, 18×3 (Strong Tackle 32, Tackle 22, Beam 8×3, Weak Tackle 16 twice, plus its growing Strength, ×1.5 from the 99 Vulnerable). Every attempt kept the Amalgam Vulnerable and used Colossus on two big turns, and still went from 69 to about 22 HP by turn 6, when the Amalgam was nearly dead and the Queen (399 HP, still untouched behind her Block) had not attacked yet. One attempt hit the Queen first (100 damage in two turns) and was abandoned at 51 HP. Reading: with 99 Weak and Frail on you, the Queen phase (about 30 damage a turn: Off With Your Head 4×5 and Execution 18 plus Strength, ×1.5) needs far more HP than the Amalgam phase leaves, so, with no way to block You're Mine, this fight is decided by the deck's damage and debuff-proof block `[HYPOTHESIS]`.
 - **Order** `[COMMUNITY]`, one boss database (slay-the-spire-2.pages.dev, early access data, accessed 2026-11-19): Puppet Strings, You're Mine, Burn Bright, Off With Your Head; another guide describes a buff, a multi-hit and a heavy hit without names. Chains of Binding afflicts cards in hand at the start of each turn; cards drawn later are free. Not simulated.
 
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: draw cards at least 3 (You're Mine: 99 Weak, Vulnerable, Frail; survived 3.9, fatal 2.2).
-- **Artifact or debuff resistance** is the single biggest swing. Each Artifact charge blocks one debuff. After You're Mine without Artifact, you deal 25% less, block 25% less and take 50% more for the rest of the fight.
+- **You're Mine always lands on turn 2**: from then on you deal 25% less, block 25% less and take 50% more for the rest of the fight. Front-load damage on turns 1 and 2, and bring block that does not depend on block cards (Colossus against the Vulnerable Amalgam, Dark Shackles on its big hits).
 - **Draw.** In the history, fatal decks had much less draw (2.2 against 3.9 cards, n=24) `[PLAYER-DATA, weak]`. Bound cards make draw more valuable.
 - **Target choice** `[COMMUNITY]`, two lines:
   1. Kill the Queen: the minion flees, but she blocks 20 per turn while the Amalgam lives. `tools/plan_turn.py` counts killing the Queen as lethal (the Amalgam carries Minion).
@@ -70,16 +70,16 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### First three turns
 - **Turn 1 (v0.111.1): the Torch Head Amalgam opens with a new Strong Tackle, 26 (32)** `[COMMUNITY]` patch notes. Block 26+ on turn 1.
-- Turn 1: expect the debuff setup. If you have Artifact, keep it for You're Mine. Block the Amalgam's Tackle 18.
+- Turn 1: Puppet Strings binds your first cards. Block the Amalgam's Strong Tackle and play your setup before You're Mine weakens everything.
 - Follow the chosen target line. Never let Off With Your Head (3×5, which is 7×5 under Vulnerable) land unblocked.
 
 ### Potion plan
-- An Ancient or Artifact-type potion before You're Mine, if you have one.
+- Strength or Dexterity potions on turn 1, before Weak and Frail arrive.
 - Block potions for Beam 8×3 and Off With Your Head.
 
 ### What killed the Player here, and the counter
 - Ironclad: 2 of 7 fatal (all characters: 8 of 24). The biggest signal is low arrival HP (54% against 79%). `[PLAYER-DATA]`
-- Counter: arrive healthy, carry Artifact if possible, keep draw high.
+- Counter: arrive healthy, front-load damage, keep draw high.
 
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`

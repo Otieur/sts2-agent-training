@@ -42,7 +42,7 @@ One page to keep in context during a run. It summarises `playbooks/ironclad.md` 
 | Waterfall Giant | **Safe plan** (simulated): the death explosion = its Steam Eruption; the turn after the kill is a stun, then block the explosion |
 | Knowledge Demon | Curse offers are Disintegration or one card: take Mind Rot, then Sloth, then Waste Away (close); never stack Disintegration (simulated) |
 | Kaiser Crab | Focus Rocket; end the Laser turn facing Rocket; kill a claw with the turn's last attack (Crab Rage) |
-| Queen | Turn 1 Strong Tackle 26 (Amalgam): block it; turn 2 You're Mine puts 99 Frail, Weak and Vulnerable on you (Artifact blocks it); she blocks 20 a turn while the Amalgam lives and only attacks after it dies; arrive high |
+| Queen | Turn 1 Strong Tackle 26 (Amalgam): block it; turn 2 You're Mine puts 99 Frail, Weak and Vulnerable on you (unavoidable: no player Artifact in StS2); she blocks 20 a turn while the Amalgam lives and only attacks after it dies; arrive high |
 | The Kin | Killing the Priest ends the fight (followers are Minions; confirmed in game): race it with a single-target deck; with hit-all damage clear the followers first (simulated) |
 | The Insatiable | Sandpit (4) kills you at 0: end every turn at 2 or more, and play Frantic Escape while cheap to keep 3–4; cost rises each play |
 | Test Subject | Phase 1: each Skill gives it 2 Strength, so attack; phases 100/200/300 HP with a one-turn stun between |
