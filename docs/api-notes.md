@@ -74,6 +74,15 @@ Full reference: `vendor/STS2-Agent/docs/api.md` (about 2,000 lines) and the mach
 
 ---
 
+## Observed live (STS2-Agent 0.16.2 on v0.111.1, 2026-11-19) `[OBS]`
+- **First action** (13:35 EST): `play_card` Tremble on a Fogmog returned `status: completed`; `GET /decisions` showed the `decision_reason`.
+- **First full fight** (14:10 EST, A10 floor 22, Bowlbug Rock and Egg, won in 2 turns, 60 to 61 HP with Burning Blood): 9 actions, no stuck state. Sequence: `play_card` Brand+ (returned `status: pending`, `stable: false`, after 1.34 s, and opened a `CARD_SELECTION` screen, `combat_hand_select`), `select_deck_card option_index=0` (exhaust Ascender's Bane), five more `play_card`, `end_turn`, `play_card` for lethal. Each call returned in about 1 to 1.5 s; the other actions returned `completed`, `stable: true`. Per-action median and p95 (request to settled state) were not measured precisely; the next fight should time them.
+- **Waits:** right after `end_turn` the next turn's state came back with a partial hand and `available_actions` without `play_card` for about 2 s while cards were drawn. Wait until `play_card` is in `available_actions` (or `combat.action_readiness.can_use_combat_actions` is true) before planning the turn.
+- **A card that asks for a choice** (Brand's "Exhaust 1 card") switches the screen to `CARD_SELECTION` with `selection.kind = combat_hand_select`; answer with `select_deck_card option_index=<n>` (indexes of the hand, in order).
+- **Live card values** (`dynamic_values`) include the player's own Strength (Strike 6 to 8 at 2 Strength) but not the target's Vulnerable (Strike stayed 6 against a Vulnerable enemy). Gap 22 answered.
+- **After a fight** the state keeps the last `combat` object (dead enemies) on the map and reward screens; route by `screen`, not by the presence of `combat`.
+- **Quitting the game** drops the connection mid-request (`RemoteDisconnected`); `tools/sts.py` reports it as a `ModError` and says when an action may or may not have been applied.
+
 ## STS2MCP (vendor/STS2MCP, commit 55e0648)
 
 ### Documented behaviour

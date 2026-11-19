@@ -195,11 +195,11 @@
 > - [x] `POST /action {"action":"play_card","card_index":N,"target_index":M,"client_context":{"decision_reason":"..."}}` plays the card in game. (Tremble on a Fogmog, A10 floor 8: status completed, energy 3 to 2, the Fogmog shows 3 Vulnerable; logged in `runs/smoke/decisions.jsonl`.)
 > - [x] `GET /decisions` contains the entry with the reason. Side finding for gap 22: with the target Vulnerable, a Strike's live `Damage` value stays 6, so live card values do not include the target's Vulnerable (the planner applies it on top).
 
-> **P0.E5.S3: Play one full fight and measure latency** · Size S · Status: Todo
+> **P0.E5.S3: Play one full fight and measure latency** · Size S · Status: In progress (fight won through the API 2026-11-19; precise latency still to time)
 > *As the Agent, I want to finish an entire Act 1 hallway fight via the API, so that I know the loop holds across turns and animations.*
 >
 > **Acceptance criteria**
-> - [ ] The fight ends in a win with no stuck state.
+> - [x] The fight ends in a win with no stuck state. (A10 floor 22 hallway, Bowlbug Rock and Egg, 2 turns, 9 actions; an Act 2 fight rather than Act 1.)
 > - [ ] `docs/api-notes.md` records the actions taken, the median and p95 time per action (request to state settled), and any waits needed (`combat.action_readiness`).
 
 > **P0.E5.S4: Probe the event stream** · Size S · Status: Todo
