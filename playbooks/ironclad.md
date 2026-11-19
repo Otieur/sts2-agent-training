@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.2 · Game version: v0.107.1 · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.3 · Game version: v0.107.1 · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -123,7 +123,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 ## 5. Rest-site policy
 
 - **Before a boss** `[HYPOTHESIS H1]`, tested in Phase 4 against the Player's baseline (equally likely to heal or smith at 37% HP before a boss):
-  - Acts 1–2: rest if HP is below the boss's threshold in section 10 (median + 10). Otherwise smith.
+  - Acts 1–2: rest if HP is below the boss's median damage **for the current ascension band** + 10 (`data/benchmarks/ironclad-encounters-by-band-v0.107.1.csv`; all-characters band file where Ironclad has fewer than 5 fights). Otherwise smith. The pooled numbers in section 10 are mostly A7–A10. Both practice post-mortems (`runs/examples/`) died with HP exactly equal to the A10 band median, where the band rule said rest and the pooled rule said smith.
   - **Act 3 and the A10 double boss: rest if HP is below 70%.**
   - Evidence (`reports/phase2/boss-arrival-hp.md`) is mixed. Boss death rates fall steeply with arrival HP, most of all in Act 3. But the Player's heals and smiths at the same HP were followed by almost the same boss death rate (31% against 30% under 50% HP). Confounding cuts both ways.
 - **Before an elite on the path:** rest if HP minus the elite's p75 would leave less than 50% of max for the next fights. `[HYPOTHESIS]`
@@ -135,9 +135,10 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 - **Priority** `[HYPOTHESIS]`:
   1. A relic or card that fills the current boss's checklist
   2. An S or A-tier card
-  3. Removal of a Strike in a small Act 1 deck
-  4. Other relics
-  5. Potions (especially Weak, Block and Strength for the coming boss)
+  3. **Removal of a removable curse** (Injury, Clumsy and others; Ascender's Bane is Eternal)
+  4. Removal of a Strike in a small Act 1 deck
+  5. Other relics
+  6. Potions (especially Weak, Block and Strength for the coming boss)
 - **Removal** `[HYPOTHESIS H4]`: remove a Strike at the first Act 1 shop when affordable, against the Player's relic-first baseline. Arithmetic: one removal is about a 3 percentage point improvement in draw quality. Act 1 basic-removal runs survived Act 1 in 79% of cases against 50% (confounded).
 - From A3, gold is about 25% scarcer. `[PLAYER-DATA]`
 - Ascender's Bane is Eternal and probably cannot be removed. `[GAME-EXTRACT]` keyword
@@ -229,6 +230,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Whether killing the Kin Priest ends that fight; whether Lagavulin Matriarch wakes when damaged.
 
 ## 14. Changelog
+- **v2.3 (2026-11-19, overnight):** pre-boss rest threshold uses the ascension-band median; curse removal added to the shop priority. Both from the practice post-mortems in `runs/examples/`.
 - **v2.2 (2026-11-19, overnight):** numeric corner targets for deck needs (section 2.1) from the deck-strength analysis (`reports/phase2/deck-strength.md`, `tools/deck_metrics.py`); H9 added.
 - **v2.1 (2026-11-19, overnight):** pre-boss rest rule split by act (Act 3 and A10: rest under 70%), from the boss arrival-HP analysis (`reports/phase2/boss-arrival-hp.md`). H1 evidence updated as mixed.
 - **v2 (2026-11-19, overnight):** imported decompiled game data (card roles, monster moves, powers).
