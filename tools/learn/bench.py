@@ -276,6 +276,54 @@ def summarize(recs, arms):
     return out
 
 
+def markdown(folder):
+    """Section 5 of reports/phase9/value-search-comparison.md: summary table, H1-H3 verdicts, paired tests."""
+    recs = load(folder)
+    man = json.loads((Path(folder) / "manifest.json").read_text())
+    arms = man["arms"]
+    summ = summarize(recs, arms)
+    L = [f"Run `{man['name']}`: {man['jobs']} jobs, {man['workers']} workers, {man['wall_seconds']} s wall, code `{man['code_commit']}`, "
+         f"game {man['game_version']} ({man['game_commit']}), model `{man['model']}`" + (f", action-value model `{man['q_model']}`" if man.get("q_model") else "") + ".", "",
+         "| Arm | Games | Errors | Won | Mean value | HP left after wins | Search s per decision | Host restarts |", "|---|---|---|---|---|---|---|---|"]
+    for n in arms:
+        x = summ[n]
+        L.append(f"| {n} | {x['games']} | {x['errors']} | {x['won']} | {x['mean_value']:.2f} | {x['mean_hp_if_won']:.2f} | {x['search_seconds_per_decision']:.3f} | {x['restarts']} |")
+    L += ["", "| Pair (B − A) | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |", "|---|---|---|---|---|---|---|---|"]
+    tests = {}
+    for a_, b_ in [("mc6", "vleaf6"), ("mc6", "vleaf2"), ("planner", "vgreedy"), ("planner", "mc6"), ("mc6", "vgreedy"), ("planner", "qpolicy"), ("mc6", "qpolicy")]:
+        if a_ in arms and b_ in arms:
+            t = paired(recs, a_, b_)
+            tests[(a_, b_)] = t
+            L.append(f"| {b_} − {a_} | {t['pairs']} | {t['mean_diff']:.2f} | {t['boot95'][0]:.2f} to {t['boot95'][1]:.2f} | {t['better']} | {t['worse']} | {t['equal']} | {t['sign_p_one_sided']:.4f} |")
+    L.append("")
+    if ("mc6", "vleaf6") in tests:
+        t = tests[("mc6", "vleaf6")]
+        L.append(f"- **H1** (`vleaf6` better than `mc6`, sign test p < 0.025): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
+                 + ("**holds**." if t["sign_p_one_sided"] < 0.025 and t["mean_diff"] > 0 else "**does not hold**."))
+    if ("mc6", "vleaf2") in tests:
+        t = tests[("mc6", "vleaf2")]
+        ratio = summ["vleaf2"]["search_seconds_per_decision"] / max(summ["mc6"]["search_seconds_per_decision"], 1e-9)
+        ok = t["boot95"][0] > -5 and ratio <= 0.4
+        L.append(f"- **H2** (`vleaf2` not worse than `mc6` by more than 5, lower bound > −5, time ratio ≤ 0.4): lower bound {t['boot95'][0]:.2f}, "
+                 f"time ratio {ratio:.2f}: " + ("**holds**." if ok else "**does not hold**."))
+    if ("planner", "vgreedy") in tests:
+        t = tests[("planner", "vgreedy")]
+        L.append(f"- **H3** (`vgreedy` better than `planner`, sign test p < 0.025): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
+                 + ("**holds**." if t["sign_p_one_sided"] < 0.025 and t["mean_diff"] > 0 else "**does not hold**."))
+    errs = [(r["fight"], r["sample"], n, v["error"][:120]) for r in recs for n, v in r["arms"].items() if "error" in v]
+    blocked = [(r["fight"], r["sample"], n) for r in recs for n, v in r["arms"].items() if v.get("blocked")]
+    L += ["", f"Jobs left out of pairs: {len(errs)} errors, {len(blocked)} blocked." + ("" if not errs else " " + "; ".join(f"fight {f} sample {s_} {n}: {e}" for f, s_, n, e in errs[:10]))]
+    by_room = {}
+    for r in recs:
+        for n in arms:
+            v = r["arms"].get(n, {})
+            if "value" in v:
+                by_room.setdefault((r["room"], n), []).append(v["value"])
+    L += ["", "Mean value by room type: " + "; ".join(f"{room} " + ", ".join(f"{n} {sum(by_room.get((room, n), [0])) / max(1, len(by_room.get((room, n), []))):.1f}" for n in arms)
+                                               for room in ("Monster", "Elite", "Boss"))]
+    return "\n".join(L)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out")
@@ -288,7 +336,11 @@ def main(argv=None):
     ap.add_argument("--limit", type=int, help="only the first N jobs (testing)")
     ap.add_argument("--report", help="print the summary and paired tests of a finished folder")
     ap.add_argument("--baseline", default="mc", help="arm the others are compared with in --report")
+    ap.add_argument("--markdown", action="store_true", help="with --report: the results section of the value-search comparison")
     a = ap.parse_args(argv)
+    if a.report and a.markdown:
+        print(markdown(a.report))
+        return 0
     if a.report:
         recs = load(a.report)
         man = json.loads((Path(a.report) / "manifest.json").read_text()) if (Path(a.report) / "manifest.json").exists() else {}
