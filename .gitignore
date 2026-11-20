@@ -23,3 +23,6 @@ sim/obj/
 data/sim/sandbox-home/
 data/learn/*/*
 !data/learn/*/manifest.json
+.venv-learn/
+models/*
+!models/*.json

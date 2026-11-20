@@ -1,6 +1,6 @@
 # Security Review: Learning Framework (P9.E5.S1, SA-8)
 
-**Verdict: PENDING the Player's approval.** Nothing has been downloaded or installed. Checked 2026-11-20 from PyPI's public metadata (`https://pypi.org/pypi/<name>/json`) on this Mac (macOS 15.6, Apple silicon, Python 3.13.3 from python.org).
+**Verdict: APPROVED by the Player on 2026-11-20 at 12:34 for PyTorch 2.15.0**, with the install method and the rules below. MLX was not chosen. Checked 2026-11-20 from PyPI's public metadata (`https://pypi.org/pypi/<name>/json`) on this Mac (macOS 15.6, Apple silicon, Python 3.13.3 from python.org).
 
 ## Why it is needed
 Phase 9 trains a combat value network and a policy network on the simulator's self-play data (`tools/selfplay.py`, `data/learn/`). The project's tools are standard-library Python; neural networks need a numerical library. No learning code runs until one is approved.
@@ -38,3 +38,10 @@ Like any Python package, it runs with the user's permissions. Mitigations: train
 - `torch.load` only on the project's own checkpoints and always with `weights_only=True` (a checkpoint from elsewhere could run code when loaded).
 - Version changes need a new entry in this review (version, date, hashes) before installing.
 - Deployed models take the visible observation only (FP-10); the model card states the data and the teacher (P9.E2.S4).
+
+## Install record (2026-11-20)
+- `.venv-learn/` created with `python3 -m venv` (Python 3.13.3); nothing installed globally.
+- The 10 wheels were downloaded into an empty folder with `pip download torch==2.15.0 --only-binary :all:`; each wheel's sha256 matched the hash PyPI publishes for it, and torch's matched the hash recorded above. `requirements-learn.txt` (committed) pins every package with its hash.
+- Installed offline from that folder: `pip install --require-hashes --only-binary :all: --no-index --find-links <folder> -r requirements-learn.txt`. Installed set: filelock 4.2.12, fsspec 2026.9.0, Jinja2 3.1.6, MarkupSafe 3.0.4, mpmath 1.3.0, networkx 3.7, setuptools 84.2.1, sympy 1.14.0, torch 2.15.0, typing_extensions 4.16.0.
+- Check: `import torch` works; the Apple GPU backend (MPS) is available; 200 training steps of a small network ran on CPU (3.0 s) and MPS (1.9 s); the process was polled with `lsof -i` 39 times while it ran and opened no socket.
+- NumPy is not installed (torch prints a warning and works without it). Adding NumPy later needs a new entry here.
