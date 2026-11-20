@@ -69,7 +69,8 @@ def load_examples(folders, enc):
 def split(ex, seed, test_share=0.15, val_share=0.15, cv=None):
     """Splits by source run. With cv = (fold, k), the runs outside the test split are cut into k folds and fold `fold`
     is the validation split (cross-validation for development choices; the test split stays the same and unread)."""
-    runs = sorted({e["run"] for e in ex})
+    sim_runs = {e["run"] for e in ex if str(e["run"]).startswith(("sim-", "synthetic-"))}
+    runs = sorted({e["run"] for e in ex} - sim_runs)        # simulated-run sources always train; held-out splits are history runs
     random.Random(seed).shuffle(runs)
     n_test, n_val = max(1, round(len(runs) * test_share)), max(1, round(len(runs) * val_share))
     test_runs, val_runs = set(runs[:n_test]), set(runs[n_test:n_test + n_val])

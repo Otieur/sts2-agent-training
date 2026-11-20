@@ -76,6 +76,11 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 `asm/asm.cs` (C#, .NET 10 file-based app, runtime libraries only): indexes `sts2.dll` (types, members, constant values), builds a call graph from IL, or prints the IL of matching methods. Outputs go to `data/asm/` (not in git). Findings and next steps: `docs/proposals/engine-simulation-spike.md`.
 `dotnet run tools/asm/asm.cs -- index|calls <dll> <out>` · `dotnet run tools/asm/asm.cs -- il <dll> "Cmd+<Wait>"`
 
+## Fight situations from simulated runs
+| Tool | What it does | Typical call |
+|---|---|---|
+| `run_specs.py` | Plays whole runs in the simulator (draft scorer for card rewards, simple policy elsewhere, large test max HP so runs reach acts 2 and 3) and records every fight's starting situation as a fight spec; HP is re-drawn to 45-100% of the real max. Sources are `sim-<seed>`, which training always puts in the training split | `run_specs.py --runs 60 --workers 2` |
+
 ## Repository front page
 | Tool | What it does | Typical call |
 |---|---|---|
