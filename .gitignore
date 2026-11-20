@@ -16,3 +16,8 @@ data/asm/
 
 # Combat replays copied from the game (binary; may hold account identifiers)
 data/sim/replays/
+
+# Simulator host build output (Phase 7)
+sim/bin/
+sim/obj/
+data/sim/sandbox-home/

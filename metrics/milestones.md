@@ -13,7 +13,7 @@ Definitions in `TRAINING_PLAN.md` section 4. Update when a milestone is reached 
 | M7 | Solo win at A10 (stretch) | — | | | |
 | M8 | Better than the Player: higher band win rate over 10+ finished runs (A5–9 above 25%, A10 above 8%) | — | | | |
 | M9 | 3 A10 wins in 10 consecutive A10 runs (stretch) | — | | | |
-| M10 | Engine spike verdict: the game's combat runs in our own process (or the fallback route) | — | | | |
+| M10 | Engine spike verdict: the game's combat runs in our own process (or the fallback route) | Done | 2026-11-19 | reports/phase7/spike.md | Route R3; one recorded boss fight exact at all 26 turn boundaries; speed not yet measured warm |
 | M11 | Simulator exact on at least 99% of at least 100 recorded fights; at least 20 fights per second per core (target 200) | — | | | |
 | M12 | Combat autopilot plays every fight of 3 real runs without language-model calls; median decision 1 s or less | — | | | |
 | M13 | Search beats the rule planner (pre-registered comparison) | — | | | |

@@ -28,6 +28,9 @@ The language model stays for what it does well: reviewing runs, writing and chec
 
 All three phases follow [simulator-integrity.md](../simulator-integrity.md). Its fair-play rules are part of this decision: a decision may use only what a player can see, and a simulator built on the real engine must re-sample every hidden random stream for decisions.
 
+## Spike verdict (2026-11-19)
+**Go, route R3.** The host in `sim/` loads the game's assemblies, starts the model database (hash equal to the game's), rebuilds a recorded boss fight and replays it: all 26 turn-boundary states equal the game's recorded states and the final HP matches the real run. Saves and the install were untouched. Not yet shown: per-fight speed once warm (one cold pass took 1.4–1.6 s under heavy load; start-up about 30 s) and fidelity beyond one fight. Details: `reports/phase7/spike.md`.
+
 ## Consequences
 - New phase documents 7–9, STATUS rows, milestones M10–M14 in `TRAINING_PLAN.md`.
 - Phases 4–6 continue in parallel: real runs supply replays (ground truth) and evaluation. Scored runs follow the integrity rules ML-5 to ML-8.

@@ -64,7 +64,7 @@
 > - [x] Waits, test flags, determinism, replay recording, the restore gap and Godot coupling documented with evidence.
 > - [x] Integrity hazards audited ([simulator-integrity.md](simulator-integrity.md)).
 
-> **P7.E1.S1: Host skeleton** · Size S · Status: Todo
+> **P7.E1.S1: Host skeleton** · Size S · Status: Done (2026-11-19, `sim/`)
 > *As the Agent, I want a console program that loads the game's assemblies from the install folder, so that later stories have somewhere to run.*
 >
 > **Acceptance criteria**
@@ -75,7 +75,7 @@
 >
 > **Notes:** `sim/bin` and `sim/obj` go into `.gitignore`.
 
-> **P7.E1.S2: Model database start-up without the engine** · Size M · Status: Todo
+> **P7.E1.S2: Model database start-up without the engine** · Size M · Status: Done (2026-11-19: 1,660 models, model-id hash equal to the game's; `reports/phase7/spike.md`)
 > *As the Agent, I want to know whether the game's model database starts outside Godot, so that the spike fails fast if it cannot (EN-1).*
 >
 > **Acceptance criteria**
@@ -85,7 +85,7 @@
 >
 > **Notes:** catch at the first native call (Harmony prefix on suspect methods, or the exception GodotSharp throws without an engine). Desk check 2026-11-19 `[GAME]`: `ModelDb.Init`, `InitIds` and `Preload` call no Godot method; the static constructor of `RelicModel` creates a `Godot.StringName`, which needs the engine's native string table, so test that first. Character and card-pool Godot calls are colour structs.
 
-> **P7.E1.S3: First fight in our process** · Size L · Status: Todo
+> **P7.E1.S3: First fight in our process** · Size L · Status: Done (2026-11-19: a recorded boss fight replayed; all 26 turn-boundary states equal to the game's, final HP 87/102)
 > *As the Agent, I want one real fight to run end to end in the host, so that the route is proven rather than assumed.*
 >
 > **Acceptance criteria**
@@ -95,20 +95,20 @@
 >
 > **Notes:** the save folder is read-only for analysis (the project instructions). Copy the file into the sandbox; never open it in place for writing.
 
-> **P7.E1.S4: First timing** · Size S · Status: Todo
+> **P7.E1.S4: First timing** · Size S · Status: In progress (one cold pass 1.4–1.6 s under heavy machine load; warm timing blocked on the reset between fights, P7.E3.S4)
 > *As the Agent, I want the cost of one fight measured, so that the speed target is grounded.*
 >
 > **Acceptance criteria**
 > - [ ] A scripted policy (the first playable card on the first enemy, else end turn) plays the same fight 1,000 times. Median, p95 and start-up time are recorded in `reports/phase7/spike.md`.
 
-> **P7.E1.S5: Go or no-go** · Size S · Status: Todo
+> **P7.E1.S5: Go or no-go** · Size S · Status: Done (2026-11-19: go, route R3; `reports/phase7/spike.md`)
 > *As the Player, I want a clear verdict with numbers, so that I know whether the fast-simulator plan holds.*
 >
 > **Acceptance criteria**
 > - [ ] `reports/phase7/spike.md` ends with: route (R3, R4 or fallback), the blockers found, fights per second, and the next story.
 > - [ ] Decision 0003 is updated with the verdict, and the Player gets a short summary.
 
-> **P7.E1.S6: Route R4 spike (only if R3 fails)** · Size L · Status: Todo (conditional; Player-gated)
+> **P7.E1.S6: Route R4 spike (only if R3 fails)** · Size L · Status: Dropped (R3 works)
 > *As the Agent, I want to test the real game binary as an offline headless simulation server, so that a failed R3 does not end the plan.*
 >
 > **Acceptance criteria**

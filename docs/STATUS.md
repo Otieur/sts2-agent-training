@@ -99,7 +99,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P7.E1 | Feasibility spike | In progress | S0 desk study done (`docs/proposals/engine-simulation-spike.md`, `tools/asm/asm.cs`); S1–S5 next; S6 (route R4) only if R3 fails |
+| P7.E1 | Feasibility spike | Done except timing | **Go, route R3** (2026-11-19, `reports/phase7/spike.md`): a recorded boss fight replays in our own process with all 26 turn-boundary states equal to the game's; S4 warm timing waits on the reset between fights |
 | P7.E2 | Ground truth from the real game | In progress | S1 done: the game records every fight itself (`replays/latest.mcr`); S2 implemented in `tools/play_turn.py`, first live run pending; no mod change needed |
 | P7.E3 | Engine host and sandbox | Todo | |
 | P7.E4 | Combat interface | Todo | |
@@ -150,7 +150,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | M7 | Solo win at A10 (stretch) | — | | |
 | M8 | Better than the Player (band win rate over 10+ runs: A5–9 above 25%, A10 above 8%) | — | | |
 | M9 | 3 A10 wins in 10 consecutive A10 runs (stretch) | — | | |
-| M10 | Engine spike verdict: the game's combat runs in our own process (or route R4) | — | | |
+| M10 | Engine spike verdict: the game's combat runs in our own process (or route R4) | Done | 2026-11-19 | reports/phase7/spike.md |
 | M11 | Simulator fidelity (99% of 100+ recorded fights exact) and speed (20+ fights/s per core; target 200) | — | | |
 | M12 | Combat autopilot: every fight of 3 real runs, no language-model calls, median decision 1 s or less | — | | |
 | M13 | Search beats the rule planner (pre-registered) | — | | |
