@@ -75,3 +75,8 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 ## Game engine research
 `asm/asm.cs` (C#, .NET 10 file-based app, runtime libraries only): indexes `sts2.dll` (types, members, constant values), builds a call graph from IL, or prints the IL of matching methods. Outputs go to `data/asm/` (not in git). Findings and next steps: `docs/proposals/engine-simulation-spike.md`.
 `dotnet run tools/asm/asm.cs -- index|calls <dll> <out>` · `dotnet run tools/asm/asm.cs -- il <dll> "Cmd+<Wait>"`
+
+## Repository front page
+| Tool | What it does | Typical call |
+|---|---|---|
+| `update_readme.py` | Regenerates the marked sections of `README.md` (headline numbers, latest benchmark table, real-run line, roadmap, refresh date) and `assets/benchmark-*.svg` from tracked files: reports, dataset and benchmark manifests, scoreboard, status board. Run after every milestone and at the end of each work block, then fast-forward `master` | `update_readme.py`, `update_readme.py --check` |

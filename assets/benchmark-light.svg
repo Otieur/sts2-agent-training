@@ -1,22 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" aria-label="Benchmark wins out of 120: rule planner 75, action-value network 78, Monte Carlo search 86">
-<rect width="880" height="300" rx="14" fill="#f6f8fa"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 290" width="880" height="290" role="img" aria-label="Benchmark wins out of 120: Rule planner (planner) 75, Action-value network (qpolicy) 78, Monte Carlo search (mc6) 86">
+<rect width="880" height="290" rx="14" fill="#f6f8fa"/>
 <text x="32" y="44" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#1f2328">Fights won on the benchmark</text>
 <text x="32" y="68" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">60 fights taken from real runs (hallways, elites, bosses; A0–A10), 2 seeds each = 120 games per policy</text>
-<line x1="300.0" y1="92" x2="300.0" y2="252" stroke="#d0d7de" stroke-width="1"/>
-<text x="300.0" y="272" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">0</text>
-<line x1="415.0" y1="92" x2="415.0" y2="252" stroke="#d0d7de" stroke-width="1"/>
-<text x="415.0" y="272" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">30</text>
-<line x1="530.0" y1="92" x2="530.0" y2="252" stroke="#d0d7de" stroke-width="1"/>
-<text x="530.0" y="272" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">60</text>
-<line x1="645.0" y1="92" x2="645.0" y2="252" stroke="#d0d7de" stroke-width="1"/>
-<text x="645.0" y="272" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">90</text>
-<line x1="760.0" y1="92" x2="760.0" y2="252" stroke="#d0d7de" stroke-width="1"/>
-<text x="760.0" y="272" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">120</text>
+<line x1="300.0" y1="92" x2="300.0" y2="242" stroke="#d0d7de" stroke-width="1"/>
+<text x="300.0" y="262" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">0</text>
+<line x1="415.0" y1="92" x2="415.0" y2="242" stroke="#d0d7de" stroke-width="1"/>
+<text x="415.0" y="262" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">30</text>
+<line x1="530.0" y1="92" x2="530.0" y2="242" stroke="#d0d7de" stroke-width="1"/>
+<text x="530.0" y="262" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">60</text>
+<line x1="645.0" y1="92" x2="645.0" y2="242" stroke="#d0d7de" stroke-width="1"/>
+<text x="645.0" y="262" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">90</text>
+<line x1="760.0" y1="92" x2="760.0" y2="242" stroke="#d0d7de" stroke-width="1"/>
+<text x="760.0" y="262" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">120</text>
 <text x="32" y="119" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#1f2328">Rule planner</text>
 <text x="32" y="137" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a">hand-written turn planner</text>
 <rect x="300" y="104" width="287.5" height="30" rx="6" fill="#8c959f"/>
 <text x="597.5" y="124" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1f2328">75</text>
-<text x="848" y="124" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="end" fill="#57606a">~3 ms/move</text>
+<text x="848" y="124" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="end" fill="#57606a">3 ms/move</text>
 <text x="32" y="169" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#1f2328">Action-value network</text>
 <text x="32" y="187" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a">learned, no simulation</text>
 <rect x="300" y="154" width="299.0" height="30" rx="6" fill="#0a7bbd"/>
@@ -26,6 +26,6 @@
 <text x="32" y="237" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a">6 sampled futures per move</text>
 <rect x="300" y="204" width="329.7" height="30" rx="6" fill="#d9621e"/>
 <text x="639.7" y="224" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1f2328">86</text>
-<text x="848" y="224" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="end" fill="#57606a">0.8 s/move</text>
-<text x="530" y="292" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">games won (of 120)</text>
+<text x="848" y="224" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="end" fill="#57606a">783 ms/move</text>
+<text x="530" y="282" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#57606a">games won (of 120)</text>
 </svg>

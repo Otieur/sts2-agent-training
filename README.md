@@ -39,14 +39,16 @@
 <tr><td><b>The rules</b></td><td>Judged by outcomes, never by imitation. The agent only ever uses what a player can see on screen. Every comparison that decides anything is written down before it runs, and failed experiments stay in the record.</td></tr>
 </table>
 
+<!-- auto:numbers:start -->
 <table>
 <tr>
 <td align="center" width="25%"><h3>57</h3>human runs analysed<br><sub>deaths, damage per encounter, card picks</sub></td>
 <td align="center" width="25%"><h3>11 / 11</h3>recorded fights replayed exactly<br><sub>by the simulator, every state equal</sub></td>
-<td align="center" width="25%"><h3>+24</h3>value per fight from search<br><sub>over the rule planner, 120 paired games</sub></td>
-<td align="center" width="25%"><h3>21,968</h3>self-play decisions<br><sub>from 586 situations of real runs</sub></td>
+<td align="center" width="25%"><h3>+24</h3>value per fight from search<br><sub>over the rule planner, 120 games</sub></td>
+<td align="center" width="25%"><h3>21,968</h3>self-play decisions<br><sub>from 1,172 simulated fights</sub></td>
 </tr>
 </table>
+<!-- auto:numbers:end -->
 
 ## How it works
 
@@ -71,6 +73,26 @@
   </picture>
 </p>
 
+**Latest benchmark** (generated from the run manifests; every run plays the same 120 games):
+
+<!-- auto:latest:start -->
+| Policy | Fights won | Mean value | Time per move | Model | Run |
+|---|---|---|---|---|---|
+| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 783 ms | – | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
+| Action-value network (`qpolicy`) | 78 of 120 | -53.1 | 7 ms | `q-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
+| Rule planner (`planner`) | 75 of 120 | -59.1 | 3 ms | – | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
+| Search with value network (`vleaf6`) | 63 of 120 | -88.8 | 384 ms | `value-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
+| Search with value network (`vleaf2`) | 58 of 120 | -99.6 | 148 ms | `value-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
+| Value network, one step (`vgreedy`) | 24 of 120 | -174.2 | 60 ms | `value-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
+<!-- auto:latest:end -->
+
+<!-- auto:realruns:start -->
+**Real game:** 2 full runs by the agent, 1 won (highest Ascension won: 0). Latest: 2026-11-20, Ascension 1, reached act 1 floor 17. Details in the [scoreboard](metrics/scoreboard.csv) and [run journals](runs/).
+<!-- auto:realruns:end -->
+
+**What has been established so far:**
+
+
 | Area | Result | Evidence |
 |---|---|---|
 | **Simulator fidelity** | All 11 recorded fights replay with every state equal to the game's; a recorded 48-floor run matches 71 of 71 checks. | [fidelity](reports/phase7/fidelity.md) · [run fidelity](reports/phase7/run-fidelity.md) |
@@ -81,12 +103,12 @@
 | **Fast learned policy** | The action-value network (`q-v2`) plays level with the planner (78 wins against 75, not significant) at 7 ms per move with no simulation at all. | [comparison](reports/phase9/value-search-comparison-2.md) |
 | **Learned evaluation** | Not there yet. Three pre-registered tests of the value network inside search failed; the diagnosis is that it memorises the roughly thirty training runs. Data augmentation and set dropout are the current fix. | [test 1](reports/phase9/value-search-comparison.md) · [test 3](reports/phase9/value-search-comparison-3.md) |
 | **Potions in search** | Promising but not established: +7 value per fight after pricing each potion, interval −0.2 to +15.8. | [comparison](reports/phase8/potions-in-search.md) |
-| **Real game** | Two full runs by the agent in the real game: a win at Ascension 0 and a loss to the Act 1 boss at Ascension 1. | [runs](runs/) · [scoreboard](metrics/scoreboard.csv) |
 
 *Value is the search's own score: HP left after a win, or −100 minus the enemies' HP left after a loss. Negative results are kept on purpose: they explain what changed next.*
 
 ## Roadmap
 
+<!-- auto:roadmap:start -->
 | Phase | What it delivers | State |
 |:---:|---|:---:|
 | **0** | Setup: game version, mods (security-reviewed), save safety, live interface | ◐ |
@@ -99,6 +121,7 @@
 | **7** | Engine simulator: the game's combat and whole runs in our own process | ◐ |
 | **8** | Combat search and autopilot | ◐ |
 | **9** | Learned models and reinforcement learning | ◐ |
+<!-- auto:roadmap:end -->
 
 ● done · ◐ in progress · ○ not started. Milestones reached so far: **first solo win (A0)** and **engine running in our own process**. Next: learned evaluation that beats rollouts, a combat autopilot for real runs, the Ascension ladder to A10, and co-op. The detailed plan, with epics and acceptance criteria, is in [TRAINING_PLAN.md](TRAINING_PLAN.md) and [docs/](docs/README.md); live progress is on the [status board](docs/STATUS.md).
 
@@ -163,3 +186,7 @@ Each decision-relevant comparison follows [a fixed template](templates/compariso
 ## Disclaimer
 
 A fan-made research project, not affiliated with or endorsed by Mega Crit. *Slay the Spire* is a trademark of Mega Crit Games. No game files, art, text dumps or decompiled data are distributed in this repository.
+
+<!-- auto:updated:start -->
+<sub>Generated sections last refreshed 2026-11-20 · game v0.111.1 · `python3 -I tools/update_readme.py`</sub>
+<!-- auto:updated:end -->
