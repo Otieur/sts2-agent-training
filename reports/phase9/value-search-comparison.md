@@ -1,6 +1,6 @@
 # Comparison: value network in search against the flat Monte Carlo teacher
 
-Written before the run (P8.E1.S3, ML-10) on 2026-11-20 at 13:40, while the training data was still being generated. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
+Written before the run (P8.E1.S3, ML-10) on 2026-11-20 at 13:15, while the training data was still being generated. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
 
 ## 1. Hypotheses
 - **H1 (equal cost):** search with value-network leaves and 6 worlds per candidate (`vleaf6`) gets a higher fight value than the current teacher (`mc6`, 6 worlds per candidate, planner rollouts to the end of the fight). Both make the same number of restores per decision, which is what search time is driven by (restore about 100 ms under load, rollout steps about 2 ms).
