@@ -253,9 +253,9 @@ def sign_test(better, worse):
     return sum(math.comb(n, i) for i in range(better, n + 1)) / 2 ** n
 
 
-def paired(recs, a, b, reps=4000, seed=0):
-    rows = [(r["arms"][a]["value"], r["arms"][b]["value"]) for r in recs
-            if "value" in r["arms"].get(a, {}) and "value" in r["arms"].get(b, {})
+def paired(recs, a, b, reps=4000, seed=0, metric="value"):
+    rows = [(r["arms"][a][metric], r["arms"][b][metric]) for r in recs
+            if metric in r["arms"].get(a, {}) and metric in r["arms"].get(b, {})
             and not r["arms"][a].get("blocked") and not r["arms"][b].get("blocked")]
     diffs = [y - x for x, y in rows]
     better, worse = sum(1 for d in diffs if d > 0), sum(1 for d in diffs if d < 0)
@@ -279,6 +279,36 @@ def summarize(recs, arms):
                   "search_seconds_per_decision": round(sum(x["search_seconds"] for x in ok) / max(dec, 1), 3),
                   "restarts": sum(x.get("restarts", 0) for x in ok)}
     return out
+
+
+def markdown_potions(folder):
+    """Section 5 of reports/phase8/potions-in-search.md."""
+    recs = load(folder)
+    man = json.loads((Path(folder) / "manifest.json").read_text())
+    arms = man["arms"]
+    L = [f"Run `{man['name']}`: {man['jobs']} jobs, {man['workers']} workers, {man['wall_seconds']} s wall, code `{man['code_commit']}`, "
+         f"game {man['game_version']} ({man['game_commit']}).", "",
+         "| Arm | Won | Mean priced value | Mean value | Potions used (Monster / Elite / Boss) | Search s per decision |", "|---|---|---|---|---|---|"]
+    summ = summarize(recs, arms)
+    for n in arms:
+        ok = [(r, r["arms"][n]) for r in recs if "value" in r["arms"].get(n, {})]
+        used = {room: sum(x.get("potions_used") or 0 for r, x in ok if r["room"] == room) for room in ("Monster", "Elite", "Boss")}
+        L.append(f"| {n} | {summ[n]['won']} | {sum(x['value_priced'] for _, x in ok) / max(1, len(ok)):.2f} | {summ[n]['mean_value']:.2f} | "
+                 f"{used['Monster']} / {used['Elite']} / {used['Boss']} | {summ[n]['search_seconds_per_decision']:.3f} |")
+    L += ["", "| Pair (B − A), priced value | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |", "|---|---|---|---|---|---|---|---|"]
+    verdict = {}
+    for a_, b_ in [("mc6", "mc6p"), ("planner", "plannerp")]:
+        t = paired(recs, a_, b_, metric="value_priced")
+        verdict[b_] = t
+        L.append(f"| {b_} − {a_} | {t['pairs']} | {t['mean_diff']:.2f} | {t['boot95'][0]:.2f} to {t['boot95'][1]:.2f} | {t['better']} | {t['worse']} | {t['equal']} | {t['sign_p_one_sided']:.4f} |")
+    L.append("")
+    for h, b_ in (("H1", "mc6p"), ("H2", "plannerp")):
+        t = verdict[b_]
+        L.append(f"- **{h}** (`{b_}` better on priced value, sign test p < 0.025): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
+                 + ("**holds**." if t["sign_p_one_sided"] < 0.025 and t["mean_diff"] > 0 else "**does not hold**."))
+    errs = [(r["fight"], r["sample"], n) for r in recs for n, v in r["arms"].items() if "error" in v]
+    L.append(f"\nErrors: {len(errs)}.")
+    return "\n".join(L)
 
 
 def markdown(folder):
@@ -344,7 +374,8 @@ def main(argv=None):
     ap.add_argument("--markdown", action="store_true", help="with --report: the results section of the value-search comparison")
     a = ap.parse_args(argv)
     if a.report and a.markdown:
-        print(markdown(a.report))
+        man = json.loads((Path(a.report) / "manifest.json").read_text())
+        print(markdown_potions(a.report) if any(n.endswith("p") for n in man["arms"]) else markdown(a.report))
         return 0
     if a.report:
         recs = load(a.report)

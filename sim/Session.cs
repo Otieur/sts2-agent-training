@@ -33,13 +33,26 @@ public sealed partial class Session
 
     public void Load(string path) { Replay = global::Replay.Load(path); _hasRun = _hasRun && false; }
 
+    // A choice left unanswered (search scoring the position right after an action that opens one, such as the Knowledge
+    // Demon's curse offer during the enemy turn) keeps its game action waiting; clean-up does not cancel it, and the next
+    // fight would queue behind it and never start (found 2026-11-20). Answer it with the smallest allowed pick first.
+    void Unwind()
+    {
+        for (var i = 0; i < 20 && Choices.Current is { } ch; i++)
+        {
+            Choices.Answer(Enumerable.Range(0, ch.Min).ToList());
+            Ctx.Drain();
+        }
+        Choices.Current = null;
+    }
+
     // Rebuilds the fight and applies the first `events` recorded events (rounded up to the next decision point).
     // With a sample seed the state is sanitized; without one it keeps the true random state (fidelity use only).
     public void Reset(int events, ulong? sampleSeed)
     {
         if (Replay == null) throw new InvalidOperationException("no replay loaded");
         SynchronizationContext.SetSynchronizationContext(Ctx);
-        if (Run != null) { Rm.CleanUp(true); Ctx.Drain(); }
+        if (Run != null) { Unwind(); Rm.CleanUp(true); Ctx.Drain(); }
         RunMode = false;
         Run = RunState.FromSerializable(Replay.serializableRun);
         Rm.SetUpReplay(Run, Replay, Me.NetId);
@@ -80,7 +93,7 @@ public sealed partial class Session
         _phase = System.Diagnostics.Stopwatch.StartNew();
         NewFightMs.Clear();
         SynchronizationContext.SetSynchronizationContext(Ctx);
-        if (Run != null) { Rm.CleanUp(true); Ctx.Drain(); }
+        if (Run != null) { Unwind(); Rm.CleanUp(true); Ctx.Drain(); }
         Mark("clean_up");
         Replay = null;
         RunMode = false;
