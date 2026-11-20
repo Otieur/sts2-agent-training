@@ -127,7 +127,7 @@ The target is to be better than the Player under the same information. A decisio
 
 | ID | Rule |
 |---|---|
-| LG-1 | Local research only. Game assemblies are referenced from the install folder and never copied into the repository. Decompiled code is not produced, and assembly indexes stay in `data/asm/` (ignored by git). Nothing from the game is published or shared. |
+| LG-1 | Local research only. Game assemblies are referenced from the install folder and never copied into the repository. Decompiled code is not produced, and assembly indexes stay in `data/asm/` (ignored by git). Nothing from the game is published or shared. The repository has a **private** remote, created at the Player's request on 2026-11-20; it holds our code, notes and number tables, no game files. It must stay private. |
 | LG-2 | The game's terms of use are the Player's to judge. The Agent does not claim any reading of them; it keeps everything private and local, and stops if the Player says so. |
 | LG-3 | The Agent plays online only with the Player (co-op), never in public lobbies or on leaderboards. |
 | LG-4 | The Player's personal details never enter simulator inputs, logs or datasets: save paths use `<id>` and `<home>`. Replays copied from the game (`replays/latest.mcr`, binary) may hold account identifiers, so they stay in `data/sim/replays/` (not in git) until a reader confirms what they contain; the game's own anonymisation (`CombatReplay.Anonymized`) is used where available. |

@@ -46,6 +46,7 @@
   - `sim/`: the C# host project, our own code. Build output goes to `sim/bin` and `sim/obj`, which git ignores.
   - `tools/sim.py`: the Python bridge.
   - Reports go to `reports/phase7/`; recorded fights go to `data/sim/replays/<run>/` (not in git).
+- **Co-op readiness** (the Player's standing requirement, 2026-11-20): co-op is a final goal, so no interface assumes one player. Observations and actions carry a player index, the session keeps a list of players, and run-level code goes through the game's own multiplayer-capable paths (action queue, choice synchronizer). Each single-player milestone records what its two-player version needs.
 - **Two modes** (FP-3):
   - *Fidelity mode* replays a finished, recorded fight with its true RNG, to test the simulator. Its output never reaches a decision.
   - *Decision mode* takes the current state, sanitizes it and re-samples every hidden stream (FP-15). Only this mode answers questions from Phase 8 and 9 code.
