@@ -79,13 +79,13 @@
 | Policy | Fights won | Mean value | Time per move | Model | Run |
 |---|---|---|---|---|---|
 | Monte Carlo search (`mc24`) | 89 of 120 | -26.1 | 3.5 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
-| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 911 ms | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
+| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 1.1 s | – | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
 | Monte Carlo search (`mc12`) | 85 of 120 | -32.6 | 1.8 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
-| Action-value network (`qpolicy`) | 78 of 120 | -53.1 | 7 ms | `q-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
-| Rule planner (`planner`) | 75 of 120 | -59.1 | 3 ms | – | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
-| Search with value network (`vleaf6`) | 63 of 120 | -88.8 | 384 ms | `value-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
-| Search with value network (`vleaf2`) | 58 of 120 | -99.6 | 148 ms | `value-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
-| Value network, one step (`vgreedy`) | 24 of 120 | -174.2 | 60 ms | `value-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
+| Rule planner (`planner`) | 75 of 120 | -59.1 | 3 ms | – | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
+| Action-value network (`qpolicy`) | 73 of 120 | -58.4 | 9 ms | `q-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
+| Search with value network (`vleaf2`) | 65 of 120 | -76.4 | 211 ms | `value-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
+| Search with value network (`vleaf6`) | 64 of 120 | -80.4 | 598 ms | `value-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
+| Value network, one step (`vgreedy`) | 64 of 120 | -87.5 | 86 ms | `value-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
 <!-- auto:latest:end -->
 
 <!-- auto:realruns:start -->
