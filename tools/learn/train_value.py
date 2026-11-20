@@ -298,6 +298,7 @@ def main(argv=None):
     ap.add_argument("--patience", type=int, default=8)
     ap.add_argument("--hidden", type=int, default=256)
     ap.add_argument("--card-dim", type=int, default=32)
+    ap.add_argument("--set-drop", type=float, default=0.0, help="probability of hiding each relic, potion and pile card in training")
     ap.add_argument("--drop", type=float, default=0.1)
     ap.add_argument("--threads", type=int, default=3)
     ap.add_argument("--device", default="cpu")
@@ -328,7 +329,7 @@ def main(argv=None):
     lin_val, lin_epochs = train(lin, data["train"], data["val"], "cpu", 300, 1e-2, 0.0, 512, 20, lambda m: None)
     log(f"linear baseline: val loss {lin_val:.4f} after {lin_epochs} epochs")
 
-    model = M.ValueNet(enc.sizes(), a.card_dim, a.hidden, a.drop).to(a.device)
+    model = M.ValueNet(enc.sizes(), a.card_dim, a.hidden, a.drop, a.set_drop).to(a.device)
     params = sum(p.numel() for p in model.parameters())
     log(f"value network: {params} parameters on {a.device}")
     best_val, epochs = train(model, data["train"], data["val"], a.device, a.epochs, a.lr, a.wd, a.bs, a.patience, log)
@@ -391,7 +392,7 @@ def main(argv=None):
         manifests.append(json.loads(mf.read_text()) if mf.exists() else {"dataset": Path(folder).name, "manifest": "missing (batch still running)"})
     meta = {"name": a.name, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": git_commit(), "encoder": E.ENCODER_VERSION,
             "vocab": enc.about, "torch": torch.__version__, "device": a.device, "parameters": params,
-            "settings": {k: getattr(a, k) for k in ("epochs", "lr", "wd", "bs", "patience", "hidden", "card_dim", "drop", "split_seed", "search_weight")},
+            "settings": {k: getattr(a, k) for k in ("epochs", "lr", "wd", "bs", "patience", "hidden", "card_dim", "drop", "set_drop", "split_seed", "search_weight")},
             "epochs_run": epochs, "best_val_loss": best_val, "train_seconds": train_seconds,
             "data": [{"folder": str(Path(f).resolve().relative_to(PROJECT)), "manifest": m} for f, m in zip(a.data, manifests)],
             "split": split_info | {"sizes": {k: len(v) for k, v in parts.items()}, "fights": {k: len({e["fight"] for e in v}) for k, v in parts.items()}},

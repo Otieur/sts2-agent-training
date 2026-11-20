@@ -89,11 +89,14 @@ def _mean(x, mask):
 
 
 class ValueNet(nn.Module):
-    def __init__(self, sizes, card_dim=32, hidden=256, drop=0.1):
+    def __init__(self, sizes, card_dim=32, hidden=256, drop=0.1, set_drop=0.0):
         """Outputs [win logit, HP left if won / 100, enemy HP left if lost / 100]; the last two are residuals on the
-        current HP and the current enemy HP, so the network learns the change from now to the end of the fight."""
+        current HP and the current enemy HP, so the network learns the change from now to the end of the fight.
+        `set_drop`: during training, each relic, potion and pile card is hidden with this probability, so the network
+        cannot recognize a source run by its exact relic set and deck (it memorized them otherwise)."""
         super().__init__()
-        self.config = {"sizes": sizes, "card_dim": card_dim, "hidden": hidden, "drop": drop, "encoder": E.ENCODER_VERSION}
+        self.config = {"sizes": sizes, "card_dim": card_dim, "hidden": hidden, "drop": drop, "set_drop": set_drop, "encoder": E.ENCODER_VERSION}
+        self.set_drop = set_drop
         d = card_dim
         self.card = nn.Embedding(sizes["cards"], d, padding_idx=0)
         self.upg = nn.Parameter(torch.zeros(d))
@@ -119,8 +122,17 @@ class ValueNet(nn.Module):
             x = x + upg.unsqueeze(-1) * self.upg
         return x
 
+    def _hide(self, ids):
+        if self.training and self.set_drop > 0:
+            return ids * (torch.rand(ids.shape, device=ids.device) >= self.set_drop).long()
+        return ids
+
     def features(self, b):
         """Shared state encoding: the trunk input, per-card hand vectors [B, H, 64] and per-enemy vectors [B, E, 64]."""
+        if self.training and self.set_drop > 0:
+            b = dict(b)
+            for f in ("relic_ids", "potion_ids", "draw_ids", "discard_ids", "exhaust_ids"):
+                b[f] = self._hide(b[f])
         hm = (b["hand_ids"] > 0).float()
         hand = self.hand(torch.cat([self.cards(b["hand_ids"], b["hand_feats"][..., 0]), b["hand_feats"]], -1))
         piles = [_mean(self.cards(b[p + "_ids"], b[p + "_upg"]), (b[p + "_ids"] > 0).float()) for p in ("draw", "discard", "exhaust")]
@@ -184,8 +196,8 @@ class QNet(ValueNet):
     """Action values (P9.E3.S1): the value network's state encoding plus, for each candidate, the vector of the card it
     plays and of its target; predicts the search's value of that candidate (/100). Scoring candidates needs no host
     call at all, so it is the fastest policy (and a prior for search)."""
-    def __init__(self, sizes, card_dim=32, hidden=256, drop=0.1):
-        super().__init__(sizes, card_dim, hidden, drop)
+    def __init__(self, sizes, card_dim=32, hidden=256, drop=0.1, set_drop=0.0):
+        super().__init__(sizes, card_dim, hidden, drop, set_drop)
         self.config["kind"] = "q"
         self.kind_emb = nn.Embedding(3, 16)
         self.q = nn.Sequential(nn.Linear(128 + 16 + 64 + 64 + 1, 128), nn.ReLU(), nn.Dropout(drop), nn.Linear(128, 1))
@@ -208,7 +220,7 @@ def save(model, path, extra=None):
 def load(path, device="cpu"):
     ck = torch.load(path, map_location=device, weights_only=True)
     cfg = ck["config"]
-    m = (QNet if cfg.get("kind") == "q" else ValueNet)(cfg["sizes"], cfg["card_dim"], cfg["hidden"], cfg["drop"])
+    m = (QNet if cfg.get("kind") == "q" else ValueNet)(cfg["sizes"], cfg["card_dim"], cfg["hidden"], cfg["drop"], cfg.get("set_drop", 0.0))
     m.load_state_dict(ck["state"])
     m.eval()
     return m, ck.get("extra", {})

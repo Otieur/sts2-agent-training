@@ -102,6 +102,7 @@ def main(argv=None):
     ap.add_argument("--patience", type=int, default=8)
     ap.add_argument("--hidden", type=int, default=128)
     ap.add_argument("--card-dim", type=int, default=16)
+    ap.add_argument("--set-drop", type=float, default=0.0, help="probability of hiding each relic, potion and pile card in training")
     ap.add_argument("--drop", type=float, default=0.2)
     ap.add_argument("--threads", type=int, default=3)
     ap.add_argument("--dev", action="store_true")
@@ -116,7 +117,7 @@ def main(argv=None):
     parts, split_info = TV.split(ex, a.split_seed)
     print(f"{len(ex)} decisions; " + ", ".join(f"{k} {len(v)}" for k, v in parts.items()), flush=True)
     data = {k: tensors(v) for k, v in parts.items() if v}
-    model = M.QNet(enc.sizes(), a.card_dim, a.hidden, a.drop)
+    model = M.QNet(enc.sizes(), a.card_dim, a.hidden, a.drop, a.set_drop)
     opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=a.wd)
     (btr, ytr), (bva, yva) = data["train"], data["val"]
     n = ytr[0].shape[0]
@@ -151,7 +152,7 @@ def main(argv=None):
         single_ms = (time.time() - t) / 200 * 1000
     meta = {"name": a.name, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": TV.git_commit(), "encoder": E.ENCODER_VERSION,
             "torch": torch.__version__, "parameters": sum(p.numel() for p in model.parameters()),
-            "settings": {k: getattr(a, k) for k in ("epochs", "lr", "wd", "bs", "patience", "hidden", "card_dim", "drop", "split_seed")},
+            "settings": {k: getattr(a, k) for k in ("epochs", "lr", "wd", "bs", "patience", "hidden", "card_dim", "drop", "set_drop", "split_seed")},
             "epochs_run": ep + 1, "best_val_loss": best, "train_seconds": round(time.time() - t0),
             "data": [str(Path(f).resolve().relative_to(PROJECT)) for f in a.data],
             "split": split_info | {"sizes": {k: len(v) for k, v in parts.items()}}, "results": results, "single_decision_ms": round(single_ms, 3)}
