@@ -10,3 +10,6 @@ __pycache__/
 
 # STS2MCP deck cache (rebuilt from combat piles by tools/mcp_adapter.py)
 runs/current/deck.json
+
+# Game assembly indexes (tools/asm/asm.cs): describe the game code, change every patch
+data/asm/

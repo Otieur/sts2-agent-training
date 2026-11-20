@@ -68,6 +68,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P4.E5 | Evaluation | In progress | Scoreboard, milestones, exam seeds ready |
 | P4.E6 | Ascension ladder | In progress | Rules written |
 | P4.E7 | Operations | Todo | |
+| P4.R1 | Engine simulation spike | Desk study done | `docs/proposals/engine-simulation-spike.md`: hidden Instant fast mode, deterministic replays with checksums, combat logic mostly free of Godot calls; prototypes (Instant mode, replay capture, simulator host) wait on the Player (mod change) |
 
 ## Phase 5: Second character ([doc](phase-5-second-character.md))
 
