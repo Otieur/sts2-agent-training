@@ -8,13 +8,13 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · elite** · Encounter ID `PHANTASMAL_GARDENERS_ELITE`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Phantasmal Gardener** (HP 26–31 (27–32 at A8+), base values; seen in 104 of 26 fights)
-  - `BITE_MOVE` SingleAttackIntent(BiteDamage) → Deal 5 damage
-  - `LASH_MOVE` SingleAttackIntent(LashDamage) → Deal 7 damage
-  - `FLAIL_MOVE` MultiAttackIntent(FlailDamage, FlailRepeat) → Deal 1 damage 3 times
-  - `ENLARGE_MOVE` BuffIntent → Gain 2 Strength (StrengthPower)
+  - `BITE_MOVE` Attack 5 → Deal 5 damage
+  - `LASH_MOVE` Attack 7 → Deal 7 damage
+  - `FLAIL_MOVE` Attack 1 x 3 → Deal 1 damage 3 times
+  - `ENLARGE_MOVE` Buff → Gain 2 Strength (StrengthPower)
   - Passive: PowerCmd.Apply<SkittishPower>
 
 ### The Player's record `[PLAYER-DATA]`

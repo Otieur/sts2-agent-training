@@ -8,18 +8,18 @@ Status: Plan v1, 2026-11-19.
 
 **Act 2 · weak** · Encounter ID `BOWLBUGS_WEAK`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Bowlbug Rock** (HP 45–48 (46–49 at A8+), base values; seen in 61 of 61 fights)
-  - `HEADBUTT_MOVE` SingleAttackIntent(HeadbuttDamage) → Deal 15 (16 at A9+) damage
-  - `DIZZY_MOVE` StunIntent → (no command in move body)
+  - `HEADBUTT_MOVE` Attack 15 (16 at A9+) → Deal 15 (16 at A9+) damage
+  - `DIZZY_MOVE` Stun → (no command in move body)
   - Passive: PowerCmd.Apply<ImbalancedPower>
 - **Bowlbug Nectar** (HP 35–38 (36–39 at A8+), base values; seen in 39 of 61 fights)
-  - `THRASH_MOVE` SingleAttackIntent(ThrashDamage) → Deal 3 damage
-  - `BUFF_MOVE` BuffIntent → Gain 15 (16 at A9+) Strength (StrengthPower)
-  - `THRASH2_MOVE` SingleAttackIntent(ThrashDamage) → Deal 3 damage
+  - `THRASH_MOVE` Attack 3 → Deal 3 damage
+  - `BUFF_MOVE` Buff → Gain 15 (16 at A9+) Strength (StrengthPower)
+  - `THRASH2_MOVE` Attack 3 → Deal 3 damage
 - **Bowlbug Egg** (HP 21–22 (23–24 at A8+), base values; seen in 22 of 61 fights)
-  - `BITE_MOVE` SingleAttackIntent(BiteDamage)+DefendIntent → Deal 7 (8 at A9+) damage, Gain 7 Block
+  - `BITE_MOVE` Attack 7 (8 at A9+) + Defend → Deal 7 (8 at A9+) damage, Gain 7 Block
 
 ### The Player's record `[PLAYER-DATA]`
 

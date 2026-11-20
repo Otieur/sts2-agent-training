@@ -11,7 +11,9 @@ Run it after every game update (docs/runbooks/game-patch.md).
     python3 -I tools/game_monsters.py --cached   # reuse data/asm/monsters-il.txt
 
 Ascension levels that change monsters: ToughEnemies (A8, more HP), DeadlyEnemies (A9, more damage).
-Limits: numbers written inline in move logic (not in a property) and move order are not read here.
+Also reads each monster's move list and shown intents (GenerateMoveStateMachine) into the facts file ("moves").
+Limits: numbers written inline in move logic (not in a property), move effects beyond the intents, and the order in
+which moves follow each other are not read here.
 """
 import argparse
 import json
@@ -70,6 +72,45 @@ def game_monsters(text):
                 props[name[4:]] = v
         if props:
             out[snake(cls)] = props
+    return out
+
+
+def game_moves(text):
+    """{monster: [{"id": move id, "intents": [[intent type, damage or count property/number, repeat property/number], ...]}]}
+    read from each monster's GenerateMoveStateMachine: the moves in declaration order with the intents the game shows."""
+    out = {}
+    for cls, ms in parse_methods(text).items():
+        cls = cls[len(NS):] if cls.startswith(NS) else cls.split("Models.Monsters.")[-1]
+        ins = ms.get("GenerateMoveStateMachine")
+        if "+" in cls or "." in cls or not ins:
+            continue
+        moves, move_id, intents, args, index_next = [], None, None, [], False
+        for op in ins:
+            if op.startswith("ldstr str:") and intents is None:
+                move_id = op[len("ldstr str:"):]
+            elif op.startswith("newarr") and "AbstractIntent" in op:
+                intents, args, index_next = [], [], False
+            elif intents is not None:
+                c = const(op)
+                if op == "dup":
+                    args, index_next = [], True
+                elif c is not None:
+                    if index_next:
+                        index_next = False
+                    else:
+                        args.append(c)
+                elif op.startswith("call") and "::get_" in op:
+                    args.append(op.rsplit("::get_", 1)[1])
+                elif op.startswith("newobj new:") and "Intents." in op:
+                    kind = op.split("Intents.")[1].split("::")[0].replace("Intent", "")
+                    intents.append([kind] + (args + [None, None])[:2])
+                    args = []
+                elif op.startswith("newobj new:") and "MoveState::.ctor" in op:
+                    if move_id:
+                        moves.append({"id": move_id, "intents": intents})
+                    move_id, intents = None, None
+        if moves:
+            out[snake(cls)] = moves
     return out
 
 
@@ -133,9 +174,9 @@ def main(argv=None):
     build = game_build()
     facts = {"about": "Monster numbers read from the installed game's code by tools/game_monsters.py: per monster, numeric "
                       "properties as {base, asc, level} (asc applies from that ascension level). [GAME] for this build.",
-             "build": build, "monsters": monsters}
+             "build": build, "monsters": monsters, "moves": game_moves(IL.read_text())}
     (FACTS_DIR / f"game-monsters-{build.split()[0]}.json").write_text(
-        json.dumps(facts, separators=(",", ":")).replace('}},"', '}},\n"') + "\n")
+        json.dumps(facts, separators=(",", ":")).replace('}},"', '}},\n"').replace('}]}],"', '}]}],\n"') + "\n")
     rows, missing_in_ours, missing_in_game = compare(monsters)
     write_report(monsters, rows, missing_in_ours, missing_in_game, build)
     print(f"{len(monsters)} monsters read from the game ({build}); {len(rows)} differ from our data; "

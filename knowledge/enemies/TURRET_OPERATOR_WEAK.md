@@ -8,16 +8,17 @@ Status: Plan v1, 2026-11-19.
 
 **Act 3 · weak** · Encounter ID `TURRET_OPERATOR_WEAK`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Living Shield** (HP 55 (65 at A8+), base values; seen in 53 of 53 fights)
-  - `SHIELD_SLAM_MOVE` SingleAttackIntent(ShieldSlamDamage) → Deal 6 damage
-  - `SMASH_MOVE` SingleAttackIntent(SmashDamage)+BuffIntent → Deal 16 (18 at A9+) damage, Gain 3 Strength (StrengthPower)
+  - `SHIELD_SLAM_MOVE` Attack 6 → Deal 6 damage
+  - `SMASH_MOVE` Attack 16 (18 at A9+) + Buff → Deal 16 (18 at A9+) damage, Gain 3 Strength (StrengthPower)
   - Passive: PowerCmd.Apply<RampartPower>
 - **Turret Operator** (HP 41 (51 at A8+), base values; seen in 53 of 53 fights)
-  - `UNLOAD_MOVE_1` MultiAttackIntent(FireDamage, 5) → Deal 3 (4 at A9+) damage 5 times
-  - `UNLOAD_MOVE_2` MultiAttackIntent(FireDamage, 5) → Deal 3 (4 at A9+) damage 5 times
-  - `RELOAD_MOVE` BuffIntent → Gain 1 Strength (StrengthPower)
+  - `UNLOAD_MOVE` Attack 3 (4 at A9+) x 5 `[GAME]` (not in the extract: effect text unknown)
+  - `UNLOAD_MOVE_2` Attack 3 (4 at A9+) x 5 → Deal 3 (4 at A9+) damage 5 times
+  - `RELOAD_MOVE` Buff → Gain 1 Strength (StrengthPower)
+  - ~~`UNLOAD_MOVE_1`~~ not in the installed game `[GAME]`
 
 ### The Player's record `[PLAYER-DATA]`
 

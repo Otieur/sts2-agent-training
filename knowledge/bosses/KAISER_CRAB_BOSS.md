@@ -8,21 +8,21 @@ Status: Act 2 (Hive) boss. Plan v1, 2026-11-19.
 
 **Act 2 · boss** · Encounter ID `KAISER_CRAB_BOSS`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Crusher** (HP 209 (219 at A8+), base values; seen in 28 of 28 fights)
-  - `THRASH_MOVE` SingleAttackIntent(ThrashDamage) → Deal 12 (14 at A9+) damage
-  - `ENLARGING_STRIKE_MOVE` SingleAttackIntent(EnlargingStrikeDamage) → Deal 4 damage
-  - `BUG_STING_MOVE` MultiAttackIntent(BugStingDamage, BugStingTimes)+DebuffIntent → Deal 6 (7 at A9+) damage 2 times, Apply 2 Weak (WeakPower) to the target, Apply 2 Frail (FrailPower) to the target
-  - `ADAPT_MOVE` BuffIntent → Gain 2 (3 at A9+) Strength (StrengthPower)
-  - `GUARDED_STRIKE_MOVE` SingleAttackIntent(GuardedStrikeDamage)+DefendIntent → Deal 12 (14 at A9+) damage, Gain 18 Block
+  - `THRASH_MOVE` Attack 12 (14 at A9+) → Deal 12 (14 at A9+) damage
+  - `ENLARGING_STRIKE_MOVE` Attack 4 → Deal 4 damage
+  - `BUG_STING_MOVE` Attack 6 (7 at A9+) x 2 + Debuff x0 → Deal 6 (7 at A9+) damage 2 times, Apply 2 Weak (WeakPower) to the target, Apply 2 Frail (FrailPower) to the target
+  - `ADAPT_MOVE` Buff → Gain 2 (3 at A9+) Strength (StrengthPower)
+  - `GUARDED_STRIKE_MOVE` Attack 12 (14 at A9+) + Defend → Deal 12 (14 at A9+) damage, Gain 18 Block
   - Passive: PowerCmd.Apply<BackAttackLeftPower>, PowerCmd.Apply<CrabRagePower>
 - **Rocket** (HP 199 (209 at A8+), base values; seen in 28 of 28 fights)
-  - `TARGETING_RETICLE_MOVE` SingleAttackIntent(TargetingReticleDamage) → Deal 3 (4 at A9+) damage
-  - `PRECISION_BEAM_MOVE` SingleAttackIntent(PrecisionBeamDamage) → Deal 18 (20 at A9+) damage
-  - `CHARGE_UP_MOVE` BuffIntent → Gain 2 (3 at A9+) Strength (StrengthPower)
-  - `LASER_MOVE` SingleAttackIntent(LaserDamage) → Deal 31 (35 at A9+) damage
-  - `RECHARGE_MOVE` SleepIntent → (no command in move body)
+  - `TARGETING_RETICLE_MOVE` Attack 3 (4 at A9+) → Deal 3 (4 at A9+) damage
+  - `PRECISION_BEAM_MOVE` Attack 18 (20 at A9+) → Deal 18 (20 at A9+) damage
+  - `CHARGE_UP_MOVE` Buff → Gain 2 (3 at A9+) Strength (StrengthPower)
+  - `LASER_MOVE` Attack 31 (35 at A9+) → Deal 31 (35 at A9+) damage
+  - `RECHARGE_MOVE` Sleep → (no command in move body)
   - Passive: PowerCmd.Apply<SurroundedPower>, PowerCmd.Apply<BackAttackRightPower>, PowerCmd.Apply<CrabRagePower>
 
 ### The Player's record `[PLAYER-DATA]`

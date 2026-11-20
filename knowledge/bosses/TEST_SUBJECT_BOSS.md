@@ -8,17 +8,18 @@ Status: Act 3 (Glory) boss. Plan v1, 2026-11-19.
 
 **Act 3 · boss** · Encounter ID `TEST_SUBJECT_BOSS`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Test Subject** (HP 100, base values; seen in 29 of 29 fights)
-  - `RESPAWN_MOVE` HealIntent+BuffIntent → Gain 1 Painful Stabs (PainfulStabsPower), Gain 1 Nemesis (NemesisPower), Remove Adaptable (AdaptablePower), Remove Painful Stabs (PainfulStabsPower)
-  - `BITE_MOVE` SingleAttackIntent(BiteDamage) → Deal 20 (22 at A9+) damage
-  - `SKULL_BASH_MOVE` SingleAttackIntent(SkullBashDamage)+DebuffIntent → Deal 14 (16 at A9+) damage, Apply 1 Vulnerable (VulnerablePower) to the target
-  - `POUNCE_MOVE` SingleAttackIntent(PounceDamage) → Deal 30 damage
-  - `MULTI_CLAW_MOVE` MultiAttackIntent(MultiClawDamage, () => MultiClawTotalCount) → Deal 10 (11 at A9+) damage ? times
-  - `PHASE3_LACERATE_MOVE` MultiAttackIntent(Phase3LacerateDamage, 3) → Deal 10 damage 3 times
-  - `BIG_POUNCE_MOVE` SingleAttackIntent(BigPounceDamage) → Deal 45 damage
-  - `BURNING_GROWL_MOVE` StatusIntent(BurningGrowlBurnCount)+BuffIntent → CardPileCmd.AddToCombatAndPreview<Burn>, Gain 2 (3 at A9+) Strength (StrengthPower)
+  - `RESPAWN_MOVE` Heal + Buff → Gain 1 Painful Stabs (PainfulStabsPower), Gain 1 Nemesis (NemesisPower), Remove Adaptable (AdaptablePower), Remove Painful Stabs (PainfulStabsPower)
+  - `BITE_MOVE` Attack 20 (22 at A9+) → Deal 20 (22 at A9+) damage
+  - `SKULL_BASH_MOVE` Attack 14 (16 at A9+) + Debuff x0 → Deal 14 (16 at A9+) damage, Apply 1 Vulnerable (VulnerablePower) to the target
+  - `MULTI_CLAW_MOVE` Attack 10 (11 at A9+) → Deal 10 (11 at A9+) damage ? times
+  - `PHASE3_LACERATE_MOVE` Attack 10 (11 at A9+) x 3 → Deal 10 damage 3 times
+  - `BIG_POUNCE` Attack 45 `[GAME]` (not in the extract: effect text unknown)
+  - `BURNING_GROWL_MOVE` Status + Buff → CardPileCmd.AddToCombatAndPreview<Burn>, Gain 2 (3 at A9+) Strength (StrengthPower)
+  - ~~`POUNCE_MOVE`~~ not in the installed game `[GAME]`
+  - ~~`BIG_POUNCE_MOVE`~~ not in the installed game `[GAME]`
   - Passive: PowerCmd.Apply<AdaptablePower>, PowerCmd.Apply<EnragePower>
 
 ### The Player's record `[PLAYER-DATA]`

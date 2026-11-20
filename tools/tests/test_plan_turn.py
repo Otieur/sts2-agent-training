@@ -556,6 +556,36 @@ class TestPlanTurn(unittest.TestCase):
         self.assertEqual((live.dmg, live.live), (12, True))
         self.assertFalse(pt.card_from_extract(0, "NO_SUCH_CARD").playable)
 
+    def test_hidden_intent_plans_for_the_largest_attack(self):
+        # [GAME] v0.111.1 move lists (knowledge/data/game-monsters-v0.111.1.json)
+        self.assertEqual(pt.worst_hidden_move("ARCHITECT"), (0, 0))               # its only move does nothing
+        self.assertEqual(pt.worst_hidden_move("VANTOM"), (26, 1))                 # Dismember
+        self.assertEqual(pt.worst_hidden_move("VANTOM", ascension=9), (30, 1))
+        self.assertEqual(pt.worst_hidden_move("NO_SUCH_MONSTER"), (0, 0))
+        st = {"screen": "COMBAT", "run": {"ascension": 0},
+              "combat": {"player": {"energy": 3, "current_hp": 50}, "hand": [],
+                         "enemies": [{"enemy_id": "VANTOM", "name": "Vantom", "current_hp": 100, "move_id": "INK_BLOT_MOVE",
+                                      "intents": [{"intent_type": "Hidden"}]}]}}
+        _, _, enemies = pt.from_state(st)
+        self.assertEqual((enemies[0].intent_per_hit, enemies[0].intent_hits), (26, 1))   # not the 7 that move_id would reveal
+        self.assertIn("intent hidden", enemies[0].name)
+
+    def test_weak_player_damage_is_truncated_once(self):
+        # Live Strike while Weak with 3 Strength shows floor(9 x 0.75) = 6. Against a Vulnerable enemy the game deals
+        # floor(9 x 0.75 x 1.5) = 10, not floor(6 x 1.5) = 9.
+        card = pt._card_from_extract(0, "STRIKE_IRONCLAD", {"Damage": 6}, 1, True)
+        self.assertEqual(card.base_dmg, 6)
+        e = lambda: [pt.parse_enemy("A:100:0:0:vuln", 0)]  # noqa: E731
+        o = pt.simulate([card], [0], pt.Player(energy=1, strength=3, weak=True), e())
+        self.assertEqual(o["dealt"], 10)
+        # another modifier in play (the live value is not what base + Strength gives): keep the live number
+        odd = pt._card_from_extract(0, "STRIKE_IRONCLAD", {"Damage": 8}, 1, True)
+        o = pt.simulate([odd], [0], pt.Player(energy=1, strength=3, weak=True), e())
+        self.assertEqual(o["dealt"], 12)
+        # not Weak: unchanged
+        o = pt.simulate([pt._card_from_extract(0, "STRIKE_IRONCLAD", {"Damage": 9}, 1, True)], [0], pt.Player(energy=1, strength=3), e())
+        self.assertEqual(o["dealt"], 13)
+
 
 if __name__ == "__main__":
     unittest.main()

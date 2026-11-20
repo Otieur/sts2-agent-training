@@ -8,13 +8,13 @@ Status: Plan v1, 2026-11-19.
 
 **Act 2 · elite** · Encounter ID `INFESTED_PRISMS_ELITE`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Infested Prism** (HP 161 (171 at A8+), base values; seen in 47 of 47 fights)
-  - `JAB_MOVE` SingleAttackIntent(JabDamage) → Deal 15 (17 at A9+) damage
-  - `RADIATE_MOVE` SingleAttackIntent(RadiateDamage)+DefendIntent → Deal 11 (13 at A9+) damage, Gain 11 (13 at A9+) Block
-  - `WHIRLWIND_MOVE` MultiAttackIntent(WhirlwindDamage, WhirlwindRepeat) → Deal 5 (6 at A9+) damage 3 times
-  - `PULSATE_MOVE` BuffIntent+DefendIntent → Gain 20 (22 at A8+) Block, Gain 4 Strength (StrengthPower)
+  - `JAB_MOVE` Attack 15 (17 at A9+) → Deal 15 (17 at A9+) damage
+  - `RADIATE_MOVE` Attack 11 (13 at A9+) + Defend → Deal 11 (13 at A9+) damage, Gain 11 (13 at A9+) Block
+  - `WHIRLWIND_MOVE` Attack 5 (6 at A9+) x 3 → Deal 5 (6 at A9+) damage 3 times
+  - `PULSATE_MOVE` Attack 8 (10 at A9+) + Buff + Defend → Gain 20 (22 at A8+) Block, Gain 4 Strength (StrengthPower) **(intents changed since the extract: was Buff+Defend; the effect text may be stale)**
   - Passive: PowerCmd.Apply<VitalSparkPower>
 
 ### The Player's record `[PLAYER-DATA]`

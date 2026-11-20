@@ -8,19 +8,22 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · weak** · Encounter ID `SLIMES_WEAK`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Twig Slime S** (HP 7–11 (8–12 at A8+), base values; seen in 79 of 79 fights)
-  - `BUTT_MOVE` SingleAttackIntent(TackleDamage) → Deal 4 (5 at A9+) damage
+  - `TACKLE_MOVE` Attack 4 (5 at A9+) `[GAME]` (not in the extract: effect text unknown)
+  - ~~`BUTT_MOVE`~~ not in the installed game `[GAME]`
 - **Leaf Slime S** (HP 11–15 (12–16 at A8+), base values; seen in 79 of 79 fights)
-  - `BUTT_MOVE` SingleAttackIntent(TackleDamage) → Deal 3 (4 at A9+) damage
-  - `GOOP_MOVE` StatusIntent(1) → CardPileCmd.AddToCombatAndPreview<Slimed>
+  - `TACKLE_MOVE` Attack 3 (4 at A9+) `[GAME]` (not in the extract: effect text unknown)
+  - `GOOP_MOVE` Status x1 → CardPileCmd.AddToCombatAndPreview<Slimed>
+  - ~~`BUTT_MOVE`~~ not in the installed game `[GAME]`
 - **Leaf Slime M** (HP 32–35 (33–36 at A8+), base values; seen in 45 of 79 fights)
-  - `CLUMP_SHOT` SingleAttackIntent(ClumpDamage) → Deal 8 (9 at A9+) damage
-  - `STICKY_SHOT` StatusIntent(2) → CardPileCmd.AddToCombatAndPreview<Slimed>
+  - `CLUMP_SHOT` Attack 8 (9 at A9+) → Deal 8 (9 at A9+) damage
+  - `STICKY_SHOT` Status x2 → CardPileCmd.AddToCombatAndPreview<Slimed>
 - **Twig Slime M** (HP 26–28 (27–29 at A8+), base values; seen in 34 of 79 fights)
-  - `CLUMP_SHOT_MOVE` SingleAttackIntent(ClumpDamage) → Deal 11 (12 at A9+) damage
-  - `STICKY_SHOT_MOVE` StatusIntent(1) → CardPileCmd.AddToCombatAndPreview<Slimed>
+  - `POKEY_POUNCE_MOVE` Attack 11 (12 at A9+) `[GAME]` (not in the extract: effect text unknown)
+  - `STICKY_SHOT_MOVE` Status x1 → CardPileCmd.AddToCombatAndPreview<Slimed>
+  - ~~`CLUMP_SHOT_MOVE`~~ not in the installed game `[GAME]`
 
 ### The Player's record `[PLAYER-DATA]`
 

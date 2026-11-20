@@ -8,22 +8,24 @@ Status: Act 3 (Glory) boss. Plan v1, 2026-11-19.
 
 **Act 3 · boss** · Encounter ID `QUEEN_BOSS`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Torch Head Amalgam** (HP 199 (211 at A8+), base values; seen in 24 of 24 fights)
-  - `TACKLE_1_MOVE` SingleAttackIntent(TackleDamage) → Deal 18 (22 at A9+) damage
-  - `TACKLE_2_MOVE` SingleAttackIntent(TackleDamage) → Deal 18 (22 at A9+) damage
-  - `BEAM_MOVE` MultiAttackIntent(SoulBeamDamage, 3) → Deal 8 damage 3 times
-  - `TACKLE_3_MOVE` SingleAttackIntent(WeakTackleDamage) → Deal 14 (16 at A9+) damage
-  - `TACKLE_4_MOVE` SingleAttackIntent(WeakTackleDamage) → Deal 14 (16 at A9+) damage
+  - `STRONG_TACKLE_MOVE` Attack 26 (32 at A9+) `[GAME]` (not in the extract: effect text unknown)
+  - `TACKLE_2_MOVE` Attack 18 (22 at A9+) → Deal 18 (22 at A9+) damage
+  - `BEAM_MOVE` Attack 8 x 3 → Deal 8 damage 3 times
+  - `TACKLE_3_MOVE` Attack 14 (16 at A9+) → Deal 14 (16 at A9+) damage
+  - `TACKLE_4_MOVE` Attack 14 (16 at A9+) → Deal 14 (16 at A9+) damage
+  - ~~`TACKLE_1_MOVE`~~ not in the installed game `[GAME]`
   - Passive: PowerCmd.Apply<MinionPower>
 - **Queen** (HP 400 (419 at A8+), base values; seen in 24 of 24 fights)
-  - `PUPPET_STRINGS_MOVE` CardDebuffIntent → Apply 3 Chains Of Binding (ChainsOfBindingPower) to the target
-  - `YOUR_MINE_MOVE` DebuffIntent → Apply 99 Frail (FrailPower) to the target, Apply 99 Weak (WeakPower) to the target, Apply 99 Vulnerable (VulnerablePower) to the target
-  - `BURN_BRIGHT_FOR_ME_MOVE` BuffIntent+DefendIntent → Apply 1 Strength (StrengthPower) to the target, Gain 20 Block
-  - `OFF_WITH_YOUR_HEAD_MOVE` MultiAttackIntent(OffWithYourHeadDamage, 5) → Deal 3 (4 at A9+) damage 5 times
-  - `EXECUTION_MOVE` SingleAttackIntent(ExecutionDamage) → Deal 15 (18 at A9+) damage
-  - `ENRAGE_MOVE` BuffIntent → Gain 2 Strength (StrengthPower)
+  - `PUPPET_STRINGS_MOVE` CardDebuff → Apply 3 Chains Of Binding (ChainsOfBindingPower) to the target
+  - `YOU_ARE_MINE_MOVE` Debuff x0 `[GAME]` (not in the extract: effect text unknown)
+  - `BURN_BRIGHT_FOR_ME_MOVE` Buff + Defend → Apply 1 Strength (StrengthPower) to the target, Gain 20 Block
+  - `OFF_WITH_YOUR_HEAD_MOVE` Attack 3 (4 at A9+) x 5 → Deal 3 (4 at A9+) damage 5 times
+  - `EXECUTION_MOVE` Attack 15 (18 at A9+) → Deal 15 (18 at A9+) damage
+  - `ENRAGE_MOVE` Buff → Gain 2 Strength (StrengthPower)
+  - ~~`YOUR_MINE_MOVE`~~ not in the installed game `[GAME]`
 
 ### The Player's record `[PLAYER-DATA]`
 

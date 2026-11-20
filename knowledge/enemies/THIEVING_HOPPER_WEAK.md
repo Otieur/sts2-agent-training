@@ -8,14 +8,14 @@ Status: Plan v1, 2026-11-19.
 
 **Act 2 · weak** · Encounter ID `THIEVING_HOPPER_WEAK`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Thieving Hopper** (HP 79 (84 at A8+), base values; seen in 66 of 66 fights)
-  - `THIEVERY_MOVE` SingleAttackIntent(TheftDamage)+CardDebuffIntent → CardPileCmd.RemoveFromCombat, Apply a power to the target, Deal 17 (19 at A9+) damage
-  - `NAB_MOVE` SingleAttackIntent(NabDamage) → Deal 14 (16 at A9+) damage
-  - `HAT_TRICK_MOVE` SingleAttackIntent(HatTrickDamage) → Deal 21 (23 at A9+) damage
-  - `FLUTTER_MOVE` BuffIntent → Gain 5 Flutter (FlutterPower)
-  - `ESCAPE_MOVE` EscapeIntent → CreatureCmd.Escape
+  - `THIEVERY_MOVE` Attack 17 (19 at A9+) + CardDebuff → CardPileCmd.RemoveFromCombat, Apply a power to the target, Deal 17 (19 at A9+) damage
+  - `NAB_MOVE` Attack 14 (16 at A9+) → Deal 14 (16 at A9+) damage
+  - `HAT_TRICK_MOVE` Attack 21 (23 at A9+) → Deal 21 (23 at A9+) damage
+  - `FLUTTER_MOVE` Buff → Gain 5 Flutter (FlutterPower)
+  - `ESCAPE_MOVE` Escape → CreatureCmd.Escape
   - Passive: PowerCmd.Apply<EscapeArtistPower>
 
 ### The Player's record `[PLAYER-DATA]`

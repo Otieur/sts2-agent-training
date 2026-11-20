@@ -8,12 +8,12 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · weak** · Encounter ID `TOADPOLES_WEAK`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Toadpole** (HP 21–25 (22–26 at A8+), base values; seen in 152 of 76 fights)
-  - `SPIKE_SPIT_MOVE` MultiAttackIntent(SpikeSpitDamage, SpikeSpitRepeat) → Gain -2 Thorns (ThornsPower), Deal 3 (4 at A9+) damage 3 times
-  - `WHIRL_MOVE` SingleAttackIntent(WhirlDamage) → Deal 7 (8 at A9+) damage
-  - `SPIKEN_MOVE` BuffIntent → Gain 2 Thorns (ThornsPower)
+  - `SPIKE_SPIT_MOVE` Attack 3 (4 at A9+) x 3 → Gain -2 Thorns (ThornsPower), Deal 3 (4 at A9+) damage 3 times
+  - `WHIRL_MOVE` Attack 7 (8 at A9+) → Deal 7 (8 at A9+) damage
+  - `SPIKEN_MOVE` Buff → Gain 2 Thorns (ThornsPower)
 
 ### The Player's record `[PLAYER-DATA]`
 

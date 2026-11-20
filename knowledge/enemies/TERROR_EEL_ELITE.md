@@ -8,13 +8,14 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · elite** · Encounter ID `TERROR_EEL_ELITE`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Terror Eel** (HP 140 (150 at A8+), base values; seen in 28 of 28 fights)
-  - `CRASH_MOVE` SingleAttackIntent(CrashDamage) → Deal 16 (18 at A9+) damage
-  - `None` None → ThrashMove=MultiAttackIntent(ThrashDamage, ThrashRepeat)+BuffIntent -> Deal 3 damage 3 times, Gain 7 Vigor (VigorPower)
-  - `STUN_MOVE` StunIntent → (no command in move body)
-  - `TERROR_MOVE` DebuffIntent → Apply 99 Vulnerable (VulnerablePower) to the target
+  - `CRASH_MOVE` Attack 16 (18 at A9+) → Deal 16 (18 at A9+) damage
+  - `THRASH_MOVE` Attack 3 (4 at A9+) x 3 + Buff `[GAME]` (not in the extract: effect text unknown)
+  - `STUN_MOVE` Stun → (no command in move body)
+  - `TERROR_MOVE` Debuff x0 → Apply 99 Vulnerable (VulnerablePower) to the target
+  - ~~`None`~~ not in the installed game `[GAME]`
   - Passive: PowerCmd.Apply<ShriekPower>
 
 ### The Player's record `[PLAYER-DATA]`

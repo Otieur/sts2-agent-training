@@ -8,18 +8,19 @@ Status: data only; plan not written yet. Game version target v0.107.1.
 
 **Act 2 · normal** · Encounter ID `SLUMBERING_BEETLE_NORMAL`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Bowlbug Rock** (HP 45–48 (46–49 at A8+), base values; seen in 25 of 25 fights)
-  - `HEADBUTT_MOVE` SingleAttackIntent(HeadbuttDamage) → Deal 15 (16 at A9+) damage
-  - `DIZZY_MOVE` StunIntent → (no command in move body)
+  - `HEADBUTT_MOVE` Attack 15 (16 at A9+) → Deal 15 (16 at A9+) damage
+  - `DIZZY_MOVE` Stun → (no command in move body)
   - Passive: PowerCmd.Apply<ImbalancedPower>
 - **Bowlbug Silk** (HP 40–43 (41–44 at A8+), base values; seen in 25 of 25 fights)
-  - `TRASH_MOVE` MultiAttackIntent(ThrashDamage, 2) → Deal 4 (5 at A9+) damage 2 times
-  - `TOXIC_SPIT_MOVE` DebuffIntent → Apply 1 Weak (WeakPower) to the target
+  - `THRASH_MOVE` Attack 4 (5 at A9+) x 2 `[GAME]` (not in the extract: effect text unknown)
+  - `TOXIC_SPIT_MOVE` Debuff x0 → Apply 1 Weak (WeakPower) to the target
+  - ~~`TRASH_MOVE`~~ not in the installed game `[GAME]`
 - **Slumbering Beetle** (HP 86 (89 at A8+), base values; seen in 25 of 25 fights)
-  - `SNORE_MOVE` SleepIntent → (no command in move body)
-  - `ROLL_OUT_MOVE` SingleAttackIntent(RolloutDamage)+BuffIntent → Deal 16 (18 at A9+) damage, Gain 2 Strength (StrengthPower)
+  - `SNORE_MOVE` Sleep → (no command in move body)
+  - `ROLL_OUT_MOVE` Attack 16 (18 at A9+) + Buff → Deal 16 (18 at A9+) damage, Gain 2 Strength (StrengthPower)
   - Passive: PowerCmd.Apply<PlatingPower>, PowerCmd.Apply<SlumberPower>, SfxCmd.PlayLoop
 
 ### The Player's record `[PLAYER-DATA]`

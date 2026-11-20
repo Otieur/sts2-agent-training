@@ -8,12 +8,13 @@ Status: Plan v1, 2026-11-19.
 
 **Act 2 · weak** · Encounter ID `EXOSKELETONS_WEAK`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Exoskeleton** (HP 24–28 (26–30 at A8+), base values; seen in 225 of 75 fights)
-  - `SKITTER_MOVE` MultiAttackIntent(SkitterDamage, SkitterRepeats) → Deal 1 damage 3 (4 at A9+) times
-  - `MANDIBLE_MOVE` SingleAttackIntent(MandiblesDamage) → Deal 8 (9 at A9+) damage
-  - `ENRAGE_MOVE` BuffIntent → Gain 2 Strength (StrengthPower)
+  - `SKITTER_MOVE` Attack 1 x 3 (4 at A9+) → Deal 1 damage 3 (4 at A9+) times
+  - `MANDIBLES_MOVE` Attack 8 (9 at A9+) `[GAME]` (not in the extract: effect text unknown)
+  - `ENRAGE_MOVE` Buff → Gain 2 Strength (StrengthPower)
+  - ~~`MANDIBLE_MOVE`~~ not in the installed game `[GAME]`
   - Passive: PowerCmd.Apply<HardToKillPower>
 
 ### The Player's record `[PLAYER-DATA]`

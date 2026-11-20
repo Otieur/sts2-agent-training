@@ -8,12 +8,12 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · weak** · Encounter ID `NIBBITS_WEAK`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Nibbit** (HP 42–46 (44–48 at A8+), base values; seen in 83 of 83 fights)
-  - `BUTT_MOVE` SingleAttackIntent(ButtDamage) → Deal 12 (13 at A9+) damage
-  - `SLICE_MOVE` SingleAttackIntent(SliceDamage)+DefendIntent → Deal 6 (7 at A9+) damage, Gain 5 (6 at A8+) Block
-  - `HISS_MOVE` BuffIntent → Gain 2 (3 at A9+) Strength (StrengthPower)
+  - `BUTT_MOVE` Attack 12 (13 at A9+) → Deal 12 (13 at A9+) damage
+  - `SLICE_MOVE` Attack 6 (7 at A9+) + Defend → Deal 6 (7 at A9+) damage, Gain 5 (6 at A8+) Block
+  - `HISS_MOVE` Buff → Gain 2 (3 at A9+) Strength (StrengthPower)
 
 ### The Player's record `[PLAYER-DATA]`
 

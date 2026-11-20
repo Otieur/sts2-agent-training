@@ -8,14 +8,15 @@ Status: Act 2 (Hive) boss. Plan v1, 2026-11-19.
 
 **Act 2 · boss** · Encounter ID `THE_INSATIABLE_BOSS`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **The Insatiable** (HP 321 (341 at A8+), base values; seen in 34 of 34 fights)
-  - `LIQUIFY_GROUND_MOVE` BuffIntent+StatusIntent(6) → Apply a power to the target, Add a generated card to your pile
-  - `THRASH_MOVE_1` MultiAttackIntent(ThrashDamage, 2) → Deal 8 (9 at A9+) damage 2 times
-  - `THRASH_MOVE_2` MultiAttackIntent(ThrashDamage, 2) → Deal 8 (9 at A9+) damage 2 times
-  - `LUNGING_BITE_MOVE` SingleAttackIntent(BiteDamage) → Deal 28 (31 at A9+) damage
-  - `SALIVATE_MOVE` BuffIntent → Gain 2 (3 at A9+) Strength (StrengthPower)
+  - `LIQUIFY_GROUND_MOVE` Buff + Status x6 → Apply a power to the target, Add a generated card to your pile
+  - `THRASH_MOVE` Attack 8 (9 at A9+) x 2 `[GAME]` (not in the extract: effect text unknown)
+  - `THRASH_MOVE_2` Attack 8 (9 at A9+) x 2 → Deal 8 (9 at A9+) damage 2 times
+  - `LUNGING_BITE_MOVE` Attack 28 (31 at A9+) → Deal 28 (31 at A9+) damage
+  - `SALIVATE_MOVE` Buff → Gain 2 (3 at A9+) Strength (StrengthPower)
+  - ~~`THRASH_MOVE_1`~~ not in the installed game `[GAME]`
 
 ### The Player's record `[PLAYER-DATA]`
 

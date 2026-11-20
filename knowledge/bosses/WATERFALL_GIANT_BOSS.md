@@ -8,17 +8,17 @@ Status: Act 1 (Underdocks) boss. Plan v1, 2026-11-19.
 
 **Act 1 · boss** · Encounter ID `WATERFALL_GIANT_BOSS`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Waterfall Giant** (HP 240 (250 at A8+), base values; seen in 30 of 30 fights)
-  - `PRESSURIZE_MOVE` BuffIntent → Gain 15 Steam Eruption (SteamEruptionPower)
-  - `STOMP_MOVE` SingleAttackIntent(StompDamage)+DebuffIntent+BuffIntent → Deal 15 (16 at A9+) damage, Apply 1 Weak (WeakPower) to the target, Gain 3 Steam Eruption (SteamEruptionPower)
-  - `RAM_MOVE` SingleAttackIntent(RamDamage)+BuffIntent → Deal 10 (11 at A9+) damage, Gain 3 Steam Eruption (SteamEruptionPower)
-  - `SIPHON_MOVE` HealIntent+BuffIntent → Heal ? HP, Gain 3 Steam Eruption (SteamEruptionPower)
-  - `PRESSURE_GUN_MOVE` SingleAttackIntent(() => CurrentPressureGunDamage)+BuffIntent → Deal ? damage, Gain 3 Steam Eruption (SteamEruptionPower)
-  - `PRESSURE_UP_MOVE` SingleAttackIntent(PressureUpDamage)+BuffIntent → Deal 13 (14 at A9+) damage, Gain 3 Steam Eruption (SteamEruptionPower)
-  - `ABOUT_TO_BLOW_MOVE` StunIntent → Remove Steam Eruption (SteamEruptionPower)
-  - `EXPLODE_MOVE` DeathBlowIntent(() => SteamEruptionDamage) → Deal ? damage, Kill itself
+  - `PRESSURIZE_MOVE` Buff → Gain 15 Steam Eruption (SteamEruptionPower)
+  - `STOMP_MOVE` Attack 15 (16 at A9+) + Debuff x0 + Buff → Deal 15 (16 at A9+) damage, Apply 1 Weak (WeakPower) to the target, Gain 3 Steam Eruption (SteamEruptionPower)
+  - `RAM_MOVE` Attack 10 (11 at A9+) + Buff → Deal 10 (11 at A9+) damage, Gain 3 Steam Eruption (SteamEruptionPower)
+  - `SIPHON_MOVE` Heal + Buff → Heal ? HP, Gain 3 Steam Eruption (SteamEruptionPower)
+  - `PRESSURE_GUN_MOVE` Attack ? + Buff → Deal ? damage, Gain 3 Steam Eruption (SteamEruptionPower)
+  - `PRESSURE_UP_MOVE` Attack 13 (14 at A9+) + Buff → Deal 13 (14 at A9+) damage, Gain 3 Steam Eruption (SteamEruptionPower)
+  - `ABOUT_TO_BLOW_MOVE` Stun → Remove Steam Eruption (SteamEruptionPower)
+  - `EXPLODE_MOVE` Attack ? (death blow) → Deal ? damage, Kill itself
   - Passive: SfxCmd.PlayLoop
 
 ### The Player's record `[PLAYER-DATA]`

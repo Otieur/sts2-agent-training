@@ -77,6 +77,7 @@ class Card:
     hp_cost: int = 0
     x_cost: bool = False
     live: bool = False          # numbers already include the player's own modifiers
+    base_dmg: Optional[int] = None  # the game's base damage for a live card (before Strength, Weak and other modifiers)
     playable: bool = True
     note: str = ""
     potion: bool = False        # a potion slot (index = slot); costs nothing but is spent
@@ -171,6 +172,36 @@ class Player:
     block_per_attack: int = 0   # Block for every Attack played (Daughter of the Wind relic: 1)
 
 
+def _load_game_monsters():
+    """Monster numbers and move lists read from the game's code (tools/game_monsters.py), or {} if the file is absent."""
+    path = Path(__file__).resolve().parent.parent / "knowledge" / "data" / f"game-monsters-{TARGET_BUILD}.json"
+    try:
+        return json.loads(path.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def worst_hidden_move(monster_id, ascension=0):
+    """(damage per hit, hits) of the monster's largest attack among its moves, for an enemy whose intent is hidden.
+    (0, 0) when none of its moves attacks (the Architect's only move does nothing) or the monster is unknown. [GAME]"""
+    data = GAME_MONSTERS
+    props = (data.get("monsters") or {}).get(monster_id) or {}
+
+    def num(x):
+        if isinstance(x, (int, float)):
+            return int(x)
+        v = props.get(x) if isinstance(x, str) else None
+        return int(v.get("asc", v["base"]) if v and ascension >= 9 else v["base"]) if v else 0
+    best = (0, 0)
+    for mv in (data.get("moves") or {}).get(monster_id) or []:
+        for kind, val, rep_ in mv.get("intents") or []:
+            if "Attack" in kind or kind == "DeathBlow":
+                per, hits = num(val), (num(rep_) if rep_ is not None else 1)
+                if per * hits > best[0] * best[1]:
+                    best = (per, hits)
+    return best
+
+
 def _load_game_cards():
     """Card facts read from the game's code for the current build (tools/game_cards.py), or {} if the file is absent."""
     path = Path(__file__).resolve().parent.parent / "knowledge" / "data" / f"game-cards-{TARGET_BUILD}.json"
@@ -181,6 +212,7 @@ def _load_game_cards():
 
 
 GAME_CARDS = _load_game_cards()
+GAME_MONSTERS = _load_game_monsters()
 GAME_VAR_ATTR = {"DamageVar": "dmg", "BlockVar": "block", "PowerVar<VulnerablePower>": "vuln", "PowerVar<WeakPower>": "weak",
                  "PowerVar<StrengthPower>": "strength"}
 # upgrade targets in the game's OnUpgrade -> Card attributes ("Power" is Uppercut's shared Weak and Vulnerable amount)
@@ -390,6 +422,11 @@ def _card_from_extract(index, card_id, live=None, cost=None, playable=True):
             card.note = "Sandpit +1 (you die when Sandpit runs out)"
     if live:
         card.live = True
+        g = GAME_CARDS.get(cid)
+        if g and not _game_calculated(g):  # the game's base value, for exact rounding while Weak (per_hit)
+            base = next((v for vt, _n, v in g.get("vars") or [] if vt == "DamageVar" and isinstance(v, (int, float))), None)
+            if base is not None:
+                card.base_dmg = int(base) + (int(sum(a for tg, a in g.get("upgrade") or [] if tg == "Damage" and isinstance(a, (int, float)))) if plus else 0)
         for k in ("CalculatedDamage", "Damage"):
             if k in live:
                 card.dmg = int(live[k]); break
@@ -476,6 +513,13 @@ def per_hit(card, player, enemy, strength_gained, played_before=0, cruelty_gaine
     if card.live:
         d = base + strength_gained
         d = math.floor(d * (vm if enemy.vuln else 1.0) * slow + 1e-9)
+        # The live value already has the player's Weak applied and truncated, so multiplying it again can be 1 off
+        # ([OBS] 2026-11-19: Strike shows 4 while Weak). When the game's base value plus Strength reproduces the live
+        # value exactly, no other modifier is in play and the hit is rebuilt with one truncation, as the game does it.
+        if player.weak and card.base_dmg is not None:
+            raw = card.base_dmg + player.strength
+            if math.floor(raw * calc.WEAK + 1e-9) == base:
+                d = math.floor((raw + strength_gained) * calc.WEAK * (vm if enemy.vuln else 1.0) * slow + 1e-9)
     else:
         d = calc.hit_damage(base, player.strength + strength_gained, attacker_weak=player.weak, target_vulnerable=enemy.vuln,
                             extra_mult=slow, vulnerable_mult=vm)
@@ -1013,8 +1057,15 @@ def from_state(st):
         att = [i for i in _dicts(e.get("intents")) if i.get("damage") is not None]
         dmg = sum(int(i["damage"]) for i in att[:1])
         hits = sum(int(i.get("hits") or 1) for i in att[:1])
+        shown_name = e.get("name") or e.get("enemy_id")
+        # A hidden intent shows no damage. Never read move_id for it (docs/simulator-integrity.md FP-7): plan for the
+        # monster's largest attack instead, from the game's move list. v0.111.1: only the Architect, which never attacks.
+        if not att and any(str(i.get("intent_type") or "").lower() in ("hidden", "unknown") for i in _dicts(e.get("intents"))):
+            asc = _int((st.get("run") or {}).get("ascension") or 0) if isinstance(st.get("run"), dict) else 0
+            dmg, hits = worst_hidden_move(str(e.get("enemy_id") or "").upper(), asc)
+            shown_name = f"{shown_name} (intent hidden: " + (f"planning for its largest attack, {dmg}x{hits})" if dmg else "none of its moves attacks)")
         raw = e.get("index", len(enemies))  # an int (STS2-Agent) or an entity_id string (STS2MCP via mcp_adapter)
-        enemies.append(Enemy(len(enemies), e.get("name") or e.get("enemy_id"), int(e.get("current_hp") or 0),
+        enemies.append(Enemy(len(enemies), shown_name, int(e.get("current_hp") or 0),
                              int(e.get("block") or 0), dmg, hits,
                              vuln=any(k.startswith("VULNERABLE") for k in pw), weak=any(k.startswith("WEAK") for k in pw),
                              slippery=int(next((v for k, v in pw.items() if k.startswith("SLIPPERY")), 0) or 0),

@@ -8,12 +8,12 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · weak** · Encounter ID `FUZZY_WURM_CRAWLER_WEAK`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Fuzzy Wurm Crawler** (HP 55–57 (58–59 at A8+), base values; seen in 87 of 87 fights)
-  - `FIRST_ACID_GOOP` SingleAttackIntent(AcidGoopDamage) → Deal 4 (6 at A9+) damage
-  - `ACID_GOOP` SingleAttackIntent(AcidGoopDamage) → Deal 4 (6 at A9+) damage
-  - `INHALE` BuffIntent → Gain 7 Strength (StrengthPower)
+  - `FIRST_ACID_GOOP` Attack 4 (6 at A9+) → Deal 4 (6 at A9+) damage
+  - `ACID_GOOP` Attack 4 (6 at A9+) → Deal 4 (6 at A9+) damage
+  - `INHALE` Buff → Gain 7 Strength (StrengthPower)
 
 ### The Player's record `[PLAYER-DATA]`
 

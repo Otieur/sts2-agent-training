@@ -117,6 +117,24 @@ class TestGameMonsters(unittest.TestCase):
         self.assertEqual(gm.game_monsters(text), {"VANTOM": {"DismemberDamage": {"base": 26, "asc": 30, "level": "DeadlyEnemies"},
                                                              "MinInitialHp": {"base": 173, "asc": 183, "level": "ToughEnemies"}}})
 
+    def test_move_lists_from_il(self):
+        ns = "MegaCrit.Sts2.Core.Models.Monsters."
+        mi = "MegaCrit.Sts2.Core.MonsterMoves."
+        text = (f"### {ns}Vantom::GenerateMoveStateMachine\n"
+                "  0000 ldstr str:INKY_LANCE_MOVE\n  0005 ldarg.0\n  0006 ldc.i4.1\n"
+                f"  0007 newarr {mi}Intents.AbstractIntent\n  000C dup\n  000D ldc.i4.0\n"
+                f"  000E call {ns}Vantom::get_InkyLanceDamage\n  0013 ldc.i4.2\n"
+                f"  0014 newobj new:{mi}Intents.MultiAttackIntent::.ctor\n  0019 stelem.ref\n"
+                f"  001A newobj new:{mi}MonsterMoveStateMachine.MoveState::.ctor\n"
+                "  001F ldstr str:DISMEMBER_MOVE\n  0024 ldc.i4.2\n"
+                f"  0025 newarr {mi}Intents.AbstractIntent\n  002A dup\n  002B ldc.i4.0\n"
+                f"  002C call {ns}Vantom::get_DismemberDamage\n  0031 newobj new:{mi}Intents.SingleAttackIntent::.ctor\n  0036 stelem.ref\n"
+                f"  0037 dup\n  0038 ldc.i4.1\n  0039 ldc.i4.3\n  003A newobj new:{mi}Intents.StatusIntent::.ctor\n  003F stelem.ref\n"
+                f"  0040 newobj new:{mi}MonsterMoveStateMachine.MoveState::.ctor\n")
+        self.assertEqual(gm.game_moves(text), {"VANTOM": [
+            {"id": "INKY_LANCE_MOVE", "intents": [["MultiAttack", "InkyLanceDamage", 2]]},
+            {"id": "DISMEMBER_MOVE", "intents": [["SingleAttack", "DismemberDamage", None], ["Status", 3, None]]}]})
+
 
 class TestNoteOverlay(unittest.TestCase):
     PROPS = {"MinInitialHp": {"base": 173, "asc": 183, "level": "ToughEnemies"}, "RadiateBlock": {"base": 11, "asc": 13, "level": "DeadlyEnemies"},
@@ -133,6 +151,25 @@ class TestNoteOverlay(unittest.TestCase):
         self.assertEqual(ben.game_effect(self.PROPS, mv), "Gain 11 (13 at A9+) Block")
         mv = {"move": "UNKNOWN_MOVE", "intent": "BuffIntent", "effect": "Gain 2 Strength"}
         self.assertEqual(ben.game_effect(self.PROPS, mv), "Gain 2 Strength")       # no game number: the text is kept
+
+    def test_move_lines_from_game_moves(self):
+        saved = dict(ben.GAME_MOVES)
+        ben.GAME_MOVES.clear()
+        ben.GAME_MOVES["X"] = [{"id": "DISMEMBER_MOVE", "intents": [["SingleAttack", "DismemberDamage", None], ["Status", 3, None]]},
+                               {"id": "INERTIA_MOVE", "intents": [["SingleAttack", "WhirlwindDamage", None], ["Buff", None, None]]},
+                               {"id": "NEW_MOVE", "intents": [["MultiAttack", "WhirlwindDamage", "WhirlwindRepeat"]]}]
+        m = {"moves": [{"move": "DISMEMBER_MOVE", "intent": "SingleAttackIntent(DismemberDamage)+StatusIntent(3)", "effect": "Deal 27 damage"},
+                       {"move": "INERTIA_MOVE", "intent": "DefendIntent+BuffIntent", "effect": "Gain 10 Block"},
+                       {"move": "OLD_MOVE", "intent": "BuffIntent", "effect": "Gain 2 Strength"}]}
+        try:
+            lines = ben.move_lines("X", m, self.PROPS)
+        finally:
+            ben.GAME_MOVES.clear(); ben.GAME_MOVES.update(saved)
+        self.assertEqual(lines[0], "  - `DISMEMBER_MOVE` Attack 26 (30 at A9+) + Status x3 → Deal 26 (30 at A9+) damage")
+        self.assertIn("intents changed since the extract: was Defend+Buff", lines[1])
+        self.assertIn("`NEW_MOVE` Attack 5 x 3 `[GAME]` (not in the extract", lines[2])
+        self.assertIn("~~`OLD_MOVE`~~ not in the installed game", lines[3])
+        self.assertEqual(ben.move_lines("UNKNOWN", {"moves": m["moves"][:1]}, self.PROPS), ["  - `DISMEMBER_MOVE` SingleAttackIntent(DismemberDamage)+StatusIntent(3) → Deal 26 (30 at A9+) damage"])
 
 
 if __name__ == "__main__":

@@ -8,16 +8,16 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · elite** · Encounter ID `PHROG_PARASITE_ELITE`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Phrog Parasite** (HP 61–64 (66–68 at A8+), base values; seen in 34 of 34 fights)
-  - `INFECT_MOVE` StatusIntent(3) → CardPileCmd.AddToCombatAndPreview<Infection>
-  - `LASH_MOVE` MultiAttackIntent(LashDamage, 4) → Deal 4 (5 at A9+) damage 4 times
+  - `INFECT_MOVE` Status x3 → CardPileCmd.AddToCombatAndPreview<Infection>
+  - `LASH_MOVE` Attack 4 (5 at A9+) x 4 → Deal 4 (5 at A9+) damage 4 times
   - Passive: PowerCmd.Apply<InfestedPower>
 - **Wriggler** (HP 17–21 (18–22 at A8+), base values; seen in 34 of 34 fights)
-  - `NASTY_BITE_MOVE` SingleAttackIntent(BiteDamage) → Deal 6 (7 at A9+) damage
-  - `WRIGGLE_MOVE` BuffIntent+StatusIntent(1) → CardPileCmd.AddToCombatAndPreview<Infection>, Gain 2 Strength (StrengthPower)
-  - `SPAWNED_MOVE` StunIntent → (no command in move body)
+  - `NASTY_BITE_MOVE` Attack 6 (7 at A9+) → Deal 6 (7 at A9+) damage
+  - `WRIGGLE_MOVE` Buff + Status x1 → CardPileCmd.AddToCombatAndPreview<Infection>, Gain 2 Strength (StrengthPower)
+  - `SPAWNED_MOVE` Stun → (no command in move body)
 
 ### The Player's record `[PLAYER-DATA]`
 

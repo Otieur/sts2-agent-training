@@ -8,13 +8,15 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · elite** · Encounter ID `SKULKING_COLONY_ELITE`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Skulking Colony** (HP 75 (80 at A8+), base values; seen in 35 of 35 fights)
-  - `INERTIA_MOVE` DefendIntent+BuffIntent → Gain 10 Block, Gain 2 (4 at A9+) Strength (StrengthPower)
-  - `ZOOM_MOVE` SingleAttackIntent(ZoomDamage) → Deal 14 (16 at A9+) damage
-  - `SUPER_CRAB_MOVE` MultiAttackIntent(SuperCrabDamage, SuperCrabRepeat) → Deal 6 damage 2 times
-  - `SMASH_MOVE` SingleAttackIntent(SmashDamage)+StatusIntent(4) → Deal 9 damage, CardPileCmd.AddToCombatAndPreview<Dazed>
+  - `ZOOM_MOVE` Attack 14 (16 at A9+) → Deal 14 (16 at A9+) damage
+  - `ZOOM_MOVE_2` Attack 14 (16 at A9+) `[GAME]` (not in the extract: effect text unknown)
+  - `INERTIA_MOVE` Attack 9 (11 at A9+) + Buff → Gain 10 Block, Gain 2 (4 at A9+) Strength (StrengthPower) **(intents changed since the extract: was Defend+Buff; the effect text may be stale)**
+  - `PIERCING_STABS_MOVE` Attack 7 (8 at A9+) x 2 `[GAME]` (not in the extract: effect text unknown)
+  - ~~`SUPER_CRAB_MOVE`~~ not in the installed game `[GAME]`
+  - ~~`SMASH_MOVE`~~ not in the installed game `[GAME]`
   - Passive: PowerCmd.Apply<HardenedShellPower>
 
 ### The Player's record `[PLAYER-DATA]`

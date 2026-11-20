@@ -8,11 +8,11 @@ Status: data only; plan not written yet. Game version target v0.107.1.
 
 **Act 2 · normal** · Encounter ID `CHOMPERS_NORMAL`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Chomper** (HP 60–64 (63–67 at A8+), base values; seen in 78 of 39 fights)
-  - `CLAMP_MOVE` MultiAttackIntent(ClampDamage, 2) → Deal 8 (9 at A9+) damage 2 times
-  - `SCREECH_MOVE` StatusIntent(3) → CardPileCmd.AddToCombatAndPreview<Dazed>
+  - `CLAMP_MOVE` Attack 8 (9 at A9+) x 2 → Deal 8 (9 at A9+) damage 2 times
+  - `SCREECH_MOVE` Status x3 → CardPileCmd.AddToCombatAndPreview<Dazed>
   - Passive: PowerCmd.Apply<ArtifactPower>
 
 ### The Player's record `[PLAYER-DATA]`

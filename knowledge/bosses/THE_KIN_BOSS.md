@@ -8,18 +8,18 @@ Status: Act 1 (Overgrowth) boss. Plan v1, 2026-11-19.
 
 **Act 1 · boss** · Encounter ID `THE_KIN_BOSS`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Kin Follower** (HP 58–59 (62–63 at A8+), base values; seen in 56 of 28 fights)
-  - `QUICK_SLASH_MOVE` SingleAttackIntent(QuickSlashDamage) → Deal 5 damage
-  - `BOOMERANG_MOVE` MultiAttackIntent(BoomerangDamage, 2) → Deal 2 damage 2 times
-  - `POWER_DANCE_MOVE` BuffIntent → Gain 2 Strength (StrengthPower)
+  - `QUICK_SLASH_MOVE` Attack 5 → Deal 5 damage
+  - `BOOMERANG_MOVE` Attack 2 x 2 → Deal 2 damage 2 times
+  - `POWER_DANCE_MOVE` Buff → Gain 2 Strength (StrengthPower)
   - Passive: PowerCmd.Apply<MinionPower>
 - **Kin Priest** (HP 190 (199 at A8+), base values; seen in 28 of 28 fights)
-  - `ORB_OF_FRAILTY_MOVE` SingleAttackIntent(OrbOfFrailtyDamage)+DebuffIntent → Deal 8 (9 at A9+) damage, Apply 1 Frail (FrailPower) to the target
-  - `ORB_OF_WEAKNESS_MOVE` SingleAttackIntent(OrbOfWeaknessDamage)+DebuffIntent → Deal 8 (9 at A9+) damage, Apply 1 Weak (WeakPower) to the target
-  - `BEAM_MOVE` MultiAttackIntent(BeamDamage, 3) → Deal 3 damage 3 times
-  - `RITUAL_MOVE` BuffIntent → Gain 2 (3 at A9+) Strength (StrengthPower)
+  - `ORB_OF_FRAILTY_MOVE` Attack 8 (9 at A9+) + Debuff x0 → Deal 8 (9 at A9+) damage, Apply 1 Frail (FrailPower) to the target
+  - `ORB_OF_WEAKNESS_MOVE` Attack 8 (9 at A9+) + Debuff x0 → Deal 8 (9 at A9+) damage, Apply 1 Weak (WeakPower) to the target
+  - `BEAM_MOVE` Attack 3 x 3 → Deal 3 damage 3 times
+  - `RITUAL_MOVE` Buff → Gain 2 (3 at A9+) Strength (StrengthPower)
 
 ### The Player's record `[PLAYER-DATA]`
 

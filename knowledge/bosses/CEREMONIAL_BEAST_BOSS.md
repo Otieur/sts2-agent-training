@@ -8,15 +8,15 @@ Status: Act 1 (Overgrowth) boss. Plan v1, 2026-11-19.
 
 **Act 1 · boss** · Encounter ID `CEREMONIAL_BEAST_BOSS`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Ceremonial Beast** (HP 252 (262 at A8+), base values; seen in 32 of 32 fights)
-  - `STAMP_MOVE` BuffIntent → Gain 150 Plow (PlowPower)
-  - `PLOW_MOVE` SingleAttackIntent(PlowDamage)+BuffIntent → Deal 18 (20 at A9+) damage, Gain 2 Strength (StrengthPower)
-  - `STUN_MOVE` StunIntent → (no command in move body)
-  - `BEAST_CRY_MOVE` DebuffIntent → Apply 1 Ringing (RingingPower) to the target
-  - `STOMP_MOVE` SingleAttackIntent(StompDamage) → Deal 15 (17 at A9+) damage
-  - `CRUSH_MOVE` SingleAttackIntent(CrushDamage)+BuffIntent → Deal 17 (19 at A9+) damage, Gain 3 (4 at A9+) Strength (StrengthPower)
+  - `STAMP_MOVE` Buff → Gain 150 Plow (PlowPower)
+  - `PLOW_MOVE` Attack 18 (20 at A9+) + Buff → Deal 18 (20 at A9+) damage, Gain 2 Strength (StrengthPower)
+  - `STUN_MOVE` Stun → (no command in move body)
+  - `BEAST_CRY_MOVE` Debuff x0 → Apply 1 Ringing (RingingPower) to the target
+  - `STOMP_MOVE` Attack 15 (17 at A9+) → Deal 15 (17 at A9+) damage
+  - `CRUSH_MOVE` Attack 17 (19 at A9+) + Buff → Deal 17 (19 at A9+) damage, Gain 3 (4 at A9+) Strength (StrengthPower)
 
 ### The Player's record `[PLAYER-DATA]`
 

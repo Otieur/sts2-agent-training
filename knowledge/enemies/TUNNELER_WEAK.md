@@ -8,13 +8,14 @@ Status: Plan v1, 2026-11-19.
 
 **Act 2 · weak** · Encounter ID `TUNNELER_WEAK`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Tunneler** (HP 87 (92 at A8+), base values; seen in 62 of 62 fights)
-  - `BITE_MOVE` SingleAttackIntent(BiteDamage) → Deal 13 (15 at A9+) damage
-  - `BURROW_MOVE` BuffIntent+DefendIntent → Gain 1 Burrowed (BurrowedPower), Gain 32 Block
-  - `BELOW_MOVE_1` SingleAttackIntent(BelowDamage) → Deal 23 (26 at A9+) damage
-  - `DIZZY_MOVE` StunIntent → (no command in move body)
+  - `BITE_MOVE` Attack 13 (15 at A9+) → Deal 13 (15 at A9+) damage
+  - `BURROW_MOVE` Buff + Defend → Gain 1 Burrowed (BurrowedPower), Gain 32 Block
+  - `BELOW_MOVE` Attack 23 (26 at A9+) `[GAME]` (not in the extract: effect text unknown)
+  - `DIZZY_MOVE` Stun → (no command in move body)
+  - ~~`BELOW_MOVE_1`~~ not in the installed game `[GAME]`
 
 ### The Player's record `[PLAYER-DATA]`
 

@@ -8,14 +8,14 @@ Status: Act 1 (Underdocks) boss. Plan v1, 2026-11-19.
 
 **Act 1 · boss** · Encounter ID `SOUL_FYSH_BOSS`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Soul Fysh** (HP 211 (221 at A8+), base values; seen in 27 of 27 fights)
-  - `BECKON_MOVE` StatusIntent(BeckonMoveAmount) → Add a generated card to your draw pile, Add a generated card to your discard pile
-  - `DE_GAS_MOVE` SingleAttackIntent(DeGasDamage) → Deal 16 (18 at A9+) damage
-  - `GAZE_MOVE` SingleAttackIntent(GazeDamage)+StatusIntent(GazeMoveAmount) → Deal 7 (8 at A9+) damage, Add a generated card to your discard pile
-  - `FADE_MOVE` BuffIntent → Gain 2 Intangible (IntangiblePower)
-  - `SCREAM_MOVE` SingleAttackIntent(ScreamDamage)+DebuffIntent → Deal 13 (15 at A9+) damage, Apply 3 Vulnerable (VulnerablePower) to the target
+  - `BECKON_MOVE` Status → Add a generated card to your draw pile, Add a generated card to your discard pile
+  - `DE_GAS_MOVE` Attack 16 (18 at A9+) → Deal 16 (18 at A9+) damage
+  - `GAZE_MOVE` Attack 7 (8 at A9+) + Status → Deal 7 (8 at A9+) damage, Add a generated card to your discard pile
+  - `FADE_MOVE` Buff → Gain 2 Intangible (IntangiblePower)
+  - `SCREAM_MOVE` Attack 13 (15 at A9+) + Debuff x0 → Deal 13 (15 at A9+) damage, Apply 3 Vulnerable (VulnerablePower) to the target
 
 ### The Player's record `[PLAYER-DATA]`
 

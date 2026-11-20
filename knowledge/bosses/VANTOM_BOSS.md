@@ -8,13 +8,13 @@ Status: Act 1 (Overgrowth) boss. Plan v1, 2026-11-19.
 
 **Act 1 · boss** · Encounter ID `VANTOM_BOSS`
 
-### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
+### Monsters (move list, intents, HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`; effect text `[GAME-EXTRACT]`)
 
 - **Vantom** (HP 173 (183 at A8+), base values; seen in 28 of 28 fights)
-  - `INK_BLOT_MOVE` SingleAttackIntent(InkBlotDamage) → Deal 7 (8 at A9+) damage
-  - `INKY_LANCE_MOVE` MultiAttackIntent(InkyLanceDamage, 2) → Deal 6 (7 at A9+) damage 2 times
-  - `DISMEMBER_MOVE` SingleAttackIntent(DismemberDamage)+StatusIntent(3) → Deal 26 (30 at A9+) damage, CardPileCmd.AddToCombatAndPreview<Wound>
-  - `PREPARE_MOVE` BuffIntent → Gain 2 Strength (StrengthPower)
+  - `INK_BLOT_MOVE` Attack 7 (8 at A9+) → Deal 7 (8 at A9+) damage
+  - `INKY_LANCE_MOVE` Attack 6 (7 at A9+) x 2 → Deal 6 (7 at A9+) damage 2 times
+  - `DISMEMBER_MOVE` Attack 26 (30 at A9+) + Status x3 → Deal 26 (30 at A9+) damage, CardPileCmd.AddToCombatAndPreview<Wound>
+  - `PREPARE_MOVE` Buff → Gain 2 Strength (StrengthPower)
   - Passive: PowerCmd.Apply<SlipperyPower>
 
 ### The Player's record `[PLAYER-DATA]`
