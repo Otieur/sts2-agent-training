@@ -53,6 +53,9 @@ Drafted 2026-11-19 (overnight). Items marked "to confirm" need the Player or a g
 - The first modded launch rewrote the modded profile's progress, prefs and 129 of its run history files, and the shared `settings.save`. The normal profile was not touched. The backup `backups/2026-11-19-pre-phase0/` holds the earlier copies.
 - The normal profile still holds an unfinished run saved by the beta (`current_run.save`); leave it until back on the beta.
 
+## Files kept out of the public repository
+The repository is public (2026-11-20). These stay on the working machine only (`.git/info/exclude`): the project instructions file read at the start of each session, the agent's local settings folder, session prompts (`prompts/`), and the decompiled game data in `knowledge/data/extract-2026-09-21/` (kept out for licensing reasons). Tools that read the extract (`tools/advise.py`, `tools/build_card_reference.py`, `tools/game_cards.py` and others) need a local copy of it. Before every push: no personal paths, emails or save identifiers in tracked files or commit messages.
+
 ## To confirm
 - [x] Game version after the branch switch: v0.111.1 from `release_info.json` (the log line `release=` comes at first launch)
 - [x] Which mods folder the game scans: `SlayTheSpire2.app/Contents/MacOS/mods/` (log, 2026-11-19). A mod with only a DLL and a JSON manifest loads.
