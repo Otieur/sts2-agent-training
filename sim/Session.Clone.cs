@@ -42,11 +42,14 @@ public sealed partial class Session
         var (o, ops) = _snapshots[id];
         if (o.Kind == "fight") NewFight(o.Spec, o.Seed);
         else { Replay = o.Recording; Reset(o.Events, o.Seed); }
+        var replay = System.Diagnostics.Stopwatch.StartNew();
         foreach (var op in ops)
         {
             if (op["step"] is { } a) { Step(a); NoteStep(a); }
             else { Sanitizer.Apply(this, (ulong)(long)op["resample"]!); NoteResample((ulong)(long)op["resample"]!); }
         }
         LastRestoreMs = sw.Elapsed.TotalMilliseconds;
+        NewFightMs["replay_ops"] = replay.Elapsed.TotalMilliseconds;
+        NewFightMs["ops"] = ops.Length;
     }
 }

@@ -21,6 +21,6 @@ Version 1, 2026-11-20. Tested on the simulator side only (`tools/sim.py smoke`, 
 
 **Deliberately absent:** `move_id` (it can name a move whose intent is hidden, FP-7), the run seed, any random-generator state, the draw order, future intents.
 
-**Actions** (`legal` lists them; `step` applies one): `{"type":"play","card":i[,"target":j]}`, `{"type":"end_turn"}`, `{"type":"choose","cards":[...]}`. Not yet: potions.
+**Actions** (`legal` lists them; `step` applies one): `{"type":"play","card":i[,"target":j]}`, `{"type":"potion","slot":k[,"target":j]}`, `{"type":"end_turn"}`, `{"type":"choose","cards":[...]}`. The host supports potions; the planner rollouts and the search candidates (`tools/sim.py`) do not use them yet (2026-11-20), because a fight value without a price on spent potions would spend every potion.
 
 **Known differences from the live API, to close in P7.E5.S3:** `enemies[].name` is the id (no localised text in the host); the live state has more fields (`action_readiness`, `lethal_risks`, card text) that no tool reads for decisions.

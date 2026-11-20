@@ -70,10 +70,18 @@ public sealed partial class Session
     // relics unless the request replaces them, then straight into the chosen encounter. No recording is involved.
     // The state is sanitized with the sample seed before it is returned, so the request's run seed fixes the set-up
     // (which monsters, their HP rolls) and the sample seed fixes everything random after it.
+    // Time of each part of the last NewFight, in ms (restores call NewFight; `stats` reports it).
+    public static readonly Dictionary<string, double> NewFightMs = new();
+    System.Diagnostics.Stopwatch _phase;
+    void Mark(string name) { NewFightMs[name] = _phase.Elapsed.TotalMilliseconds; _phase.Restart(); }
+
     public void NewFight(JsonNode spec, ulong sampleSeed)
     {
+        _phase = System.Diagnostics.Stopwatch.StartNew();
+        NewFightMs.Clear();
         SynchronizationContext.SetSynchronizationContext(Ctx);
         if (Run != null) { Rm.CleanUp(true); Ctx.Drain(); }
+        Mark("clean_up");
         Replay = null;
         RunMode = false;
         Choices.Intercept = false;
@@ -93,10 +101,18 @@ public sealed partial class Session
         // the game records every fight in memory (initial run state, then every action) whenever TestMode is off; the
         // host never writes the file (WriteReplay is stubbed), so the recording is pure cost
         Rm.CombatReplayWriter.IsEnabled = false;
+        Mark("create_run");
         Ctx.RunUntil(Rm.FinalizeStartingRelics(), "FinalizeStartingRelics");
+        Mark("starting_relics");
         Rm.Launch();
+        Mark("launch");
         Rm.GenerateRooms();
-        Ctx.RunUntil(Rm.GenerateMap(), "GenerateMap");
+        Mark("generate_rooms");
+        // A fight from nothing needs no map, and generating it was most of a restore (90-240 ms under load of about
+        // 110-260 ms). Checked 2026-11-20: 40 history fights, 673 states, identical with and without the map
+        // (SIM_FIGHT_MAP=1 generates it again for such checks). Whole runs (Session.Run.cs) still generate it.
+        if (Environment.GetEnvironmentVariable("SIM_FIGHT_MAP") == "1") Ctx.RunUntil(Rm.GenerateMap(), "GenerateMap");
+        Mark("generate_map");
         var me = Me;
         if (spec["deck"] is JsonArray deck)
         {
@@ -108,6 +124,7 @@ public sealed partial class Session
                 Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CardPileCmd.Add(card, PileType.Deck, CardPilePosition.Bottom, null, true), "add card");
             }
         }
+        Mark("deck");
         if (spec["relics"] is JsonArray relics)
         {
             // "relic_pickup": false adds each relic without its pickup effect: for situations taken from a recorded run,
@@ -127,6 +144,7 @@ public sealed partial class Session
                 Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.PotionCmd.TryToProcure(ById(ModelDb.AllPotions, id, "potion").ToMutable(), me, -1), "add potion");
         if (spec["max_hp"] != null) Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.SetMaxHp(me.Creature, (int)spec["max_hp"]), "set max HP");
         if (spec["hp"] != null) Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.SetCurrentHp(me.Creature, (int)spec["hp"]), "set HP");
+        Mark("relics_potions_hp");
         var encounter = ById(ModelDb.AllEncounters, (string)spec["encounter"], "encounter").ToMutable();
         var point = encounter.RoomType switch
         {
@@ -136,7 +154,9 @@ public sealed partial class Session
         };
         Ctx.RunUntil(Rm.EnterRoomDebug(encounter.RoomType, point, encounter, false), "enter the encounter");
         Ctx.Drain();
+        Mark("enter_room");
         Sanitizer.Apply(this, sampleSeed);
+        Mark("sanitize");
         Sanitized = true;
         Choices.Intercept = true;
         NoteOrigin("fight", spec, 0, sampleSeed);

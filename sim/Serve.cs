@@ -180,6 +180,7 @@ public static class Serve
                         reply["draw_samples"] = DrawKnowledge.Samples; reply["draw_rejections"] = DrawKnowledge.Rejections;
                         reply["draw_fallbacks"] = DrawKnowledge.Fallbacks; reply["draw_last_fallback"] = DrawKnowledge.LastFallback;
                         reply["game_exceptions"] = Stubs.ExceptionCount;
+                        reply["newfight_ms"] = new JsonObject(Session.NewFightMs.Select(kv => new KeyValuePair<string, JsonNode>(kv.Key, Math.Round(kv.Value, 2))));
                         reply["slow_waits"] = new JsonArray(s.Ctx.SlowWaits.TakeLast(10).Select(x => (JsonNode)x).ToArray());
                         break;
                     case "quit": Reply(reply); return 0;
