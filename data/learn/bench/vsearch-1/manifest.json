@@ -1,0 +1,93 @@
+{
+ "name": "vsearch-1",
+ "created": "2026-11-20 14:59",
+ "benchmark": "data/sim/benchmark-v1.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "203f7c2",
+ "arms": [
+  "planner",
+  "mc6",
+  "vleaf6",
+  "vleaf2",
+  "vgreedy",
+  "qpolicy"
+ ],
+ "model": "models/value-v1/model.pt",
+ "q_model": "models/q-v1/model.pt",
+ "seeds": 2,
+ "seed_base": 7000000,
+ "workers": 6,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 753,
+ "jobs": 120,
+ "summary": {
+  "planner": {
+   "games": 120,
+   "errors": 0,
+   "won": 75,
+   "mean_value": -59.108333333333334,
+   "mean_hp_if_won": 43.50666666666667,
+   "seconds": 15.6,
+   "search_seconds_per_decision": 0.002,
+   "restarts": 0
+  },
+  "mc6": {
+   "games": 120,
+   "errors": 0,
+   "won": 86,
+   "mean_value": -34.916666666666664,
+   "mean_hp_if_won": 44.08139534883721,
+   "seconds": 2078.4,
+   "search_seconds_per_decision": 0.896,
+   "restarts": 0
+  },
+  "vleaf6": {
+   "games": 120,
+   "errors": 0,
+   "won": 64,
+   "mean_value": -83.01666666666667,
+   "mean_hp_if_won": 38.59375,
+   "seconds": 1143.8,
+   "search_seconds_per_decision": 0.469,
+   "restarts": 0
+  },
+  "vleaf2": {
+   "games": 120,
+   "errors": 0,
+   "won": 61,
+   "mean_value": -91.41666666666667,
+   "mean_hp_if_won": 37.9344262295082,
+   "seconds": 451.2,
+   "search_seconds_per_decision": 0.186,
+   "restarts": 0
+  },
+  "vgreedy": {
+   "games": 120,
+   "errors": 4,
+   "won": 51,
+   "mean_value": -108.26724137931035,
+   "mean_hp_if_won": 39.35294117647059,
+   "seconds": 159.3,
+   "search_seconds_per_decision": 0.072,
+   "restarts": 0
+  },
+  "qpolicy": {
+   "games": 120,
+   "errors": 0,
+   "won": 73,
+   "mean_value": -56.30833333333333,
+   "mean_hp_if_won": 42.6986301369863,
+   "seconds": 25.9,
+   "search_seconds_per_decision": 0.007,
+   "restarts": 0
+  }
+ }
+}
