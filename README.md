@@ -45,7 +45,7 @@
 <td align="center" width="25%"><h3>57</h3>human runs analysed<br><sub>deaths, damage per encounter, card picks</sub></td>
 <td align="center" width="25%"><h3>11 / 11</h3>recorded fights replayed exactly<br><sub>by the simulator, every state equal</sub></td>
 <td align="center" width="25%"><h3>+51</h3>value per fight from search<br><sub>best search (mcw6) over the rule planner, 120 games</sub></td>
-<td align="center" width="25%"><h3>21,968</h3>self-play decisions<br><sub>from 1,172 simulated fights</sub></td>
+<td align="center" width="25%"><h3>43,128</h3>self-play decisions<br><sub>from 2,344 simulated fights</sub></td>
 </tr>
 </table>
 <!-- auto:numbers:end -->
@@ -80,13 +80,13 @@
 |---|---|---|---|---|---|
 | Monte Carlo search, wide (`mcw6`) | 99 of 120 | -7.7 | 2.0 s | – | [`wide-1`](data/learn/bench/wide-1/manifest.json) 2026-11-20 |
 | Monte Carlo search (`mc24`) | 89 of 120 | -26.1 | 3.5 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
-| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 1.1 s | – | [`wide-1`](data/learn/bench/wide-1/manifest.json) 2026-11-20 |
+| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 917 ms | – | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
 | Monte Carlo search (`mc12`) | 85 of 120 | -32.6 | 1.8 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
-| Rule planner (`planner`) | 75 of 120 | -59.1 | 3 ms | – | [`wide-1`](data/learn/bench/wide-1/manifest.json) 2026-11-20 |
-| Action-value network (`qpolicy`) | 73 of 120 | -58.4 | 9 ms | `q-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
-| Search with value network (`vleaf2`) | 65 of 120 | -76.4 | 211 ms | `value-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
-| Search with value network (`vleaf6`) | 64 of 120 | -80.4 | 598 ms | `value-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
-| Value network, one step (`vgreedy`) | 64 of 120 | -87.5 | 86 ms | `value-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
+| Action-value network (`qpolicy`) | 81 of 120 | -50.3 | 10 ms | `q-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
+| Rule planner (`planner`) | 75 of 120 | -59.1 | 3 ms | – | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
+| Search with value network (`vleaf2`) | 73 of 120 | -63.0 | 181 ms | `value-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
+| Search with value network (`vleaf6`) | 68 of 120 | -67.0 | 469 ms | `value-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
+| Value network, one step (`vgreedy`) | 66 of 120 | -77.2 | 68 ms | `value-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
 <!-- auto:latest:end -->
 
 <!-- auto:realruns:start -->
@@ -103,8 +103,8 @@
 | **Speed** | About 32 fights per second per core; restoring a snapshot takes 4 ms at the median (longer late in long fights, since the moves since the start are replayed). | [spike report](reports/phase7/spike.md) |
 | **Fair play** | 8 of 8 checks pass: the hidden draw order changes with the sample seed, the true next draws are guessed no better than chance, and decisions do not depend on hidden state. | [integrity rules](docs/simulator-integrity.md) |
 | **Search against rules** | Monte Carlo search over **every distinct legal move** wins **99 of 120** benchmark games against 75 for the rule planner (+51 value per fight, better in 90 games, worse in 20). Limited to the planner's own candidate moves, the same search wins 86 (+24). | [wide candidates](reports/phase8/wide-candidates.md) · [comparison](reports/phase9/value-search-comparison-2.md) |
-| **Fast learned policy** | The action-value network (`q-v2`) plays level with the planner (78 wins against 75, not significant) at 7 ms per move with no simulation at all. | [comparison](reports/phase9/value-search-comparison-2.md) |
-| **Learned evaluation** | Not there yet. Three pre-registered tests of the value network inside search failed; the diagnosis is that it memorises the roughly thirty training runs. Data augmentation and set dropout are the current fix. | [test 1](reports/phase9/value-search-comparison.md) · [test 3](reports/phase9/value-search-comparison-3.md) |
+| **Fast learned policy** | The action-value network (`q-v4`) wins 81 of 120 against 75 for the planner (+9 value per fight, not yet significant) at 10 ms per move, with no simulation at all. | [comparison](reports/phase9/value-search-comparison-4.md) |
+| **Learned evaluation** | Not there yet, but closing in. Four pre-registered tests of the value network inside search failed, each by less: search with network leaves went from −54 to −32 value per fight against rollout search. The first networks memorised their training runs; augmented situations and set dropout fixed most of that (held-out error 64 → 40, level with a linear model). | [test 1](reports/phase9/value-search-comparison.md) · [test 4](reports/phase9/value-search-comparison-4.md) |
 | **Search budget** | Which moves are searched matters far more than how many futures are sampled: widening the candidates added 27 value per fight at twice the time, while four times the futures added about 9. | [budget](reports/phase8/search-budget.md) |
 | **Potions in search** | Promising but not established: +7 value per fight after pricing each potion, interval −0.2 to +15.8. | [comparison](reports/phase8/potions-in-search.md) |
 

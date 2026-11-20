@@ -1,0 +1,549 @@
+{
+ "name": "cv-sd0-f2",
+ "created": "2026-11-20 16:00",
+ "code_commit": "9bd2e56",
+ "encoder": "enc-v1.1",
+ "vocab": {
+  "game_version": "v0.111.1",
+  "game_commit": "cc1f9462",
+  "source": "data/asm/sts2-index.txt (tools/learn/vocab.py)",
+  "rule": "index 0 = padding, 1 = unknown id; lists sorted",
+  "sizes": {
+   "cards": 598,
+   "relics": 301,
+   "powers": 267,
+   "potions": 67,
+   "monsters": 122,
+   "intent_types": 17,
+   "target_types": 12,
+   "card_types": 9
+  }
+ },
+ "torch": "2.15.0",
+ "device": "cpu",
+ "parameters": 227627,
+ "settings": {
+  "epochs": 80,
+  "lr": 0.001,
+  "wd": 0.0001,
+  "bs": 256,
+  "patience": 8,
+  "hidden": 256,
+  "card_dim": 32,
+  "drop": 0.1,
+  "set_drop": 0.0,
+  "split_seed": 7,
+  "search_weight": 5.0
+ },
+ "epochs_run": 14,
+ "best_val_loss": 1.6610690355300903,
+ "train_seconds": 102,
+ "data": [
+  {
+   "folder": "data/learn/combat-v1",
+   "manifest": {
+    "dataset": "combat-v1",
+    "created": "2026-11-20 13:44",
+    "game_version": "v0.111.1",
+    "game_commit": "cc1f9462",
+    "host_commit": "b2525a1",
+    "fidelity": "11 of 11 recorded fights reproduce exactly.** Phase 7 exit gate: at least 99% of at least 100 fights (M11).",
+    "encoder": "none (raw observations, docs/observation-spec.md)",
+    "teacher": {
+     "policy": "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)",
+     "k": 6,
+     "top": 2,
+     "rollout_policy": "plan_turn.py balanced",
+     "privileged": false
+    },
+    "spec_source": {
+     "file": "data/learn/specs/fight-specs-ironclad.json",
+     "about": {
+      "character": "IRONCLAD",
+      "created": "2026-11-20 12:21",
+      "fights": 591,
+      "skipped": {
+       "exam seed": 82
+      },
+      "by_act": {
+       "1": 334,
+       "2": 172,
+       "3": 85
+      },
+      "by_room": {
+       "Monster": 436,
+       "Elite": 80,
+       "Boss": 75
+      },
+      "approximations": [
+       "no enchantments",
+       "relics removed before the fight are missing",
+       "potions capped at 3",
+       "max HP as recorded for the floor",
+       "source builds older than the installed game"
+      ],
+      "valid": 586,
+      "invalid": {
+       "new_fight: ArgumentException: unknown encounter '\u2026' ": 5
+      }
+     }
+    },
+    "spec_generator": {
+     "version": "v1",
+     "starter": {
+      "IRONCLAD": [
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "BASH"
+      ]
+     },
+     "rarity_weight": {
+      "Common": 0.55,
+      "Uncommon": 0.35,
+      "Rare": 0.1
+     },
+     "added_cards": {
+      "1": [
+       2,
+       6
+      ],
+      "2": [
+       6,
+       11
+      ],
+      "3": [
+       10,
+       16
+      ]
+     },
+     "upgraded_share": {
+      "1": 0.1,
+      "2": 0.3,
+      "3": 0.5
+     },
+     "strikes_removed": {
+      "1": [
+       0,
+       0
+      ],
+      "2": [
+       0,
+       2
+      ],
+      "3": [
+       1,
+       3
+      ]
+     },
+     "hp": "40-100% of 80",
+     "relics": "starting relic only",
+     "potions": "none",
+     "ascension": "0-10 uniform",
+     "act_weights": [
+      0.4,
+      0.35,
+      0.25
+     ],
+     "room_weights": {
+      "Monster": 0.7,
+      "Elite": 0.2,
+      "Boss": 0.1
+     }
+    },
+    "seed": 1,
+    "workers": 6,
+    "worker_exit_codes": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "wall_seconds": 548,
+    "summary": {
+     "fights": 586,
+     "errors": 0,
+     "won": 480,
+     "decisions": 10895,
+     "host_restarts": 0,
+     "blocked_fights": 0,
+     "by_act": {
+      "1": 333,
+      "2": 172,
+      "3": 81
+     },
+     "seconds": 25308.5
+    },
+    "notes": [
+     "Generated in three sessions on 2026-11-20: 12:18-12:58 (tools at 2f4926e; the 106 records of a host that could no longer start fights after a stuck rollout were dropped), 13:02-13:35 (tools at cd5b3be with host restart and resume; host build of 12:14), 13:35-13:44 (host rebuilt at 2df4533: Rolling Boulder fix, map generation skipped).",
+     "The map skip leaves trajectories unchanged (190 fights, 3,330 states identical); the Rolling Boulder fix only affects the 3 fights from one source run that were errors before and were replayed in the last session.",
+     "host_commit is the commit at the end of the batch."
+    ]
+   }
+  },
+  {
+   "folder": "data/learn/combat-v1s2",
+   "manifest": {
+    "dataset": "combat-v1s2",
+    "created": "2026-11-20 15:10",
+    "game_version": "v0.111.1",
+    "game_commit": "cc1f9462",
+    "host_commit": "8459a9f-dirty",
+    "fidelity": "11 of 11 recorded fights reproduce exactly.** Phase 7 exit gate: at least 99% of at least 100 fights (M11).",
+    "encoder": "none (raw observations, docs/observation-spec.md)",
+    "teacher": {
+     "policy": "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)",
+     "k": 6,
+     "top": 2,
+     "rollout_policy": "plan_turn.py balanced",
+     "privileged": false
+    },
+    "spec_source": {
+     "file": "data/learn/specs/fight-specs-ironclad.json",
+     "about": {
+      "character": "IRONCLAD",
+      "created": "2026-11-20 12:21",
+      "fights": 591,
+      "skipped": {
+       "exam seed": 82
+      },
+      "by_act": {
+       "1": 334,
+       "2": 172,
+       "3": 85
+      },
+      "by_room": {
+       "Monster": 436,
+       "Elite": 80,
+       "Boss": 75
+      },
+      "approximations": [
+       "no enchantments",
+       "relics removed before the fight are missing",
+       "potions capped at 3",
+       "max HP as recorded for the floor",
+       "source builds older than the installed game"
+      ],
+      "valid": 586,
+      "invalid": {
+       "new_fight: ArgumentException: unknown encounter '\u2026' ": 5
+      }
+     }
+    },
+    "spec_generator": {
+     "version": "v1",
+     "starter": {
+      "IRONCLAD": [
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "BASH"
+      ]
+     },
+     "rarity_weight": {
+      "Common": 0.55,
+      "Uncommon": 0.35,
+      "Rare": 0.1
+     },
+     "added_cards": {
+      "1": [
+       2,
+       6
+      ],
+      "2": [
+       6,
+       11
+      ],
+      "3": [
+       10,
+       16
+      ]
+     },
+     "upgraded_share": {
+      "1": 0.1,
+      "2": 0.3,
+      "3": 0.5
+     },
+     "strikes_removed": {
+      "1": [
+       0,
+       0
+      ],
+      "2": [
+       0,
+       2
+      ],
+      "3": [
+       1,
+       3
+      ]
+     },
+     "hp": "40-100% of 80",
+     "relics": "starting relic only",
+     "potions": "none",
+     "ascension": "0-10 uniform",
+     "act_weights": [
+      0.4,
+      0.35,
+      0.25
+     ],
+     "room_weights": {
+      "Monster": 0.7,
+      "Elite": 0.2,
+      "Boss": 0.1
+     }
+    },
+    "seed": 2,
+    "workers": 4,
+    "worker_exit_codes": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "wall_seconds": 5059,
+    "summary": {
+     "fights": 586,
+     "errors": 0,
+     "won": 474,
+     "decisions": 11073,
+     "host_restarts": 0,
+     "blocked_fights": 0,
+     "by_act": {
+      "1": 333,
+      "2": 172,
+      "3": 81
+     },
+     "seconds": 20143.2
+    }
+   }
+  }
+ ],
+ "split": {
+  "test_runs": [
+   "1790729234-5F54F0Z4JD",
+   "1790739811-GZCFQLZ3ZM",
+   "1790871555-ZU94KEL19C",
+   "1790887497-RYN479KJ98",
+   "1791147048-4F8KMAD56G",
+   "1791244489-JW8LUJHKBY",
+   "1793992106-5X0ETMK27U"
+  ],
+  "val_runs": [
+   "1790393921-C1HH4R7GZT",
+   "1790654967-083QC020L9",
+   "1790705377-XLPCMG6AXP",
+   "1790705796-1HTWD1ULUB",
+   "1790808906-5LF6MT47G9",
+   "1791081820-AB56HWC7A9",
+   "1791148506-S5AZQA208Y",
+   "1791213234-AJBPD2DHSF",
+   "1791335284-NTPN13S8AU",
+   "1795112193-1A71S17ERMG4"
+  ],
+  "runs": 48,
+  "sizes": {
+   "train": 12783,
+   "val": 3653,
+   "test": 3089,
+   "bench": 2443
+  },
+  "fights": {
+   "train": 668,
+   "val": 208,
+   "test": 176,
+   "bench": 120
+  }
+ },
+ "baselines": {
+  "mean_value": -14.93718219510287,
+  "mean_win": 0.760776030665728,
+  "linear_val_loss": 1.379645586013794
+ },
+ "results": {
+  "val": {
+   "network": {
+    "states": 3653,
+    "fights": 208,
+    "value_mae": 42.32123438097371,
+    "value_rmse": 74.97779042317039,
+    "value_r": 0.6852148990352372,
+    "win_brier": 0.12825771990741183,
+    "win_logloss": 0.4636182065336478,
+    "win_auc": 0.8700173250952001
+   },
+   "linear": {
+    "states": 3653,
+    "fights": 208,
+    "value_mae": 45.139106123929736,
+    "value_rmse": 67.32528598517376,
+    "value_r": 0.6936175194026444,
+    "win_brier": 0.11375473977917208,
+    "win_logloss": 0.3718176652316737,
+    "win_auc": 0.8679811622568941
+   },
+   "mean": {
+    "states": 3653,
+    "fights": 208,
+    "value_mae": 80.14271578567714,
+    "value_rmse": 94.1931082556504,
+    "value_r": null,
+    "win_brier": 0.1558846841205342,
+    "win_logloss": 0.492262344954402,
+    "win_auc": 0.5
+   },
+   "search_estimate_subset": {
+    "network": {
+     "states": 2930,
+     "fights": 208,
+     "value_mae": 41.07338369608739,
+     "value_rmse": 73.09337403721682,
+     "value_r": 0.6882679693427128
+    },
+    "search": {
+     "states": 2930,
+     "fights": 208,
+     "value_mae": 16.248293515358363,
+     "value_rmse": 36.324095615171814,
+     "value_r": 0.9213861864153017
+    }
+   },
+   "fight_start": {
+    "network": {
+     "states": 208,
+     "fights": 208,
+     "value_mae": 39.39965465435615,
+     "value_rmse": 71.6276954144126,
+     "value_r": 0.6750808366142785,
+     "win_brier": 0.10314515184043474,
+     "win_logloss": 0.3528161701832948,
+     "win_auc": 0.9012210679788591
+    },
+    "linear": {
+     "states": 208,
+     "fights": 208,
+     "value_mae": 43.64647948741913,
+     "value_rmse": 69.83569533285011,
+     "value_r": 0.6257068645931506,
+     "win_brier": 0.10312123041695462,
+     "win_logloss": 0.3430477413749963,
+     "win_auc": 0.8499179879715691
+    }
+   }
+  }
+ },
+ "calibration": {
+  "val": [
+   {
+    "bin": "0.0-0.1",
+    "states": 341,
+    "predicted": 0.04239356851470152,
+    "observed": 0.30498533724340177
+   },
+   {
+    "bin": "0.1-0.2",
+    "states": 171,
+    "predicted": 0.14930992543000227,
+    "observed": 0.4327485380116959
+   },
+   {
+    "bin": "0.2-0.3",
+    "states": 94,
+    "predicted": 0.24961476202340835,
+    "observed": 0.5957446808510638
+   },
+   {
+    "bin": "0.3-0.4",
+    "states": 72,
+    "predicted": 0.3510407999985748,
+    "observed": 0.7222222222222222
+   },
+   {
+    "bin": "0.4-0.5",
+    "states": 55,
+    "predicted": 0.4413070965896953,
+    "observed": 0.6363636363636364
+   },
+   {
+    "bin": "0.5-0.6",
+    "states": 47,
+    "predicted": 0.5538707185298839,
+    "observed": 0.7872340425531915
+   },
+   {
+    "bin": "0.6-0.7",
+    "states": 87,
+    "predicted": 0.6532903375296757,
+    "observed": 0.7011494252873564
+   },
+   {
+    "bin": "0.7-0.8",
+    "states": 94,
+    "predicted": 0.7440754473209381,
+    "observed": 0.574468085106383
+   },
+   {
+    "bin": "0.8-0.9",
+    "states": 122,
+    "predicted": 0.8506907229540778,
+    "observed": 0.7704918032786885
+   },
+   {
+    "bin": "0.9-1.0",
+    "states": 2570,
+    "predicted": 0.9883435016708151,
+    "observed": 0.9319066147859922
+   }
+  ]
+ },
+ "bootstrap_95": {
+  "val": {
+   "network_minus_linear_mae": [
+    -8.017465243312174,
+    2.7701182342677395
+   ],
+   "network_minus_search_mae": [
+    16.917303486681774,
+    33.938207286626195
+   ]
+  }
+ },
+ "speed_ms": {
+  "single_state": 4.334,
+  "batch_64": 11.531,
+  "collate_one": 0.584
+ },
+ "log": [
+  "21968 states from 1172 fights (0 skipped); train 12783, val 3653, test 3089, bench 2443; unknown ids 0",
+  "linear baseline: val loss 1.3796 after 38 epochs",
+  "value network: 227627 parameters on cpu",
+  "epoch 1: train 2.0742 val 1.8004",
+  "epoch 2: train 0.8432 val 1.6745",
+  "epoch 3: train 0.5924 val 1.8157",
+  "epoch 4: train 0.4865 val 1.6673",
+  "epoch 5: train 0.4130 val 1.7597",
+  "epoch 6: train 0.3745 val 1.6611",
+  "epoch 7: train 0.3557 val 1.8154",
+  "epoch 8: train 0.3256 val 1.7493",
+  "epoch 9: train 0.3016 val 1.7008",
+  "epoch 10: train 0.2880 val 1.9121",
+  "epoch 11: train 0.2765 val 1.7774",
+  "epoch 12: train 0.2601 val 1.9047",
+  "epoch 13: train 0.2572 val 1.7880",
+  "epoch 14: train 0.2433 val 1.8169"
+ ]
+}
