@@ -8,12 +8,12 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · weak** · Encounter ID `SLUDGE_SPINNER_WEAK`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Sludge Spinner** (HP 37–39, base values; seen in 79 of 79 fights)
-  - `OIL_SPRAY_MOVE` SingleAttackIntent(OilSprayDamage)+DebuffIntent → Deal 8 damage, Apply 1 Weak (WeakPower) to the target
-  - `SLAM_MOVE` SingleAttackIntent(SlamDamage) → Deal 11 damage
-  - `RAGE_MOVE` SingleAttackIntent(RageDamage)+BuffIntent → Deal 6 damage, Gain 3 Strength (StrengthPower)
+- **Sludge Spinner** (HP 37–39 (41–42 at A8+), base values; seen in 79 of 79 fights)
+  - `OIL_SPRAY_MOVE` SingleAttackIntent(OilSprayDamage)+DebuffIntent → Deal 8 (9 at A9+) damage, Apply 1 Weak (WeakPower) to the target
+  - `SLAM_MOVE` SingleAttackIntent(SlamDamage) → Deal 11 (12 at A9+) damage
+  - `RAGE_MOVE` SingleAttackIntent(RageDamage)+BuffIntent → Deal 6 (7 at A9+) damage, Gain 3 Strength (StrengthPower)
 
 ### The Player's record `[PLAYER-DATA]`
 

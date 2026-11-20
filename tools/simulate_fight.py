@@ -9,6 +9,10 @@ Modelled across turns: draw 5 (reshuffle), 3 energy, block resets, Strength (Inf
 (+Strength each turn), Vulnerable and Weak durations on the boss, Slippery stacks, the boss's Strength gains and
 status cards (Vantom's Wounds), exhaust, Anger's copy, draw cards (re-plan after drawing with the energy left).
 Not modelled: relics, potions, other powers' effects, upgrades, card-specific conditions.
+Boss numbers below are the pre-v0.107.1 extract's, the version the Player's history (the calibration target) was played on. The
+installed game differs in places (v0.111.1: Vantom Dismember 26, Waterfall Giant 240 HP, Byrdonis Swoop 17; see
+reports/game-check/monsters.md and knowledge/gaps.md item 33). Card numbers come from tools/plan_turn.py, which uses the installed
+game's values.
 
 Bosses: VANTOM (cycle from knowledge/bosses/VANTOM_BOSS.md: Ink Blot 7, Inky Lance 6x2, Dismember 27 + 3 Wounds,
 Prepare +2 Strength; 173 HP; 9 Slippery); LAGAVULIN_MATRIARCH (asleep 3 turns behind 12 Plating, wakes stunned when

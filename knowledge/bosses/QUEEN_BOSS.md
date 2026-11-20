@@ -8,21 +8,21 @@ Status: Act 3 (Glory) boss. Plan v1, 2026-11-19.
 
 **Act 3 · boss** · Encounter ID `QUEEN_BOSS`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Torch Head Amalgam** (HP 199, base values; seen in 24 of 24 fights)
-  - `TACKLE_1_MOVE` SingleAttackIntent(TackleDamage) → Deal 18 damage
-  - `TACKLE_2_MOVE` SingleAttackIntent(TackleDamage) → Deal 18 damage
+- **Torch Head Amalgam** (HP 199 (211 at A8+), base values; seen in 24 of 24 fights)
+  - `TACKLE_1_MOVE` SingleAttackIntent(TackleDamage) → Deal 18 (22 at A9+) damage
+  - `TACKLE_2_MOVE` SingleAttackIntent(TackleDamage) → Deal 18 (22 at A9+) damage
   - `BEAM_MOVE` MultiAttackIntent(SoulBeamDamage, 3) → Deal 8 damage 3 times
-  - `TACKLE_3_MOVE` SingleAttackIntent(WeakTackleDamage) → Deal 14 damage
-  - `TACKLE_4_MOVE` SingleAttackIntent(WeakTackleDamage) → Deal 14 damage
+  - `TACKLE_3_MOVE` SingleAttackIntent(WeakTackleDamage) → Deal 14 (16 at A9+) damage
+  - `TACKLE_4_MOVE` SingleAttackIntent(WeakTackleDamage) → Deal 14 (16 at A9+) damage
   - Passive: PowerCmd.Apply<MinionPower>
-- **Queen** (HP 400, base values; seen in 24 of 24 fights)
+- **Queen** (HP 400 (419 at A8+), base values; seen in 24 of 24 fights)
   - `PUPPET_STRINGS_MOVE` CardDebuffIntent → Apply 3 Chains Of Binding (ChainsOfBindingPower) to the target
   - `YOUR_MINE_MOVE` DebuffIntent → Apply 99 Frail (FrailPower) to the target, Apply 99 Weak (WeakPower) to the target, Apply 99 Vulnerable (VulnerablePower) to the target
   - `BURN_BRIGHT_FOR_ME_MOVE` BuffIntent+DefendIntent → Apply 1 Strength (StrengthPower) to the target, Gain 20 Block
-  - `OFF_WITH_YOUR_HEAD_MOVE` MultiAttackIntent(OffWithYourHeadDamage, 5) → Deal 3 damage 5 times
-  - `EXECUTION_MOVE` SingleAttackIntent(ExecutionDamage) → Deal 15 damage
+  - `OFF_WITH_YOUR_HEAD_MOVE` MultiAttackIntent(OffWithYourHeadDamage, 5) → Deal 3 (4 at A9+) damage 5 times
+  - `EXECUTION_MOVE` SingleAttackIntent(ExecutionDamage) → Deal 15 (18 at A9+) damage
   - `ENRAGE_MOVE` BuffIntent → Gain 2 Strength (StrengthPower)
 
 ### The Player's record `[PLAYER-DATA]`

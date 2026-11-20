@@ -1,6 +1,6 @@
 # Ironclad Playbook
 
-Version: v2.18 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
+Version: v2.19 · Knowledge base: the Player's history v0.107.1; game data extract older (pre-v0.107.1) · Target game: v0.111.1 (main since 2026-11-16; see `knowledge/version-delta-v0.111.1.md`) · Last updated: 2026-11-19 · Status: draft (v2 adds game data, community knowledge and boss plans; not yet tested in the Agent's own runs)
 
 The goal is strong play, judged by results. Every rule carries a provenance label and an evidence pointer. Conflicts follow the precedence in `docs/README.md`:
 
@@ -132,7 +132,7 @@ The Player's decks showed no archetypes (`reports/phase1/archetypes-ironclad.md`
 | 1 | Terror Eel | 29 / 39 | 0/5 | First damage stuns it; then 99 Vulnerable on you | Hit it on turn 1; block ×1.5 hits |
 | 1 | Byrdonis | 22.5 / 32.8 | 3/10 | +Strength every turn (Territorial) | Kill fast; never under 50% HP |
 | 1 | Phrog Parasite | 19 / 30 | 1/9 | Spawns Wrigglers on death; Infection cards | Save hit-all damage for wave 2 |
-| 1 | Skulking Colony | 19 / 35 | 1/9 | Loses at most 20 HP per turn (v0.107.1); 75 HP; no block | About 20 damage a turn for 4 turns; block Zoom 16 on turns 1–2 |
+| 1 | Skulking Colony | 19 / 35 | 1/9 | Loses at most 20 HP per turn (v0.107.1); 75 HP; no block | About 20 damage a turn for 4 turns; block Zoom 14 (16 at A9+) on turns 1–2 |
 | 1 | Phantasmal Gardeners | 12 / 19 | 0/8 | Several small bodies | Hit-all damage; safest elite |
 | 2 | Decimillipede | 36.5 / 39.2 | 0/8 | Segments reattach | Kill segments together; hit-all damage |
 | 2 | Entomancer | 30 / 38 | 3/13 | **Each damage instance adds a card to your draw pile** | Few big hits, not multi-hit; block Bees 3×7 |
@@ -276,6 +276,7 @@ At A10 there are two Glory bosses at the end of Act 3 (floors 48–49). Plan for
 - Kaiser Crab facing (Surrounded): which claw counts as behind you (gap 23).
 
 ## 14. Changelog
+- **v2.19 (2026-11-19, check against the game's code):** monster and card numbers are now read from the installed game (`tools/game_monsters.py`, `tools/game_cards.py`; reports in `reports/game-check/`). 23 monsters and many cards differed from the pre-v0.107.1 extract. Changed here: Skulking Colony's Zoom is 14 (16 at A9+), not 16. Boss and elite notes regenerated with A8+ HP and A9+ damage values; Vantom's Dismember is 26 (30 at A9+), so the turn-3 block target is 26 `[GAME]`. Planner: Cruelty and Paper Phrog raise the Vulnerable multiplier, Paper Krane lowers Weak to 0.60, Slippery and Flutter react only to unblocked hits, exact upgrade values `[GAME]`.
 - **v2.18 (2026-11-19, first live session):** Queen: no player source of Artifact exists in StS2, so the "Artifact against You're Mine" advice is removed. The Kin: killing the Priest ending the fight is confirmed by the in-game Minion tooltip (was two guides); A10 hit points noted.
 - **v2.17 (2026-11-19, after the morning report):** boss rows for Aeonglass, Test Subject and Queen from the community wiki's move tables; the planner reads the elite and hallway powers the wiki explained (Terror Eel's threshold, Skittish, Hex, Ravenous, Imbalanced, Flutter, Burrowed, Shrink).
 - **v2.16 (2026-11-19, overnight):** The Insatiable: end every turn at Sandpit 2 or more (community numbers); The Kin: killing the Priest ends the fight (two guides), and in the simulator racing it pays with single-target decks while hit-all decks should clear the followers; Test Subject's Enrage counts Skills only; simulated drafting uses the run's upgrades and common relics and skips cards the simulator does not model.

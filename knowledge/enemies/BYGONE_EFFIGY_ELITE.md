@@ -8,13 +8,13 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · elite** · Encounter ID `BYGONE_EFFIGY_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Bygone Effigy** (HP 127, base values; seen in 38 of 38 fights)
+- **Bygone Effigy** (HP 127 (132 at A8+), base values; seen in 38 of 38 fights)
   - `INITIAL_SLEEP_MOVE` SleepIntent → (no command in move body)
   - `WAKE_MOVE` BuffIntent → Gain 10 Strength (StrengthPower)
   - `SLEEP_MOVE` SleepIntent → (no command in move body)
-  - `SLASHES_MOVE` SingleAttackIntent(SlashDamage) → Deal 15 damage
+  - `SLASHES_MOVE` SingleAttackIntent(SlashDamage) → Deal 13 (15 at A9+) damage
   - Passive: PowerCmd.Apply<SlowPower>
 
 ### The Player's record `[PLAYER-DATA]`

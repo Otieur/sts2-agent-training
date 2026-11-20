@@ -1,6 +1,6 @@
 # Ironclad Quick Reference (for live play)
 
-One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.18); when they differ, the playbook wins. Section numbers point there.
+One page to keep in context during a run. It summarises `playbooks/ironclad.md` (v2.19); when they differ, the playbook wins. Section numbers point there.
 
 ## Every decision
 1. State and advice in one: `python3 -I tools/advise.py --live --save runs/<run>/state.json` (co-op: add `--instance teammate`; STS2MCP: `--mod sts2mcp`)

@@ -8,22 +8,22 @@ Status: Plan v1, 2026-11-19.
 
 **Act 3 · elite** · Encounter ID `KNIGHTS_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Flail Knight** (HP 101, base values; seen in 23 of 23 fights)
+- **Flail Knight** (HP 101 (108 at A8+), base values; seen in 23 of 23 fights)
   - `WAR_CHANT` BuffIntent → Gain 3 Strength (StrengthPower)
-  - `FLAIL_MOVE` MultiAttackIntent(FlailDamage, 2) → Deal 9 damage 2 times
-  - `RAM_MOVE` SingleAttackIntent(RamDamage) → Deal 15 damage
-- **Spectral Knight** (HP 93, base values; seen in 23 of 23 fights)
+  - `FLAIL_MOVE` MultiAttackIntent(FlailDamage, 2) → Deal 9 (10 at A9+) damage 2 times
+  - `RAM_MOVE` SingleAttackIntent(RamDamage) → Deal 15 (17 at A9+) damage
+- **Spectral Knight** (HP 93 (97 at A8+), base values; seen in 23 of 23 fights)
   - `HEX` DebuffIntent → Apply 2 Hex (HexPower) to the target
-  - `SOUL_SLASH` SingleAttackIntent(SoulSlashDamage) → Deal 15 damage
-  - `SOUL_FLAME` MultiAttackIntent(SoulFlameDamage, 3) → Deal 3 damage 3 times
-- **Magi Knight** (HP 82, base values; seen in 23 of 23 fights)
-  - `FIRST_POWER_SHIELD_MOVE` SingleAttackIntent(PowerShieldDamage)+DefendIntent → Deal 6 damage, Gain 5 Block
+  - `SOUL_SLASH` SingleAttackIntent(SoulSlashDamage) → Deal 15 (17 at A9+) damage
+  - `SOUL_FLAME` MultiAttackIntent(SoulFlameDamage, 3) → Deal 3 (4 at A9+) damage 3 times
+- **Magi Knight** (HP 82 (89 at A8+), base values; seen in 23 of 23 fights)
+  - `FIRST_POWER_SHIELD_MOVE` SingleAttackIntent(PowerShieldDamage)+DefendIntent → Deal 6 (7 at A9+) damage, Gain 5 Block
   - `DAMPEN_MOVE` DebuffIntent → Apply a power to the target
   - `PREP_MOVE` DefendIntent → Gain 5 Block
-  - `MAGIC_BOMB` SingleAttackIntent(BombDamage) → Deal 35 damage
-  - `RAM_MOVE` SingleAttackIntent(SpearDamage) → Deal 10 damage
+  - `MAGIC_BOMB` SingleAttackIntent(BombDamage) → Deal 35 (40 at A9+) damage
+  - `RAM_MOVE` SingleAttackIntent(SpearDamage) → Deal 10 (11 at A9+) damage
 
 ### The Player's record `[PLAYER-DATA]`
 

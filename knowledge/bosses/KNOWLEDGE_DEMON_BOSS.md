@@ -8,13 +8,13 @@ Status: Act 2 (Hive) boss. Plan v1, 2026-11-19.
 
 **Act 2 · boss** · Encounter ID `KNOWLEDGE_DEMON_BOSS`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Knowledge Demon** (HP 379, base values; seen in 40 of 40 fights)
+- **Knowledge Demon** (HP 379 (399 at A8+), base values; seen in 40 of 40 fights)
   - `CURSE_OF_KNOWLEDGE_MOVE` DebuffIntent → (no command in move body)
-  - `SLAP_MOVE` SingleAttackIntent(SlapDamage) → Deal 17 damage
-  - `KNOWLEDGE_OVERWHELMING_MOVE` MultiAttackIntent(KnowledgeOverwhelmingDamage, 3) → Deal 8 damage 3 times
-  - `PONDER_MOVE` SingleAttackIntent(PonderDamage)+HealIntent+BuffIntent → Deal 11 damage, Heal ? HP, Gain 2 Strength (StrengthPower)
+  - `SLAP_MOVE` SingleAttackIntent(SlapDamage) → Deal 17 (18 at A9+) damage
+  - `KNOWLEDGE_OVERWHELMING_MOVE` MultiAttackIntent(KnowledgeOverwhelmingDamage, 3) → Deal 8 (9 at A9+) damage 3 times
+  - `PONDER_MOVE` SingleAttackIntent(PonderDamage)+HealIntent+BuffIntent → Deal 11 (13 at A9+) damage, Heal ? HP, Gain 2 (3 at A9+) Strength (StrengthPower)
 
 ### The Player's record `[PLAYER-DATA]`
 

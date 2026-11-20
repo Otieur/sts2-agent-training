@@ -34,16 +34,20 @@ class AttackResult:
 
 
 def hit_damage(base: float, strength: int = 0, vigor: int = 0, attacker_weak: bool = False,
-               target_vulnerable: bool = False, extra_mult: float = 1.0, cap: Optional[int] = None) -> int:
-    """Damage of one hit before block. Additive (Strength, Vigor) first, then multipliers, then floor, then cap."""
+               target_vulnerable: bool = False, extra_mult: float = 1.0, cap: Optional[int] = None,
+               vulnerable_mult: float = VULNERABLE, weak_mult: float = WEAK) -> int:
+    """Damage of one hit before block. Additive (Strength, Vigor) first, then multipliers, then floor, then cap.
+    [GAME] v0.111.1 Hooks.Hook.ModifyDamage: additions, then multiplications, then truncation to an integer, floor 0.
+    vulnerable_mult and weak_mult change with Cruelty (+amount/100), Paper Phrog (+0.25), Paper Krane (Weak 0.60) and
+    Debilitate (doubles the effect): VulnerablePower and WeakPower.ModifyDamageMultiplicative."""
     d = base + strength + vigor
     if d < 0:
         d = 0
     mult = extra_mult
     if target_vulnerable:
-        mult *= VULNERABLE
+        mult *= vulnerable_mult
     if attacker_weak:
-        mult *= WEAK
+        mult *= weak_mult
     d = math.floor(d * mult + 1e-9)
     if cap is not None:
         d = min(d, cap)

@@ -8,12 +8,12 @@ Status: Plan v1, 2026-11-19.
 
 **Act 2 · elite** · Encounter ID `ENTOMANCER_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Entomancer** (HP 145, base values; seen in 36 of 36 fights)
+- **Entomancer** (HP 145 (165 at A8+), base values; seen in 36 of 36 fights)
   - `PHEROMONE_SPIT_MOVE` BuffIntent → Gain 1 Personal Hive (PersonalHivePower), Gain 1 Strength (StrengthPower), Gain 2 Strength (StrengthPower)
-  - `BEES_MOVE` MultiAttackIntent(BeesDamage, BeesRepeat) → Deal 3 damage 7 times
-  - `SPEAR_MOVE` SingleAttackIntent(SpearMoveDamage) → Deal 18 damage
+  - `BEES_MOVE` MultiAttackIntent(BeesDamage, BeesRepeat) → Deal 3 damage 7 (8 at A9+) times
+  - `SPEAR_MOVE` SingleAttackIntent(SpearMoveDamage) → Deal 18 (20 at A9+) damage
   - Passive: PowerCmd.Apply<PersonalHivePower>
 
 ### The Player's record `[PLAYER-DATA]`

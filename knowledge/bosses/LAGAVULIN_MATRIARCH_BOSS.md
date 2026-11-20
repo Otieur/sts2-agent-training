@@ -8,13 +8,13 @@ Status: Act 1 (Underdocks) boss. Plan v1, 2026-11-19.
 
 **Act 1 · boss** · Encounter ID `LAGAVULIN_MATRIARCH_BOSS`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Lagavulin Matriarch** (HP 222, base values; seen in 32 of 32 fights)
+- **Lagavulin Matriarch** (HP 222 (233 at A8+), base values; seen in 32 of 32 fights)
   - `SLEEP_MOVE` SleepIntent → (no command in move body)
-  - `SLASH_MOVE` SingleAttackIntent(SlashDamage) → Deal 19 damage
-  - `SLASH2_MOVE` SingleAttackIntent(Slash2Damage)+DefendIntent → Deal 12 damage, Gain 12 Block
-  - `DISEMBOWEL_MOVE` MultiAttackIntent(DisembowelDamage, DisembowelRepeat) → Deal 9 damage 2 times
+  - `SLASH_MOVE` SingleAttackIntent(SlashDamage) → Deal 19 (21 at A9+) damage
+  - `SLASH2_MOVE` SingleAttackIntent(Slash2Damage)+DefendIntent → Deal 12 damage, Gain 12 (14 at A8+) Block
+  - `DISEMBOWEL_MOVE` MultiAttackIntent(DisembowelDamage, DisembowelRepeat) → Deal 9 (10 at A9+) damage 2 times
   - `SOUL_SIPHON_MOVE` DebuffIntent+BuffIntent → Apply -2 Strength (StrengthPower) to the target, Apply -2 Dexterity (DexterityPower) to the target, Gain 2 Strength (StrengthPower)
   - Passive: CreatureCmd.TriggerAnim, PowerCmd.Apply<PlatingPower>, PowerCmd.Apply<AsleepPower>
 

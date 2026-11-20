@@ -8,13 +8,13 @@ Status: Plan v1, 2026-11-19.
 
 **Act 2 · elite** · Encounter ID `INFESTED_PRISMS_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Infested Prism** (HP 200, base values; seen in 47 of 47 fights)
-  - `JAB_MOVE` SingleAttackIntent(JabDamage) → Deal 22 damage
-  - `RADIATE_MOVE` SingleAttackIntent(RadiateDamage)+DefendIntent → Deal 16 damage, Gain 16 Block
-  - `WHIRLWIND_MOVE` MultiAttackIntent(WhirlwindDamage, WhirlwindRepeat) → Deal 9 damage 3 times
-  - `PULSATE_MOVE` BuffIntent+DefendIntent → Gain 20 Block, Gain 4 Strength (StrengthPower)
+- **Infested Prism** (HP 161 (171 at A8+), base values; seen in 47 of 47 fights)
+  - `JAB_MOVE` SingleAttackIntent(JabDamage) → Deal 15 (17 at A9+) damage
+  - `RADIATE_MOVE` SingleAttackIntent(RadiateDamage)+DefendIntent → Deal 11 (13 at A9+) damage, Gain 11 (13 at A9+) Block
+  - `WHIRLWIND_MOVE` MultiAttackIntent(WhirlwindDamage, WhirlwindRepeat) → Deal 5 (6 at A9+) damage 3 times
+  - `PULSATE_MOVE` BuffIntent+DefendIntent → Gain 20 (22 at A8+) Block, Gain 4 Strength (StrengthPower)
   - Passive: PowerCmd.Apply<VitalSparkPower>
 
 ### The Player's record `[PLAYER-DATA]`
@@ -40,7 +40,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - **Answer** `[HYPOTHESIS]`: count Skills. A Skill is worth playing only if its block beats the Tainted it adds across the Prism's hits next turn (a 5-block Defend against a 3-hit attack with +3 per hit is a net loss). Prefer Attacks and Powers, and block with few, large Skills. Re-check once the duration is known.
 
 ### Key mechanics, pre-rework `[GAME-EXTRACT]` (may be outdated)
-- 200 HP.
+- 161 HP (171 at A8+) `[GAME]` v0.111.1 (the extract showed 200; Jab 15, Radiate 11, Whirlwind 5 against the extract's 22, 16, 9).
   - Jab: 22
   - Radiate: 16 + 16 block
   - Whirlwind: 9×3

@@ -2,7 +2,7 @@
 
 Update this file whenever a story changes status. Story-level status lives in each phase document; this board tracks epics.
 
-**Active phase:** Phase 0 is nearly done (2026-11-19: mod live on v0.111.1, first session complete; the items left need the game or the Player) and Phase 3 shadowing runs live. Next: Phase 4, the Agent's own practice runs, once the Player agrees how the game is shared (a separate profile is proposed). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md` (Needs-the-Player checklist in section 5).
+**Active phase:** Phase 4 (solo practice) is live: the Agent's first run on profile 2 won at A0 on 2026-11-19 (M3); the ladder is at A1. Phase 0 has only small items left (precise latency, permissions allowlist). Phases 1 and 2 are done; Phase 3 shadowing ran in the first live session. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md`.
 **Engine track (2026-11-19):** Phases 7–9 (engine simulator, combat search, learned models) are specified; the desk study is done and Phase 7 starts with the feasibility spike (P7.E1). Direction: `docs/decisions/0003-engine-simulator-and-learning.md`; rules: `docs/simulator-integrity.md`.
 **Last updated:** 2026-11-19
 
@@ -100,12 +100,12 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P7.E1 | Feasibility spike | In progress | S0 desk study done (`docs/proposals/engine-simulation-spike.md`, `tools/asm/asm.cs`); S1–S5 next; S6 (route R4) only if R3 fails |
-| P7.E2 | Ground truth from the real game | Todo | S2 needs the Player (mod change) |
+| P7.E2 | Ground truth from the real game | In progress | S1 done: the game records every fight itself (`replays/latest.mcr`); S2 implemented in `tools/play_turn.py`, first live run pending; no mod change needed |
 | P7.E3 | Engine host and sandbox | Todo | |
 | P7.E4 | Combat interface | Todo | |
 | P7.E5 | Fidelity suite | Todo | |
 | P7.E6 | Fair-play layer | Todo | Rules in `docs/simulator-integrity.md` |
-| P7.E7 | Performance and operations | Todo | |
+| P7.E7 | Performance and operations | In progress | S4: patch runbook extended with `tools/game_facts.py`, `game_cards.py`, `game_monsters.py` |
 | P7.E8 | Run-level simulation | Todo | After Phase 8 starts |
 
 ---

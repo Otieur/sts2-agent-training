@@ -8,12 +8,12 @@ Status: Act 1 (Overgrowth) boss. Plan v1, 2026-11-19.
 
 **Act 1 · boss** · Encounter ID `VANTOM_BOSS`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Vantom** (HP 173, base values; seen in 28 of 28 fights)
-  - `INK_BLOT_MOVE` SingleAttackIntent(InkBlotDamage) → Deal 7 damage
-  - `INKY_LANCE_MOVE` MultiAttackIntent(InkyLanceDamage, 2) → Deal 6 damage 2 times
-  - `DISMEMBER_MOVE` SingleAttackIntent(DismemberDamage)+StatusIntent(3) → Deal 27 damage, CardPileCmd.AddToCombatAndPreview<Wound>
+- **Vantom** (HP 173 (183 at A8+), base values; seen in 28 of 28 fights)
+  - `INK_BLOT_MOVE` SingleAttackIntent(InkBlotDamage) → Deal 7 (8 at A9+) damage
+  - `INKY_LANCE_MOVE` MultiAttackIntent(InkyLanceDamage, 2) → Deal 6 (7 at A9+) damage 2 times
+  - `DISMEMBER_MOVE` SingleAttackIntent(DismemberDamage)+StatusIntent(3) → Deal 26 (30 at A9+) damage, CardPileCmd.AddToCombatAndPreview<Wound>
   - `PREPARE_MOVE` BuffIntent → Gain 2 Strength (StrengthPower)
   - Passive: PowerCmd.Apply<SlipperyPower>
 
@@ -35,14 +35,14 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 > v0.107.1 nerfed Vantom at lower ascension (no numbers published) `[COMMUNITY]`. The extract's values below predate that; the Player's 28 fights were on v0.107.1.
 
 ### Mechanics summary
-- **Slippery** `[GAME-EXTRACT]`: each damage instance is capped at 1 and removes one stack. Starts at 9 stacks in solo `[COMMUNITY]`; the wiki (slaythespire.wiki.gg page, accessed 2026-11-19) shows 9 and a patch note (2026-04-23) lowering it to 8 at lower ascensions, so expect 8 at A0. The wiki confirms the cycle and numbers (HP 173, 183 at A8+; Dismember 30 at higher ascension). Every Strike counts as one instance. Multi-hit cards count per hit.
-- **Cycle** `[GAME-EXTRACT]`: Ink Blot 7 → Inky Lance 6×2 → Dismember 27 + 3 Wounds → Prepare (+2 Strength), then repeat. Every hit in cycle 2 is 2 higher (Dismember 29).
+- **Slippery** `[GAME]` (v0.111.1 `SlipperyPower`): each hit that gets through Block costs Vantom 1 HP and removes one stack; a hit fully absorbed by Block removes no stack. Starts at 9 stacks in solo `[COMMUNITY]`; the wiki (slaythespire.wiki.gg page, accessed 2026-11-19) shows 9 and a patch note (2026-04-23) lowering it to 8 at lower ascensions, so expect 8 at A0. The wiki confirms the cycle and numbers (HP 173, 183 at A8+; Dismember 30 at higher ascension). Every Strike counts as one instance. Multi-hit cards count per hit.
+- **Cycle** `[GAME-EXTRACT]`, numbers `[GAME]` v0.111.1: Ink Blot 7 → Inky Lance 6×2 → Dismember 26 + 3 Wounds → Prepare (+2 Strength), then repeat. Every hit in cycle 2 is 2 higher (Dismember 28). At A9+: 8, 7×2, 30. (The extract and v0.107.1 showed Dismember 27.)
 - 173 HP. A typical fight lasts 7 turns (benchmark median).
 
 ### Deck checklist
 - **Countable checks** (`tools/deck_check.py`, tuned on the history 2026-11-19) `[PLAYER-DATA, weak]`: single-hit hit-all attacks at most 0 (wasted on Slippery; survived decks 0.3, fatal 0.8); draw cards at least 2 (finds the cheap attacks; survived 2.1, fatal 1.0).
 - **Clear Slippery in two turns.** 9 hit instances across turns 1–2. The starter deck's Strikes plus Bash give about 6. Multi-hit cards (Twin Strike, Sword Boomerang, Thrash, Fight Me, Dismantle, Tear Asunder, Fiend Fire, Whirlwind) and 0-cost attacks (Anger) close the gap.
-- **27 block on turn 3**, or 20 with Weak on Vantom. Block cards: Impervious 30, Blood Wall 16, Flame Barrier 12, Shrug It Off 8, Evil Eye 8, Taunt 7.
+- **26 block on turn 3** (30 at A9+), or 19 with Weak on Vantom (22 at A9+). Block cards `[GAME]`: Impervious 30, Blood Wall 16, Flame Barrier 12, Shrug It Off 8, Evil Eye 8, Taunt 6.
 - **Damage after Slippery:** about 25 per turn to finish by turn 8.
 - **Wound handling:** draw and exhaust outlets (Burning Pact, True Grit, Second Wind, Stoke). In the history, fatal decks had about half the draw cards of survived ones (1.0 against 2.1, n=28) `[PLAYER-DATA, weak]`.
 - **Hit-all single-hit cards** (Breakthrough, Thunderclap) deal 1 per enemy while Slippery is up. Fatal decks carried more of them (0.8 against 0.3) `[PLAYER-DATA, weak]`. Do not count them as damage here.
@@ -54,7 +54,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### First three turns
 1. **Turn 1 (incoming 7):** play cheap attacks to strip stacks; keep the count (state shows Slippery stacks). Hold Bash unless it lands the last stack or the Vulnerable will still be up when real damage starts (Vulnerable ticks down at end of turn). Block what's left.
 2. **Turn 2 (6×2):** finish the stacks, then apply Vulnerable and start real damage. Block 12.
-3. **Turn 3 (Dismember 27 + 3 Wounds):** this is the turn to block fully. Weak on Vantom cuts it to 20. Don't open with a 3-cost power here.
+3. **Turn 3 (Dismember 26 + 3 Wounds; 30 at A9+):** this is the turn to block fully. Weak on Vantom cuts it to 19 (22 at A9+). Don't open with a 3-cost power here.
 4. **Turn 4 (Prepare, no attack):** free turn. Play powers (Demon Form, Inflame) and maximum damage.
 
 ### Potion plan

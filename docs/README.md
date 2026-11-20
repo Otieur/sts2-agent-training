@@ -97,7 +97,7 @@ Every rule in a playbook or knowledge file carries one label, so its strength is
 
 | Label | Meaning | Strength |
 |---|---|---|
-| `[GAME]` | Read from the game's own data via the mod, or verified in a test fight | Highest |
+| `[GAME]` | Read from the game's own data via the mod, verified in a test fight, or read from the installed game's code (`tools/game_cards.py`, `tools/game_monsters.py`, `tools/game_facts.py`, `tools/asm/asm.cs`; cite the build and the type or method) | Highest |
 | `[OBS]` | Observed repeatedly in the Agent's own runs (cite run IDs) | High |
 | `[PLAYER-DATA]` | From the Player's run history (cite the report and n). **Outcome statistics** (deaths, damage taken, survival by situation) are evidence. **Pick rates and habits** are a baseline only. | Medium for outcomes; none for habits |
 | `[PLAYER-SAID]` | The Player's stated reasoning from an interview or retro | Context and hypotheses; a rule only once outcomes support it |

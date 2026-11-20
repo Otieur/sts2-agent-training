@@ -8,15 +8,15 @@ Status: Act 1 (Underdocks) boss. Plan v1, 2026-11-19.
 
 **Act 1 · boss** · Encounter ID `WATERFALL_GIANT_BOSS`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Waterfall Giant** (HP 250, base values; seen in 30 of 30 fights)
+- **Waterfall Giant** (HP 240 (250 at A8+), base values; seen in 30 of 30 fights)
   - `PRESSURIZE_MOVE` BuffIntent → Gain 15 Steam Eruption (SteamEruptionPower)
-  - `STOMP_MOVE` SingleAttackIntent(StompDamage)+DebuffIntent+BuffIntent → Deal 15 damage, Apply 1 Weak (WeakPower) to the target, Gain 3 Steam Eruption (SteamEruptionPower)
-  - `RAM_MOVE` SingleAttackIntent(RamDamage)+BuffIntent → Deal 10 damage, Gain 3 Steam Eruption (SteamEruptionPower)
+  - `STOMP_MOVE` SingleAttackIntent(StompDamage)+DebuffIntent+BuffIntent → Deal 15 (16 at A9+) damage, Apply 1 Weak (WeakPower) to the target, Gain 3 Steam Eruption (SteamEruptionPower)
+  - `RAM_MOVE` SingleAttackIntent(RamDamage)+BuffIntent → Deal 10 (11 at A9+) damage, Gain 3 Steam Eruption (SteamEruptionPower)
   - `SIPHON_MOVE` HealIntent+BuffIntent → Heal ? HP, Gain 3 Steam Eruption (SteamEruptionPower)
   - `PRESSURE_GUN_MOVE` SingleAttackIntent(() => CurrentPressureGunDamage)+BuffIntent → Deal ? damage, Gain 3 Steam Eruption (SteamEruptionPower)
-  - `PRESSURE_UP_MOVE` SingleAttackIntent(PressureUpDamage)+BuffIntent → Deal 13 damage, Gain 3 Steam Eruption (SteamEruptionPower)
+  - `PRESSURE_UP_MOVE` SingleAttackIntent(PressureUpDamage)+BuffIntent → Deal 13 (14 at A9+) damage, Gain 3 Steam Eruption (SteamEruptionPower)
   - `ABOUT_TO_BLOW_MOVE` StunIntent → Remove Steam Eruption (SteamEruptionPower)
   - `EXPLODE_MOVE` DeathBlowIntent(() => SteamEruptionDamage) → Deal ? damage, Kill itself
   - Passive: SfxCmd.PlayLoop
@@ -37,7 +37,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ## Plan
 
 ### Mechanics summary
-- 250 HP `[GAME-EXTRACT]`.
+- 240 HP (250 at A8+) `[GAME]` v0.111.1 (the extract showed 250).
 - Moves `[GAME-EXTRACT]`:
   - Pressurize: +15 Steam Eruption
   - Stomp: 15 + Weak on you, +3 Steam

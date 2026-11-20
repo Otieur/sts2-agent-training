@@ -8,11 +8,11 @@ Status: Plan v1, 2026-11-19.
 
 **Act 2 · weak** · Encounter ID `EXOSKELETONS_WEAK`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Exoskeleton** (HP 24–28, base values; seen in 225 of 75 fights)
-  - `SKITTER_MOVE` MultiAttackIntent(SkitterDamage, SkitterRepeats) → Deal 1 damage 3 times
-  - `MANDIBLE_MOVE` SingleAttackIntent(MandiblesDamage) → Deal 8 damage
+- **Exoskeleton** (HP 24–28 (26–30 at A8+), base values; seen in 225 of 75 fights)
+  - `SKITTER_MOVE` MultiAttackIntent(SkitterDamage, SkitterRepeats) → Deal 1 damage 3 (4 at A9+) times
+  - `MANDIBLE_MOVE` SingleAttackIntent(MandiblesDamage) → Deal 8 (9 at A9+) damage
   - `ENRAGE_MOVE` BuffIntent → Gain 2 Strength (StrengthPower)
   - Passive: PowerCmd.Apply<HardToKillPower>
 

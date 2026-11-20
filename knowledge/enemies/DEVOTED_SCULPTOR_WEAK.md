@@ -8,11 +8,11 @@ Status: Plan v1, 2026-11-19.
 
 **Act 3 · weak** · Encounter ID `DEVOTED_SCULPTOR_WEAK`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Devoted Sculptor** (HP 162, base values; seen in 56 of 56 fights)
+- **Devoted Sculptor** (HP 162 (172 at A8+), base values; seen in 56 of 56 fights)
   - `FORBIDDEN_INCANTATION_MOVE` BuffIntent → Gain 9 Ritual (RitualPower)
-  - `SAVAGE_MOVE` SingleAttackIntent(SavageDamage) → Deal 12 damage
+  - `SAVAGE_MOVE` SingleAttackIntent(SavageDamage) → Deal 12 (15 at A9+) damage
 
 ### The Player's record `[PLAYER-DATA]`
 

@@ -8,10 +8,10 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · elite** · Encounter ID `TERROR_EEL_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Terror Eel** (HP 140, base values; seen in 28 of 28 fights)
-  - `CRASH_MOVE` SingleAttackIntent(CrashDamage) → Deal 17 damage
+- **Terror Eel** (HP 140 (150 at A8+), base values; seen in 28 of 28 fights)
+  - `CRASH_MOVE` SingleAttackIntent(CrashDamage) → Deal 16 (18 at A9+) damage
   - `None` None → ThrashMove=MultiAttackIntent(ThrashDamage, ThrashRepeat)+BuffIntent -> Deal 3 damage 3 times, Gain 7 Vigor (VigorPower)
   - `STUN_MOVE` StunIntent → (no command in move body)
   - `TERROR_MOVE` DebuffIntent → Apply 99 Vulnerable (VulnerablePower) to the target
@@ -39,7 +39,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 
 ### Priorities and recommended answers
 - **Deal damage on turn 1** to use the free stun.
-- After Terror you take ×1.5 damage for the rest of the fight: Crash 17 becomes 25. Block accordingly, or end it fast (140 HP).
+- After Terror you take ×1.5 damage for the rest of the fight: Crash 16 becomes 24 (18 becomes 27 at A9+) `[GAME]` v0.111.1. Block accordingly, or end it fast (140 HP).
 - An Artifact charge would block Terror.
 
 ### Ready to fight

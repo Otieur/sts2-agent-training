@@ -45,11 +45,32 @@ string TName(EntityHandle h)
         case HandleKind.TypeSpecification:
         {
             var br = md.GetBlobReader(md.GetTypeSpecification((TypeSpecificationHandle)h).Signature);
-            if (br.ReadSignatureTypeCode() == SignatureTypeCode.GenericTypeInstance) { br.ReadSignatureTypeCode(); return TName(br.ReadTypeHandle()) + "<>"; }
-            return "(spec)";
+            return SigType(ref br);
         }
     }
     return "?";
+}
+
+// One type from a signature blob, with generic arguments (PowerVar`1<...VulnerablePower>).
+string SigType(ref BlobReader br)
+{
+    var code = br.ReadSignatureTypeCode();
+    switch (code)
+    {
+        case SignatureTypeCode.GenericTypeInstance:
+        {
+            br.ReadSignatureTypeCode();
+            var name = TName(br.ReadTypeHandle());
+            var n = br.ReadCompressedInteger();
+            var parts = new List<string>();
+            for (var i = 0; i < n; i++) parts.Add(SigType(ref br));
+            return name + "<" + string.Join(",", parts) + ">";
+        }
+        case SignatureTypeCode.TypeHandle: return TName(br.ReadTypeHandle());
+        case SignatureTypeCode.SZArray: return SigType(ref br) + "[]";
+        case SignatureTypeCode.GenericTypeParameter: case SignatureTypeCode.GenericMethodParameter: return "T" + br.ReadCompressedInteger();
+        default: return code.ToString();
+    }
 }
 
 string MName(EntityHandle h) => h.Kind switch

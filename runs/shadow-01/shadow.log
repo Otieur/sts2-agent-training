@@ -1,14 +1,14 @@
 Traceback (most recent call last):
-  File "~/Downloads/slay the spire/tools/shadow.py", line 229, in <module>
+  File "<project>/tools/shadow.py", line 229, in <module>
     sys.exit(main())
              ~~~~^^
-  File "~/Downloads/slay the spire/tools/shadow.py", line 223, in main
+  File "<project>/tools/shadow.py", line 223, in main
     n = shadow(adapter, args.out, args.interval, args.minutes * 60)
-  File "~/Downloads/slay the spire/tools/shadow.py", line 180, in shadow
+  File "<project>/tools/shadow.py", line 180, in shadow
     call = make_call(st)
-  File "~/Downloads/slay the spire/tools/shadow.py", line 63, in make_call
+  File "<project>/tools/shadow.py", line 63, in make_call
     res = draft.score_offer(deck, offer, advise._character(st), act or 1, floor, boss)
-  File "~/Downloads/slay the spire/tools/draft.py", line 224, in score_offer
+  File "<project>/tools/draft.py", line 224, in score_offer
     c = dm.CARDS[cid.split(".", 1)[-1]]
         ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
 KeyError: 'NOT_YET'

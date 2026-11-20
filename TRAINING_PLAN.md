@@ -191,11 +191,11 @@ Repeat Phases 1–4 for Necrobinder, reusing the knowledge base. It should go fa
 The game's combat logic is deterministic, can be replayed from room entry and checked with the game's own checksums, and rarely calls the Godot engine (desk study: `docs/proposals/engine-simulation-spike.md`). Phase 7 loads the game's assemblies into a separate process of our own, stubs the few engine, save, achievement and telemetry calls, and runs fights headless.
 
 1. **Feasibility spike (1–2 days):** model database start-up without the engine, one real fight in our process, first timing; go or no-go. Fallback: an offline headless game instance.
-2. **Ground truth:** record a replay of every Agent fight in the real game (needs a mod change approved by the player).
+2. **Ground truth:** keep the replay the game already writes for every fight (`replays/latest.mcr`, copied by `tools/play_turn.py`).
 3. **Host and sandbox:** deterministic single-thread scheduler, engine-call stubs, no saves, achievements, Steam or telemetry, no state shared between fights, a version guard.
 4. **Combat interface and Python bridge:** load, legal actions, step, branch, batch.
 5. **Fidelity suite:** recorded fights replayed with checksums and field comparisons; live observations compared too.
-6. **Fair-play layer:** a sanitizer that keeps only what a player could know, re-seeds all 15 random streams and samples the draw order with known positions kept; invariance audit and leak canary.
+6. **Fair-play layer:** a sanitizer that keeps only what a player could know, re-seeds every random generator and samples the draw order with known positions kept; invariance audit and leak canary.
 
 **Done when:** at least 99% of at least 100 recorded fights match exactly, at least 20 fights per second per core (target 200), and the integrity tests pass.
 
@@ -242,9 +242,10 @@ Expert iteration for combat: a value network replaces the heuristic leaf evaluat
 | Mod bugs or co-op desync corrupt a run | Use the modded profile only; back up saves; never use the game's Load button for co-op saves (the mod docs warn this can mark the save corrupt) |
 | Context compaction mid-run loses the plan | Run journal updated every floor |
 | Learning only from the player's history caps skill at the player's level | Outside knowledge (Phase 2), the Agent's own experiments, exam seeds |
-| The decompiled game data is older than the player's history (pre-v0.107.1) and two patches behind the game | Card changes patched (`knowledge/data/card-patches.json`); both version deltas documented; live `/data` export in Phase 2 replaces it |
+| The decompiled game data is older than the player's history (pre-v0.107.1) and two patches behind the game | Since 2026-11-19 card and monster numbers are read from the installed game's code (`tools/game_cards.py`, `tools/game_monsters.py`, reports in `reports/game-check/`): 23 monsters and many cards had differed. The planner uses the game's values and exact upgrades; notes show A8+ HP and A9+ damage. `tools/game_facts.py` re-checks the facts our rules depend on after each patch |
 | Models and rules tuned on the player's own history are confounded | Decision-point comparisons, base rates, calibration against the record (simulator), and Phase 4 experiments before any rule is adopted |
 | Small sample sizes (12 Ironclad wins) | Report counts next to rates; treat win correlations as hypotheses |
+| The player's win rates may include runs with reloads (the run files do not record them) | Treat the rates as an upper bound on no-reload play; the Agent's scored runs allow none (`docs/simulator-integrity.md` ML-6) |
 | Overfitting the playbook to one run | Changes need evidence; changelog; exam seeds catch regressions |
 | Token usage (the STS2MCP author reports about 8M tokens per run for a smaller model) | Record tokens per run in the scoreboard so the real cost is known |
 | Decisions that use hidden information (seed, RNG state, draw order, future rolls) make results meaningless | `docs/simulator-integrity.md` §1: sanitizer, re-seeded streams, invariance audit, leak canary |

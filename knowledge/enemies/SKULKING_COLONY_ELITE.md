@@ -8,11 +8,11 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · elite** · Encounter ID `SKULKING_COLONY_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Skulking Colony** (HP 79, base values; seen in 35 of 35 fights)
-  - `INERTIA_MOVE` DefendIntent+BuffIntent → Gain 10 Block, Gain 3 Strength (StrengthPower)
-  - `ZOOM_MOVE` SingleAttackIntent(ZoomDamage) → Deal 16 damage
+- **Skulking Colony** (HP 75 (80 at A8+), base values; seen in 35 of 35 fights)
+  - `INERTIA_MOVE` DefendIntent+BuffIntent → Gain 10 Block, Gain 2 (4 at A9+) Strength (StrengthPower)
+  - `ZOOM_MOVE` SingleAttackIntent(ZoomDamage) → Deal 14 (16 at A9+) damage
   - `SUPER_CRAB_MOVE` MultiAttackIntent(SuperCrabDamage, SuperCrabRepeat) → Deal 6 damage 2 times
   - `SMASH_MOVE` SingleAttackIntent(SmashDamage)+StatusIntent(4) → Deal 9 damage, CardPileCmd.AddToCombatAndPreview<Dazed>
   - Passive: PowerCmd.Apply<HardenedShellPower>

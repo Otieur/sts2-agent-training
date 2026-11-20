@@ -8,13 +8,13 @@ Status: Plan v1, 2026-11-19.
 
 **Act 3 · elite** · Encounter ID `MECHA_KNIGHT_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Mecha Knight** (HP 300, base values; seen in 24 of 24 fights)
-  - `CHARGE_MOVE` SingleAttackIntent(ChargeDamage) → Deal 25 damage
+- **Mecha Knight** (HP 300 (320 at A8+), base values; seen in 24 of 24 fights)
+  - `CHARGE_MOVE` SingleAttackIntent(ChargeDamage) → Deal 25 (30 at A9+) damage
   - `FLAMETHROWER_MOVE` StatusIntent(4) → CardPileCmd.AddToCombatAndPreview<Burn>
   - `WINDUP_MOVE` DefendIntent+BuffIntent → Gain 15 Block, Gain 5 Strength (StrengthPower)
-  - `HEAVY_CLEAVE_MOVE` SingleAttackIntent(HeavyCleaveDamage) → Deal 35 damage
+  - `HEAVY_CLEAVE_MOVE` SingleAttackIntent(HeavyCleaveDamage) → Deal 35 (40 at A9+) damage
   - Passive: PowerCmd.Apply<ArtifactPower>
 
 ### The Player's record `[PLAYER-DATA]`

@@ -19,13 +19,21 @@ Everything not yet verified in a v0.107.1 fight is on the checklist at the end.
 ## Damage and block arithmetic
 Powers modify damage in two passes: additive hooks (`ModifyDamageAdditive`) and multiplicative hooks (`ModifyDamageMultiplicative`). `[GAME-EXTRACT]`
 
-**Working formula** for one hit of an attack, used by `tools/calc.py` `[HYPOTHESIS]` on order and rounding:
+**Formula** for one hit of an attack, used by `tools/calc.py`. Order and rounding are `[GAME]` (v0.111.1 `Hooks.Hook.ModifyDamage`: additions, then multiplications, then truncation to an integer, never below 0):
 
 ```
-damage = floor( (base + Strength + Vigor) × (1.5 if target Vulnerable) × (0.75 if attacker Weak) × other multipliers )
-damage = min(damage, 1) if the target has Slippery or Intangible (a cap per hit)
+damage = floor( (base + Strength + Vigor) × (Vulnerable multiplier if the target is Vulnerable) × (Weak multiplier if the attacker is Weak) × other multipliers )
 HP lost = max(0, damage − target block); block absorbs first
+Slippery: HP lost is capped at 1, and a stack is removed only when damage gets through Block
 ```
+
+**Multipliers `[GAME]` v0.111.1** (they apply to powered attacks only; damage from powers such as Juggernaut and Flame Barrier is unpowered: no Strength, no Vulnerable, no Weak):
+- Vulnerable 1.5 (`VulnerablePower`). The attacker's Paper Phrog adds 0.25; the attacker's Cruelty adds its amount divided by 100 (25, or 50 upgraded: 1.75 or 2.0); the target's Debilitate doubles the bonus.
+- Weak 0.75 (`WeakPower`). The target's Paper Krane makes it 0.60; the attacker's Debilitate doubles the reduction.
+- Frail 0.75 on Block from cards and monster moves (`FrailPower`). Block from Rage, Feel No Pain and Daughter of the Wind is unpowered: no Dexterity, no Frail.
+- Flutter 0.5 on attack damage taken; a stack is lost only on a hit that deals unblocked damage (`FlutterPower`). Colossus 0.5 on damage from Vulnerable attackers. Slow: +10% per card played this turn.
+- Juggernaut: its amount as unpowered damage to a random hittable enemy on every Block gain (`JuggernautPower.AfterBlockGained`). Flame Barrier: its amount back to the attacker on every powered attack hit, blocked or not (`FlameBarrierPower.AfterDamageReceived` has no amount check).
+- `[OBS]` 2026-11-19: card values shown by the live game include the player's Strength, Weak and Frail, not the target's Vulnerable.
 
 **Block from a card:**
 ```
@@ -89,6 +97,8 @@ block = floor( (base + Dexterity) × (0.75 if Frail) × (2 if Unmovable active) 
 - Rest-site options seen: Smith (upgrade), Heal (restores 30% of max HP, rounded down, capped at max HP; 237 of 297 heals match exactly, 34 were larger, presumably relic boosts), and relic-driven options (Dig, Cook, Kindle, Hatch, Lift, Clone). `[PLAYER-DATA]`
 
 ## Verification checklist (first Phase 4 runs; P2.E2.S2)
+**Status 2026-11-19:** items 1–7 and 10 are confirmed from the game's code (`[GAME]` v0.111.1, section "Damage and block arithmetic"; item 6 with the correction that only unblocked hits count). Items 8, 9 and 11 still need a look in game.
+
 | # | Rule to verify | Test | Expected |
 |---|---|---|---|
 | 1 | Vulnerable multiplier and rounding | Strike (6) on a Vulnerable enemy with 0 Strength | 9 |

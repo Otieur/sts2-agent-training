@@ -8,11 +8,11 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · weak** · Encounter ID `CORPSE_SLUGS_WEAK`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Corpse Slug** (HP 25–27, base values; seen in 162 of 81 fights)
+- **Corpse Slug** (HP 25–27 (27–29 at A8+), base values; seen in 162 of 81 fights)
   - `WHIP_SLAP_MOVE` MultiAttackIntent(WhipSlapDamage, WhipSlapRepeat) → Deal 3 damage 2 times
-  - `GLOMP_MOVE` SingleAttackIntent(GlompDamage) → Deal 8 damage
+  - `GLOMP_MOVE` SingleAttackIntent(GlompDamage) → Deal 8 (9 at A9+) damage
   - `GOOP_MOVE` DebuffIntent → Apply 2 Frail (FrailPower) to the target
   - Passive: PowerCmd.Apply<RavenousPower>
 

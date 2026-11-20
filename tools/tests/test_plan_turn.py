@@ -495,6 +495,67 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.simulate(ids("INFLAME"), [None], pt.Player(energy=1), [pt.parse_enemy("A:100:0:0", 0)])
         self.assertEqual(o["powers"], 1)                            # a Power is not counted twice
 
+    def test_vulnerable_and_weak_multipliers_from_the_game(self):
+        # [GAME] v0.111.1: Cruelty adds amount/100 to the Vulnerable multiplier, Paper Phrog 0.25, Debilitate doubles the bonus
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        vuln = lambda: [pt.parse_enemy("A:100:0:0:vuln", 0)]  # noqa: E731
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1), vuln())
+        self.assertEqual(o["dealt"], 9)                                   # 6 x 1.5
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1, vuln_mult=1.75), vuln())
+        self.assertEqual(o["dealt"], 10)                                  # 6 x 1.75 = 10.5, truncated
+        o = pt.simulate(ids("CRUELTY", "STRIKE_IRONCLAD"), [None, 0], pt.Player(energy=2), vuln())
+        self.assertEqual(o["dealt"], 10)                                  # Cruelty played first counts this turn
+        e = vuln(); e[0].debilitate = True
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1), e)
+        self.assertEqual(o["dealt"], 12)                                  # 1.5 + 0.5 = 2.0
+        order = [c.card_id for c in sorted(ids("STRIKE_IRONCLAD", "CRUELTY"), key=lambda c: pt.ORDER[pt.phase(c)])]
+        self.assertEqual(order[0], "CRUELTY")
+        # Weak applied this turn: 0.75, or 0.60 with Paper Krane
+        o = pt.simulate(ids("UPPERCUT"), [0], pt.Player(energy=3, enemy_weak_mult=0.60), [pt.parse_enemy("A:50:0:20", 0)])
+        self.assertEqual(o["incoming"], 12)
+        st = {"screen": "COMBAT", "run": {"relics": [{"relic_id": "PAPER_PHROG"}, {"relic_id": "PAPER_KRANE"}]},
+              "combat": {"player": {"energy": 3, "current_hp": 50, "powers": [{"power_id": "CRUELTY_POWER", "amount": 25}]},
+                         "hand": [], "enemies": [{"enemy_id": "X", "current_hp": 10, "powers": [{"power_id": "DEBILITATE_POWER", "amount": 1}]}]}}
+        _, player, enemies = pt.from_state(st)
+        self.assertEqual((player.vuln_mult, player.enemy_weak_mult, enemies[0].debilitate), (2.0, 0.60, True))
+
+    def test_slippery_and_flutter_need_unblocked_damage(self):
+        # [GAME] v0.111.1: both powers react only to damage that gets through Block
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        e = pt.parse_enemy("Vantom:173:8:7:slippery=9", 0)
+        o = pt.simulate(ids("STRIKE_IRONCLAD", "STRIKE_IRONCLAD"), [0, 0], pt.Player(energy=2), [e])
+        self.assertEqual((o["dealt"], o["enemies_after"][0]["slippery"], o["enemies_after"][0]["block"]), (1, 8, 0))  # 6 blocked; 6: 2 blocked, 1 lost
+        e = pt.parse_enemy("Byrdonis:90:6:0", 0); e.flutter = 2
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1, strength=6), [e])
+        self.assertEqual((o["dealt"], o["enemies_after"][0]["block"]), (0, 0))   # 12 halved to 6, all blocked: no stack lost
+        e = pt.parse_enemy("Byrdonis:90:0:9", 0); e.flutter = 1
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1), [e])
+        self.assertEqual((o["dealt"], o["incoming"]), (3, 0))                    # unblocked hit: last stack gone, stunned
+
+    def test_game_facts_base_and_upgrades(self):
+        # [GAME] v0.111.1 (knowledge/data/game-cards-v0.111.1.json): exact values and upgrade targets from the game's code
+        c = lambda x: pt.card_from_extract(0, x)  # noqa: E731
+        self.assertEqual((c("UPPERCUT+").dmg, c("UPPERCUT+").vuln, c("UPPERCUT+").weak), (13, 2, 2))   # upgrade raises the debuffs
+        self.assertEqual((c("IRON_WAVE+").dmg, c("IRON_WAVE+").block), (7, 7))                         # both values +2
+        self.assertEqual((c("SWORD_BOOMERANG+").dmg, c("SWORD_BOOMERANG+").hits), (3, 4))              # one more hit
+        self.assertEqual((c("BODY_SLAM").cost, c("BODY_SLAM+").cost), (1, 0))                          # cost upgrade
+        self.assertEqual((c("BARRICADE").cost, c("BARRICADE+").cost), (3, 2))
+        self.assertEqual((c("RAMPAGE").dmg, c("RAMPAGE+").dmg), (10, 10))                              # the upgrade raises the increase
+        self.assertEqual((c("BRAND").strength, c("BRAND+").strength), (1, 2))
+        self.assertEqual((c("JUGGERNAUT").juggernaut, c("JUGGERNAUT+").juggernaut), (6, 8))
+        self.assertEqual((c("CRUELTY").cruelty, c("CRUELTY+").cruelty), (25, 50))
+        self.assertEqual((c("TREMBLE").vuln, c("HEMOKINESIS").dmg, c("CINDER").dmg), (3, 15, 18))      # changed since the extract
+        self.assertEqual((c("STRIKE_IRONCLAD+").dmg, c("DEFEND_IRONCLAD+").block, c("BASH+").dmg, c("BASH+").vuln), (9, 8, 10, 3))
+
+    def test_card_added_after_the_extract(self):
+        # OUTRAGE (v0.111.1) is not in the extract: built from the game's facts instead of being treated as unplayable
+        card = pt.card_from_extract(0, "OUTRAGE")
+        self.assertEqual((card.dmg, card.cost, card.target, card.playable), (9, 0, "AnyEnemy", True))
+        self.assertEqual(pt.card_from_extract(0, "OUTRAGE+").dmg, 13)
+        live = pt._card_from_extract(0, "OUTRAGE", {"Damage": 12}, 0, True)
+        self.assertEqual((live.dmg, live.live), (12, True))
+        self.assertFalse(pt.card_from_extract(0, "NO_SUCH_CARD").playable)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,9 +8,9 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · elite** · Encounter ID `PHANTASMAL_GARDENERS_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Phantasmal Gardener** (HP 28–32, base values; seen in 104 of 26 fights)
+- **Phantasmal Gardener** (HP 26–31 (27–32 at A8+), base values; seen in 104 of 26 fights)
   - `BITE_MOVE` SingleAttackIntent(BiteDamage) → Deal 5 damage
   - `LASH_MOVE` SingleAttackIntent(LashDamage) → Deal 7 damage
   - `FLAIL_MOVE` MultiAttackIntent(FlailDamage, FlailRepeat) → Deal 1 damage 3 times

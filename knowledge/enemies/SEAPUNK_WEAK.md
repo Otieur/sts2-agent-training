@@ -8,10 +8,10 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · weak** · Encounter ID `SEAPUNK_WEAK`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Seapunk** (HP 44–46, base values; seen in 86 of 86 fights)
-  - `SEA_KICK_MOVE` SingleAttackIntent(SeaKickDamage) → Deal 11 damage
+- **Seapunk** (HP 44–46 (47–49 at A8+), base values; seen in 86 of 86 fights)
+  - `SEA_KICK_MOVE` SingleAttackIntent(SeaKickDamage) → Deal 11 (13 at A9+) damage
   - `SPINNING_KICK_MOVE` MultiAttackIntent(SpinningKickDamage, SpinningKickRepeat) → Deal 2 damage 4 times
   - `BUBBLE_BURP_MOVE` BuffIntent+DefendIntent → Gain 7 Block, Gain 1 Strength (StrengthPower)
 

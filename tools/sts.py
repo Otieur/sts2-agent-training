@@ -238,7 +238,7 @@ def _a_intents(e):
             out.append(f"{kind} {i.get('damage')}" + (f"x{hits}" if hits > 1 else "") + f" (={i.get('total_damage')})")
         else:
             out.append(f"{kind} {i.get('label') or ''}".strip())
-    return "; ".join(out) or (e.get("move_id") or "-")
+    return "; ".join(out) or "-"  # never fall back to move_id: it would name a move whose intent is hidden (FP-7)
 
 
 def _a_player_rows(players, local_label="you", other_label="teammate"):

@@ -3,7 +3,7 @@
 print the advice for the next decision point.
 
     python3 -I tools/play_turn.py RUN_DIR                      # show the advice for the current screen
-    python3 -I tools/play_turn.py RUN_DIR --go safe [--rank 2] # play that combat plan, then show the next advice
+    python3 -I tools/play_turn.py RUN_DIR --go safe            # play the top safe plan, then show the next advice
     python3 -I tools/play_turn.py RUN_DIR --act "claim_reward option_index=1" --reason "..."   # one action, then advice
 
 Plans come from tools/advise.py (which calls tools/plan_turn.py); every action goes through tools/sts.py with a reason,
@@ -12,8 +12,10 @@ card that changes the hand), so the next call re-plans from the real hand. No fi
 state is polled until the game accepts the next one.
 """
 import argparse
+import glob
 import json
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -22,6 +24,38 @@ from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parent.parent
 API = "http://127.0.0.1:8080/state"
+# The Agent's profile (read-only). The game writes a replay of each fight to replays/latest.mcr when the fight ends
+# ([GAME] v0.111.1: CombatReplayWriter is enabled outside TestMode; CombatManager.EndCombatInternal -> RunManager.WriteReplay).
+AGENT_PROFILE = str(Path.home() / "Library/Application Support/SlayTheSpire2/steam/*/modded/profile2")
+REPLAYS = PROJECT / "data" / "sim" / "replays"  # not in git: replays may hold account identifiers
+
+
+def keep_replay(run, floor):
+    """Copy the game's replay of the fight that just ended into the replay corpus (Phase 7 ground truth). Read-only on
+    the save folder; returns the copied path or None."""
+    try:
+        src = max((Path(p) for p in glob.glob(AGENT_PROFILE + "/replays/latest.mcr")), key=lambda p: p.stat().st_mtime, default=None)
+        if src is None or time.time() - src.stat().st_mtime > 180:
+            return None  # no replay, or not from the fight that just ended
+        out = REPLAYS / Path(run).name / f"floor{int(floor or 0):02d}-{time.strftime('%H%M%S', time.localtime(src.stat().st_mtime))}.mcr"
+        if not out.exists():
+            out.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, out)
+        return out
+    except OSError:
+        return None
+
+
+def reload_count():
+    """The game's own count of reloads in the current run (SerializableRun.NumReloads), or None. Reads that one field
+    of the in-progress save and nothing else: the file also holds the seed and RNG state, which no tool may use
+    (docs/simulator-integrity.md FP-2, ML-6)."""
+    try:
+        src = max((Path(p) for p in glob.glob(AGENT_PROFILE + "/saves/current_run.save")), key=lambda p: p.stat().st_mtime, default=None)
+        m = re.search(r'"num_reloads"\s*:\s*(\d+)', src.read_text()) if src else None
+        return int(m.group(1)) if m else None
+    except OSError:
+        return None
 
 
 def read_state():
@@ -44,8 +78,8 @@ def _hand_key(d):
 
 
 def settle(timeout=20.0, poll=0.3):
-    """Poll until the game accepts the next decision. In combat the hand must also be the same on two reads in a row:
-    play_card becomes available while the turn's draw is still animating (seen live 2026-11-19)."""
+    """Poll until the game accepts the next decision. In combat the hand and energy must also be unchanged across
+    three reads: play_card becomes available while the turn's draw is still animating (seen live 2026-11-19)."""
     t0 = time.time()
     d, prev, same = None, None, 0
     while time.time() - t0 < timeout:
@@ -73,9 +107,8 @@ def advise(run):
                           capture_output=True, text=True, timeout=300).stdout
 
 
-def plan_commands(text, mode, rank=1):
-    """The commands advise.py printed for the top plan of a mode (rank 1 only: advise prints commands for the top plan)
-    and that plan's two summary lines."""
+def plan_commands(text, mode):
+    """The commands advise.py printed for the top plan of a mode, and that plan's two summary lines."""
     lines = text.splitlines()
     hdr = next((i for i, l in enumerate(lines) if l.strip() == f"{mode}:"), None)
     summary = ""
@@ -122,8 +155,15 @@ def compact(d):
     return "\n".join(out)
 
 
-def show(run, max_lines):
+def show(run, max_lines, was_combat=False, floor=None):
     d, _ = settle(timeout=5)
+    if was_combat and d.get("screen") != "COMBAT":  # the fight just ended: keep its replay
+        kept = keep_replay(run, floor)
+        if kept:
+            print(f"replay kept: {kept.relative_to(PROJECT)}")
+    n = reload_count()
+    if n:
+        print(f"WARNING: the game counts {n} reload(s) in this run (scored runs need 0)")
     text = advise(run)
     keep = [l for l in text.splitlines() if not l.startswith("  python3") and not l.startswith("commands for")]
     print(compact(d))
@@ -140,6 +180,11 @@ def main(argv=None):
     a = ap.parse_args(argv)
     t0 = time.time()
     n, ok = 0, True
+    try:
+        before = read_state()
+    except Exception:  # noqa: BLE001
+        before = {}
+    was_combat, floor = before.get("screen") == "COMBAT", (before.get("run") or {}).get("floor")
     if a.go:
         summary, cmds = plan_commands(advise(a.run), a.go)
         if not cmds:
@@ -171,7 +216,7 @@ def main(argv=None):
         if not out.startswith("OK"):
             ok = False
         settle()
-    show(a.run, a.lines)
+    show(a.run, a.lines, was_combat, floor)
     print(f"[{n} actions, {time.time() - t0:.1f}s]")
     return 0 if ok else 1
 

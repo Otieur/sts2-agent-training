@@ -57,6 +57,13 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 ## Shared
 `stslib.py` (database, statistics, tables), `knowledge/data/card-patches.json` (card changes after the extract).
 
+## Checks against the game's own code (run after every game update: `docs/runbooks/game-patch.md`)
+| Tool | What it does | Typical call |
+|---|---|---|
+| `game_facts.py` | Re-reads the facts about the game's code that our rules and tools cite (15 checks); exit code 1 and a CHANGED row when one no longer holds | `game_facts.py` |
+| `game_cards.py` | Card cost, type, rarity, target, values and upgrade amounts from the game; writes `knowledge/data/game-cards-<version>.json` (used by `plan_turn.py`) and `reports/game-check/cards.md` | `game_cards.py` |
+| `game_monsters.py` | Monster HP and move numbers with A8+ and A9+ values; writes `knowledge/data/game-monsters-<version>.json` (used by `build_encounter_notes.py`) and `reports/game-check/monsters.md` | `game_monsters.py` |
+
 ## Game engine research
 `asm/asm.cs` (C#, .NET 10 file-based app, runtime libraries only): indexes `sts2.dll` (types, members, constant values), builds a call graph from IL, or prints the IL of matching methods. Outputs go to `data/asm/` (not in git). Findings and next steps: `docs/proposals/engine-simulation-spike.md`.
 `dotnet run tools/asm/asm.cs -- index|calls <dll> <out>` · `dotnet run tools/asm/asm.cs -- il <dll> "Cmd+<Wait>"`

@@ -43,5 +43,31 @@ class TestPlanCommands(unittest.TestCase):
         self.assertTrue(play_turn.ready({"screen": "MAP", "available_actions": ["choose_map_node", "save_and_quit"]}))
 
 
+class TestReplayAndReloads(unittest.TestCase):
+    def test_keep_replay_and_reload_count(self):
+        import os
+        import tempfile
+        saved = (play_turn.AGENT_PROFILE, play_turn.REPLAYS)
+        with tempfile.TemporaryDirectory() as tmp:
+            prof = Path(tmp) / "steam" / "1" / "modded" / "profile2"
+            (prof / "replays").mkdir(parents=True)
+            (prof / "saves").mkdir()
+            (prof / "replays" / "latest.mcr").write_bytes(b"replay")
+            (prof / "saves" / "current_run.save").write_text('{"num_reloads": 2, "rng": {"seed": "SECRET"}}')
+            play_turn.AGENT_PROFILE = str(Path(tmp) / "steam" / "*" / "modded" / "profile2")
+            play_turn.REPLAYS = Path(tmp) / "corpus"
+            try:
+                out = play_turn.keep_replay("runs/2026-01-01-SEED", 7)
+                self.assertEqual((out.parent.name, out.name[:8], out.read_bytes()), ("2026-01-01-SEED", "floor07-", b"replay"))
+                self.assertEqual(play_turn.reload_count(), 2)          # only the reload counter is read
+                old = (prof / "replays" / "latest.mcr")
+                os.utime(old, (1, 1))                                  # an old replay is not from the fight that just ended
+                self.assertIsNone(play_turn.keep_replay("runs/2026-01-01-SEED", 8))
+                (prof / "saves" / "current_run.save").unlink()
+                self.assertIsNone(play_turn.reload_count())
+            finally:
+                play_turn.AGENT_PROFILE, play_turn.REPLAYS = saved
+
+
 if __name__ == "__main__":
     unittest.main()

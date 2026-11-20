@@ -8,7 +8,7 @@ Status: Act 3 (Glory) boss. Plan v1, 2026-11-19. Not in the extracted game data;
 
 **Act 3 · boss** · Encounter ID `AEONGLASS_BOSS`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
 - **Aeonglass**: not in the extracted data.
 

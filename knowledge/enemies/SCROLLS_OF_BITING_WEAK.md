@@ -8,11 +8,11 @@ Status: Plan v1, 2026-11-19.
 
 **Act 3 · weak** · Encounter ID `SCROLLS_OF_BITING_WEAK`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Scroll Of Biting** (HP 31–38, base values; seen in 135 of 45 fights)
-  - `CHOMP` SingleAttackIntent(ChompDamage) → Deal 14 damage
-  - `CHEW` MultiAttackIntent(ChewDamage, 2) → Deal 5 damage 2 times
+- **Scroll Of Biting** (HP 30–37 (33–39 at A8+), base values; seen in 135 of 45 fights)
+  - `CHOMP` SingleAttackIntent(ChompDamage) → Deal 14 (16 at A9+) damage
+  - `CHEW` MultiAttackIntent(ChewDamage, 2) → Deal 5 (6 at A9+) damage 2 times
   - `MORE_TEETH` BuffIntent → Gain 2 Strength (StrengthPower)
   - Passive: PowerCmd.Apply<PaperCutsPower>
 

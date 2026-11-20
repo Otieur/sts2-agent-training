@@ -19,7 +19,7 @@ Can the agent run the game's real combat logic without animations, (1) to make l
 ### 2. Combat is deterministic and replayable
 - `[GAME]` `Random.Rng` is counter-based (`_counter`, `_random`) and serializable (`ToSerializable`, `LoadFromSerializable`).
 - `[GAME]` Co-op checks determinism: after actions, `RunManager.SendPostActionChecksum` and `Multiplayer.Game.ChecksumTracker` hash a `NetFullCombatState` with XxHash32 and compare peers (`StateDivergenceException`).
-- `[GAME]` `Multiplayer.Replay.CombatReplay` records a combat: the `SerializableRun` at room entry, the synchronizer ids, every game action, player choice and hook resume, and the checksums. `CombatReplayWriter.RecordInitialState` is called from `RunManager.EnterMapPointInternal` and `EnterRoomDebug`. Recording is gated by `CombatReplayWriter.IsEnabled`.
+- `[GAME]` `Multiplayer.Replay.CombatReplay` records a combat: the `SerializableRun` at room entry, the synchronizer ids, every game action, player choice and hook resume, and the checksums. `CombatReplayWriter.RecordInitialState` is called from `RunManager.EnterMapPointInternal` and `EnterRoomDebug`. Recording is on whenever TestMode is off (`RunManager.InitializeShared`), and the replay is written to `replays/latest.mcr` in the profile folder when a fight ends (checked 2026-11-19; the files exist).
 - `[GAME]` A debug runner replays a combat and validates it: `Nodes.Debug.Multiplayer.NMultiplayerTest.RunReplay`. It calls `RunState.FromSerializable` → `RunManager.SetUpReplay` → `RunManager.Launch` → `NRun.Create`, fast-forwards the synchronizer ids, and loads the recorded checksums. It warns when the replay's git commit differs from the game's.
 - Consequence: any combat state can be reproduced from its room-entry `SerializableRun` plus its action list, and checked against the game's own checksums.
 
@@ -58,7 +58,7 @@ Methods in `sts2.dll` that call Godot directly (`Godot.*`) or touch UI nodes (`C
 | # | Route | What it gives | Main risk | Effort |
 |---|---|---|---|---|
 | R1 | Instant mode in the live game | Faster live play: more runs per hour, the same game | UI tweens may still wait; console use may mark the profile | Hours |
-| R2 | Record a `CombatReplay` for every Agent fight | Exact action logs and checksums: ground truth for any simulator | Writer gating and output path to confirm | Half a day |
+| R2 | Keep the `CombatReplay` the game already writes for every fight | Exact action logs and checksums: ground truth for any simulator | The file is overwritten each fight, so it must be copied in time (done in `tools/play_turn.py`) | Done |
 | R3 | Simulator host: our own .NET process loads `sts2.dll`, sets NonInteractiveMode, builds `RunState.FromSerializable`, runs combat | Fights in milliseconds, many processes in parallel: search, then learned models and reinforcement learning become possible | Godot native calls during model-database load or combat setup; singletons; may need Harmony stubs | 1–2 days to a yes or no |
 | R4 | Offline headless game instance as a simulator server (`--headless --force-steam off --clientId`, our mod replays a combat plus candidate actions and returns the state) | The real engine with no fidelity gap | Each branch replays from room entry and pays scene setup; slower than R3; a second Godot process per worker | 1–2 days |
 
@@ -80,5 +80,5 @@ Order: R1 and R2 first (cheap, useful whatever happens next), then R3. Fall back
 
 ## Open questions
 - Does model-database initialisation (`ModelDb`) need Godot's resource loader?
-- Is `CombatReplayWriter.IsEnabled` set by a preference, a command-line flag, or only in debug builds?
+- ~~Is `CombatReplayWriter.IsEnabled` set by a preference, a command-line flag, or only in debug builds?~~ Always on outside TestMode.
 - How much of the remaining end-turn time comes from UI tweens rather than `Cmd.Wait`?

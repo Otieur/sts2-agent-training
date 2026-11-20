@@ -16,7 +16,7 @@
 | **First milestone** | A 1–2 day feasibility spike (E1) ends in a go or no-go. Go means route R3 (our own process). If R3 fails, the spike tries route R4: an offline, headless game instance as a simulation server. If both fail, decision 0003 names the fallback. |
 | **Speed target** | Median full hallway fight at most 5 ms on one core (200 fights per second), with fixed actions. Minimum to be useful for Phase 8: 20 fights per second. The numbers are a hypothesis until E1.S4 measures them. |
 | **Exactness target** | At least 99% of recorded fights replay with matching checksums and field comparisons; every mismatch explained. |
-| **Player involvement** | Approve the mod change that records fights (E2.S2) and the game restart it needs; approve any offline-instance or console work (SA-6); approve any downloaded package (SA-8). No involvement during simulator runs. |
+| **Player involvement** | Approve any offline-instance or console work (SA-6) and any downloaded package (SA-8). Recording fights needs nothing: the game already writes a replay of every fight (E2.S1). No involvement during simulator runs. |
 | **Downloads** | None expected. The host references `sts2.dll`, `GodotSharp.dll` and `0Harmony.dll` in the game's install folder; Harmony ships with the game, so engine-call stubs need no download. The .NET 9 SDK is already installed. |
 | **Machine load** | Simulator jobs use at most half the CPU cores at low priority by default (SA-7). |
 | **What can go wrong** | Model-database start-up needs the Godot engine (EN-1); hidden engine calls in rare cards or monsters; state leaking between fights; game patches breaking the host mid-phase. Each has a story below. |
@@ -29,7 +29,7 @@
             live game (Steam, profile 2)                      our machine, separate processes
  ┌──────────────────────────────────────┐        ┌────────────────────────────────────────────┐
  │ STS2-Agent mod (HTTP API, read/act)   │──state─▶ tools/*.py (advise, play_turn, Phase 8 search)│
- │ replay capture (E2): one replay/fight │──files─▶ runs/<run>/replays/  ──▶ fidelity suite (E5)  │
+ │ the game writes replays/latest.mcr    │──copy──▶ data/sim/replays/<run>/ ─▶ fidelity suite (E5) │
  └──────────────────────────────────────┘        │            │ JSON lines (tools/sim.py)        │
                                                  │            ▼                                   │
                                                  │  sim host (sim/, C#, .NET 9)                   │
@@ -45,11 +45,11 @@
 - **Where code lives:**
   - `sim/`: the C# host project, our own code. Build output goes to `sim/bin` and `sim/obj`, which git ignores.
   - `tools/sim.py`: the Python bridge.
-  - Reports go to `reports/phase7/`; recorded fights go to `runs/<run>/replays/`.
+  - Reports go to `reports/phase7/`; recorded fights go to `data/sim/replays/<run>/` (not in git).
 - **Two modes** (FP-3):
   - *Fidelity mode* replays a finished, recorded fight with its true RNG, to test the simulator. Its output never reaches a decision.
   - *Decision mode* takes the current state, sanitizes it and re-samples every hidden stream (FP-15). Only this mode answers questions from Phase 8 and 9 code.
-- **Reaching the current state in a live fight:** the engine has no mid-combat restore (EN-2). The host therefore rebuilds the fight from the room-entry state plus the actions taken so far. The sanitizer then checks that the result equals the live observation, hides the draw order, re-seeds all 15 streams and re-samples hidden pre-rolled state before any search (FP-15).
+- **Reaching the current state in a live fight:** the engine has no mid-combat restore (EN-2). The host therefore rebuilds the fight from the room-entry state plus the actions taken so far. The sanitizer then checks that the result equals the live observation, hides the draw order, replaces the run seed, re-seeds every random generator and re-samples hidden pre-rolled state before any search (FP-15).
 
 ---
 
@@ -83,7 +83,7 @@
 > - [ ] It initialises `ModelDb` and lists the card, relic, power, potion, monster and encounter counts.
 > - [ ] Every native Godot call reached during start-up is caught and logged with its stack. A table in `reports/phase7/spike.md` says, for each one, stub (with why it is logic-neutral), avoid, or blocker.
 >
-> **Notes:** catch at the first native call (Harmony prefix on suspect methods, or the exception GodotSharp throws without an engine). Characters and card pools call Godot in 33 and 20 methods: check them first.
+> **Notes:** catch at the first native call (Harmony prefix on suspect methods, or the exception GodotSharp throws without an engine). Desk check 2026-11-19 `[GAME]`: `ModelDb.Init`, `InitIds` and `Preload` call no Godot method; the static constructor of `RelicModel` creates a `Godot.StringName`, which needs the engine's native string table, so test that first. Character and card-pool Godot calls are colour structs.
 
 > **P7.E1.S3: First fight in our process** · Size L · Status: Todo
 > *As the Agent, I want one real fight to run end to end in the host, so that the route is proven rather than assumed.*
@@ -118,19 +118,22 @@
 
 ### P7.E2: Ground truth from the real game
 
-> **P7.E2.S1: How replay recording is switched on** · Size S · Status: Todo
+> **P7.E2.S1: How replay recording is switched on** · Size S · Status: Done (2026-11-19)
 > *As the Agent, I want to know what enables `CombatReplayWriter`, so that recording needs the smallest possible change.*
 >
 > **Acceptance criteria**
-> - [ ] The IL of `CombatReplayWriter.IsEnabled`, its setter callers and `WriteReplay` is read; the gate (setting, flag, debug build only) and the output path are documented in the spike report.
+> - [x] `[GAME]` Recording is on whenever TestMode is off: `RunManager.InitializeShared` sets `CombatReplayWriter.IsEnabled = !TestMode.IsOn`. No setting, flag or mod is needed.
+> - [x] `[GAME]` The replay is written when a fight ends (`CombatManager.EndCombatInternal` → `RunManager.WriteReplay`), also on run clean-up and on a state divergence, to `replays/latest.mcr` in the profile folder. Each fight overwrites the last. `[OBS]` The files exist for every profile; profile 2's was the final boss fight of the first Agent run.
+> - [x] Format: binary, starting with the game version and commit strings (`v0.111.1`, `cc1f9462`). `tools/game_facts.py` re-checks the gating after each patch.
 
-> **P7.E2.S2: Record every Agent fight** · Size M · Status: Todo (Player-gated: mod change)
-> *As the Agent, I want a replay file for every fight in my runs, so that the simulator has exact ground truth.*
+> **P7.E2.S2: Keep every Agent fight's replay** · Size S · Status: In progress (implemented and unit-tested 2026-11-19; first live run pending)
+> *As the Agent, I want each fight's replay copied before the next fight overwrites it, so that the simulator has exact ground truth.*
 >
 > **Acceptance criteria**
-> - [ ] Recording is enabled for profile-2 runs only, through the smallest change found in S1: a setting, a launch flag, or a small mod of our own. Saves are backed up first (SA-9).
-> - [ ] Each fight's replay is copied to `runs/<run>/replays/<floor>-<encounter>.replay`, anonymised where the game supports it (LG-4).
-> - [ ] Live play is unaffected: the same fight with and without recording shows no difference in `play_turn.py` timings beyond noise.
+> - [x] `tools/play_turn.py` copies `replays/latest.mcr` from the Agent's profile (read-only) to `data/sim/replays/<run>/floor<NN>-<time>.mcr` when a fight ends. The folder is not in git (LG-4). No mod change and no Player step.
+> - [x] The first Agent run's last fight is kept as the first corpus item (`data/sim/replays/2026-11-19-1ZWEN4BFQUZL/`).
+> - [ ] A full live run yields one replay per fight (count equals the journal's fight count).
+> - [ ] Fights ended outside `play_turn.py` (a manual `sts.py act`) are covered, or the gap is documented.
 
 > **P7.E2.S3: Replay corpus index** · Size S · Status: Todo
 > *As the Next Session, I want an index of recorded fights, so that tests and benchmarks pick fights by act, type and encounter.*
@@ -265,13 +268,14 @@
 >
 > **Acceptance criteria**
 > - [ ] Fidelity mode and decision mode have separate entry points; decision mode refuses input that has not passed the sanitizer.
-> - [ ] The sanitizer rebuilds the current state, checks it equals the live observation (else stops and reports), hides the draw order, re-seeds all 15 streams, and re-samples hidden pre-rolled state. The inventory of hidden pre-rolled state is documented (OQ7.3).
+> - [ ] The sanitizer rebuilds the current state, checks it equals the live observation (else stops and reports), hides the draw order, replaces the run seed and re-seeds every random generator (FP-2), and re-samples hidden pre-rolled state. The inventory of hidden pre-rolled state is documented (OQ7.3).
 
-> **P7.E6.S2: Re-seed every hidden stream** · Size M · Status: Todo
-> *As the Agent, I want all run and player random streams replaced by fresh seeds per sampled world, so that no future roll is predictable (FP-2, FP-8, FP-9).*
+> **P7.E6.S2: Re-seed every random generator** · Size M · Status: Todo
+> *As the Agent, I want the run seed and every random generator replaced per sampled world, so that no future roll is predictable (FP-2, FP-8, FP-9).*
 >
 > **Acceptance criteria**
-> - [ ] The 12 `RunRngSet` streams and 3 `PlayerRngSet` streams are re-seeded per sample from a sampler seed that is logged; test: two samples with different sampler seeds diverge on the next shuffle and the next monster roll.
+> - [ ] The run seed, the 12 `RunRngSet` streams, the 3 `PlayerRngSet` streams and every other `Rng` instance reachable from the run and combat objects (each monster's `_rng`, event generators, relic-held ones) are re-seeded per sample from a logged sampler seed. The generators are found by walking the objects, not from a fixed list.
+> - [ ] Test: after sanitizing, no reachable `Rng` has the state it had before. Two samples with different sampler seeds diverge on the next shuffle and the next monster roll.
 
 > **P7.E6.S3: Draw-pile sampler** · Size M · Status: Todo
 > *As the Agent, I want sampled draw orders consistent with what the player knows, so that search neither cheats nor forgets (FP-5, FP-14).*
@@ -315,11 +319,12 @@
 > **Acceptance criteria**
 > - [ ] Each batch reports its failure rate; above 0.1% the batch is marked unusable and the first failures are saved for review.
 
-> **P7.E7.S4: Game patch runbook** · Size S · Status: Todo
+> **P7.E7.S4: Game patch runbook** · Size S · Status: In progress (runbook extended 2026-11-19 with the checks that exist)
 > *As the Next Session, I want a fixed procedure after every game update, so that the simulator is re-checked before use (FI-4).*
 >
 > **Acceptance criteria**
-> - [ ] `docs/runbooks/game-patch.md`: back up saves, rebuild the assembly index, diff it against the last one, re-check the evidence cited in `docs/simulator-integrity.md`, run the fidelity suite, update the version guard, record the result in `docs/environment.md`.
+> - [x] `docs/runbooks/game-patch.md` (from P2.E7.S1) now runs `tools/game_facts.py` (the facts our rules cite), `tools/game_cards.py` and `tools/game_monsters.py` (numbers), and regenerates the notes.
+> - [ ] Added once they exist: run the fidelity suite, update the version guard.
 
 ### P7.E8: Run-level simulation (after Phase 8 starts)
 
@@ -358,9 +363,9 @@
 
 | ID | Question | Resolved by |
 |---|---|---|
-| OQ7.1 | Does `ModelDb` start without the Godot engine? | E1.S2 |
-| OQ7.2 | What enables `CombatReplayWriter`, and where does it write? | E2.S1 |
-| OQ7.3 | Which hidden state is pre-rolled and stored (beyond the draw order and RNG streams), for example a monster's later moves or pending random effects? | E6.S1 (inventory from the IL of monster and power models) |
+| OQ7.1 | Does `ModelDb` start without the Godot engine? Desk check: its own methods call no Godot method; `RelicModel`'s static constructor creates a `Godot.StringName` | E1.S2 |
+| OQ7.2 | ~~What enables `CombatReplayWriter`, and where does it write?~~ Answered 2026-11-19: always on outside TestMode; `replays/latest.mcr` per profile, overwritten each fight | E2.S1 (done) |
+| OQ7.3 | Which hidden state is pre-rolled and stored (beyond the draw order and random generators)? Known so far `[GAME]`: each monster stores `NextMove` (the move its shown intent comes from; hidden for Hidden intents) and a move state machine whose random branches roll at transition time; each monster has its own generator | E6.S1 (inventory from the IL of monster and power models) |
 | OQ7.4 | Is branching cheaper by replay or by cloning? | E4.S4 |
 | OQ7.5 | Can the in-progress fight's actions be read live (replay events or our own log) with enough detail to rebuild the state, including hook resumes and player choices? | E2.S2, E6.S1 |
 | OQ7.6 | Is 200 fights per second realistic? | E1.S4, E7.S1 |

@@ -8,14 +8,14 @@ Status: Act 1 (Underdocks) boss. Plan v1, 2026-11-19.
 
 **Act 1 · boss** · Encounter ID `SOUL_FYSH_BOSS`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Soul Fysh** (HP 211, base values; seen in 27 of 27 fights)
+- **Soul Fysh** (HP 211 (221 at A8+), base values; seen in 27 of 27 fights)
   - `BECKON_MOVE` StatusIntent(BeckonMoveAmount) → Add a generated card to your draw pile, Add a generated card to your discard pile
-  - `DE_GAS_MOVE` SingleAttackIntent(DeGasDamage) → Deal 16 damage
-  - `GAZE_MOVE` SingleAttackIntent(GazeDamage)+StatusIntent(GazeMoveAmount) → Deal 7 damage, Add a generated card to your discard pile
+  - `DE_GAS_MOVE` SingleAttackIntent(DeGasDamage) → Deal 16 (18 at A9+) damage
+  - `GAZE_MOVE` SingleAttackIntent(GazeDamage)+StatusIntent(GazeMoveAmount) → Deal 7 (8 at A9+) damage, Add a generated card to your discard pile
   - `FADE_MOVE` BuffIntent → Gain 2 Intangible (IntangiblePower)
-  - `SCREAM_MOVE` SingleAttackIntent(ScreamDamage)+DebuffIntent → Deal 11 damage, Apply 3 Vulnerable (VulnerablePower) to the target
+  - `SCREAM_MOVE` SingleAttackIntent(ScreamDamage)+DebuffIntent → Deal 13 (15 at A9+) damage, Apply 3 Vulnerable (VulnerablePower) to the target
 
 ### The Player's record `[PLAYER-DATA]`
 
@@ -39,7 +39,7 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
   - De-Gas: 16
   - Gaze: 7 + a status card
   - Fade: +2 Intangible
-  - Scream: 11 + 3 Vulnerable on you (extract). **13 (15) since v0.107.1** `[COMMUNITY]` wiki patch notes
+  - Scream: **13 (15 at A9+)** + 3 Vulnerable on you `[GAME]` v0.111.1 `SoulFysh.ScreamDamage` (the extract showed 11; the wiki patch notes gave 13 since v0.107.1)
 - Beckon cards deal **unblockable** damage `[COMMUNITY]`, corroborated by the game data: Beckon is a 1-cost Status with `HpLossVar(6)` (HP loss ignores block) `[GAME-EXTRACT]`. Two guides say a Beckon still in your hand at the end of your turn costs 6 HP, and that spending its 1 energy (or exhausting it) gets rid of it; exhausting is better, since a played Beckon returns through the discard pile `[COMMUNITY]` (games.gg and clawsomegamer, March 2026, accessed 2026-11-19; version not stated).
 - **Cycle** `[COMMUNITY]`, two guides agree: turn 1 Beckon (a Beckon into your draw pile and one into your discard pile), turn 2 De-Gas 16, turn 3 Gaze 7 plus another Beckon, turn 4 Fade (Intangible), turn 5 Scream (13 + 3 Vulnerable), then repeating from turn 6. Both describe the Intangible as lasting one turn; the game data gives Fade 2 Intangible and a power that ticks down at every turn end, which fits one of your turns `[GAME-EXTRACT]` + `[HYPOTHESIS]` (gap 27).
 - **The wiki confirms the cycle** `[COMMUNITY]` (slaythespire.wiki.gg page, accessed 2026-11-19): HP 211 (221 at A8+); Beckon puts 1 Beckon into the draw pile and 1 into the discard pile; De-Gas 16 (18); Gaze 7 (8) + 1 Beckon into the discard pile; Fade 2 Intangible (the first one effectively lasts only your next turn); Scream 13 (15) + 3 Vulnerable; a Beckon in hand at the end of your turn costs 6 HP.

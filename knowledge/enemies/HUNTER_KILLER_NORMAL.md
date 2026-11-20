@@ -8,12 +8,12 @@ Status: data only; plan not written yet. Game version target v0.107.1.
 
 **Act 2 · normal** · Encounter ID `HUNTER_KILLER_NORMAL`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Hunter Killer** (HP 121, base values; seen in 41 of 41 fights)
+- **Hunter Killer** (HP 121 (126 at A8+), base values; seen in 41 of 41 fights)
   - `TENDERIZING_GOOP_MOVE` DebuffIntent → Apply 1 Tender (TenderPower) to the target
-  - `BITE_MOVE` SingleAttackIntent(BiteDamage) → Deal 17 damage
-  - `PUNCTURE_MOVE` MultiAttackIntent(PunctureDamage, 3) → Deal 7 damage 3 times
+  - `BITE_MOVE` SingleAttackIntent(BiteDamage) → Deal 17 (19 at A9+) damage
+  - `PUNCTURE_MOVE` MultiAttackIntent(PunctureDamage, 3) → Deal 7 (8 at A9+) damage 3 times
 
 ### The Player's record `[PLAYER-DATA]`
 

@@ -8,12 +8,12 @@ Status: Plan v1, 2026-11-19.
 
 **Act 3 · elite** · Encounter ID `SOUL_NEXUS_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Soul Nexus** (HP 234, base values; seen in 18 of 18 fights)
-  - `SOUL_BURN_MOVE` SingleAttackIntent(SoulBurnDamage) → Deal 29 damage
-  - `MAELSTROM_MOVE` MultiAttackIntent(MaelstromDamage, MaelstromRepeat) → Deal 6 damage 4 times
-  - `DRAIN_LIFE_MOVE` SingleAttackIntent(DrainLifeDamage)+DebuffIntent(strong: true) → Deal 18 damage, Apply 2 Vulnerable (VulnerablePower) to the target, Apply 2 Weak (WeakPower) to the target
+- **Soul Nexus** (HP 234 (254 at A8+), base values; seen in 18 of 18 fights)
+  - `SOUL_BURN_MOVE` SingleAttackIntent(SoulBurnDamage) → Deal 29 (31 at A9+) damage
+  - `MAELSTROM_MOVE` MultiAttackIntent(MaelstromDamage, MaelstromRepeat) → Deal 6 (7 at A9+) damage 4 times
+  - `DRAIN_LIFE_MOVE` SingleAttackIntent(DrainLifeDamage)+DebuffIntent(strong: true) → Deal 18 (19 at A9+) damage, Apply 2 Vulnerable (VulnerablePower) to the target, Apply 2 Weak (WeakPower) to the target
 
 ### The Player's record `[PLAYER-DATA]`
 

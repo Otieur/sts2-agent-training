@@ -241,6 +241,7 @@ runs/<YYYY-MM-DD>-<seed>/
 > - [ ] Results are compared with the Player's result on the same seed (floor reached, win).
 >
 > **Notes:** depends on OQ0.6 (seeded starts through the API). Custom-seed runs may not count toward unlocks, which does not matter here. Card rewards depend on choices made, so the same seed is similar, not identical.
+> **Integrity (added 2026-11-19, `docs/simulator-integrity.md` ML-7):** the seeds come from the Player's history, and `data/runs.db` holds every encounter, reward and event of the Player's runs on them. While playing an exam seed the Agent opens no record of that seed: not the Player's run, and not its own earlier journals, logs, post-mortems or replays of it. A replayed seed compares playbook versions; claims about skill need fresh seeds.
 
 > **P4.E5.S3: Milestone tracking** · Size XS · Status: Done (metrics/milestones.md)
 > *As the Player, I want milestones recorded when reached, so that the project's progress is obvious.*

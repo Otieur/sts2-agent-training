@@ -53,7 +53,8 @@ import calc  # noqa: E402
 import deck_metrics  # noqa: E402
 from deck_metrics import CARDS  # noqa: E402
 
-deck_metrics.apply_patches("v0.111.1")  # live tools use the target game's card values
+TARGET_BUILD = "v0.111.1"  # the game version the live tools play (stslib.MAIN_BUILD is the history's version)
+deck_metrics.apply_patches(TARGET_BUILD)  # live tools use the target game's card values
 
 MAX_ASSIGNMENTS = 729  # per subset; above this, single-target cards focus the weakest enemy
 
@@ -103,6 +104,7 @@ class Card:
     colossus: bool = False      # Colossus: half damage from Vulnerable enemies this turn
     doom: int = 0               # Doom applied to the target (Scourge 13, End of Days 29)
     self_doom: int = 0          # Doom on yourself (Borrowed Time 3)
+    cruelty: int = 0            # Cruelty gained: Vulnerable enemies take this many percentage points more from you
     juggernaut: int = 0         # Juggernaut gained: damage to a random enemy whenever you gain Block (live value)
     cost_down_per_attack: int = 0  # costs this much less per Attack played earlier this turn (Stomp 1)
 
@@ -140,6 +142,7 @@ class Enemy:
     minion: bool = False        # Minion: the fight ends when every non-minion is dead (Kin followers, Queen's Amalgam)
     doom: int = 0               # Doom on it: it dies at the end of its own turn (after attacking) if its HP is at or below it
     paper_cuts: int = 0         # Paper Cuts (Scrolls of Biting): you lose this much max HP each time it damages you
+    debilitate: bool = False    # Debilitate: Vulnerable and Weak on it are twice as effective [GAME] DebilitatePower
 
 
 @dataclass
@@ -163,7 +166,68 @@ class Player:
     hexed: bool = False         # Hex (Spectral Knight): every card is Ethereal, so cards left in hand are exhausted
     shrunk: bool = False        # Shrink (Shrinker Beetle): your attacks deal 30% less (after Strength)
     juggernaut: int = 0         # Juggernaut on you: this much damage to a random enemy whenever you gain Block
+    vuln_mult: float = 1.5      # your attacks against Vulnerable enemies: 1.5, + Cruelty/100, + 0.25 with Paper Phrog [GAME]
+    enemy_weak_mult: float = 0.75  # Weak enemies' attacks against you: 0.75, or 0.60 with Paper Krane [GAME]
     block_per_attack: int = 0   # Block for every Attack played (Daughter of the Wind relic: 1)
+
+
+def _load_game_cards():
+    """Card facts read from the game's code for the current build (tools/game_cards.py), or {} if the file is absent."""
+    path = Path(__file__).resolve().parent.parent / "knowledge" / "data" / f"game-cards-{TARGET_BUILD}.json"
+    try:
+        return json.loads(path.read_text())["cards"]
+    except (OSError, ValueError, KeyError):
+        return {}
+
+
+GAME_CARDS = _load_game_cards()
+GAME_VAR_ATTR = {"DamageVar": "dmg", "BlockVar": "block", "PowerVar<VulnerablePower>": "vuln", "PowerVar<WeakPower>": "weak",
+                 "PowerVar<StrengthPower>": "strength"}
+# upgrade targets in the game's OnUpgrade -> Card attributes ("Power" is Uppercut's shared Weak and Vulnerable amount)
+GAME_UPGRADE_ATTR = {"Damage": ("dmg",), "Block": ("block",), "Vulnerable": ("vuln",), "VulnerablePower": ("vuln",),
+                     "Weak": ("weak",), "WeakPower": ("weak",), "Strength": ("strength", "temp_str"),
+                     "StrengthPower": ("strength", "temp_str"), "Power": ("vuln", "weak"), "Cards": ("draw",),
+                     "Energy": ("energy",), "JuggernautPower": ("juggernaut",), "CrueltyPower": ("cruelty",),
+                     "RagePower": ("rage",), "FeelNoPainPower": ("fnp",), "FlameBarrierPower": ("retaliate",), "HpLoss": ("hp_cost",)}
+
+
+def _game_calculated(g):
+    return any(str(v[0]).startswith(("Calculated", "Extra")) for v in g.get("vars") or [])
+
+
+def _apply_game_base(cid, p, base_cost):
+    """Replace numbers parsed from the extract's text with the game's own ([GAME], current build) where the text
+    already established what the number means: same kind of value, not calculated in the play logic."""
+    g = GAME_CARDS.get(cid)
+    if not g:
+        return base_cost
+    for vt, _name, val in g.get("vars") or []:
+        key = GAME_VAR_ATTR.get(vt)
+        if key and isinstance(val, (int, float)) and p.get(key) and not (key == "dmg" and (_game_calculated(g) or p.get("osty"))):
+            p[key] = int(val)
+        if vt == "RepeatVar" and isinstance(val, (int, float)) and p.get("hits", 1) > 1:
+            p["hits"] = int(val)
+    if isinstance(g.get("cost"), int) and g["cost"] >= 0 and not p.get("x_cost"):
+        return g["cost"]
+    return base_cost
+
+
+def _card_from_game(index, cid, g, live, cost, playable):
+    """A card the extract does not have (added after it), built from the game's facts: numbers and target are known,
+    special effects are not. Live values from the mod replace the numbers as usual."""
+    vals = {GAME_VAR_ATTR[vt]: int(v) for vt, _n, v in g.get("vars") or [] if vt in GAME_VAR_ATTR and isinstance(v, (int, float))}
+    hits = next((int(v) for vt, _n, v in g.get("vars") or [] if vt == "RepeatVar" and isinstance(v, (int, float))), 1)
+    lv = live or {}
+    card = Card(index, cid, cid.replace("_", " ").title(), cost if cost is not None else max(0, g.get("cost") or 0),
+                g.get("target") if g.get("target") in ("AnyEnemy", "AllEnemies", "RandomEnemy") else "Self",
+                int(lv.get("Damage", vals.get("dmg", 0))), hits, int(lv.get("Block", vals.get("block", 0))),
+                int(lv.get("VulnerablePower", vals.get("vuln", 0))), int(lv.get("WeakPower", vals.get("weak", 0))),
+                0, 0, 0, 0, (g.get("cost") or 0) < 0 and g.get("type") not in ("Status", "Curse", "Quest"),
+                playable=bool(playable) and g.get("type") not in ("Status", "Curse", "Quest"), power=g.get("type") == "Power")
+    card.live = bool(live)
+    card.skill = g.get("type") == "Skill"
+    card.note = "from game data; special effects unknown"
+    return card
 
 
 def parse_effect(c):
@@ -195,8 +259,28 @@ def parse_effect(c):
 
 
 def _upgrade(card, c):
-    """Apply an upgrade to base numbers (not live ones) where the extract is unambiguous: one UpgradeValueBy on a card
-    whose first variable is Damage, Block or Strength, or two values applied in variable order. [GAME-EXTRACT]"""
+    """Apply an upgrade to base numbers (not live ones). With game facts: the exact amounts and targets from the game's
+    OnUpgrade [GAME]. Without: the extract where it is unambiguous (one UpgradeValueBy on a card whose first variable is
+    Damage, Block or Strength, or two values applied in variable order) [GAME-EXTRACT]."""
+    g = GAME_CARDS.get(card.card_id)
+    if g:
+        for target, amount in g.get("upgrade") or []:
+            if not isinstance(amount, (int, float)):
+                continue
+            if target == "EnergyCost":
+                if not card.x_cost:
+                    card.cost = max(0, card.cost + int(amount))
+            elif target == "Repeat":
+                if card.hits > 1:
+                    card.hits += int(amount)
+            elif target == "Damage" and (_game_calculated(g) or card.osty):
+                continue
+            else:
+                for attr in GAME_UPGRADE_ATTR.get(target, ()):
+                    if getattr(card, attr, 0):
+                        setattr(card, attr, getattr(card, attr) + int(amount))
+        card.upgraded = True
+        return card
     ups = [int(x) for x in re.findall(r"UpgradeValueBy\((\d+)m?\)", c.get("on_upgrade") or "")]
     kinds = re.findall(r"(DamageVar|BlockVar|PowerVar<StrengthPower>|PowerVar<VulnerablePower>|PowerVar<WeakPower>|\w+Var|DynamicVar)",
                        c.get("vars") or "")
@@ -236,6 +320,9 @@ def _card_from_extract(index, card_id, live=None, cost=None, playable=True):
     if plus and c and not live:
         return _upgrade(_card_from_extract(index, cid, None, cost, playable), c)
     if not c:
+        if cid in GAME_CARDS and cid not in EXTRA_STATUSES:  # added after the extract: numbers from the game's code
+            card = _card_from_game(index, cid, GAME_CARDS[cid], live, cost, playable)
+            return _upgrade(card, {}) if plus and not live else card
         if cid in EXTRA_STATUSES:  # statuses newer than the extract (Aeonglass's Wither) [COMMUNITY]
             # playable only if the state says so (one guide gives Wither Retain and Exhaust); its cost comes from the state
             card = Card(index, cid, cid.replace("_", " ").title(), cost or 0, "Self", playable=bool(playable) and cost is not None,
@@ -245,6 +332,7 @@ def _card_from_extract(index, card_id, live=None, cost=None, playable=True):
         return Card(index, cid, cid, cost if cost is not None else 9, "Self", playable=False, note="not in the extract")
     p = parse_effect(c)
     base_cost = c["cost"] if c["cost"] is not None and c["cost"] >= 0 else 0
+    base_cost = _apply_game_base(cid, p, base_cost)
     name = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", c["name"])
     name = re.sub(r" (Ironclad|Silent|Necrobinder|Regent|Defect)$", "", name)
     is_power = c["type"] == "Power"
@@ -264,6 +352,8 @@ def _card_from_extract(index, card_id, live=None, cost=None, playable=True):
         m = re.search(pat, eff)
         setattr(card, attr, int(m.group(1)) if m else 0)
     card.colossus = bool(re.search(r"Gain \d+ Colossus", eff))
+    if card.card_id == "CRUELTY":  # [GAME] v0.111.1 Cards.Cruelty: CrueltyPower 25 (+25 upgraded); CrueltyPower.ModifyVulnerableMultiplier
+        card.cruelty = int((live or {}).get("CrueltyPower") or (50 if card.upgraded else 25))
     if card.card_id == "JUGGERNAUT":  # flat damage per Block gained, not raised by Strength or Vulnerable (seen live 2026-11-19)
         card.juggernaut = int((live or {}).get("JuggernautPower") or (8 if card.upgraded else 6))
     if card.card_id == "STOMP":  # costs 1 less per Attack played this turn (card text); the live cost already counts earlier ones
@@ -361,26 +451,35 @@ def card_from_potion(slot, potion_id):
     return card
 
 
-def per_hit(card, player, enemy, strength_gained, played_before=0):
+def vulnerable_mult(player, enemy, cruelty_gained=0):
+    """Multiplier of your attacks against this enemy if it is Vulnerable. [GAME] v0.111.1
+    VulnerablePower.ModifyDamageMultiplicative: 1.5, the dealer's Paper Phrog +0.25, the dealer's Cruelty +amount/100, then the
+    target's Debilitate doubles the bonus."""
+    m = player.vuln_mult + cruelty_gained / 100.0
+    return m + (m - 1) if enemy.debilitate else m
+
+
+def per_hit(card, player, enemy, strength_gained, played_before=0, cruelty_gained=0):
     base = card.dmg
     slow = 1 + 0.1 * played_before if enemy.slow else 1.0
+    vm = vulnerable_mult(player, enemy, cruelty_gained)
     if card.osty and not card.live:
-        d = math.floor(base * (calc.VULNERABLE if enemy.vuln else 1.0) * slow + 1e-9)
-        if enemy.slippery > 0 or enemy.intangible:
+        d = math.floor(base * (vm if enemy.vuln else 1.0) * slow + 1e-9)
+        if enemy.intangible:
             d = min(d, 1)
         return max(0, d)
     if card.flat:
         d = base
-        if enemy.slippery > 0 or enemy.intangible:
+        if enemy.intangible:
             d = min(d, 1)
         return max(0, d)
     if card.live:
         d = base + strength_gained
-        d = math.floor(d * (calc.VULNERABLE if enemy.vuln else 1.0) * slow + 1e-9)
+        d = math.floor(d * (vm if enemy.vuln else 1.0) * slow + 1e-9)
     else:
         d = calc.hit_damage(base, player.strength + strength_gained, attacker_weak=player.weak, target_vulnerable=enemy.vuln,
-                            extra_mult=slow)
-    if enemy.slippery > 0 or enemy.intangible:
+                            extra_mult=slow, vulnerable_mult=vm)
+    if enemy.intangible:
         d = min(d, 1)
     if enemy.hit_cap is not None:
         d = min(d, enemy.hit_cap)
@@ -419,14 +518,19 @@ def hit(enemy, dmg):
         return 0
     if enemy.hive and dmg > 0:
         enemy.hive_added = getattr(enemy, "hive_added", 0) + enemy.hive
-    if enemy.slippery > 0:
+    absorbed = min(enemy.block, dmg)
+    enemy.block -= absorbed
+    # Slippery: Block absorbs the full hit; HP lost is capped at 1 and a stack is removed only when damage gets through
+    # [GAME] v0.111.1 SlipperyPower.ModifyHpLostAfterOsty, AfterDamageReceived (UnblockedDamage)
+    if enemy.slippery > 0 and dmg - absorbed > 0:
         enemy.slippery -= 1
-    if enemy.flutter > 0:  # every hit counts toward the stun; at 0 it is stunned (attack this turn assumed cancelled)
+        dmg = absorbed + 1
+    # Flutter: a stack is lost only when an Attack deals unblocked damage; at 0 it is stunned and its move is replaced
+    # [GAME] v0.111.1 FlutterPower.AfterDamageReceived (UnblockedDamage > 0, powered attack), StunnedMove
+    if enemy.flutter > 0 and dmg - absorbed > 0:
         enemy.flutter -= 1
         if enemy.flutter == 0:
             enemy.intent_hits = 0
-    absorbed = min(enemy.block, dmg)
-    enemy.block -= absorbed
     if enemy.burrowed and absorbed > 0 and enemy.block == 0:  # Burrowed Block broken: stunned (the wiki)
         enemy.burrowed = False
         enemy.intent_hits = 0
@@ -456,8 +560,8 @@ EXHAUST_HAND = {"FIEND_FIRE"}                   # exhausts the rest of the hand:
 
 
 def phase(card):
-    if card.juggernaut:
-        return "strength"  # Juggernaut before the Block it turns into damage
+    if card.juggernaut or card.cruelty:
+        return "strength"  # Juggernaut before the Block it turns into damage; Cruelty before the Attacks it boosts
     if card.cost_down_per_attack:
         return "after_block"  # Stomp after the Attacks that make it cheaper
     if card.card_id in BLOCK_DAMAGE:
@@ -510,6 +614,7 @@ def simulate(cards, targets, player, enemies):
     colossus = player.colossus
     my_doom = player.doom
     jugg, jugg_hits, attacks_done = player.juggernaut, 0, 0
+    cruelty = 0  # Cruelty gained this turn (percentage points on the Vulnerable multiplier)
 
     def gain_block(amount):
         """Add Block; with Juggernaut, each gain hits a random enemy (spread over the living ones in turn)."""
@@ -568,14 +673,14 @@ def simulate(cards, targets, player, enemies):
                     if live_now:
                         e = live_now[h % len(live_now)]
                         hp_cost += e.thorns
-                        dealt += hit(e, per_hit(card, player, e, str_before, played))
+                        dealt += hit(e, per_hit(card, player, e, str_before, played, cruelty))
             else:
                 for e in victims:
                     # Dismantle: hits twice if the target is Vulnerable [COMMUNITY] (the extract shows "? times")
                     for _ in range(hits * (2 if card.card_id in HITS_TWICE_IF_VULNERABLE and e.vuln else 1)):
                         if e.hp > 0 and e.thorns and not card.osty:
                             hp_cost += e.thorns  # Thorns hit back on each hit (counted as HP lost; block may absorb it)
-                        dealt += hit(e, per_hit(card, player, e, str_before, played))
+                        dealt += hit(e, per_hit(card, player, e, str_before, played, cruelty))
                     if e.skittish and e.hp > 0:  # Skittish: Block after the first Attack that hits it this turn (the wiki)
                         e.block += e.skittish
                         e.skittish = 0
@@ -614,6 +719,7 @@ def simulate(cards, targets, player, enemies):
         if is_attack and not card.potion:
             attacks_done += 1
         jugg += card.juggernaut
+        cruelty += card.cruelty
         rage += card.rage
         free += card.free_attacks
         colossus = colossus or card.colossus
@@ -651,11 +757,15 @@ def simulate(cards, targets, player, enemies):
     intents = [(e.intent_per_hit + (e.enrage + e.taint) * skills, e.intent_hits) for e, o in pairs]  # Vital Spark: Tainted Skills
     if colossus:  # half damage from Vulnerable enemies this turn [GAME-EXTRACT] + [COMMUNITY]
         intents = [(d // 2 if e.vuln else d, h) for (d, h), (e, o) in zip(intents, pairs)]
-    weak = [e.weak and not o.weak for e, o in pairs]
+    # Weak applied this turn: 0.75, 0.60 with Paper Krane; the enemy's own Debilitate doubles the reduction [GAME]
+    for k, (e, o) in enumerate(pairs):
+        if e.weak and not o.weak:
+            wm = player.enemy_weak_mult
+            wm = max(0.0, wm - (1 - wm)) if e.debilitate else wm
+            intents[k] = (math.floor(intents[k][0] * wm + 1e-9), intents[k][1])
     if player.end_turn_dmg:  # Disintegration hits at the end of your turn, before the enemies, and uses up block first
         intents.append((player.end_turn_dmg, 1))
-        weak.append(False)
-    inc = calc.incoming_hp_loss(intents, player_block=block, weak_enemies=weak)
+    inc = calc.incoming_hp_loss(intents, player_block=block)
     to_osty = min(osty, inc.hp_lost)  # Osty takes the unblocked damage first while alive [GAME-EXTRACT] DIE_FOR_YOU_POWER
     lost = inc.hp_lost - to_osty + hp_cost
     all_dead = fight_over(es)
@@ -862,6 +972,7 @@ def from_state(st):
     p = c.get("player") or {}
     powers = {(x.get("power_id") or x.get("id") or x.get("name") or "").upper(): x.get("amount", x.get("stacks", 1))
               for x in _dicts(p.get("powers"))}
+    relics = {str(r.get("relic_id") or "").upper() for r in _dicts((st.get("run") or {}).get("relics") if isinstance(st.get("run"), dict) else None)}
     osty = sum(_int(x.get("current_hp") or 0) for x in _dicts(p.get("pets")) if (x.get("pet_id") or "").upper() == "OSTY")
     player = Player(energy=_int(p.get("energy") or 0), block=_int(p.get("block") or 0), osty_hp=osty,
                     strength=_int(powers.get("STRENGTH_POWER", powers.get("STRENGTH", 0)) or 0),
@@ -874,8 +985,10 @@ def from_state(st):
                     colossus=any(k.startswith("COLOSSUS") for k in powers), hexed=any(k.startswith("HEX") for k in powers),
                     shrunk=any(k.startswith("SHRINK") for k in powers),
                     juggernaut=_int(powers.get("JUGGERNAUT_POWER", powers.get("JUGGERNAUT", 0)) or 0),
-                    block_per_attack=1 if any(isinstance(r, dict) and r.get("relic_id") == "DAUGHTER_OF_THE_WIND"
-                                              for r in _list((st.get("run") or {}).get("relics"))) else 0,
+                    block_per_attack=1 if "DAUGHTER_OF_THE_WIND" in relics else 0,
+                    vuln_mult=calc.VULNERABLE + _int(powers.get("CRUELTY_POWER", powers.get("CRUELTY", 0)) or 0) / 100.0
+                    + (0.25 if "PAPER_PHROG" in relics else 0.0),
+                    enemy_weak_mult=0.60 if "PAPER_KRANE" in relics else calc.WEAK,
                     doom=_int(powers.get("DOOM_POWER", powers.get("DOOM", 0)) or 0))
     # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
     # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])
@@ -922,7 +1035,8 @@ def from_state(st):
                              crab_rage=any(k.startswith("CRAB_RAGE") for k in pw),
                              minion=any(k.startswith("MINION") for k in pw),
                              doom=int(next((v for k, v in pw.items() if k.startswith("DOOM")), 0) or 0),
-                             paper_cuts=int(next((v for k, v in pw.items() if k.startswith("PAPER_CUTS")), 0) or 0)))
+                             paper_cuts=int(next((v for k, v in pw.items() if k.startswith("PAPER_CUTS")), 0) or 0),
+                             debilitate=any(k.startswith("DEBILITATE") for k in pw)))
     for i, e in enumerate(enemies):
         e.index = i  # internal position; e.ref keeps the mod's index or entity_id for the action
     run = st.get("run") if isinstance(st.get("run"), dict) else {}

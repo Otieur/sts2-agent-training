@@ -8,12 +8,12 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · weak** · Encounter ID `SHRINKER_BEETLE_WEAK`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Shrinker Beetle** (HP 38–40, base values; seen in 77 of 77 fights)
+- **Shrinker Beetle** (HP 38–40 (40–42 at A8+), base values; seen in 77 of 77 fights)
   - `SHRINKER_MOVE` DebuffIntent(strong: true) → Apply -1 Shrink (ShrinkPower) to the target
-  - `CHOMP_MOVE` SingleAttackIntent(ChompDamage) → Deal 7 damage
-  - `STOMP_MOVE` SingleAttackIntent(StompDamage) → Deal 13 damage
+  - `CHOMP_MOVE` SingleAttackIntent(ChompDamage) → Deal 7 (8 at A9+) damage
+  - `STOMP_MOVE` SingleAttackIntent(StompDamage) → Deal 13 (14 at A9+) damage
 
 ### The Player's record `[PLAYER-DATA]`
 

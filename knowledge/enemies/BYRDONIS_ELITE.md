@@ -8,11 +8,11 @@ Status: Plan v1, 2026-11-19.
 
 **Act 1 · elite** · Encounter ID `BYRDONIS_ELITE`
 
-### Monsters `[GAME-EXTRACT]`
+### Monsters `[GAME-EXTRACT]` (HP and damage numbers `[GAME]` v0.111.1 cc1f9462, `tools/game_monsters.py`)
 
-- **Byrdonis** (HP 91–94, base values; seen in 34 of 34 fights)
-  - `PECK_MOVE` MultiAttackIntent(PeckDamage, PeckRepeat) → Deal 3 damage 3 times
-  - `SWOOP_MOVE` SingleAttackIntent(SwoopDamage) → Deal 16 damage
+- **Byrdonis** (HP 81–84 (90 at A8+), base values; seen in 34 of 34 fights)
+  - `PECK_MOVE` MultiAttackIntent(PeckDamage, PeckRepeat) → Deal 3 (4 at A9+) damage 3 times
+  - `SWOOP_MOVE` SingleAttackIntent(SwoopDamage) → Deal 17 (19 at A9+) damage
   - Passive: PowerCmd.Apply<TerritorialPower>
 
 ### The Player's record `[PLAYER-DATA]`

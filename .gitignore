@@ -13,3 +13,6 @@ runs/current/deck.json
 
 # Game assembly indexes (tools/asm/asm.cs): describe the game code, change every patch
 data/asm/
+
+# Combat replays copied from the game (binary; may hold account identifiers)
+data/sim/replays/
