@@ -66,11 +66,17 @@ def load_examples(folders, enc):
     return ex, fights, skipped
 
 
-def split(ex, seed, test_share=0.15, val_share=0.15):
+def split(ex, seed, test_share=0.15, val_share=0.15, cv=None):
+    """Splits by source run. With cv = (fold, k), the runs outside the test split are cut into k folds and fold `fold`
+    is the validation split (cross-validation for development choices; the test split stays the same and unread)."""
     runs = sorted({e["run"] for e in ex})
     random.Random(seed).shuffle(runs)
     n_test, n_val = max(1, round(len(runs) * test_share)), max(1, round(len(runs) * val_share))
     test_runs, val_runs = set(runs[:n_test]), set(runs[n_test:n_test + n_val])
+    if cv:
+        rest = runs[n_test:]
+        fold, k = cv
+        val_runs = set(rest[fold::k])
     parts = {"train": [], "val": [], "test": [], "bench": []}
     for e in ex:
         if e["bench"]:
@@ -302,6 +308,8 @@ def main(argv=None):
     ap.add_argument("--drop", type=float, default=0.1)
     ap.add_argument("--threads", type=int, default=3)
     ap.add_argument("--device", default="cpu")
+    ap.add_argument("--cv-k", type=int, default=0, help="cross-validation over the non-test runs: number of folds (implies --dev)")
+    ap.add_argument("--cv-fold", type=int, default=0)
     ap.add_argument("--search-weight", type=float, default=0.0, help="weight of the auxiliary loss toward the search's estimate")
     ap.add_argument("--dev", action="store_true", help="development run: report the validation split only (test splits stay unread)")
     a = ap.parse_args(argv)
@@ -320,7 +328,9 @@ def main(argv=None):
     t0 = time.time()
     enc = E.Encoder()
     ex, fights, skipped = load_examples(a.data, enc)
-    parts, split_info = split(ex, a.split_seed)
+    parts, split_info = split(ex, a.split_seed, cv=(a.cv_fold, a.cv_k) if a.cv_k else None)
+    if a.cv_k:
+        a.dev = True                                   # cross-validation runs never read the test splits
     log(f"{len(ex)} states from {fights} fights ({skipped} skipped); " + ", ".join(f"{k} {len(v)}" for k, v in parts.items())
         + f"; unknown ids {len(enc.unknown)}")
     data = {k: tensors(v) for k, v in parts.items() if v}
