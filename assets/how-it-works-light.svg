@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 430" width="1120" height="430" role="img" aria-label="How it works: real game, knowledge, simulator with search, learning; search and networks improve each other; promotion only through a pre-registered benchmark">
+<defs><linearGradient id="acc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d9621e"/><stop offset="1" stop-color="#c98a12"/></linearGradient><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a7bbd"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d9621e"/></marker></defs>
+<rect width="1120" height="430" rx="16" fill="#f6f8fa"/>
+<rect x="22.0" y="70" width="236" height="196" rx="14" fill="#ffffff" stroke="#d0d7de" stroke-width="1.2"/>
+<circle cx="52.0" cy="102" r="14" fill="#eef1f4" stroke="#d0d7de" stroke-width="1.2"/>
+<text x="52.0" y="107" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#1f2328">1</text>
+<text x="76.0" y="107" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" letter-spacing="2" fill="#d9621e">REAL GAME</text>
+<text x="40.0" y="148" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1f2328">Slay the Spire 2</text>
+<circle cx="45.0" cy="177" r="3" fill="#0a7bbd"/>
+<text x="56.0" y="182" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">state-export mod</text>
+<circle cx="45.0" cy="203" r="3" fill="#0a7bbd"/>
+<text x="56.0" y="208" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">live state in</text>
+<circle cx="45.0" cy="229" r="3" fill="#0a7bbd"/>
+<text x="56.0" y="234" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">actions with reasons out</text>
+<rect x="302.0" y="70" width="236" height="196" rx="14" fill="#ffffff" stroke="#d0d7de" stroke-width="1.2"/>
+<circle cx="332.0" cy="102" r="14" fill="#eef1f4" stroke="#d0d7de" stroke-width="1.2"/>
+<text x="332.0" y="107" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#1f2328">2</text>
+<text x="356.0" y="107" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" letter-spacing="2" fill="#d9621e">KNOWLEDGE</text>
+<text x="320.0" y="148" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1f2328">From human runs</text>
+<circle cx="325.0" cy="177" r="3" fill="#0a7bbd"/>
+<text x="336.0" y="182" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">57 recorded runs: danger map</text>
+<circle cx="325.0" cy="203" r="3" fill="#0a7bbd"/>
+<text x="336.0" y="208" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">game data, community strategy</text>
+<circle cx="325.0" cy="229" r="3" fill="#0a7bbd"/>
+<text x="336.0" y="234" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">playbook and rule tools</text>
+<rect x="582.0" y="70" width="236" height="196" rx="14" fill="#ffffff" stroke="#d9621e" stroke-width="2"/>
+<circle cx="612.0" cy="102" r="14" fill="url(#acc)" stroke="#d9621e" stroke-width="1.2"/>
+<text x="612.0" y="107" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#ffffff">3</text>
+<text x="636.0" y="107" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" letter-spacing="2" fill="#d9621e">SIMULATOR</text>
+<text x="600.0" y="148" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1f2328">Search on the real engine</text>
+<circle cx="605.0" cy="177" r="3" fill="#0a7bbd"/>
+<text x="616.0" y="182" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">game's own combat engine</text>
+<circle cx="605.0" cy="203" r="3" fill="#0a7bbd"/>
+<text x="616.0" y="208" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">sample the hidden future</text>
+<circle cx="605.0" cy="229" r="3" fill="#0a7bbd"/>
+<text x="616.0" y="234" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">play each move out</text>
+<rect x="862.0" y="70" width="236" height="196" rx="14" fill="#ffffff" stroke="#d0d7de" stroke-width="1.2"/>
+<circle cx="892.0" cy="102" r="14" fill="#eef1f4" stroke="#d0d7de" stroke-width="1.2"/>
+<text x="892.0" y="107" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#1f2328">4</text>
+<text x="916.0" y="107" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" letter-spacing="2" fill="#d9621e">LEARNING</text>
+<text x="880.0" y="148" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1f2328">Self-play networks</text>
+<circle cx="885.0" cy="177" r="3" fill="#0a7bbd"/>
+<text x="896.0" y="182" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">decisions, values, outcomes</text>
+<circle cx="885.0" cy="203" r="3" fill="#0a7bbd"/>
+<text x="896.0" y="208" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">value and action networks</text>
+<circle cx="885.0" cy="229" r="3" fill="#0a7bbd"/>
+<text x="896.0" y="234" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#57606a">wider search, fast policy</text>
+<line x1="262.0" y1="158.0" x2="296.0" y2="158.0" stroke="#0a7bbd" stroke-width="2" />
+<path d="M 298.0 158.0 L 287.0 164.0 L 287.0 152.0 z" fill="#0a7bbd"/>
+<line x1="298.0" y1="178.0" x2="264.0" y2="178.0" stroke="#0a7bbd" stroke-width="2" />
+<path d="M 262.0 178.0 L 273.0 172.0 L 273.0 184.0 z" fill="#0a7bbd"/>
+<line x1="542.0" y1="168.0" x2="576.0" y2="168.0" stroke="#0a7bbd" stroke-width="2" />
+<path d="M 578.0 168.0 L 567.0 174.0 L 567.0 162.0 z" fill="#0a7bbd"/>
+<line x1="822.0" y1="168.0" x2="856.0" y2="168.0" stroke="#0a7bbd" stroke-width="2" />
+<path d="M 858.0 168.0 L 847.0 174.0 L 847.0 162.0 z" fill="#0a7bbd"/>
+<path d="M 980.0 64 C 980.0 28, 700.0 28, 700.0 62" fill="none" stroke="#d9621e" stroke-width="2.2" />
+<path d="M 700.0 66.0 L 694.0 55.0 L 706.0 55.0 z" fill="#d9621e"/>
+<text x="840.0" y="32" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" text-anchor="middle" fill="#d9621e">better evaluation and move priors</text>
+<path d="M 700.0 272 L 700.0 296 L 140.0 296 L 140.0 274" fill="none" stroke="#0a7bbd" stroke-width="2" stroke-dasharray="6 5" />
+<path d="M 140.0 270.0 L 146.0 281.0 L 134.0 281.0 z" fill="#0a7bbd"/>
+<text x="420.0" y="288" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle" fill="#57606a">search decides the moves in real runs</text>
+<rect x="22.0" y="352" width="1076.0" height="50" rx="12" fill="#eef1f4" stroke="#d0d7de" stroke-width="1"/>
+<rect x="38.0" y="369" width="16" height="16" rx="4" fill="url(#acc)"/>
+<text x="66.0" y="383" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#1f2328"><tspan font-weight="700">Promotion gate:</tspan> a pre-registered benchmark of 60 fights from real runs, 2 seeds each. A new policy or network replaces the old one only if it wins.</text>
+</svg>

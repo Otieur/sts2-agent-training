@@ -14,9 +14,10 @@
 </p>
 
 <p align="center">
-  <b>An AI agent that learns to play <i>Slay the Spire 2</i>, first solo as the Ironclad, then as a co-op teammate.</b><br>
-  It reads the real game through a state-export mod, plans with search over a simulator built on the game's own engine,<br>
-  and trains neural networks on its own play. Every claim is checked against results, not against how a human plays.
+  <b>An AI agent that learns to play <i>Slay the Spire 2</i>, first solo as the Ironclad, then as a co-op teammate.</b>
+</p>
+<p align="center">
+  It reads the real game through a state-export mod, plans with search over a simulator built on the game's own engine, and trains neural networks on its own play. Every claim is checked against results, not against how a human plays.
 </p>
 
 <p align="center">
@@ -32,11 +33,11 @@
 
 ## In one minute
 
-| | |
-|---|---|
-| **The goal** | Clearly beat a human benchmark: the project owner's recorded Ironclad win rates of **63%** at Ascension 0–4, **25%** at 5–9 and **8%** at 10. Then play co-op alongside a human, controlling a second character. |
-| **The approach** | Three layers that build on each other: **knowledge** from 57 recorded human runs and the game's data, a **simulator** that runs the game's real combat engine outside the game so the agent can search, and **learned models** trained by self-play inside that simulator. |
-| **The rules** | Judged by outcomes, never by imitation. The agent only ever uses what a player can see on screen. Every comparison that decides anything is written down before it runs, and failed experiments stay in the record. |
+<table>
+<tr><td width="18%"><b>The goal</b></td><td>Clearly beat a human benchmark: the project owner's recorded Ironclad win rates of <b>63%</b> at Ascension 0–4, <b>25%</b> at 5–9 and <b>8%</b> at 10. Then play co-op alongside a human, controlling a second character.</td></tr>
+<tr><td><b>The approach</b></td><td>Three layers that build on each other: <b>knowledge</b> from 57 recorded human runs and the game's data, a <b>simulator</b> that runs the game's real combat engine outside the game so the agent can search, and <b>learned models</b> trained by self-play inside that simulator.</td></tr>
+<tr><td><b>The rules</b></td><td>Judged by outcomes, never by imitation. The agent only ever uses what a player can see on screen. Every comparison that decides anything is written down before it runs, and failed experiments stay in the record.</td></tr>
+</table>
 
 <table>
 <tr>
@@ -49,29 +50,12 @@
 
 ## How it works
 
-```mermaid
-flowchart LR
-    subgraph REAL["Real game"]
-        G["Slay the Spire 2<br/>+ state-export mod"]
-    end
-    subgraph KNOW["Knowledge"]
-        H["57 recorded runs"] --> A["History analysis<br/>danger map, deaths, picks"]
-        D["Game data and<br/>community strategy"] --> P["Playbook and rule tools<br/>turn planner, drafting, pathing"]
-        A --> P
-    end
-    subgraph SIM["Simulator"]
-        E["Game's own combat engine<br/>in a sandboxed host"] --> S["Search<br/>sample hidden futures,<br/>play each move out"]
-    end
-    subgraph LEARN["Learning"]
-        SP["Self-play data"] --> N["Value and<br/>action-value networks"]
-    end
-    G -- "live state" --> P
-    P -- "actions with reasons" --> G
-    P --> S
-    S --> SP
-    N -- "better leaves and priors" --> S
-    S -- "pre-registered benchmark" --> B{{"Promote only<br/>if it wins"}}
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/how-it-works-dark.svg">
+    <img src="assets/how-it-works-light.svg" alt="How it works: the real game and the knowledge layer feed a simulator that runs the game's own engine; search there decides moves in real runs; self-play networks improve search; a pre-registered benchmark gates every promotion" width="100%">
+  </picture>
+</p>
 
 1. **Knowledge.** The project owner's run history becomes a danger map (which fights cost HP and end runs), a benchmark to beat and a source of hypotheses. Game data and community strategy fill the gaps. The result is a versioned playbook plus rule-based tools: a turn planner that does exact damage and block arithmetic, a draft scorer, a path planner and a deck checker.
 2. **Simulator.** A .NET host loads the game's own assemblies from a local installation and runs real combat, and whole runs, without the game's window, graphics or saves. It can start any fight from a situation taken from a real run, snapshot it, and re-sample everything a player cannot see (draw order, random rolls) before trying a move.
@@ -127,27 +111,29 @@ flowchart LR
 
 ## Repository map
 
-```text
-sim/          .NET 9 host that runs the game's combat engine (Harmony patches, fake engine layer, JSON-lines server)
-tools/        Python tools: game interface, analysis, turn planner, drafting, pathing, self-play, simulator bridge
-tools/learn/  observation encoder, value and action-value networks, training, paired benchmark runner
-knowledge/    game mechanics, enemies, bosses, cards, community strategy, data tables checked against the game
-playbooks/    strategy per character, versioned, with a one-page quick reference
-reports/      analyses and experiment write-ups by phase (history, simulator, search, learning)
-docs/         phase plans with epics and stories, status board, runbooks, decisions, reviews
-data/         fixed benchmark sets and dataset manifests (raw data and run history stay local)
-models/       model cards and training records (weights are not stored in git)
-runs/         journals, decisions and post-mortems of the agent's real runs
-templates/    journal, post-mortem and pre-registered comparison templates
-```
+| Folder | What is inside |
+|---|---|
+| [`sim/`](sim/) | .NET 9 host that runs the game's combat engine: Harmony patches, a fake engine layer, a JSON-lines server |
+| [`tools/`](tools/) | Python tools: game interface, history analysis, turn planner, drafting, pathing, self-play, simulator bridge |
+| [`tools/learn/`](tools/learn/) | observation encoder, value and action-value networks, training, paired benchmark runner |
+| [`knowledge/`](knowledge/) | game mechanics, enemies, bosses, cards and community strategy; data tables checked against the game |
+| [`playbooks/`](playbooks/) | strategy per character, versioned, with a one-page quick reference |
+| [`reports/`](reports/) | analyses and experiment write-ups by phase: history, simulator, search, learning |
+| [`docs/`](docs/) | phase plans with epics and stories, status board, runbooks, decisions, security reviews |
+| [`data/`](data/) | fixed benchmark sets and dataset manifests (raw data and run history stay local) |
+| [`models/`](models/) | model cards and training records (weights are not stored in git) |
+| [`runs/`](runs/) | journals, decisions and post-mortems of the agent's real runs |
+| [`templates/`](templates/) | journal, post-mortem and pre-registered comparison templates |
 
 ## Getting started
 
 You need your own copy of *Slay the Spire 2* (installed through Steam on macOS), the .NET 9 SDK and Python 3.13. Nothing from the game is included here: the simulator reads the game's assemblies from your installation at run time.
 
 ```bash
-# build the simulator host against your installed game
-cd sim && STS2_DATA_DIR="$HOME/Library/Application Support/Steam/steamapps/common/Slay the Spire 2/SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64" dotnet build -c Release && cd ..
+# point the build at your installed game (default Steam location on macOS)
+export STS2_DATA_DIR="$HOME/Library/Application Support/Steam/steamapps/common/\
+Slay the Spire 2/SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64"
+(cd sim && dotnet build -c Release)
 
 # check it: a fight from nothing, fair play, sandbox
 python3 -I tools/sim.py smoke
@@ -158,9 +144,14 @@ python3 -I tools/sim.py sandbox
 Self-play and training (fight situations come from your own run history via `tools/extract_runs.py` and `tools/fight_specs.py`; the learning tools run in a virtual environment built from the hash-pinned `requirements-learn.txt`):
 
 ```bash
-python3 -I tools/selfplay.py --workers 6 --fights 586 --specs data/learn/specs/fight-specs-ironclad.json --out data/learn/combat-v1
+# self-play: the search plays every situation and records each decision
+python3 -I tools/selfplay.py --workers 6 --fights 586 \
+    --specs data/learn/specs/fight-specs-ironclad.json --out data/learn/combat-v1
+
+# train a value network, then compare policies on the benchmark
 .venv-learn/bin/python -I tools/learn/train_value.py --data data/learn/combat-v1 --name value-v1
-.venv-learn/bin/python -I tools/learn/bench.py --out data/learn/bench/run-1 --arms planner mc6 qpolicy --q-model models/q-v1/model.pt
+.venv-learn/bin/python -I tools/learn/bench.py --out data/learn/bench/run-1 \
+    --arms planner mc6 vleaf6 --model models/value-v1/model.pt
 ```
 
 Every tool has a docstring with its options; [tools/README.md](tools/README.md) lists them by purpose.
