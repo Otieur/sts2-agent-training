@@ -99,9 +99,25 @@ public static class Serve
                         reply["obs"] = s.RunObserve();
                         break;
                     case "encounters":
+                    {
+                        // which act each encounter belongs to, from the game's default act list (1-based position)
+                        var acts = new Dictionary<string, List<int>>();
+                        var list = MegaCrit.Sts2.Core.Models.ActModel.GetDefaultList().ToList();
+                        for (var i = 0; i < list.Count; i++)
+                            foreach (var e in list[i].AllEncounters)
+                                (acts.TryGetValue(e.Id.Entry, out var l) ? l : acts[e.Id.Entry] = new List<int>()).Add(i + 1);
                         reply["encounters"] = new JsonArray(MegaCrit.Sts2.Core.Models.ModelDb.AllEncounters
-                            .Select(e => (JsonNode)new JsonObject { ["id"] = e.Id.Entry, ["room_type"] = e.RoomType.ToString(), ["weak"] = e.IsWeak }).ToArray());
+                            .Select(e => (JsonNode)new JsonObject { ["id"] = e.Id.Entry, ["room_type"] = e.RoomType.ToString(), ["weak"] = e.IsWeak,
+                                ["acts"] = new JsonArray((acts.TryGetValue(e.Id.Entry, out var a) ? a : new List<int>()).Select(x => (JsonNode)x).ToArray()) }).ToArray());
                         break;
+                    }
+                    case "card_pool":   // the character's card pool as the game defines it (for generated fight specs)
+                    {
+                        var ch = MegaCrit.Sts2.Core.Models.ModelDb.AllCharacters.First(c => c.Id.Entry == ((string)req["character"] ?? "IRONCLAD"));
+                        reply["cards"] = new JsonArray(ch.CardPool.AllCards.Select(c => (JsonNode)new JsonObject
+                            { ["id"] = c.Id.Entry, ["rarity"] = c.Rarity.ToString(), ["type"] = c.Type.ToString() }).ToArray());
+                        break;
+                    }
                     case "observe": reply["obs"] = s.Observe(); break;
                     case "legal": reply["actions"] = s.Legal(); break;
                     case "step":

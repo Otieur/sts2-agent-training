@@ -38,7 +38,7 @@
 
 ### P8.E1: Evaluation harness
 
-> **P8.E1.S1: Benchmark fight set** · Size M · Status: Todo
+> **P8.E1.S1: Benchmark fight set** · Size M · Status: In progress (2026-11-20: `data/sim/benchmark-v1.json`, 60 fights: 30 hallway, 20 elite, 10 boss across the three acts, taken from the Player's history by `tools/fight_specs.py --benchmark` instead of the replay corpus, as agreed with the Player on 2026-11-20: deck, relics, potions, HP and max HP before each fight; exam seeds excluded; at most two fights per source run; approximations listed in the file (no enchantments, older source builds). Training leaves out these (run, floor) pairs. Left: run the baselines and search on it under the comparison protocol)
 > *As the Agent, I want a fixed, versioned set of fights to compare policies on, so that every comparison is like for like.*
 >
 > **Acceptance criteria**

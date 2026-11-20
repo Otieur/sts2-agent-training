@@ -109,11 +109,23 @@ public sealed partial class Session
             }
         }
         if (spec["relics"] is JsonArray relics)
+        {
+            // "relic_pickup": false adds each relic without its pickup effect: for situations taken from a recorded run,
+            // whose deck and max HP already include those effects (tools/fight_specs.py)
+            var pickup = (bool?)spec["relic_pickup"] ?? true;
+            var have = me.Relics.Select(r => r.Id.Entry).ToHashSet();
             foreach (var id in relics.Select(x => (string)x))
-                Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain(ById(ModelDb.AllRelics, id, "relic").ToMutable(), me, me.Relics.Count), "add relic");
+            {
+                if (!pickup && have.Contains(id)) continue;       // the starting relic is already there
+                var relic = ById(ModelDb.AllRelics, id, "relic").ToMutable();
+                if (pickup) Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain(relic, me, me.Relics.Count), "add relic");
+                else me.AddRelicInternal(relic, me.Relics.Count, true);
+            }
+        }
         if (spec["potions"] is JsonArray potions)
             foreach (var id in potions.Select(x => (string)x))
                 Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.PotionCmd.TryToProcure(ById(ModelDb.AllPotions, id, "potion").ToMutable(), me, -1), "add potion");
+        if (spec["max_hp"] != null) Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.SetMaxHp(me.Creature, (int)spec["max_hp"]), "set max HP");
         if (spec["hp"] != null) Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.SetCurrentHp(me.Creature, (int)spec["hp"]), "set HP");
         var encounter = ById(ModelDb.AllEncounters, (string)spec["encounter"], "encounter").ToMutable();
         var point = encounter.RoomType switch

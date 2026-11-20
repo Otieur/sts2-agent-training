@@ -45,7 +45,7 @@
 > - [ ] Encoding of every field in `docs/observation-spec.md`; vocabulary built from the game's model database, with an "unknown" entry for ids added by patches.
 > - [ ] Tests: live fixtures and simulated states encode without error; round-trip checks for numeric fields.
 
-> **P9.E1.S2: Datasets** · Size M · Status: Todo
+> **P9.E1.S2: Datasets** · Size M · Status: In progress (2026-11-20: `tools/selfplay.py`: self-play in the simulator with the search policy as teacher, six hosts in parallel; each decision keeps the observation, the candidates, their sampled values and the choice, and each fight its outcome; starting points are 586 fights from the Player's history (`tools/fight_specs.py`, exam seeds excluded) or a synthetic generator; manifest per dataset under `data/learn/`. First dataset `combat-v1` being generated)
 > *As the Agent, I want versioned datasets of decisions and outcomes, so that every model can be traced to its data (ML-2).*
 >
 > **Acceptance criteria**
@@ -130,7 +130,7 @@
 
 ### P9.E5: Training infrastructure
 
-> **P9.E5.S1: Framework choice and security review** · Size M · Status: Todo (Player-gated)
+> **P9.E5.S1: Framework choice and security review** · Size M · Status: In progress (Player-gated; 2026-11-20: `docs/reviews/learning-framework-security-review.md` drafted: PyTorch 2.15.0 recommended, MLX 0.32.4 as the alternative; waiting for the Player's approval)
 > *As the Player, I want any downloaded learning library reviewed before it runs on my machine (SA-8).*
 >
 > **Acceptance criteria**

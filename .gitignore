@@ -21,3 +21,5 @@ data/sim/replays/
 sim/bin/
 sim/obj/
 data/sim/sandbox-home/
+data/learn/*/*
+!data/learn/*/manifest.json
