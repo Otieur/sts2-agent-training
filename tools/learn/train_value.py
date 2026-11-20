@@ -35,8 +35,9 @@ BENCH = PROJECT / "data" / "sim" / "benchmark-v1.json"
 
 
 def value_of(outcome):
-    """The search's value scale (tools/sim.py _value)."""
-    return outcome["hp"] if outcome["status"] == "won" else -100 - outcome["enemy_hp_left"]
+    """The search's value scale (tools/sim.py _value); enemy HP left above 10,000 is a placeholder (not counted)."""
+    left = outcome["enemy_hp_left"] if outcome["enemy_hp_left"] <= 10_000 else 0
+    return outcome["hp"] if outcome["status"] == "won" else -100 - left
 
 
 def load_examples(folders, enc):
@@ -56,8 +57,10 @@ def load_examples(folders, enc):
                 fights += 1
                 for d_i, d in enumerate(r["decisions"]):
                     search = d["values"][d["chosen"]] if d["values"] and d["values"][0] is not None else None
+                    if search is not None:
+                        search = max(-700.0, min(200.0, search))   # the Waterfall Giant's placeholder HP gave values near -10^8
                     ex.append({"enc": enc.encode(d["obs"]), "won": 1.0 if o["status"] == "won" else 0.0, "hp": o["hp"] / 100.0,
-                               "left": o["enemy_hp_left"] / 100.0, "value": float(value_of(o)), "search": search, "run": run,
+                               "left": (o["enemy_hp_left"] if o["enemy_hp_left"] <= 10_000 else 0) / 100.0, "value": float(value_of(o)), "search": search, "run": run,
                                "bench": (run, src.get("floor")) in bench, "fight": fid, "d": d_i, "n": len(r["decisions"]),
                                "act": r["spec"].get("act"), "room": r["spec"].get("room")})
     return ex, fights, skipped

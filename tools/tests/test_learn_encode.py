@@ -110,6 +110,15 @@ class TestEncoder(unittest.TestCase):
         self.assertEqual(len(enc["mates"]), 1)
         self.assertAlmostEqual(E.decode_global(enc["glob"])["players"], 2)
 
+    def test_placeholder_hp(self):
+        """An unkillable phase's placeholder HP (about 10^9) is clipped and left out of the enemy HP total."""
+        obs = copy.deepcopy(json.loads(SIM[0].read_text()))
+        before = E.decode_global(self.enc.encode(obs)["glob"])["enemy_hp_total"]
+        obs["combat"]["enemies"].append(dict(obs["combat"]["enemies"][0], current_hp=999999953, max_hp=999999999, index=len(obs["combat"]["enemies"])))
+        enc = self.enc.encode(obs)
+        self.assertLessEqual(max(r[0] for r in enc["enemy_feats"]), E.HP_CLIP / E.HP_SCALE)
+        self.assertAlmostEqual(E.decode_global(enc["glob"])["enemy_hp_total"], before)
+
     def test_vocab_rules(self):
         for kind, names in self.enc.vocab.items():
             self.assertEqual(names[:2], ["<pad>", "<unk>"], kind)

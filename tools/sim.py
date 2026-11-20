@@ -464,8 +464,14 @@ def _finish_with_planner(sim, pt, obs, mode, limit=300, potions=None):
     return obs
 
 
+# Above this, an enemy's HP is a placeholder for a phase that cannot be won by damage (the Waterfall Giant's HP becomes
+# about 10^9 once its 240 HP are gone and the fight turns into surviving); such HP is not counted as HP left.
+UNKILLABLE_HP = 10_000
+
+
 def _enemy_hp_left(obs):
-    return sum(e.get("current_hp", 0) for e in (obs.get("combat") or {}).get("enemies", []) if e.get("current_hp", 0) > 0)
+    return sum(e.get("current_hp", 0) for e in (obs.get("combat") or {}).get("enemies", [])
+               if 0 < e.get("current_hp", 0) <= UNKILLABLE_HP)
 
 
 def _value(obs, spent=0, price=0.0):

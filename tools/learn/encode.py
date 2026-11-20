@@ -26,7 +26,7 @@ import math
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parents[2]
-ENCODER_VERSION = "enc-v1"
+ENCODER_VERSION = "enc-v1.1"   # same layout as enc-v1; HP above UNKILLABLE_HP is clipped and left out of totals
 DEFAULT_VOCAB = PROJECT / "knowledge" / "data" / "vocab-v0.111.1.json"
 
 # Caps: anything beyond is dropped (counts stay exact in `glob`).
@@ -42,6 +42,9 @@ ENEMY_FEATS = (["hp", "max_hp", "hp_frac", "block", "alive", "hittable", "slot",
 MATE_FEATS = ["hp", "max_hp", "block", "energy", "alive"]
 
 HP_SCALE, BLOCK_SCALE, DMG_SCALE = 100.0, 50.0, 50.0
+# An enemy HP above this is a placeholder for a phase won by surviving, not by damage (the Waterfall Giant's HP becomes
+# about 10^9); it is clipped to HP_CLIP in the features and left out of the enemy HP total (enc-v1.1).
+UNKILLABLE_HP, HP_CLIP = 10_000, 3_000
 
 
 def _player(o):
@@ -87,7 +90,7 @@ GLOBAL_FIELDS = [
     ("exhaust_count", lambda o: _count(o, "exhaust_pile"), 40.0),
     ("piles_known", lambda o: 1.0 if (o.get("combat") or {}).get("draw_pile") is not None else 0.0, 1.0),
     ("enemies_alive", lambda o: sum(1 for e in _enemies(o) if _alive(e)), 5.0),
-    ("enemy_hp_total", lambda o: sum(e.get("current_hp") or 0 for e in _enemies(o) if _alive(e)), 300.0),
+    ("enemy_hp_total", lambda o: sum(e.get("current_hp") or 0 for e in _enemies(o) if _alive(e) and (e.get("current_hp") or 0) <= UNKILLABLE_HP), 300.0),
     ("enemy_block_total", lambda o: sum(e.get("block") or 0 for e in _enemies(o) if _alive(e)), BLOCK_SCALE),
     ("incoming", _incoming, DMG_SCALE),
     ("incoming_unblocked", lambda o: max(0, _incoming(o) - (_player(o).get("block") or 0)), DMG_SCALE),
@@ -154,7 +157,7 @@ class Encoder:
         single = max([i.get("damage") or 0 for i in intents if i.get("intent_type") == "Attack"] or [0])
         kinds = ENEMY_FEATS[10:-1]
         types = {i.get("intent_type") for i in intents}
-        hp, mx = e.get("current_hp") or 0, e.get("max_hp") or 1
+        hp, mx = min(e.get("current_hp") or 0, HP_CLIP), min(e.get("max_hp") or 1, HP_CLIP)
         return ([hp / HP_SCALE, mx / HP_SCALE, hp / max(mx, 1), (e.get("block") or 0) / BLOCK_SCALE, 1.0 if _alive(e) else 0.0,
                  1.0 if e.get("is_hittable", True) else 0.0, slot / 5.0, attack_total / DMG_SCALE, hits / 5.0, single / DMG_SCALE]
                 + [1.0 if k[len("intent_"):] in types else 0.0 for k in kinds]
