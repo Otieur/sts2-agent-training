@@ -84,6 +84,32 @@ class Host:
         self.sim.close()
 
 
+AUGMENT_VERSION = "a1"
+
+
+def augment(spec, rng, pool):
+    """A variant of a history spec (augmentation a1), so that a network sees many decks and relic sets per source run
+    instead of memorizing about thirty: remove 0-3 random cards (deck kept at 8 or more), add 0-3 cards drawn from the
+    character's pool by rarity (upgraded with probability 0.3), drop each relic but the first (the starting relic) with
+    probability 0.25 and each potion with probability 0.3, scale HP by 0.75-1.15 (at least 1, at most max HP). The source
+    is kept, so splits by source run and the benchmark exclusion still hold."""
+    s = json.loads(json.dumps(spec))
+    deck = list(s["deck"])
+    for _ in range(rng.randint(0, 3)):
+        if len(deck) > 8:
+            deck.pop(rng.randrange(len(deck)))
+    draws = [c for c in pool if c["rarity"] in RARITY_WEIGHT]
+    added = [c["id"] + ("+" if rng.random() < 0.3 else "") for c in rng.choices(draws, weights=[RARITY_WEIGHT[c["rarity"]] for c in draws], k=rng.randint(0, 3))]
+    s["deck"] = deck + added
+    relics = s.get("relics") or []
+    s["relics"] = relics[:1] + [r for r in relics[1:] if rng.random() >= 0.25]
+    s["potions"] = [p for p in (s.get("potions") or []) if rng.random() >= 0.3]
+    mx = s.get("max_hp") or 80
+    s["hp"] = max(1, min(mx, int(round((s.get("hp") or mx) * rng.uniform(0.75, 1.15)))))
+    s["augmented"] = {"version": AUGMENT_VERSION, "added": added, "deck_size_before": len(spec["deck"])}
+    return s
+
+
 def scored_search(sim, obs, mode, k, top, decision, done=None, potions=None):
     """search_action with every candidate's mean value kept (the teacher's distribution). `done` maps (candidate,
     sample) to a value already computed, or None for a rollout that got stuck; it survives a host restart, so the search
@@ -247,7 +273,7 @@ def worker(a):
     host = Host()
     try:
         history = load_specs(a.specs) if a.specs else None
-        if not history:
+        if not history or a.augment:
             encounters = host.sim.encounters()
             pool = host.sim.call(cmd="card_pool", character="IRONCLAD")["cards"]
         order = list(range(len(history))) if history else []
@@ -258,6 +284,8 @@ def worker(a):
                 continue
             rng = random.Random(seed)
             spec = history[order[i % len(order)]] if history else make_spec(rng, encounters, pool)
+            if history and a.augment:
+                spec = augment(spec, rng, pool)
             t0 = time.time()
             rec = None
             for attempt in range(2):
@@ -320,6 +348,7 @@ def main(argv=None):
     ap.add_argument("--teacher", default="mc", help="mc (flat Monte Carlo, k worlds) or a value-network arm of tools/learn/bench.py "
                     "(vleafK, vgreedyK; needs --model and .venv-learn/bin/python)")
     ap.add_argument("--model", help="value network checkpoint for a value-network teacher")
+    ap.add_argument("--augment", action="store_true", help="play an augmented variant of each history spec (augment)")
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     ap.add_argument("--summary", help="print the summary of a dataset folder")
     a = ap.parse_args(argv)
@@ -338,7 +367,7 @@ def main(argv=None):
     t0 = time.time()
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--fights", str(a.fights),
                                "--k", str(a.k), "--top", str(a.top), "--mode", a.mode, "--seed", str(a.seed), "--out", str(out),
-                               "--teacher", a.teacher] + (["--model", a.model] if a.model else [])
+                               "--teacher", a.teacher] + (["--model", a.model] if a.model else []) + (["--augment"] if a.augment else [])
                               + (["--specs", a.specs] if a.specs else []))
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
@@ -351,7 +380,8 @@ def main(argv=None):
         "teacher": ({"policy": "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)", "k": a.k, "top": a.top,
                      "rollout_policy": f"plan_turn.py {a.mode}", "privileged": False} if a.teacher == "mc" else
                     {"policy": f"{a.teacher} (tools/learn/bench.py)", "model": a.model, "privileged": False}),
-        "spec_source": ({"file": str(Path(a.specs).resolve().relative_to(PROJECT)), "about": json.loads(Path(a.specs).read_text())["about"]}
+        "spec_source": ({"file": str(Path(a.specs).resolve().relative_to(PROJECT)), "about": json.loads(Path(a.specs).read_text())["about"],
+                         "augmentation": AUGMENT_VERSION if a.augment else None}
                         if a.specs else "synthetic generator (spec_generator)"),
         "spec_generator": {"version": SPEC_VERSION, "starter": STARTER, "rarity_weight": RARITY_WEIGHT, "added_cards": ADDED,
                            "upgraded_share": UPGRADED, "strikes_removed": REMOVED, "hp": "40-100% of 80", "relics": "starting relic only",

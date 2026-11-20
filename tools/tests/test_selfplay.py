@@ -49,6 +49,23 @@ class TestSpecs(unittest.TestCase):
 
 
 
+class TestAugment(unittest.TestCase):
+    def test_augment(self):
+        spec = {"source": {"run": "R1", "floor": 5}, "act": 1, "room": "Monster", "encounter": "A1_HALL", "ascension": 3, "character": "IRONCLAD",
+                "deck": ["STRIKE_IRONCLAD"] * 5 + ["DEFEND_IRONCLAD"] * 4 + ["BASH", "C1", "C2"], "relics": ["BURNING_BLOOD", "R1", "R2", "R3"],
+                "potions": ["P1", "P2"], "hp": 60, "max_hp": 80}
+        for seed in range(200):
+            a = sp.augment(spec, random.Random(seed), POOL)
+            self.assertEqual(a["source"], spec["source"])
+            self.assertEqual(a["relics"][0], "BURNING_BLOOD")
+            self.assertTrue(set(a["relics"]) <= set(spec["relics"]))
+            self.assertTrue(8 <= len(a["deck"]) <= len(spec["deck"]) + 3)
+            self.assertTrue(1 <= a["hp"] <= 80)
+            self.assertFalse(any(c.rstrip("+") in ("C10", "C11") for c in a["augmented"]["added"]))
+        self.assertEqual(sp.augment(spec, random.Random(3), POOL), sp.augment(spec, random.Random(3), POOL))
+        self.assertEqual(spec["deck"][-1], "C2")                                   # the original is not modified
+
+
 class TestBenchmark(unittest.TestCase):
     def test_stratified_selection(self):
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
