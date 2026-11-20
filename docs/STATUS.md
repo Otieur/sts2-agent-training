@@ -115,7 +115,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P8.E1 | Evaluation harness | In progress | Benchmark set `data/sim/benchmark-v1.json` (60 fights from history specs), comparison template, paired runner `tools/learn/bench.py`; five pre-registered comparisons run on 2026-11-20 |
-| P8.E2 | Search | In progress | Flat Monte Carlo over the planner's candidates beats the planner on the benchmark (+24 value per fight, 86 wins against 75 of 120); potions in search and search budget compared |
+| P8.E2 | Search | In progress | Flat Monte Carlo over every distinct legal move (`mcw6`) wins 99 of 120 benchmark games (+51 value per fight over the planner; +27 over search limited to the planner's candidates, pre-registered, `reports/phase8/wide-candidates.md`); more worlds per candidate add little; potions promising but not established |
 | P8.E3 | Leaf evaluation | In progress | Value-network leaves tested three times (pre-registered), not yet better than rollouts |
 | P8.E4 | Run-context costs | Todo | |
 | P8.E5 | Live combat autopilot | Todo | S5 needs the Player's sign-off |

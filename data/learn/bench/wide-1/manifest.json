@@ -1,0 +1,60 @@
+{
+ "name": "wide-1",
+ "created": "2026-11-20 16:56",
+ "benchmark": "data/sim/benchmark-v1.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "80d9849",
+ "arms": [
+  "planner",
+  "mc6",
+  "mcw6"
+ ],
+ "model": null,
+ "q_model": null,
+ "seeds": 2,
+ "seed_base": 7000000,
+ "workers": 6,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 1404,
+ "jobs": 120,
+ "summary": {
+  "planner": {
+   "games": 120,
+   "errors": 0,
+   "won": 75,
+   "mean_value": -59.108333333333334,
+   "mean_hp_if_won": 43.50666666666667,
+   "seconds": 22.7,
+   "search_seconds_per_decision": 0.003,
+   "restarts": 0
+  },
+  "mc6": {
+   "games": 120,
+   "errors": 0,
+   "won": 86,
+   "mean_value": -34.916666666666664,
+   "mean_hp_if_won": 44.08139534883721,
+   "seconds": 2439.1,
+   "search_seconds_per_decision": 1.051,
+   "restarts": 0
+  },
+  "mcw6": {
+   "games": 120,
+   "errors": 0,
+   "won": 99,
+   "mean_value": -7.666666666666667,
+   "mean_hp_if_won": 44.45454545454545,
+   "seconds": 4819.9,
+   "search_seconds_per_decision": 2.049,
+   "restarts": 0
+  }
+ }
+}

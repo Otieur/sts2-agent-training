@@ -24,7 +24,30 @@ The search-budget comparison (`search-budget.md`) found that more worlds per can
 - What follows: if H1 holds, wide candidates become the default for self-play and live search, and the action-value network is tried as a filter to keep their cost down; if not, the planner's candidates stay and effort goes to leaf evaluation.
 
 ## 5. Results
-Pending.
+Run 2026-11-20, 16:32–16:56 (`data/learn/bench/wide-1/manifest.json`; paired statistics from `tools/learn/bench.py` `paired`).
+
+Run `wide-1`: 120 jobs, 6 workers, 1404 s wall, code `80d9849`, game v0.111.1 (cc1f9462).
+
+| Arm | Games | Errors | Won | Mean value | HP left after wins | Search s per decision |
+|---|---|---|---|---|---|---|
+| planner | 120 | 0 | 75 | -59.11 | 43.51 | 0.003 |
+| mc6 | 120 | 0 | 86 | -34.92 | 44.08 | 1.051 |
+| mcw6 | 120 | 0 | 99 | -7.67 | 44.45 | 2.049 |
+
+| Pair (B − A) | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |
+|---|---|---|---|---|---|---|---|
+| mcw6 − mc6 | 120 | 27.25 | 17.23 to 38.32 | 68 | 20 | 32 | 1.4e-07 |
+| mc6 − planner | 120 | 24.19 | 13.56 to 35.48 | 75 | 21 | 24 | 1.4e-08 |
+| mcw6 − planner | 120 | 51.44 | 36.07 to 68.13 | 90 | 20 | 10 | 4.3e-12 |
+
+- **H1** (`mcw6` better than `mc6`, sign test p < 0.05): p = 1.4e-07, mean difference 27.25: **holds**.
+
+Mean value by room type: Monster planner 33.9, mc6 40.1, mcw6 50.0; Elite planner -100.2, mc6 -53.6, mcw6 -4.0; Boss planner -255.8, mc6 -222.8, mcw6 -187.9
+
+Search time per decision: `mcw6` 2.05 s against `mc6` 1.05 s (ratio 1.95).
+
+**Verdict: H1 holds, by a wide margin.** Searching every distinct legal card play instead of only the planner's own candidates adds 27 value points per fight (68 better, 20 worse) and 13 wins (99 against 86), for twice the search time. The gain is largest in elite fights (mean value −4.0 against −53.6). Compare the search-budget comparison: four times the worlds per candidate added only about 9. The planner's candidate list, not the rollout evaluation, was what limited search. By the rule in section 4, wide candidates become the default for self-play (`tools/selfplay.py --wide`) and live search, and the action-value network will be tried as a filter to keep the cost down.
+
 
 ## 6. Deviations and notes
 None yet.

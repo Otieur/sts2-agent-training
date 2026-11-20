@@ -44,7 +44,7 @@
 <tr>
 <td align="center" width="25%"><h3>57</h3>human runs analysed<br><sub>deaths, damage per encounter, card picks</sub></td>
 <td align="center" width="25%"><h3>11 / 11</h3>recorded fights replayed exactly<br><sub>by the simulator, every state equal</sub></td>
-<td align="center" width="25%"><h3>+24</h3>value per fight from search<br><sub>over the rule planner, 120 games</sub></td>
+<td align="center" width="25%"><h3>+51</h3>value per fight from search<br><sub>best search (mcw6) over the rule planner, 120 games</sub></td>
 <td align="center" width="25%"><h3>21,968</h3>self-play decisions<br><sub>from 1,172 simulated fights</sub></td>
 </tr>
 </table>
@@ -61,7 +61,7 @@
 
 1. **Knowledge.** The project owner's run history becomes a danger map (which fights cost HP and end runs), a benchmark to beat and a source of hypotheses. Game data and community strategy fill the gaps. The result is a versioned playbook plus rule-based tools: a turn planner that does exact damage and block arithmetic, a draft scorer, a path planner and a deck checker.
 2. **Simulator.** A .NET host loads the game's own assemblies from a local installation and runs real combat, and whole runs, without the game's window, graphics or saves. It can start any fight from a situation taken from a real run, snapshot it, and re-sample everything a player cannot see (draw order, random rolls) before trying a move.
-3. **Search.** For each candidate move, the agent samples several possible futures, plays each one out to the end of the fight and picks the move with the best average result.
+3. **Search.** For every distinct legal move (not only the moves the rule planner would pick), the agent samples several possible futures, plays each one out to the end of the fight and picks the move with the best average result.
 4. **Learning.** Search plays thousands of fights; every decision, every candidate's value and every outcome is recorded. Networks learn to predict fight results and move values from what is visible, so that search can look wider for the same time, and a fast policy exists when time is short.
 
 ## Results so far
@@ -78,10 +78,11 @@
 <!-- auto:latest:start -->
 | Policy | Fights won | Mean value | Time per move | Model | Run |
 |---|---|---|---|---|---|
+| Monte Carlo search, wide (`mcw6`) | 99 of 120 | -7.7 | 2.0 s | – | [`wide-1`](data/learn/bench/wide-1/manifest.json) 2026-11-20 |
 | Monte Carlo search (`mc24`) | 89 of 120 | -26.1 | 3.5 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
-| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 1.1 s | – | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
+| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 1.1 s | – | [`wide-1`](data/learn/bench/wide-1/manifest.json) 2026-11-20 |
 | Monte Carlo search (`mc12`) | 85 of 120 | -32.6 | 1.8 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
-| Rule planner (`planner`) | 75 of 120 | -59.1 | 3 ms | – | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
+| Rule planner (`planner`) | 75 of 120 | -59.1 | 3 ms | – | [`wide-1`](data/learn/bench/wide-1/manifest.json) 2026-11-20 |
 | Action-value network (`qpolicy`) | 73 of 120 | -58.4 | 9 ms | `q-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
 | Search with value network (`vleaf2`) | 65 of 120 | -76.4 | 211 ms | `value-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
 | Search with value network (`vleaf6`) | 64 of 120 | -80.4 | 598 ms | `value-v3` | [`vsearch-3`](data/learn/bench/vsearch-3/manifest.json) 2026-11-20 |
@@ -101,10 +102,10 @@
 | **Whole runs** | A run starts from any seed and plays through every room type to the final boss (40 of 40 flow runs and 30 of 30 normal runs finish). | [flow](reports/phase7/whole-runs-flow.md) · [play](reports/phase7/whole-runs-play.md) |
 | **Speed** | About 32 fights per second per core; restoring a snapshot takes 4 ms at the median (longer late in long fights, since the moves since the start are replayed). | [spike report](reports/phase7/spike.md) |
 | **Fair play** | 8 of 8 checks pass: the hidden draw order changes with the sample seed, the true next draws are guessed no better than chance, and decisions do not depend on hidden state. | [integrity rules](docs/simulator-integrity.md) |
-| **Search against rules** | Monte Carlo search beats the rule planner by **24 value points per fight**: better in 75 of 120 paired games, worse in 21; 86 wins against 75. | [comparison](reports/phase9/value-search-comparison-2.md) |
+| **Search against rules** | Monte Carlo search over **every distinct legal move** wins **99 of 120** benchmark games against 75 for the rule planner (+51 value per fight, better in 90 games, worse in 20). Limited to the planner's own candidate moves, the same search wins 86 (+24). | [wide candidates](reports/phase8/wide-candidates.md) · [comparison](reports/phase9/value-search-comparison-2.md) |
 | **Fast learned policy** | The action-value network (`q-v2`) plays level with the planner (78 wins against 75, not significant) at 7 ms per move with no simulation at all. | [comparison](reports/phase9/value-search-comparison-2.md) |
 | **Learned evaluation** | Not there yet. Three pre-registered tests of the value network inside search failed; the diagnosis is that it memorises the roughly thirty training runs. Data augmentation and set dropout are the current fix. | [test 1](reports/phase9/value-search-comparison.md) · [test 3](reports/phase9/value-search-comparison-3.md) |
-| **Search budget** | More sampled futures help only a little: 12 futures per move are +2 over 6 (not significant), 24 are +9 over 6 at four times the time. | [comparison](reports/phase8/search-budget.md) |
+| **Search budget** | Which moves are searched matters far more than how many futures are sampled: widening the candidates added 27 value per fight at twice the time, while four times the futures added about 9. | [budget](reports/phase8/search-budget.md) |
 | **Potions in search** | Promising but not established: +7 value per fight after pricing each potion, interval −0.2 to +15.8. | [comparison](reports/phase8/potions-in-search.md) |
 
 *Value is the search's own score: HP left after a win, or −100 minus the enemies' HP left after a loss. Negative results are kept on purpose: they explain what changed next.*

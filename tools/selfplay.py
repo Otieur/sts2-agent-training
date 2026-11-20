@@ -290,7 +290,9 @@ def worker(a):
             rec = None
             for attempt in range(2):
                 try:
-                    if teacher is None:
+                    if teacher is None and a.wide:
+                        rec = play(host, spec, seed, lambda sim, obs, d, done: scored_search(sim, obs, a.mode, a.k, a.top, d, done, wide=True), stuck_log)
+                    elif teacher is None:
                         rec = play_fight(host, spec, seed, a.k, a.top, a.mode, stuck_log)
                     else:
                         rec = play(host, spec, seed, teacher, stuck_log)
@@ -348,6 +350,7 @@ def main(argv=None):
     ap.add_argument("--teacher", default="mc", help="mc (flat Monte Carlo, k worlds) or a value-network arm of tools/learn/bench.py "
                     "(vleafK, vgreedyK; needs --model and .venv-learn/bin/python)")
     ap.add_argument("--model", help="value network checkpoint for a value-network teacher")
+    ap.add_argument("--wide", action="store_true", help="flat Monte Carlo teacher over the wide candidate set (tools/sim.py search_candidates_wide)")
     ap.add_argument("--augment", action="store_true", help="play an augmented variant of each history spec (augment)")
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     ap.add_argument("--summary", help="print the summary of a dataset folder")
@@ -367,7 +370,7 @@ def main(argv=None):
     t0 = time.time()
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--fights", str(a.fights),
                                "--k", str(a.k), "--top", str(a.top), "--mode", a.mode, "--seed", str(a.seed), "--out", str(out),
-                               "--teacher", a.teacher] + (["--model", a.model] if a.model else []) + (["--augment"] if a.augment else [])
+                               "--teacher", a.teacher] + (["--model", a.model] if a.model else []) + (["--augment"] if a.augment else []) + (["--wide"] if a.wide else [])
                               + (["--specs", a.specs] if a.specs else []))
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
@@ -377,7 +380,8 @@ def main(argv=None):
     manifest = {
         "dataset": out.name, "created": time.strftime("%Y-%m-%d %H:%M"), "game_version": build.get("version"), "game_commit": build.get("commit"),
         "host_commit": git_commit(), "fidelity": fid, "encoder": "none (raw observations, docs/observation-spec.md)",
-        "teacher": ({"policy": "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)", "k": a.k, "top": a.top,
+        "teacher": ({"policy": ("flat Monte Carlo over the wide candidate set (tools/sim.py search_candidates_wide)" if a.wide else
+                                "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)"), "k": a.k, "top": a.top,
                      "rollout_policy": f"plan_turn.py {a.mode}", "privileged": False} if a.teacher == "mc" else
                     {"policy": f"{a.teacher} (tools/learn/bench.py)", "model": a.model, "privileged": False}),
         "spec_source": ({"file": str(Path(a.specs).resolve().relative_to(PROJECT)), "about": json.loads(Path(a.specs).read_text())["about"],

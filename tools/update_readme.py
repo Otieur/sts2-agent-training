@@ -189,11 +189,13 @@ def sections(f):
     s = {}
     fid = f["fidelity"]
     arms, _ = latest_arms(f["bench_runs"])
-    gain = (arms["mc6"][0]["mean_value"] - arms["planner"][0]["mean_value"]) if "mc6" in arms and "planner" in arms else None
+    search = [a for a in arms if re.fullmatch(r"mcw?\d+", a)]
+    best = max(search, key=lambda a: arms[a][0]["mean_value"]) if search else None
+    gain = (arms[best][0]["mean_value"] - arms["planner"][0]["mean_value"]) if best and "planner" in arms else None
     cards = [
         (f"{f['human_runs']}" if f["human_runs"] else "–", "human runs analysed", "deaths, damage per encounter, card picks"),
         (f"{fid[0]} / {fid[1]}" if fid else "–", "recorded fights replayed exactly", "by the simulator, every state equal"),
-        (f"{gain:+.0f}" if gain is not None else "–", "value per fight from search", f"over the rule planner, {arms['mc6'][0]['games'] if 'mc6' in arms else 0} games"),
+        (f"{gain:+.0f}" if gain is not None else "–", "value per fight from search", f"best search ({best}) over the rule planner, {arms[best][0]['games'] if best else 0} games"),
         (f"{f['decisions']:,}", "self-play decisions", f"from {f['fights']:,} simulated fights"),
     ]
     s["numbers"] = "<table>\n<tr>\n" + "\n".join(
