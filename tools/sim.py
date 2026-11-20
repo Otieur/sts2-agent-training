@@ -128,8 +128,24 @@ class Sim:
         self.close()
 
 
+def installed_build_replays():
+    """Recorded fights from the installed game build, and the skipped ones as (path, version) (headers name the build)."""
+    sys.path.insert(0, str(PROJECT / "tools"))
+    import keep_replays
+    info = Path(os.environ.get("STS2_DATA_DIR", str(Path.home() / "Library/Application Support/Steam/steamapps/common/Slay the Spire 2/SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64"))).parent / "release_info.json"
+    installed = json.loads(info.read_text()).get("commit") if info.exists() else None
+    files, skipped = [], []
+    for f in sorted(REPLAYS.glob("*/*.mcr")):
+        h = keep_replays.read_header(f.read_bytes()[:128])
+        if installed and h and h[1] != installed:
+            skipped.append((f.relative_to(REPLAYS), h[0]))
+        else:
+            files.append(f)
+    return files, skipped
+
+
 def default_replay():
-    files = sorted(REPLAYS.glob("*/*.mcr"))
+    files, _ = installed_build_replays()
     if not files:
         sys.exit("no recorded fights under data/sim/replays (tools/play_turn.py keeps them during live play)")
     return files[-1]
@@ -1004,17 +1020,7 @@ def cmd_runcheck(a):
 def cmd_fidelity(a):
     """P7.E5.S1: replay every recorded fight in fidelity mode and compare the host's states with the game's. Recordings
     from another game build (their header names the build) are skipped and counted, not failed."""
-    sys.path.insert(0, str(PROJECT / "tools"))
-    import keep_replays
-    info = Path(os.environ.get("STS2_DATA_DIR", str(Path.home() / "Library/Application Support/Steam/steamapps/common/Slay the Spire 2/SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64"))).parent / "release_info.json"
-    installed = json.loads(info.read_text()).get("commit") if info.exists() else None
-    files, skipped = [], []
-    for f in sorted(REPLAYS.glob("*/*.mcr")):
-        h = keep_replays.read_header(f.read_bytes()[:128])
-        if installed and h and h[1] != installed:
-            skipped.append((f.relative_to(REPLAYS), h[0]))
-        else:
-            files.append(f)
+    files, skipped = installed_build_replays()
     for f, v in skipped:
         print(f"skip {f}: recorded on {v}, not the installed build")
     rows = []
