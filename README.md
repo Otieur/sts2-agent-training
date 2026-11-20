@@ -78,7 +78,9 @@
 <!-- auto:latest:start -->
 | Policy | Fights won | Mean value | Time per move | Model | Run |
 |---|---|---|---|---|---|
-| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 783 ms | – | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
+| Monte Carlo search (`mc24`) | 89 of 120 | -26.1 | 3.5 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
+| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 911 ms | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
+| Monte Carlo search (`mc12`) | 85 of 120 | -32.6 | 1.8 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
 | Action-value network (`qpolicy`) | 78 of 120 | -53.1 | 7 ms | `q-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
 | Rule planner (`planner`) | 75 of 120 | -59.1 | 3 ms | – | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
 | Search with value network (`vleaf6`) | 63 of 120 | -88.8 | 384 ms | `value-v2` | [`vsearch-2`](data/learn/bench/vsearch-2/manifest.json) 2026-11-20 |
@@ -102,6 +104,7 @@
 | **Search against rules** | Monte Carlo search beats the rule planner by **24 value points per fight**: better in 75 of 120 paired games, worse in 21; 86 wins against 75. | [comparison](reports/phase9/value-search-comparison-2.md) |
 | **Fast learned policy** | The action-value network (`q-v2`) plays level with the planner (78 wins against 75, not significant) at 7 ms per move with no simulation at all. | [comparison](reports/phase9/value-search-comparison-2.md) |
 | **Learned evaluation** | Not there yet. Three pre-registered tests of the value network inside search failed; the diagnosis is that it memorises the roughly thirty training runs. Data augmentation and set dropout are the current fix. | [test 1](reports/phase9/value-search-comparison.md) · [test 3](reports/phase9/value-search-comparison-3.md) |
+| **Search budget** | More sampled futures help only a little: 12 futures per move are +2 over 6 (not significant), 24 are +9 over 6 at four times the time. | [comparison](reports/phase8/search-budget.md) |
 | **Potions in search** | Promising but not established: +7 value per fight after pricing each potion, interval −0.2 to +15.8. | [comparison](reports/phase8/potions-in-search.md) |
 
 *Value is the search's own score: HP left after a win, or −100 minus the enemies' HP left after a loss. Negative results are kept on purpose: they explain what changed next.*
