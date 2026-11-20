@@ -22,7 +22,7 @@ Tags are derived from the effect text by `tools/import_extract.py` (multi-hit, a
 | Cinder | 2 | Attack | Common | Deal 17 damage; Shuffle your draw pile; Exhaust a card | damage, exhaust-other | 8/54 | 15% | -0.99 ▼ |
 | Headbutt | 1 | Attack | Common | Deal 9 damage; Choose a card from a pile; Put a card into your draw pile | damage | 7/57 | 12% | -1.34 ▼ |
 | Iron Wave | 1 | Attack | Common | Gain 5 Block; Deal 5 damage | block, damage | 8/66 | 12% | -1.26 ▼ |
-| Molten Fist | 1 | Attack | Common | Deal 10 damage; Apply ? Vulnerable to the target; keywords: Exhaust | damage, vulnerable | 18/43 | 42% | +0.39 ▲ |
+| Molten Fist | 1 | Attack | Common | Deal 10 damage; Apply ? Vulnerable to the target (the amount equals the target's current Vulnerable, so it doubles it: 3 → 6 and 2 → 4 observed live 2026-11-20 `[OBS]`, `runs/2026-11-20-SANQXMY7C9U8` floors 7 and 15; nothing without Vulnerable); keywords: Exhaust | damage, vulnerable | 18/43 | 42% | +0.39 ▲ |
 | Perfected Strike | 2 | Attack | Common | Deal ? damage | damage | 2/52 | 4% | -2.32 ▼ |
 | Pommel Strike | 1 | Attack | Common | Deal 9 damage; Draw 1 card | damage, draw | 7/47 | 15% | -1.07 ▼ |
 | Setup Strike **[v0.111.1]** | 1 | Attack | Common | Deal 7 damage; Gain 3 Setup Strike | damage | 5/51 | 10% | -1.37 ▼ |

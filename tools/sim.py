@@ -814,7 +814,9 @@ def cmd_fidelity(a):
                     own[f.relative_to(REPLAYS)] = {"status": "error: " + str(e)[:80], "hp": None, "own_actions": 0}
     for i, r in enumerate(rows):
         o = own.get(r[0], {})
-        same_end = bool(r[3]) and o.get("hp") is not None and str(o["hp"]) == r[3][3] and (o["status"] == "won") == (r[3][2] == "False")
+        # the recorded ending: lost at 0 HP, won when the fight is over with HP left, else still in progress
+        expected = None if not r[3] else ("lost" if r[3][3] == "0" else ("won" if r[3][2] == "False" else "in_progress"))
+        same_end = bool(r[3]) and o.get("hp") is not None and str(o["hp"]) == r[3][3] and o.get("status") == expected
         rows[i] = r[:5] + (r[5] and same_end, r[6] or ("" if same_end else f"own-action replay ended differently: {o}")) + (o,)
         print(f"{'ok  ' if same_end else 'FAIL'} {r[0]}: own-action replay {o.get('status')} at HP {o.get('hp')} ({o.get('own_actions')} own actions)")
     REPORTS.mkdir(parents=True, exist_ok=True)

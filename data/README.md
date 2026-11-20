@@ -12,6 +12,7 @@ The extractor only reads the save folder. `data/raw/` holds one copy of each uni
 ## Snapshot (2026-11-18)
 
 - 689 files scanned across `profile1`, `modded/profile1` and `back_prof1`. 233 unique runs after deduplicating on `(seed, start_time)`.
+- Since 2026-11-20 `tools/extract_runs.py` skips `modded/profile2`, the Agent's practice profile, so the dataset stays the Player's history (`--include-agent` reads it too). The Agent's runs are in `runs/` and `metrics/scoreboard.csv`. Rebuilt 2026-11-20: 690 files, 234 unique runs.
 - 227 runs on v0.107.1 (main branch) and 6 on v0.113.1 (beta). 232 solo runs and 1 co-op run.
 - Deck reconstruction matches the recorded final deck in 232/232 solo runs by card, and 230/232 including upgrade levels. The two misses are Silent runs where an upgrade was not logged.
 

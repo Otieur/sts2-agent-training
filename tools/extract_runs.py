@@ -347,9 +347,18 @@ def process_run(run_id, run, sources, tables):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--save-root", type=Path, default=DEFAULT_SAVE_ROOT)
+    ap.add_argument("--include-agent", action="store_true",
+                    help="also read modded/profile2, the Agent's practice profile (by default the dataset is the Player's history only)")
     args = ap.parse_args()
 
     files = sorted(args.save_root.glob("**/saves/history/*.run"))
+    # The Agent plays on modded/profile2 (since 2026-11-19). Its runs are not the Player's history and must not enter the
+    # Player's benchmarks; they are tracked in metrics/scoreboard.csv and runs/.
+    agent = [f for f in files if "/modded/profile2/" in str(f)]
+    if not args.include_agent:
+        files = [f for f in files if f not in agent]
+        if agent:
+            print(f"skipped {len(agent)} run files from the Agent's profile (modded/profile2)")
     if not files:
         raise SystemExit(f"No .run files under {args.save_root}")
 

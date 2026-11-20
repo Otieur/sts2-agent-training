@@ -3,8 +3,8 @@
 Update this file whenever a story changes status. Story-level status lives in each phase document; this board tracks epics.
 
 **Active phase:** Phase 4 (solo practice) is live: the Agent's first run on profile 2 won at A0 on 2026-11-19 (M3); the ladder is at A1. Phase 0 has only small items left (precise latency, permissions allowlist). Phases 1 and 2 are done; Phase 3 shadowing ran in the first live session. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md`.
-**Engine track (2026-11-19):** Phases 7–9 (engine simulator, combat search, learned models) are specified; the desk study is done and Phase 7 starts with the feasibility spike (P7.E1). Direction: `docs/decisions/0003-engine-simulator-and-learning.md`; rules: `docs/simulator-integrity.md`.
-**Last updated:** 2026-11-19
+**Engine track (2026-11-20):** Phase 7 simulator works for fights and whole runs: the game's own code runs in our process, recorded fights replay exactly (10 of 10), fights start from nothing for all 85 encounters, whole runs play from a seed through every room type, decision mode is fair-play checked (8 of 8). Next: Phase 8 search on top of it (snapshot and restore exist), the two-player host for co-op. Direction: `docs/decisions/0003-engine-simulator-and-learning.md`.
+**Last updated:** 2026-11-20
 
 ---
 
@@ -66,7 +66,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P4.E2 | Combat procedure | In progress | S1, S3, S4 done (plan_turn.py, journal.py); planner covers the common Ironclad cards whose text the extract leaves incomplete, playable statuses (Sandpit guard), 17 potions and the boss and elite powers in the notes; S2 calculator awaits in-game verification |
 | P4.E3 | Strategy procedures | Done (tooling) | path.py, draft.py, advise.py, deck_check.py; advise.py never raises on damaged states (fuzz test); untested live |
 | P4.E4 | Post-mortem | In progress | S1 facts sheet done (postmortem.py, tested on the Player's runs) |
-| P4.E5 | Evaluation | In progress | Scoreboard, milestones, exam seeds ready |
+| P4.E5 | Evaluation | In progress | Scoreboard: 2 Agent runs (A0 won 2026-11-19; A1 died to the act 1 boss 2026-11-20) |
 | P4.E6 | Ascension ladder | In progress | Rules written |
 | P4.E7 | Operations | Todo | |
 
@@ -100,13 +100,13 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | Epic | Title | Status | Notes |
 |---|---|---|---|
 | P7.E1 | Feasibility spike | Done | **Go, route R3** (2026-11-19, `reports/phase7/spike.md`): a recorded boss fight replays in our own process with all 26 turn-boundary states equal to the game's; 400 warm passes all correct at 31 ms CPU per fight (about 32 fights per second per core: above the minimum of 20, short of the 200 target) |
-| P7.E2 | Ground truth from the real game | In progress | S1 done: the game records every fight itself (`replays/latest.mcr`); S2 implemented in `tools/play_turn.py`, first live run pending; no mod change needed |
-| P7.E3 | Engine host and sandbox | In progress | `sim/`: fake engine, inert UI, stubs, single-thread scheduler, sandbox HOME, version check on load; automated sandbox and isolation tests open |
-| P7.E4 | Combat interface | In progress | Decision mode works: reset to a decision point, observe, legal actions, step, card choices; Python bridge `tools/sim.py`; potions and cloning open |
-| P7.E5 | Fidelity suite | In progress | `tools/sim.py fidelity`: 1 of 1 recorded fights exact (26 of 26 states; own-action replay identical). Needs 100 fights from real runs for M11 |
-| P7.E6 | Fair-play layer | In progress | Sanitizer (every generator re-seeded, draw pile shuffled), `tools/sim.py fairplay` 7 of 7; known draw positions and the pre-rolled-state inventory open; `docs/observation-spec.md` v1 |
+| P7.E2 | Ground truth from the real game | In progress | S1 done: the game records every fight itself (`replays/latest.mcr`); S2 live 2026-11-20: `tools/play_turn.py` kept 9 fights of the A1 run (hallways, three elites, the boss); no mod change needed |
+| P7.E3 | Engine host and sandbox | In progress | `sim/`: fake engine, inert UI (made inert first and eagerly: FI-7b), stubs, single-thread scheduler, sandbox HOME, version check on load; automated sandbox test 3 of 3 (save folder unchanged, sandbox home empty, no network socket) |
+| P7.E4 | Combat interface | In progress | Decision mode: reset to a decision point or a fight from nothing (85 of 85 encounters), observe, legal actions, step, card choices through the game's local selector, potions; snapshot and restore by recipe (exact, about 45 ms); live-object cloning not started |
+| P7.E5 | Fidelity suite | In progress | `tools/sim.py fidelity`: 10 of 10 recorded fights exact (218 states; nine from the 2026-11-20 run, a lost boss fight included); recorded run reproduced from its seed 71 of 71. Needs 100 fights for M11 |
+| P7.E6 | Fair-play layer | In progress | Sanitizer (every generator re-seeded; known draw positions kept, FP-5), hidden pre-rolled state inventoried (FP-16), `tools/sim.py fairplay` 8 of 8; run-level re-sampling of pre-rolled content open |
 | P7.E7 | Performance and operations | In progress | S4: patch runbook extended with `tools/game_facts.py`, `game_cards.py`, `game_monsters.py` |
-| P7.E8 | Run-level simulation | Todo | After Phase 8 starts |
+| P7.E8 | Run-level simulation | In progress (done early) | Whole runs from a seed through every room type and act change (2026-11-20); batches of 40 flow-test and 30 normal runs all finish (`reports/phase7/whole-runs-*.md`); the closing Architect scene after the last boss is not entered (FI-7c) |
 
 ---
 

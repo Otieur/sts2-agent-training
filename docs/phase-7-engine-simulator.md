@@ -210,7 +210,7 @@
 > - [ ] Each step returns the observation (through the shared encoder, E6.S5), the events, and a status (EN-5).
 > - [ ] The legal-action list equals the live game's on the same state, tested on recorded fights.
 
-> **P7.E4.S4: Branching** · Size M · Status: In progress (2026-11-20: branching by replay from room entry, `reset(events, seed)`, 3–14 ms set-up plus the prefix. Snapshot and restore by recipe (`sim/Session.Clone.cs`: origin plus the decision-mode steps and re-samples since): `tools/sim.py clone` restores 12 of 12 fights exactly (observation, draw order, every generator) and the same line then gives the same result; a restore of a fight from nothing takes a median 289 ms, too slow for search, being profiled. Cloning live objects not started. Run-level states are refused until FP-16's re-sampling exists)
+> **P7.E4.S4: Branching** · Size M · Status: In progress (2026-11-20: branching by replay from room entry, `reset(events, seed)`, 3–14 ms set-up plus the prefix. Snapshot and restore by recipe (`sim/Session.Clone.cs`: origin plus the decision-mode steps and re-samples since): `tools/sim.py clone` restores 12 of 12 fights exactly (observation, draw order, every generator) and the same line then gives the same result; a restore of a fight from nothing takes about 45 ms on an idle machine (a new fight about 23 ms) once the game's in-memory fight recording is off; it was 289 ms with the recording on and the game running. Cloning live objects not started. Run-level states are refused until FP-16's re-sampling exists)
 > *As Phase 8 code, I want to branch a fight at any point cheaply, so that search can try many lines (EN-2, EN-3).*
 >
 > **Acceptance criteria**
@@ -226,7 +226,7 @@
 
 ### P7.E5: Fidelity suite
 
-> **P7.E5.S1: Replay the corpus** · Size M · Status: In progress (2026-11-20: `tools/sim.py fidelity`, `reports/phase7/fidelity.md`: 1 of 1 recorded fights exact; needs fights from more runs)
+> **P7.E5.S1: Replay the corpus** · Size M · Status: In progress (2026-11-20: `tools/sim.py fidelity`, `reports/phase7/fidelity.md`: 10 of 10 recorded fights exact (218 states; nine recorded live on 2026-11-20: hallways, three elites and the act 1 boss, a lost fight included); more runs and characters will widen it)
 > *As the Agent, I want every recorded fight replayed in fidelity mode with checksums compared, so that exactness is measured.*
 >
 > **Acceptance criteria**
@@ -278,7 +278,7 @@
 > - [ ] The run seed, the 12 `RunRngSet` streams, the 3 `PlayerRngSet` streams and every other `Rng` instance reachable from the run and combat objects (each monster's `_rng`, event generators, relic-held ones) are re-seeded per sample from a logged sampler seed. The generators are found by walking the objects, not from a fixed list.
 > - [ ] Test: after sanitizing, no reachable `Rng` has the state it had before. Two samples with different sampler seeds diverge on the next shuffle and the next monster roll.
 
-> **P7.E6.S3: Draw-pile sampler** · Size M · Status: In progress (2026-11-20: the draw pile is shuffled per sample; positions the player knows are not kept yet)
+> **P7.E6.S3: Draw-pile sampler** · Size M · Status: Done (2026-11-20: `sim/DrawKnowledge.cs` logs the visible draw-pile operations since the last shuffle and samples orders consistent with them by rejection, with random inserts placed lazily; a card put on top stays on top in 12 of 12 samples while the rest varies; no fallback to a full shuffle on any decision point of the recorded fights)
 > *As the Agent, I want sampled draw orders consistent with what the player knows, so that search neither cheats nor forgets (FP-5, FP-14).*
 >
 > **Acceptance criteria**
