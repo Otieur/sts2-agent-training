@@ -1,6 +1,6 @@
 # Comparison: search and planner with potions against without
 
-Written before the run (P8.E1.S3, ML-10) on 2026-11-20 at 14:52. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
+Written before the run (P8.E1.S3, ML-10) on 2026-11-20 at 14:49. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
 
 ## 1. Hypotheses
 - **H1:** flat Monte Carlo search whose candidates and rollouts may drink potions (`mc6p`) gets a higher priced fight value than the same search without potions (`mc6`).
