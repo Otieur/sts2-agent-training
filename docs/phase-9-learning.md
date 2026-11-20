@@ -38,7 +38,7 @@
 
 ### P9.E1: Data and encoding
 
-> **P9.E1.S1: Tensor encoding** · Size M · Status: Todo
+> **P9.E1.S1: Tensor encoding** · Size M · Status: Done (2026-11-20: `tools/learn/vocab.py` builds `knowledge/data/vocab-v0.111.1.json` from the game assembly's model classes (transitive subclasses; 598 cards, 301 relics, 267 powers, 67 potions, 122 monsters, intent, target and card-type enums; 0 padding, 1 unknown); `tools/learn/encode.py` turns an observation into plain lists (enc-v1: global features with a decoder, hand, piles as sets, powers, enemies with their powers and intents, relics, potions, pending choice, teammate rows for co-op) and adapts live states (`from_live`; piles unknown there); `tools/learn/model.py` makes tensors. Tests: `tools/tests/test_learn_encode.py`, 8 tests on 3 simulator fixtures and 5 live fixtures, round trip of the numeric fields, unknown ids, seat axis. Every state of `combat-v1` encodes with no unknown id, about 0.15 ms per state)
 > *As the Agent, I want the shared observation turned into model inputs in one tested module, so that training and live play cannot diverge (ML-1).*
 >
 > **Acceptance criteria**
@@ -55,13 +55,13 @@
 
 ### P9.E2: Combat value network
 
-> **P9.E2.S1: First value model** · Size L · Status: Todo
+> **P9.E2.S1: First value model** · Size L · Status: In progress (2026-11-20: `tools/learn/train_value.py`: outputs win chance, HP left if won and enemy HP left if lost, the last two as residuals on the current values; split by source run with the benchmark pairs held out; baselines mean, linear on global features and the search's own estimate; calibration, bootstrap intervals, model card. `value-v1` trains when `combat-v1` is complete)
 > *As the Agent, I want a network that predicts fight results, so that search can judge positions better than the heuristic.*
 >
 > **Acceptance criteria**
 > - [ ] Trained on E1.S2 combat data; held-out error and calibration reported against the heuristic of P8.E3.S1.
 
-> **P9.E2.S2: Value in search** · Size M · Status: Todo
+> **P9.E2.S2: Value in search** · Size M · Status: In progress (2026-11-20: pre-registered in `reports/phase9/value-search-comparison.md`; runner `tools/learn/bench.py` plays every arm on the same benchmark fight and seeds in the same worker)
 > *As the Agent, I want search to use the value network at the leaves, so that its gain is measured where it matters.*
 >
 > **Acceptance criteria**
@@ -87,7 +87,7 @@
 
 ### P9.E3: Combat policy and expert iteration
 
-> **P9.E3.S1: Policy network** · Size L · Status: Todo
+> **P9.E3.S1: Policy network** · Size L · Status: In progress (2026-11-20: action-value network `QNet` scores the planner's candidates from the shared state encoding plus the played card's and target's vectors; `tools/learn/train_q.py` reports agreement with the teacher and regret measured with the teacher's values; `qpolicy` arm in `tools/learn/bench.py` needs no restore)
 > *As the Agent, I want a network that predicts search's choices, so that search is focused and a fast fallback exists.*
 >
 > **Acceptance criteria**
@@ -130,7 +130,7 @@
 
 ### P9.E5: Training infrastructure
 
-> **P9.E5.S1: Framework choice and security review** · Size M · Status: In progress (Player-gated; 2026-11-20: `docs/reviews/learning-framework-security-review.md` drafted: PyTorch 2.15.0 recommended, MLX 0.32.4 as the alternative; waiting for the Player's approval)
+> **P9.E5.S1: Framework choice and security review** · Size M · Status: Done (2026-11-20: PyTorch 2.15.0 approved by the Player at 12:34 and installed offline with pinned hashes into `.venv-learn/`; `docs/reviews/learning-framework-security-review.md`)
 > *As the Player, I want any downloaded learning library reviewed before it runs on my machine (SA-8).*
 >
 > **Acceptance criteria**

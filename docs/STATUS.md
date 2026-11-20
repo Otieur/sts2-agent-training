@@ -127,11 +127,11 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P9.E1 | Data and encoding | Todo | |
-| P9.E2 | Combat value network | Todo | |
-| P9.E3 | Combat policy and expert iteration | Todo | |
+| P9.E1 | Data and encoding | In progress | S1 done 2026-11-20 (`tools/learn/encode.py`, vocabulary from the game assembly, 8 tests); S2: `combat-v1` (586 history fights, flat Monte Carlo teacher) |
+| P9.E2 | Combat value network | In progress | S1 trainer and model card (`tools/learn/train_value.py`); S2 comparison pre-registered (`reports/phase9/value-search-comparison.md`) |
+| P9.E3 | Combat policy and expert iteration | In progress | S1 action-value network (`tools/learn/train_q.py`); self-play takes a value-network teacher |
 | P9.E4 | Strategic decisions | Todo | S2 needs P7.E8 |
-| P9.E5 | Training infrastructure | Todo | S1 needs the Player (framework security review) |
+| P9.E5 | Training infrastructure | In progress | S1 done: PyTorch 2.15.0 approved 2026-11-20 and installed in `.venv-learn/` |
 | P9.E6 | Evaluation and the ascension ladder | Todo | |
 | P9.E7 | Patch resilience | Todo | |
 
