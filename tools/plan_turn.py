@@ -601,9 +601,13 @@ CONDITIONAL_ENERGY = {"FORGOTTEN_RITUAL"}       # energy only after an exhaust t
 HITS_TWICE_IF_VULNERABLE = {"DISMANTLE"}
 BLOCK_DAMAGE = {"BODY_SLAM"}                    # deals damage equal to your current Block [GAME-EXTRACT] CalculatedDamage
 EXHAUST_HAND = {"FIEND_FIRE"}                   # exhausts the rest of the hand: 7 damage per card exhausted [GAME-EXTRACT]
+EXHAUST_RANDOM_IN_HAND = {"CINDER"}             # exhausts a random card in hand: played after every other planned card
+                                                # [OBS] 2026-11-20, runs/2026-11-20-SANQXMY7C9U8 boss turn 2 (Salvo lost)
 
 
 def phase(card):
+    if card.card_id in EXHAUST_RANDOM_IN_HAND:
+        return "last"      # so no planned card can be the one it exhausts
     if card.juggernaut or card.cruelty:
         return "strength"  # Juggernaut before the Block it turns into damage; Cruelty before the Attacks it boosts
     if card.cost_down_per_attack:
@@ -1076,7 +1080,9 @@ def from_state(st):
                              thorns=int(next((v for k, v in pw.items() if k.startswith("THORNS")), 0) or 0),
                              artifact=int(next((v for k, v in pw.items() if k.startswith("ARTIFACT")), 0) or 0),
                              hit_cap=next((int(v) for k, v in pw.items() if k.startswith("HARD_TO_KILL") and v is not None), None),
-                             shriek=int(next((v for k, v in pw.items() if k.startswith("SHRIEK")), 0) or 0),
+                             # Shriek (Terror Eel) and Plow (Ceremonial Beast) stun at an HP threshold and cancel that
+                             # turn's attack; Plow's amount is the threshold [OBS] 2026-11-20 (170 -> 140 HP: intent Stun)
+                             shriek=int(next((v for k, v in pw.items() if k.startswith(("SHRIEK", "PLOW"))), 0) or 0),
                              taint=int(next((v for k, v in pw.items() if k.startswith("VITAL_SPARK")), 0) or 0),
                              skittish=int(next((v for k, v in pw.items() if k.startswith("SKITTISH")), 0) or 0),
                              infested=any(k.startswith("INFESTED") for k in pw), ravenous=any(k.startswith("RAVENOUS") for k in pw),

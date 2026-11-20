@@ -586,6 +586,30 @@ class TestPlanTurn(unittest.TestCase):
         o = pt.simulate([pt._card_from_extract(0, "STRIKE_IRONCLAD", {"Damage": 9}, 1, True)], [0], pt.Player(energy=1, strength=3), e())
         self.assertEqual(o["dealt"], 13)
 
+    def test_plow_threshold_cancels_the_attack(self):
+        # [OBS] 2026-11-20: Ceremonial Beast at 170 with Plow 150 went to 140 and its intent became Stun at once
+        beast = pt.Enemy(0, "Ceremonial Beast", 170, 0, 22, 1, vuln=True, shriek=150)
+        o = best(hand("Strike", "Strike", "Strike"), pt.Player(energy=3, hp=18), [beast], "balanced")
+        self.assertGreaterEqual(o["dealt"], 20)   # 3 x 9 against Vulnerable: 170 -> 143, below the threshold
+        self.assertEqual(o["hp_lost"], 0)
+
+    def test_plow_read_from_state(self):
+        st = {"data": {"combat": {
+            "player": {"current_hp": 18, "energy": 3, "block": 0, "powers": []},
+            "hand": [],
+            "enemies": [{"index": 0, "name": "Ceremonial Beast", "current_hp": 170, "block": 0, "is_alive": True,
+                         "powers": [{"power_id": "PLOW_POWER", "amount": 150}],
+                         "intents": [{"intent_type": "Attack", "damage": 22, "hits": 1, "total_damage": 22}]}]}}}
+        _, _, enemies = pt.from_state(st)
+        self.assertEqual(enemies[0].shriek, 150)
+
+    def test_cinder_played_after_the_other_cards(self):
+        # [OBS] 2026-11-20: Cinder exhausts a random card in hand, so planned cards go before it
+        o = best(hand("Cinder", "Strike", "Defend"), pt.Player(energy=4), [pt.parse_enemy("Beast:200:0:10", 0)], "balanced")
+        names = [p.split(" →")[0] for p in o["plays"]]
+        self.assertIn("Cinder", names)
+        self.assertEqual(names[-1], "Cinder")
+
 
 if __name__ == "__main__":
     unittest.main()

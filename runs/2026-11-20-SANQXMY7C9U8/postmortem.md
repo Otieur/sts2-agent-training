@@ -33,5 +33,7 @@ Also: the deck arrived at the boss with 10.8 block per turn. `tools/deck_check.p
 | Knowledge: Molten Fist doubles the target's Vulnerable; Slow is ×(1 + 0.1 × cards played this turn) | Byrdonis turn 3; Bygone Effigy turn 2 | Correct damage in the planner and draft scorer (Molten Fist is tier D in the lists) | `[OBS]` |
 | Path planner: check why an extra elite raises the predicted boss arrival HP (68% vs 48% at floor 14) | Floor 14 map scores | Avoids elites taken at the H5 margin on a wrong estimate | `[HYPOTHESIS]` |
 
+**Applied the same night (factual planner fixes, with tests in `tools/tests/test_plan_turn.py`):** Cinder is ordered after every other planned card; Plow is read as a stun threshold like Shriek. The other three rows remain proposals.
+
 ## Scoreboard row
 Appended to `metrics/scoreboard.csv`: yes
