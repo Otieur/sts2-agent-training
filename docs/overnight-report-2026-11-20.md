@@ -7,7 +7,8 @@
 2. **It reproduces the real game exactly wherever that can be checked.** All 10 recorded fights replay with every state equal to the game's (218 states; nine of them recorded live tonight, including three elites and a lost boss fight). The Agent's recorded A0 run, replayed from its seed with its choices, matches the game in 71 of 71 checks over all 48 floors.
 3. **Background runs are fast and reliable.** Batches of 40 flow-test runs and 30 normal runs from new seeds all finish. About 7.7 ms per decision including the Python driver; a full-length run takes 4–16 s on one host on an idle machine.
 4. **The open list is closed.** Known draw positions are kept by the sampler (FP-5); hidden pre-rolled state is inventoried (new rule FP-16); snapshot and restore work (exact, about 45 ms per restore); the sandbox test is automated (saves unchanged, no network).
-5. **The real A1 run died to the act 1 boss.** Ironclad A1, seed SANQXMY7C9U8: three elites killed, then died to Ceremonial Beast on floor 17 with the Beast at 77/252 HP. Post-mortem: `runs/2026-11-20-SANQXMY7C9U8/postmortem.md`. The ladder stays at A1.
+5. **A first search already beats the rule planner in the simulator** (exploratory): flat Monte Carlo over the planner's candidate actions, scored on re-sampled worlds, was better than the planner in 23 of 36 paired fights and worse in 4 (sign test p = 0.0002); it won 24 against 22 with 32.5 against 28.9 mean HP left. Baselines on the same fights: greedy won 20, random 3.
+6. **The real A1 run died to the act 1 boss.** Ironclad A1, seed SANQXMY7C9U8: three elites killed, then died to Ceremonial Beast on floor 17 with the Beast at 77/252 HP. Post-mortem: `runs/2026-11-20-SANQXMY7C9U8/postmortem.md`. The ladder stays at A1.
 
 ## 2. Work done (by stage)
 | Stage | Result |
@@ -47,11 +48,18 @@ Also found: the game records every fight in memory whenever TestMode is off; the
 ## 5. Co-op readiness
 - Fights: the acting player is an index; the sampler covers every player's draw pile; replays apply any player's events.
 - Card choices go through the game's local selector and `PlayerChoiceSynchronizer`, the co-op path.
-- Run level: every room action uses the multiplayer-capable synchronizers. Missing: a two-player run in one process (`RunManager.SetUpNewMultiplayer` needs a host-side net service that delivers the second seat's actions). Not started.
+- Run level: every room action uses the multiplayer-capable synchronizers. Missing: a two-player run in one process. `RunManager.SetUpNewMultiplayer` takes an `INetHostGameService` (about 30 members, mostly trivial in process); ours would deliver the second seat's actions to the game's registered message handlers as messages from a client, the way `NetReplayGameService` feeds recorded actions. Not started.
 
 ## 6. Next steps and what needs you
 - **Phase 8 (search):** snapshot and restore exist (about 45 ms); the next step is a search policy on top of decision mode, measured against the rule planner in the simulator.
 - **Planner fixes from the run** (proposed in the post-mortem, not applied): Cinder's random exhaust; the Plow stun when its threshold is crossed; Molten Fist's Vulnerable doubling; a Ceremonial Beast block target in `tools/deck_check.py`; a check of the path planner's elite estimate.
 - **Run-level search** must first re-sample pre-rolled run content (FP-16); until then the host refuses run-level snapshots.
 - **Co-op:** the two-player host (above), and a recorded co-op fight with you to test the replay path.
+- **Merge:** tonight's work is on `overnight/2026-11-20-full-run-sim` (pushed to the private repository), not on `master`; merging is your call.
 - **Nothing needs undoing.** Your profile 1 was not touched; the game was closed at the main menu after the run.
+
+## 7. After the report (06:00 on)
+- **Planner fixes from the run, applied with tests** (564f686): Cinder is ordered after every other planned card; Plow is read as a stun threshold, so a plan that crosses it is valued with the cancelled attack. 191 tool tests pass. The dataset's derived tables were rebuilt after the profile fix (`analyze_*`, `check_playbook.py`: all figures match).
+- **First search experiment** (`tools/sim.py search`, `reports/phase8/search-first-experiment.md`, exploratory): on 36 hallway and elite fights from nothing, search won 24 of 36 (mean HP left 32.5) against the planner's 22 (28.9); search was better in 23 fights, worse in 4, equal in 9 (sign test one-sided p = 0.0002; mean paired value difference 11.67, bootstrap 95% interval 4.06 to 22.00). Exploratory (not under the comparison protocol); about 10–50 s per fight in Python.
+- **Comparison template** for future experiments: `templates/comparison.md` (P8.E1.S3).
+

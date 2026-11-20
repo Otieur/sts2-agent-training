@@ -384,6 +384,220 @@ def cmd_sandbox(a):
     return 0 if all(results) else 1
 
 
+def _act_from(card, ref):
+    act = {"type": "play", "card": card.index}
+    if card.target == "AnyEnemy" and ref is not None:
+        act["target"] = ref
+    return act
+
+
+def _same_action(a, b):
+    return all(a.get(k) == b.get(k) for k in ("type", "card", "target", "cards"))
+
+
+def search_candidates(sim, pt, obs, top):
+    """First actions of the rule planner's top plans in both modes, plus ending the turn; only legal ones."""
+    if obs.get("choice"):
+        return [planner_action(pt, obs, "safe")]
+    hand, player, enemies = pt.from_state(obs)
+    hand = [c for c in hand if not c.potion]
+    cands = []
+    if enemies and hand:
+        for mode in ("safe", "balanced"):
+            for plan in pt.rank(pt.plans(hand, player, enemies), mode)[:top]:
+                seq = plan.get("seq") or []
+                a = _act_from(*seq[0]) if seq else {"type": "end_turn"}
+                if not any(_same_action(a, c) for c in cands):
+                    cands.append(a)
+    if not any(c["type"] == "end_turn" for c in cands):
+        cands.append({"type": "end_turn"})
+    legal = sim.legal()
+    return [c for c in cands if any(_same_action(c, l) for l in legal)] or [{"type": "end_turn"}]
+
+
+def _finish_with_planner(sim, pt, obs, mode, limit=300):
+    for _ in range(limit):
+        if obs["status"] != "in_progress" or obs.get("blocked"):
+            break
+        try:
+            obs = sim.step(planner_action(pt, obs, mode))
+        except SimError:
+            obs = sim.step({"type": "end_turn"})
+    return obs
+
+
+def _enemy_hp_left(obs):
+    return sum(e.get("current_hp", 0) for e in (obs.get("combat") or {}).get("enemies", []) if e.get("current_hp", 0) > 0)
+
+
+def _value(obs):
+    """HP left after a win; after a loss, -100 minus the enemies' HP left (losing closer to a win is better)."""
+    return obs["combat"]["player"]["current_hp"] if obs["status"] == "won" else -100 - _enemy_hp_left(obs)
+
+
+def search_action(sim, pt, obs, mode, k, top, decision):
+    """Flat Monte Carlo over the planner's candidate first actions (P8 first experiment). Each candidate is scored on
+    k re-sampled worlds (restore the snapshot, re-sample the hidden state, play the candidate, finish with the planner);
+    all candidates share the same sample seeds. Only the past is restored; the future is re-sampled (FP-15)."""
+    cands = search_candidates(sim, pt, obs, top)
+    if len(cands) == 1:
+        return cands[0], 0
+    snap = sim.call(cmd="snapshot")["id"]
+    best, best_v, sims = cands[0], None, 0
+    for a in cands:
+        total = 0
+        for j in range(k):
+            sim.call(cmd="restore", id=snap)
+            sim.call(cmd="resample", sample_seed=1_000_003 * (decision + 1) + j)
+            try:
+                o = sim.step(a)
+            except SimError:
+                total += -1000
+                continue
+            total += _value(_finish_with_planner(sim, pt, o, mode))
+            sims += 1
+        if best_v is None or total > best_v:
+            best, best_v = a, total
+    sim.call(cmd="restore", id=snap)       # back to the real fight
+    return best, sims
+
+
+def cmd_search(a):
+    """First search experiment: the rule planner alone against flat Monte Carlo over its candidate actions, on the same
+    fights from nothing (same encounter, run seed and sample seed). Reports HP left and wins per policy."""
+    sys.path.insert(0, str(PROJECT / "tools"))
+    import plan_turn as pt
+    rows = []
+    t0 = time.time()
+    with Sim() as sim:
+        encs = [e["id"] for e in sim.encounters() if e["room_type"] in a.rooms.split(",") and not e["weak"]]
+        picked = encs[:: max(1, len(encs) // a.fights)][: a.fights]
+        for enc in picked:
+            for s in range(a.seeds):
+                res = {}
+                for policy in ("planner", "search"):
+                    obs = sim.new_fight(enc, seed=f"SEARCH{s:06d}", sample_seed=s + 1)["obs"]
+                    t1, decision, sims = time.time(), 0, 0
+                    while obs["status"] == "in_progress" and not obs.get("blocked") and decision < 300:
+                        if policy == "planner":
+                            act = planner_action(pt, obs, a.mode)
+                        else:
+                            act, n = search_action(sim, pt, obs, a.mode, a.k, a.top, decision)
+                            sims += n
+                        try:
+                            obs = sim.step(act)
+                        except SimError:
+                            obs = sim.step({"type": "end_turn"})
+                        decision += 1
+                    res[policy] = (obs["status"], obs["combat"]["player"]["current_hp"], decision, sims, time.time() - t1, _enemy_hp_left(obs))
+                rows.append((enc, s, res))
+                p, q = res["planner"], res["search"]
+                print(f"{enc:34s} s{s}  planner {p[0]:5s} HP {p[1]:3d} (enemy {p[5]:3d}) | search {q[0]:5s} HP {q[1]:3d} (enemy {q[5]:3d}) ({q[3]} rollouts, {q[4]:.0f} s)", flush=True)
+    n = len(rows)
+    def summ(pol):
+        wins = sum(1 for r in rows if r[2][pol][0] == "won")
+        hp = sum(r[2][pol][1] for r in rows) / max(n, 1)
+        return wins, hp
+    pw, ph = summ("planner"); sw, sh = summ("search")
+    def val(t):
+        return t[1] if t[0] == "won" else -100 - t[5]
+    better = sum(1 for r in rows if val(r[2]["search"]) > val(r[2]["planner"]))
+    worse = sum(1 for r in rows if val(r[2]["search"]) < val(r[2]["planner"]))
+    L = ["# First search experiment: rule planner against flat Monte Carlo", "",
+         f"Generated by `tools/sim.py search` on {time.strftime('%Y-%m-%d %H:%M')}. Fights from nothing (Ironclad starting deck, "
+         f"80 HP), {len(set(r[0] for r in rows))} encounters (room types {a.rooms}, not the weak pool) × {a.seeds} seeds; both "
+         f"policies play the same fight (same run seed and sample seed). Planner mode `{a.mode}`. Search: at every decision, the "
+         f"first actions of the planner's top {a.top} plans in both modes plus ending the turn, each scored on {a.k} re-sampled "
+         f"worlds (restore, re-sample the hidden state, play it, finish with the planner; value = HP left, or -100 minus the enemies' HP left for a loss), "
+         f"with shared sample seeds across candidates. Decisions use only what the player can see (FP-15).", "",
+         "**Exploratory** unless run from a filled `templates/comparison.md` (P8.E1.S3, ML-10); fights from nothing with the "
+         "starting deck are not the benchmark set (P8.E1.S1).", "",
+         f"- Planner: won {pw} of {n}, mean HP left {ph:.1f}",
+         f"- Search: won {sw} of {n}, mean HP left {sh:.1f}",
+         f"- Search better in {better} fights, worse in {worse}, equal in {n - better - worse}",
+         f"- Total time {time.time() - t0:.0f} s", "",
+         "| Encounter | Seed | Planner | Search | Search rollouts | Search seconds |", "|---|---|---|---|---|---|"]
+    def cell(t):
+        return f"{t[0]} {t[1]} HP" + (f" (enemies {t[5]} HP left)" if t[0] != "won" else "")
+    L += [f"| {r[0]} | {r[1]} | {cell(r[2]['planner'])} | {cell(r[2]['search'])} | {r[2]['search'][3]} | {r[2]['search'][4]:.0f} |" for r in rows]
+    out = PROJECT / "reports" / "phase8" / a.report
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("\n".join(L) + "\n")
+    print(f"planner won {pw}/{n} (HP {ph:.1f}); search won {sw}/{n} (HP {sh:.1f}); better {better}, worse {worse}. Report: {out.relative_to(PROJECT)}")
+    return 0
+
+
+def baseline_action(sim, pt, obs, policy, rng):
+    """Baseline policies (P8.E1.S2). random: a uniform legal action. greedy: the play with the most immediate damage
+    (the planner's one-card simulation), else the most block, else end the turn."""
+    acts = sim.legal()
+    if policy == "random" or obs.get("choice"):
+        return rng.choice(acts) if acts else {"type": "end_turn"}
+    hand, player, enemies = pt.from_state(obs)
+    by_index = {c.index: c for c in hand if not c.potion}
+    best, best_key = {"type": "end_turn"}, (0, 0)
+    for a in acts:
+        if a.get("type") != "play" or a.get("card") not in by_index:
+            continue
+        c = by_index[a["card"]]
+        # the host's target is the enemy's combat index; the planner's simulation wants its position in the list
+        pos = next((i for i, e in enumerate(enemies) if e.ref == a.get("target")), None) if a.get("target") is not None else None
+        if a.get("target") is not None and pos is None:
+            continue
+        o = pt.simulate([c], [pos], player, enemies)
+        if not o:
+            continue
+        key = (o["dealt"], o.get("block", 0))
+        if key > best_key:
+            best, best_key = a, key
+    return best
+
+
+def cmd_baselines(a):
+    """The rule planner, a greedy and a random policy on the same fights from nothing (P8.E1.S2)."""
+    import random
+    sys.path.insert(0, str(PROJECT / "tools"))
+    import plan_turn as pt
+    pols = ["planner", "greedy", "random"]
+    rows = []
+    with Sim() as sim:
+        encs = [e["id"] for e in sim.encounters() if e["room_type"] in a.rooms.split(",") and not e["weak"]]
+        picked = encs[:: max(1, len(encs) // a.fights)][: a.fights]
+        for enc in picked:
+            for s in range(a.seeds):
+                res = {}
+                for pol in pols:
+                    rng = random.Random(s)
+                    obs = sim.new_fight(enc, seed=f"SEARCH{s:06d}", sample_seed=s + 1)["obs"]
+                    for _ in range(400):
+                        if obs["status"] != "in_progress" or obs.get("blocked"):
+                            break
+                        act = planner_action(pt, obs, "balanced") if pol == "planner" else baseline_action(sim, pt, obs, pol, rng)
+                        try:
+                            obs = sim.step(act)
+                        except SimError:
+                            obs = sim.step({"type": "end_turn"})
+                    res[pol] = (obs["status"], obs["combat"]["player"]["current_hp"], _enemy_hp_left(obs))
+                rows.append((enc, s, res))
+                print(f"{enc:34s} s{s} " + " | ".join(f"{p} {res[p][0]} {res[p][1]}" for p in pols), flush=True)
+    n = len(rows)
+    L = ["# Baseline policies on fights from nothing", "",
+         f"Generated by `tools/sim.py baselines` on {time.strftime('%Y-%m-%d %H:%M')}: the same fights as `tools/sim.py search` "
+         f"(room types {a.rooms}, {a.fights} encounters × {a.seeds} seeds, Ironclad starting deck, 80 HP). Exploratory, not the "
+         f"benchmark set (P8.E1.S1).", ""]
+    for p in pols:
+        wins = sum(1 for r in rows if r[2][p][0] == "won")
+        hp = sum(r[2][p][1] for r in rows) / max(n, 1)
+        L.append(f"- {p}: won {wins} of {n}, mean HP left {hp:.1f}")
+    L += ["", "| Encounter | Seed | " + " | ".join(pols) + " |", "|---|---|" + "---|" * len(pols)]
+    L += [f"| {r[0]} | {r[1]} | " + " | ".join(f"{r[2][p][0]} {r[2][p][1]}" for p in pols) + " |" for r in rows]
+    out = PROJECT / "reports" / "phase8" / "baselines.md"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("\n".join(L) + "\n")
+    print(f"Report: {out.relative_to(PROJECT)}")
+    return 0
+
+
 def planner_action(pt, obs, mode):
     """The rule planner's next action for a simulated observation: the first play of its top plan, or end the turn."""
     if obs.get("choice"):  # the planner has no view on card choices yet: take the first options
@@ -860,6 +1074,20 @@ def main(argv=None):
     sw.add_argument("--rollouts", type=int, default=2)
     sw.add_argument("--only", help="substring of the encounter id")
     sw.add_argument("--deck", help="comma-separated card ids replacing the starting deck")
+    bl = sub.add_parser("baselines")
+    bl.set_defaults(fn=cmd_baselines)
+    bl.add_argument("--fights", type=int, default=12)
+    bl.add_argument("--seeds", type=int, default=3)
+    bl.add_argument("--rooms", default="Monster,Elite")
+    se = sub.add_parser("search")
+    se.set_defaults(fn=cmd_search)
+    se.add_argument("--fights", type=int, default=12, help="number of encounters")
+    se.add_argument("--seeds", type=int, default=2)
+    se.add_argument("--k", type=int, default=3, help="re-sampled worlds per candidate")
+    se.add_argument("--top", type=int, default=2, help="plans per planner mode")
+    se.add_argument("--mode", default="balanced")
+    se.add_argument("--rooms", default="Monster,Elite,Boss", help="room types of the encounters, comma-separated")
+    se.add_argument("--report", default="search-first-experiment.md")
     sb = sub.add_parser("sandbox")
     sb.set_defaults(fn=cmd_sandbox)
     sb.add_argument("--fights", type=int, default=20)

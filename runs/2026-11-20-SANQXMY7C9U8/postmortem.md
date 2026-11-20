@@ -5,6 +5,7 @@ Character Ironclad · A1 · Playbook v2.19 · Result: died on floor 17 to Ceremo
 ## Facts (from `facts.md`)
 - Floor 17, act 1. Elites killed: 3 (Byrdonis, Bygone Effigy, Phrog Parasite). Run time 150 min, 256 logged actions.
 - HP curve: 80/80 through floor 6; 63 after Byrdonis; 48 after Bygone Effigy; 42 after the Ruby Raiders; 30 after Phrog Parasite; rested to 54 (68%) before the boss; 0 on boss turn 7.
+- Damage in the 8 fights before the boss: 98 against a benchmark-median sum of 68.5 for the same encounters (`tools/journal.py summary`).
 - Fights above the benchmark p75: Slimes (floor 4, 6 vs 3.0), Byrdonis (23 vs 19.5), Slimes (floor 9, 15 vs 13.2), and the boss.
 - Potions: Ship in a Bottle (Byrdonis), Potion-Shaped Rock in four fights (Petrified Toad renews it every fight), Fysh Oil and Distilled Chaos (Phrog Parasite), Colorless Potion (boss). None held at death.
 - Errors and failed actions: `--tool-pick` passed to `tools/play_turn.py`, which does not accept it, so the next command played a Defend instead of the planned Strike (floor 4); two target indexes went stale after a kill (a step failed and was redone); one potion slot index assumed to shift (it does not). No reloads.
@@ -31,7 +32,7 @@ Also: the deck arrived at the boss with 10.8 block per turn. `tools/deck_check.p
 | Planner: Cinder exhausts a random card in hand; plan cards that must survive before it | Boss turn 2: Salvo exhausted | Removes a planning error worth about one card per Cinder play | `[OBS]` |
 | Planner: crossing Plow's threshold stuns Ceremonial Beast and cancels its attack that turn; value plans that cross it accordingly | Boss turn 4: intent changed to Stun after the second Strike | Prefers threshold-crossing lines that the current model scores as taking the full hit | `[OBS]` |
 | Knowledge: Molten Fist doubles the target's Vulnerable; Slow is ×(1 + 0.1 × cards played this turn) | Byrdonis turn 3; Bygone Effigy turn 2 | Correct damage in the planner and draft scorer (Molten Fist is tier D in the lists) | `[OBS]` |
-| Path planner: check why an extra elite raises the predicted boss arrival HP (68% vs 48% at floor 14) | Floor 14 map scores | Avoids elites taken at the H5 margin on a wrong estimate | `[HYPOTHESIS]` |
+| Path planner: check why an extra elite raises the predicted boss arrival HP (68% vs 48% at floor 14). First look: the figure follows the planner's own rest rule (low HP after the elite means a rest, higher HP after a hallway means a smith), so boss arrival HP alone is not a fair way to compare these two routes; show the expected HP before the rest site too | Floor 14 map scores | Avoids elites taken at the H5 margin on a misread figure | `[HYPOTHESIS]` |
 
 **Applied the same night (factual planner fixes, with tests in `tools/tests/test_plan_turn.py`):** Cinder is ordered after every other planned card; Plow is read as a stun threshold like Shriek. The other three rows remain proposals.
 

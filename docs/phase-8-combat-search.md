@@ -45,14 +45,14 @@
 > - [ ] `data/sim/benchmark-v1.json`: room-entry states from the replay corpus (P7.E2.S3): at least 30 hallway, 20 elite and 10 boss fights across the three acts, with the run context (act, floor, deck, relics, potions, HP).
 > - [ ] Exam seeds are excluded (ML-7). The file records the game build and fidelity version (ML-2).
 
-> **P8.E1.S2: Baseline policies in the simulator** · Size M · Status: Todo
+> **P8.E1.S2: Baseline policies in the simulator** · Size M · Status: In progress (2026-11-20: planner, greedy and random policies in `tools/sim.py baselines`; exploratory results on 36 fights from nothing, `reports/phase8/baselines.md`: planner won 22 (mean HP left 28.9), greedy 20 (24.5), random 3 (3.0); the benchmark-set run waits for P8.E1.S1)
 > *As the Agent, I want the current planner, a greedy policy and a random policy runnable inside the simulator, so that search has baselines.*
 >
 > **Acceptance criteria**
 > - [ ] `tools/sim.py` runs `plan_turn.py` as a policy (safe and balanced modes) through an adapter from the shared observation; greedy (best immediate damage-for-HP) and random policies too.
 > - [ ] Each baseline's results on the benchmark set are in `reports/phase8/baselines.md`.
 
-> **P8.E1.S3: Comparison protocol** · Size S · Status: Todo
+> **P8.E1.S3: Comparison protocol** · Size S · Status: In progress (2026-11-20: `templates/comparison.md` written; the first search experiment ran before it and is labelled exploratory)
 > *As the Player, I want comparisons fixed before they run, so that results are not cherry-picked (ML-10).*
 >
 > **Acceptance criteria**
@@ -61,7 +61,7 @@
 
 ### P8.E2: Search
 
-> **P8.E2.S1: Turn-level beam search with exact outcomes** · Size M · Status: Todo
+> **P8.E2.S1: Turn-level beam search with exact outcomes** · Size M · Status: Todo (exploratory precursor 2026-11-20: `tools/sim.py search`, flat Monte Carlo over the planner's candidate first actions with engine outcomes and planner rollouts on re-sampled worlds; `reports/phase8/search-first-experiment.md`: on 36 hallway and elite fights from nothing, search won 24 of 36 (mean HP left 32.5) against the planner's 22 (28.9); search was better in 23 fights, worse in 4, equal in 9 (sign test one-sided p = 0.0002; mean paired value difference 11.67, bootstrap 95% interval 4.06 to 22.00). Exploratory (not under the comparison protocol); about 10–50 s per fight in Python)
 > *As the Agent, I want the current planner's idea (search a turn's plays) run on the exact engine, so that the first gain needs no new algorithm.*
 >
 > **Acceptance criteria**

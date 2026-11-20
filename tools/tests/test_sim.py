@@ -33,6 +33,22 @@ class TestSimBridge(unittest.TestCase):
         o = obs([("STRIKE_IRONCLAD", 1, {"Damage": 6})], [dict(ENEMY)], choice={"kind": "FromCombatPile", "min": 1, "max": 1, "options": ["BASH", "DEFEND_IRONCLAD"]})
         self.assertEqual(sim.planner_action(pt, o, "safe"), {"type": "choose", "cards": [0]})
 
+    def test_search_value_and_action_matching(self):
+        won = {"status": "won", "combat": {"player": {"current_hp": 40}, "enemies": []}}
+        lost = {"status": "lost", "combat": {"player": {"current_hp": 0}, "enemies": [{"current_hp": 12}, {"current_hp": 0}]}}
+        self.assertEqual(sim._value(won), 40)
+        self.assertEqual(sim._value(lost), -112)        # closer losses score higher; dead enemies do not count
+        self.assertTrue(sim._same_action({"type": "play", "card": 1, "target": 0}, {"type": "play", "card": 1, "target": 0, "card_id": "X"}))
+        self.assertFalse(sim._same_action({"type": "play", "card": 1, "target": 0}, {"type": "play", "card": 1, "target": 1}))
+
+    def test_greedy_baseline_maps_targets_by_combat_index(self):
+        class FakeSim:
+            def legal(self):
+                return [{"type": "play", "card": 0, "target": 3}, {"type": "end_turn"}]
+        dead_first = [dict(ENEMY, index=2, current_hp=0, is_alive=False), dict(ENEMY, index=3)]
+        o = obs([("STRIKE_IRONCLAD", 1, {"Damage": 6})], dead_first)
+        self.assertEqual(sim.baseline_action(FakeSim(), pt, o, "greedy", None), {"type": "play", "card": 0, "target": 3})
+
     def test_brief(self):
         text = sim.brief(obs([("STRIKE_IRONCLAD", 1, {"Damage": 6})], [dict(ENEMY)]))
         self.assertIn("STRIKE_IRONCLAD(1)", text)
