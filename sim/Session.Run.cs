@@ -24,12 +24,14 @@ public sealed partial class Session
     RewardsSet _rewards;                       // the rewards set on offer, captured from the synchronizer
     object _rewardsRoom;                       // the room whose end-of-room rewards were offered already
     object _doneRoom;                          // the rest site, shop or treasure room that has been finished
-    bool _chestOpened;
+    object _chestRoom;                         // the treasure room whose chest has been opened
     Task _pending;                             // a game task still running from the last run-level action
-    readonly HashSet<Reward> _failedRewards = new();   // rewards a take attempt did not claim (no room, refused)
+    readonly HashSet<Reward> _failedRewards = new();   // rewards a take attempt did not claim (no room, refused, declined)
+    Reward _lastReward;                                // the reward whose selection is in progress
     public int Floor => Run?.TotalFloor ?? 0;
     public bool Victory;
     public bool TestHp;                        // the run used the test-only max-HP switch: flow test, not play
+    public string UnlockSource = "all";        // where the run's unlock state came from
 
     static bool _hooked;
 
@@ -53,11 +55,21 @@ public sealed partial class Session
         if (Run != null) { Rm.CleanUp(true); Ctx.Drain(); }
         Replay = null;
         Choices.Current = null;
-        _last = null; _pending = null; _rewards = null; _rewardsRoom = null; _doneRoom = null; _chestOpened = false;
+        _last = null; _pending = null; _rewards = null; _rewardsRoom = null; _doneRoom = null; _chestRoom = null;
         _failedRewards.Clear();
         Applied = 0; PlayerIndex = 0; Victory = false;
         var character = ById(ModelDb.AllCharacters, (string)spec["character"] ?? "IRONCLAD", "character");
-        var players = new List<Player> { Player.CreateForNewRun(character, MegaCrit.Sts2.Core.Unlocks.UnlockState.all, 1UL) };
+        // Unlocks decide which cards, relics and potions can appear (FI-5). Default: everything. With "unlocks_from":
+        // the unlock state stored in a recorded fight of the profile (the replay's run carries the player's unlocks).
+        var unlocks = MegaCrit.Sts2.Core.Unlocks.UnlockState.all;
+        UnlockSource = "all";
+        if (spec["unlocks_from"] != null)
+        {
+            var rec = global::Replay.Load((string)spec["unlocks_from"]);
+            unlocks = MegaCrit.Sts2.Core.Unlocks.UnlockState.FromSerializable(rec.serializableRun.Players[0].UnlockState);
+            UnlockSource = Path.GetFileName((string)spec["unlocks_from"]);
+        }
+        var players = new List<Player> { Player.CreateForNewRun(character, unlocks, 1UL) };
         var acts = ActModel.GetDefaultList().Select(a => a.ToMutable()).ToList();
         RunSeed = (string)spec["seed"] ?? "SIMRUN000001";
         Run = RunState.CreateForNewRun(players, acts, Array.Empty<ModifierModel>(), GameMode.Standard, (int?)spec["ascension"] ?? 0, RunSeed);
@@ -128,7 +140,9 @@ public sealed partial class Session
     List<MapPoint> NextPoints()
     {
         var here = Run.CurrentMapPoint;
-        if (here == null) return Run.Map.StartingMapPoint.Children.OrderBy(p => p.coord.col).ToList();
+        // At the start of acts 2 and 3 the player stands on the map before the act's first point, the Ancient.
+        // (Act 1 enters Neow directly.)
+        if (here == null) return new List<MapPoint> { Run.Map.StartingMapPoint };
         return here.Children.OrderBy(p => p.coord.col).ToList();
     }
 
@@ -180,7 +194,7 @@ public sealed partial class Session
                 break;
             }
             case "treasure":
-                if (!_chestOpened) acts.Add(new JsonObject { ["type"] = "open_chest" });
+                if (_chestRoom != Run.CurrentRoom) acts.Add(new JsonObject { ["type"] = "open_chest" });
                 else
                 {
                     var relics = Rm.TreasureRoomRelicSynchronizer.CurrentRelics;
@@ -210,9 +224,9 @@ public sealed partial class Session
 
     static string ShopLabel(MerchantEntry e) => e switch
     {
-        MerchantCardEntry c => "card:" + c.CreationResult.Card.Id.Entry,
-        MerchantRelicEntry r => "relic:" + r.Model.Id.Entry,
-        MerchantPotionEntry p => "potion:" + p.Model.Id.Entry,
+        MerchantCardEntry c => "card:" + (c.CreationResult?.Card?.Id.Entry ?? "sold"),
+        MerchantRelicEntry r => "relic:" + (r.Model?.Id.Entry ?? "sold"),
+        MerchantPotionEntry p => "potion:" + (p.Model?.Id.Entry ?? "sold"),
         _ => "removal",
     };
 
@@ -223,7 +237,16 @@ public sealed partial class Session
         if (type is "play" or "end_turn" or "potion" or "choose")
         {
             if (screen is not ("combat" or "choice")) throw new InvalidOperationException($"'{type}' is not possible on the {screen} screen");
-            if (screen == "choice" || type == "choose") { Choices.Answer(action["cards"]!.AsArray().Select(x => (int)x).ToList()); Ctx.Drain(); Settle(); return; }
+            if (screen == "choice" || type == "choose")
+            {
+                var kind = Choices.Current?.Kind;
+                var picks = action["cards"]!.AsArray().Select(x => (int)x).ToList();
+                Choices.Answer(picks);
+                Ctx.Drain(); Settle();
+                // a card reward closed without a pick is declined: it is not offered again
+                if (kind == "CardReward" && picks.Count == 0 && _lastReward != null) _failedRewards.Add(_lastReward);
+                return;
+            }
             Step(action);
             Settle();
             return;
@@ -233,6 +256,7 @@ public sealed partial class Session
             case "take_reward":
             {
                 var reward = _rewards.Rewards[(int)action["index"]];
+                _lastReward = reward;
                 Track(Rm.RewardsSetSynchronizer.SelectLocalReward(reward));
                 if (!reward.SuccessfullySelected && Choices.Current == null) _failedRewards.Add(reward);
                 break;
@@ -262,7 +286,7 @@ public sealed partial class Session
                 break;
             }
             case "open_chest":
-                _chestOpened = true;
+                _chestRoom = Run.CurrentRoom;
                 Track(((TreasureRoom)Run.CurrentRoom).DoNormalRewards());
                 break;
             case "pick_relic":
@@ -311,6 +335,7 @@ public sealed partial class Session
         o["run_seed_hidden"] = true;
         o["act"] = Run.CurrentActIndex + 1;
         o["floor"] = Run.TotalFloor;
+        o["act_floor"] = Run.ActFloor;
         o["room"] = Run.CurrentRoom?.GetType().Name;
         var me = Me;
         o["player"] = new JsonObject
@@ -321,6 +346,7 @@ public sealed partial class Session
             ["potions"] = new JsonArray(me.PotionSlots.Select(p => (JsonNode)(p?.Id.Entry)).ToArray()),
         };
         o["test_hp"] = TestHp;
+        o["unlocks"] = UnlockSource;
         o["player_index"] = PlayerIndex;
         o["players"] = Run.Players.Count;
         if (Choices.Current is { } pc)
@@ -352,7 +378,60 @@ public sealed partial class Session
                 o["next"] = new JsonArray(NextPoints().Select(p => (JsonNode)new JsonObject { ["type"] = p.PointType.ToString(), ["col"] = p.coord.col, ["row"] = p.coord.row }).ToArray());
                 o["at_boss"] = AtBoss;
                 break;
+            case "shop":
+            {
+                var inv = ((MerchantRoom)Run.CurrentRoom).GetLocalInventory();
+                o["shop"] = new JsonArray(inv.AllEntries.Select(e => (JsonNode)new JsonObject { ["item"] = ShopLabel(e), ["cost"] = e.Cost, ["stocked"] = e.IsStocked }).ToArray());
+                break;
+            }
+            case "treasure":
+                o["chest"] = new JsonArray((Rm.TreasureRoomRelicSynchronizer.CurrentRelics ?? Array.Empty<RelicModel>()).Select(r => (JsonNode)r.Id.Entry).ToArray());
+                break;
         }
+        // what the player sees on entering a fight: the encounter and its monsters
+        if (Run.CurrentRoom is CombatRoom room)
+        {
+            o["encounter"] = room.Encounter?.Id.Entry;
+            o["monsters"] = new JsonArray((room.CombatState?.Enemies ?? Enumerable.Empty<MegaCrit.Sts2.Core.Entities.Creatures.Creature>()).Select(c => (JsonNode)c.ModelId.Entry).ToArray());
+        }
+        if (Run.CurrentRoom is EventRoom er) o["event_id"] = er.CanonicalEvent?.Id.Entry;
         return o;
+    }
+
+    // Fidelity tests only (never a decision, docs/simulator-integrity.md FP-2): how many numbers each named random
+    // stream has produced so far, to find where a replay's random state drifts from the recorded run.
+    public JsonObject DebugRngCounters()
+    {
+        var f = typeof(MegaCrit.Sts2.Core.Random.Rng).GetField("_counter", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+        var o = new JsonObject();
+        foreach (var set in new object[] { Run.Rng, Me.PlayerRng })
+            foreach (var pr in set.GetType().GetProperties().Where(x => x.PropertyType == typeof(MegaCrit.Sts2.Core.Random.Rng)))
+                o[pr.Name] = (int)f.GetValue(pr.GetValue(set))!;
+        return o;
+    }
+
+    // The act map, as the player sees it on the map screen: every point, its type and the points it leads to.
+    public JsonObject MapView()
+    {
+        var map = Run.Map;
+        var pts = new JsonArray();
+        var all = map.GetAllMapPoints().ToList();
+        foreach (var extra in new[] { map.StartingMapPoint, map.BossMapPoint, map.SecondBossMapPoint })
+            if (extra != null && !all.Contains(extra)) all.Add(extra);   // the start (Ancient) and boss points sit outside the grid
+        foreach (var p in all)
+            pts.Add(new JsonObject { ["col"] = p.coord.col, ["row"] = p.coord.row, ["type"] = p.PointType.ToString(),
+                                     ["children"] = new JsonArray(p.Children.Select(c => (JsonNode)new JsonArray(c.coord.col, c.coord.row)).ToArray()) });
+        var start = map.StartingMapPoint;
+        return new JsonObject { ["act"] = Run.CurrentActIndex + 1, ["points"] = pts, ["start"] = new JsonArray(start.coord.col, start.coord.row),
+                                ["boss"] = new JsonArray(map.BossMapPoint.coord.col, map.BossMapPoint.coord.row),
+                                ["here"] = Run.CurrentMapPoint == null ? null : new JsonArray(Run.CurrentMapPoint.coord.col, Run.CurrentMapPoint.coord.row) };
+    }
+
+    // Moves to a given map point (used by the fidelity replay, which follows a recorded path).
+    public void MoveTo(int col, int row)
+    {
+        var pt = NextPoints().FirstOrDefault(p => p.coord.col == col && p.coord.row == row) ?? throw new ArgumentException($"({col},{row}) is not reachable from here");
+        _rewards = null;
+        Track(Rm.EnterMapCoord(pt.coord));
     }
 }

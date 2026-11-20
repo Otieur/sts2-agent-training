@@ -73,6 +73,13 @@ public static class Serve
                         reply["obs"] = s.RunObserve();
                         break;
                     case "run_observe": reply["obs"] = s.RunObserve(); break;
+                    case "map": reply["map"] = s.MapView(); break;
+                    case "debug_rng": reply["counters"] = s.DebugRngCounters(); break;   // fidelity tests only (FP-2)
+                    case "move_to":
+                        s.MoveTo((int)req["col"], (int)req["row"]);
+                        steps++;
+                        reply["obs"] = s.RunObserve();
+                        break;
                     case "encounters":
                         reply["encounters"] = new JsonArray(MegaCrit.Sts2.Core.Models.ModelDb.AllEncounters
                             .Select(e => (JsonNode)new JsonObject { ["id"] = e.Id.Entry, ["room_type"] = e.RoomType.ToString(), ["weak"] = e.IsWeak }).ToArray());

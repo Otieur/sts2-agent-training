@@ -413,6 +413,226 @@ def cmd_runs(a):
     return 0
 
 
+TYPE_MAP = {"ancient": "Ancient", "monster": "Monster", "unknown": "Unknown", "shop": "Shop", "rest_site": "RestSite",
+            "treasure": "Treasure", "elite": "Elite", "boss": "Boss"}
+
+
+def strip_id(x):
+    return str(x or "").split(".", 1)[-1]
+
+
+def find_path(mp, types):
+    """A path from the act's starting point whose point types follow `types` (the recorded floors after the Ancient)."""
+    pts = {(p["col"], p["row"]): p for p in mp["points"]}
+    start = tuple(mp["start"])
+
+    def dfs(at, k):
+        if k == len(types):
+            return []
+        for c in sorted(pts[at]["children"], key=lambda c: c[0]):
+            c = tuple(c)
+            if pts[c]["type"] == types[k]:
+                rest = dfs(c, k + 1)
+                if rest is not None:
+                    return [c] + rest
+        return None
+    return dfs(start, 0)
+
+
+def cmd_runcheck(a):
+    """Stage 3: a recorded run replayed from its seed in the simulator, following the recorded choices. Compares what
+    the game generated (map, encounters, card rewards, shop stock, chest relics, events, Ancient options) floor by floor.
+    Fights are played by the rule planner, so HP differs from the real run; the comparison is about generation."""
+    sys.path.insert(0, str(PROJECT / "tools"))
+    import random
+    import plan_turn as pt
+    rec = json.loads(Path(a.run_file).read_text())
+    seed, asc = rec["seed"], rec.get("ascension", 0)
+    floors = [f for act in rec["map_point_history"] for f in act]
+    acts_types = [[TYPE_MAP[f["map_point_type"]] for f in act] for act in rec["map_point_history"]]
+    rows = {}   # floor -> list of (check, ok, detail)
+
+    def note(fl, check, ok, detail=""):
+        rows.setdefault(fl, []).append((check, ok, detail))
+
+    rng = random.Random(0)
+    with Sim() as sim:
+        spec = {"seed": seed, "character": "IRONCLAD", "ascension": asc}
+        if a.test_max_hp:
+            spec["test_max_hp"] = a.test_max_hp
+        replays = sorted((REPLAYS / Path(a.run_file).parent.name).glob("*.mcr"))
+        if replays and not a.all_unlocks:
+            spec["unlocks_from"] = str(replays[0])   # the profile's unlock state at the time of the run (FI-5)
+        obs = sim.call(cmd="new_run", spec=spec, timeout=120)["obs"]
+        unlock_source = obs.get("unlocks")
+        path, path_act, used = [], 0, {}
+        steps = 0
+        while obs["screen"] != "game_over" and steps < 6000:
+            steps += 1
+            act_list = rec["map_point_history"][obs["act"] - 1] if obs["act"] <= len(rec["map_point_history"]) else []
+            k = obs["act_floor"] - 1
+            fl = sum(len(x) for x in rec["map_point_history"][:obs["act"] - 1]) + obs["act_floor"]   # floor number as recorded
+            r = act_list[k] if 0 <= k < len(act_list) else {"player_stats": [{}], "rooms": [{}], "map_point_type": "?"}
+            ps = r["player_stats"][0]
+            q = used.setdefault(fl, {"cards": [c for c in ps.get("card_choices", [])], "events": list(ps.get("event_choices", [])), "checked": set()})
+            scr = obs["screen"]
+            acts = sim.call(cmd="run_legal")["actions"]
+            if a.rng_trace and (fl, scr) != q.get("last_rng"):
+                q["last_rng"] = (fl, scr)
+                print(f"  [rng] floor {fl} {scr}: " + " ".join(f"{k}={v}" for k, v in sim.call(cmd="debug_rng")["counters"].items() if v))
+            if a.trace and fl in a.trace and scr != "combat":
+                print(f"  [floor {fl}] {scr}: event={obs.get('event', {}).get('options') if obs.get('event') else None} choice={obs.get('choice')} rewards={obs.get('rewards')} acts={[x.get('type') + ':' + str(x.get('card_id') or x.get('key') or x.get('reward') or '') for x in acts][:8]}")
+            if not acts:
+                note(fl, "stuck", False, scr); break
+            act = None
+            if "room" not in q["checked"] and scr != "map":
+                q["checked"].add("room")
+                want = strip_id(r["rooms"][0].get("model_id")) if r.get("rooms") else ""
+                got = obs.get("encounter") or obs.get("event_id") or ""
+                if want.startswith(("EVENT", )) or r["rooms"][0].get("room_type") in ("event", "monster", "elite", "boss"):
+                    note(fl, "room", want == got, f"recorded {want}, simulated {got}")
+            if scr == "event":
+                opts = obs["event"]["options"]
+                if obs["event"]["ancient"]:
+                    pick = next((x["choice"] for x in ps.get("relic_choices", []) if x.get("was_picked")), None)
+                    if "ancient" not in q["checked"]:
+                        q["checked"].add("ancient")
+                        offered = sorted(strip_id(x["TextKey"]) for x in ps.get("ancient_choice", []))
+                        note(fl, "ancient options", offered == sorted(o["relic"] or "" for o in opts), f"recorded {offered}, simulated {sorted(o['relic'] or '' for o in opts)}")
+                    idx = next((i for i, o in enumerate(opts) if o["relic"] == strip_id(pick)), 0)
+                else:
+                    idx = 0
+                    if q["events"]:
+                        key = q["events"][0]["title"]["key"].rsplit(".title", 1)[0]
+                        m = [i for i, o in enumerate(opts) if o["key"] == key]
+                        if m:
+                            idx = m[0]
+                            q["events"].pop(0)
+                act = next((x for x in acts if x.get("index") == idx and x["type"] == "event_option"), acts[0])
+            elif scr == "choice":
+                ch = obs["choice"]
+                labels = ch["options"]
+                want = None
+                if ch["kind"] == "CardReward":
+                    if "cards" not in q["checked"] and q["cards"]:
+                        offer = [strip_id(c["card"]["id"]) for c in q["cards"][:3]]
+                        shown = [x.rstrip("+") for x in labels if not x.startswith("alt:")]
+                        picked = next((strip_id(c["card"]["id"]) for c in q["cards"][:3] if c.get("was_picked")), None)
+                        # the run file lists the picked card first, the others in the order shown
+                        as_recorded = ([picked] + [x for x in shown if x != picked]) if picked in shown else shown
+                        note(fl, "card reward", offer == as_recorded, f"recorded {offer}, simulated {shown}")
+                        q["cards"] = q["cards"][3:]
+                        want = picked
+                    else:
+                        want = None
+                else:
+                    pool = [strip_id(x.get("id") if isinstance(x, dict) else x) for x in ps.get("upgraded_cards", []) + ps.get("cards_removed", [])]
+                    pool += [strip_id(x["original_card"]["id"]) for x in ps.get("cards_transformed", [])]
+                    pool += [strip_id(x["id"]) for x in ps.get("cards_gained", [])]
+                    pool += [strip_id(x["choice"]) for x in ps.get("relic_choices", []) if x.get("was_picked")]
+                    want = next((p for p in pool if any(l.rstrip("+") == p for l in labels)), None)
+                i = next((i for i, l in enumerate(labels) if l.rstrip("+") == want), None) if want else None
+                if i is not None:
+                    act = next((x for x in acts if x.get("cards") == [i]), acts[0])
+                else:
+                    act = next((x for x in acts if x.get("cards") == []), None) or acts[0]
+            elif scr == "rewards":
+                wanted_potions = {strip_id(x["choice"]) for x in ps.get("potion_choices", []) if x.get("was_picked")}
+                take = None
+                for x in acts:
+                    if x["type"] != "take_reward":
+                        continue
+                    rw = obs["rewards"][x["index"]]
+                    if rw["type"] == "PotionReward" and rw["detail"] not in wanted_potions:
+                        continue
+                    take = x
+                    break
+                act = take or next((x for x in acts if x["type"] == "skip_rewards"), acts[0])
+            elif scr == "combat":
+                act = run_policy(pt, obs, acts, rng)
+            elif scr == "rest":
+                want = (ps.get("rest_site_choices") or ["HEAL"])[0]
+                act = next((x for x in acts if str(x.get("option", "")).upper() == want), acts[0])
+            elif scr == "shop":
+                if "shop" not in q["checked"]:
+                    q["checked"].add("shop")
+                    stock = obs.get("shop", [])
+                    rel = sorted(s["item"][6:] for s in stock if s["item"].startswith("relic:"))
+                    pot = sorted(s["item"][7:] for s in stock if s["item"].startswith("potion:"))
+                    rr = sorted(strip_id(x["choice"]) for x in ps.get("relic_choices", []))
+                    rp = sorted(strip_id(x["choice"]) for x in ps.get("potion_choices", []))
+                    note(fl, "shop relics", rel == rr, f"recorded {rr}, simulated {rel}")
+                    note(fl, "shop potions", pot == rp, f"recorded {rp}, simulated {pot}")
+                    cards = sorted(s["item"][5:] for s in stock if s["item"].startswith("card:"))
+                    # the run file keeps the shop cards not bought in card_choices and the bought ones in cards_gained
+                    rc_ = sorted([strip_id(c["card"]["id"]) for c in ps.get("card_choices", [])] + [strip_id(c["id"]) for c in ps.get("cards_gained", [])])
+                    if rc_:
+                        note(fl, "shop cards", cards == rc_, f"recorded {rc_}, simulated {cards}")
+                        q["cards"] = []
+                buys = {"relic:" + strip_id(x) for x in ps.get("bought_relics", [])} | {"potion:" + strip_id(x) for x in ps.get("bought_potions", [])}
+                buys |= {"card:" + strip_id(x) for x in ps.get("bought_colorless", [])}
+                buys |= {"card:" + strip_id(x["id"]) for x in ps.get("cards_gained", [])}   # character cards bought here
+                if ps.get("cards_removed"):
+                    buys.add("removal")
+                done = q.setdefault("bought", set())
+                act = next((x for x in acts if x["type"] == "buy" and x["item"] in buys - done), None)
+                if act:
+                    done.add(act["item"])
+                else:
+                    act = next(x for x in acts if x["type"] == "leave")
+            elif scr == "treasure":
+                if any(x["type"] == "open_chest" for x in acts):
+                    act = next(x for x in acts if x["type"] == "open_chest")
+                else:
+                    if "chest" not in q["checked"]:
+                        q["checked"].add("chest")
+                        rr = sorted(strip_id(x["choice"]) for x in ps.get("relic_choices", []))
+                        note(fl, "chest relics", sorted(obs.get("chest", [])) == rr, f"recorded {rr}, simulated {sorted(obs.get('chest', []))}")
+                    pick = next((strip_id(x["choice"]) for x in ps.get("relic_choices", []) if x.get("was_picked")), None)
+                    act = next((x for x in acts if x.get("relic") == pick), None) or next(x for x in acts if x["type"] == "leave")
+            elif scr == "map":
+                if any(x["type"] == "next_act" for x in acts):
+                    act = next(x for x in acts if x["type"] == "next_act")
+                else:
+                    if path_act != obs["act"]:
+                        mp = sim.call(cmd="map")["map"]
+                        path = find_path(mp, acts_types[obs["act"] - 1][1:]) or []
+                        if path and mp.get("here") is None:
+                            path = [tuple(mp["start"])] + path   # acts 2 and 3: walk onto the Ancient first
+                        note(fl, f"act {obs['act']} map path", bool(path), f"{len(path)} floors matching the recorded room types")
+                        path_act = obs["act"]
+                    if path:
+                        c, rrow = path.pop(0)
+                        obs = sim.call(cmd="move_to", col=c, row=rrow, timeout=120)["obs"]
+                        continue
+                    act = acts[0]
+            try:
+                obs = sim.call(cmd="run_step", action=act or acts[0], timeout=120)["obs"]
+            except SimError as e:
+                note(fl, "step", False, str(e)[:160])
+                break
+        final = obs
+    checks = [(fl, c, ok, d) for fl in sorted(rows) for c, ok, d in rows[fl]]
+    good = sum(1 for x in checks if x[2])
+    REPORTS.mkdir(parents=True, exist_ok=True)
+    L = ["# Run-level fidelity: a recorded run replayed from its seed", "",
+         f"Generated by `tools/sim.py runcheck` on {time.strftime('%Y-%m-%d %H:%M')}. Recorded run: `{Path(a.run_file).name}` (seed {seed}, A{asc}, "
+         f"{len(floors)} floors, won). The simulator starts a new run from the same seed and follows the recorded choices (Ancient relic, path, "
+         "event options, card picks, rest-site choices, purchases, chest relic). Fights are played by the rule planner, so HP and the course "
+         "of each fight differ from the real run; the checks compare what the game generated." +
+         (f" **Flow aid: started with max HP {a.test_max_hp} (test-only switch) so the replay is not cut short by a lost fight.**" if a.test_max_hp else ""), "",
+         f"Unlock state: {unlock_source}.", "",
+         f"**{good} of {len(checks)} checks match.** Simulated run ended on floor {final['floor']} ({final['screen']}).", "",
+         "| Floor | Check | Match | Detail |", "|---|---|---|---|"]
+    L += [f"| {fl} | {c} | {'yes' if ok else '**no**'} | {d} |" for fl, c, ok, d in checks]
+    (REPORTS / "run-fidelity.md").write_text("\n".join(L) + "\n")
+    for fl, c, ok, d in checks:
+        if not ok:
+            print(f"floor {fl}: {c} differs: {d}")
+    print(f"{good} of {len(checks)} checks match; simulated run ended on floor {final['floor']} ({final['screen']}). Report: reports/phase7/run-fidelity.md")
+    return 0 if good == len(checks) else 1
+
+
 def cmd_fidelity(a):
     """P7.E5.S1: replay every recorded fight in fidelity mode and compare the host's states with the game's."""
     files = sorted(REPLAYS.glob("*/*.mcr"))
@@ -464,6 +684,13 @@ def cmd_fidelity(a):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
+    rc = sub.add_parser("runcheck")
+    rc.set_defaults(fn=cmd_runcheck)
+    rc.add_argument("run_file", nargs="?", default=str(PROJECT / "runs" / "2026-11-19-1ZWEN4BFQUZL" / "run.run"))
+    rc.add_argument("--test-max-hp", type=int)
+    rc.add_argument("--all-unlocks", action="store_true", help="ignore the profile's unlock state from its recorded fights")
+    rc.add_argument("--trace", type=int, nargs="*", help="print every non-combat decision on these floors")
+    rc.add_argument("--rng-trace", action="store_true", help="fidelity debugging: print the random-stream counters at each screen")
     rp = sub.add_parser("runs")
     rp.set_defaults(fn=cmd_runs)
     rp.add_argument("--count", type=int, default=5)
