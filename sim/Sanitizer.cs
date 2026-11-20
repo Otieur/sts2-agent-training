@@ -73,10 +73,10 @@ public static class Sanitizer
             RandomField.SetValue(gens[i], new MegaRandom(Mix(sampleSeed, (ulong)i + 1)));
             CounterField.SetValue(gens[i], 0);
         }
-        var me = s.Run.Players[0];
-        var draw = me.PlayerCombatState.DrawPile;
-        if (draw.Cards.Count > 1)
-            draw.RandomizeOrderInternal(me, new Rng(Mix(sampleSeed, 0xD1CEUL)), MegaCrit.Sts2.Core.Combat.CombatManager.Instance.DebugOnlyGetState());
+        // every player's draw order is hidden: re-sampled, keeping only the positions the player knows (FP-5)
+        for (var k = 0; k < s.Run.Players.Count; k++)
+            if (s.Run.Players[k].PlayerCombatState?.DrawPile is { } draw)
+                DrawKnowledge.Resample(draw, Mix(sampleSeed, 0xD1CEUL + (ulong)k));
         LastCount = gens.Count;
         LastMs = sw.Elapsed.TotalMilliseconds;
     }

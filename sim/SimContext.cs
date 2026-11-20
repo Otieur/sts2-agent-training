@@ -24,12 +24,19 @@ public sealed class SimContext : SynchronizationContext
     public void RunUntil(Task t, string what)
     {
         var idle = System.Diagnostics.Stopwatch.StartNew();
+        var total = System.Diagnostics.Stopwatch.StartNew();
+        long idleMs = 0;
         while (!t.IsCompleted)
         {
-            if (PumpOne()) { idle.Restart(); continue; }
+            if (PumpOne()) { idleMs += idle.ElapsedMilliseconds; idle.Restart(); continue; }
             if (idle.ElapsedMilliseconds > 3000) throw new TimeoutException($"stuck: '{what}' is waiting for something that never completes (status {t.Status})");
             Thread.Yield();
         }
+        idleMs += idle.ElapsedMilliseconds;
+        // waits that idled on something outside the host (a real-time timer): worth finding, the host never needs them
+        if (idleMs > 20) { SlowWaits.Add($"{what}: {idleMs} ms idle of {total.ElapsedMilliseconds} ms"); if (SlowWaits.Count > 50) SlowWaits.RemoveAt(0); }
         t.GetAwaiter().GetResult();
     }
+
+    public readonly List<string> SlowWaits = new();
 }

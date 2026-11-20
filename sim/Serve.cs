@@ -4,7 +4,7 @@
 //
 // Requests: {"cmd":"load","path":..} · {"cmd":"reset","events":k,"seed":n|null} · {"cmd":"observe"} · {"cmd":"legal"}
 //           {"cmd":"step","action":{..}} · {"cmd":"hidden"} (tests only) · {"cmd":"rollout","policy":"first"|"random","seed":n,"max_steps":m}
-//           {"cmd":"stats"} · {"cmd":"quit"}
+//           {"cmd":"resample","sample_seed":n} · {"cmd":"snapshot"} · {"cmd":"restore","id":k} · {"cmd":"stats"} · {"cmd":"quit"}
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -16,6 +16,14 @@ public static class Serve
     {
         try { Stages.Boot(false); Choices.Install(); Host.InstallStubs(); } catch (Stages.StageFailed) { return 1; }
         if (!args.Contains("log")) Stubs.CaptureLog();
+        // debugging aid: SIM_DEBUG_NRE=1 prints the frames (with IL offsets) of every NullReferenceException to stderr
+        if (Environment.GetEnvironmentVariable("SIM_DEBUG_NRE") == "1")
+            AppDomain.CurrentDomain.FirstChanceException += (_, e) =>
+            {
+                if (e.Exception is not NullReferenceException) return;
+                var st = new System.Diagnostics.StackTrace(e.Exception, false);
+                Console.Error.WriteLine("NRE: " + string.Join(" <- ", st.GetFrames().Take(5).Select(f => $"{f.GetMethod()?.DeclaringType?.Name}.{f.GetMethod()?.Name}@IL{f.GetILOffset():X4}")));
+            };
         var s = new Session();
         SynchronizationContext.SetSynchronizationContext(s.Ctx);
         var info = Path.Combine(Path.GetDirectoryName(Program.GameDir.TrimEnd('/'))!, "release_info.json");
@@ -87,26 +95,51 @@ public static class Serve
                     case "observe": reply["obs"] = s.Observe(); break;
                     case "legal": reply["actions"] = s.Legal(); break;
                     case "step":
+                    {
+                        var errors = Stubs.ExceptionCount;
                         s.Step(req["action"]!);
+                        s.NoteStep(req["action"]!);
                         steps++;
+                        // a game exception the game caught and only logged (FI-7b): the step is reported as failed
+                        if (Stubs.ExceptionCount != errors) throw new InvalidOperationException("game exception during the step: " + Stubs.LastException);
                         reply["obs"] = s.Observe();
                         break;
-                    case "hidden": reply["hidden"] = s.Hidden(); break;
+                    }
+                    case "hidden": reply["hidden"] = s.Hidden(); break;   // tests only
+                    case "resample":                                       // decision mode: a new sample of the hidden state
+                        if (!s.Sanitized) throw new InvalidOperationException("resample works on a sanitized (decision-mode) state only");
+                    {
+                        var seed = (ulong)(req["sample_seed"]?.GetValue<long>() ?? 1L);
+                        Sanitizer.Apply(s, seed);
+                        s.NoteResample(seed);
+                        reply["generators_reseeded"] = Sanitizer.LastCount;
+                        break;
+                    }
+                    case "snapshot": reply["id"] = s.Snapshot(); break;          // P7.E4.S4: decision-mode fights only
+                    case "restore":
+                        s.Restore((int)req["id"]);
+                        reply["obs"] = s.Observe();
+                        reply["restore_ms"] = s.LastRestoreMs;
+                        break;
                     case "selfcheck": reply["result"] = s.OwnActionsReplay(); break;
                     case "rollout":
                     {
                         var rng = new Random((int)(req["seed"] ?? 0));
                         var max = (int)(req["max_steps"] ?? 400);
                         var n = 0;
+                        var errors = Stubs.ExceptionCount;
                         while (n < max && s.Status() == "in_progress" && !s.Blocked)
                         {
                             var acts = s.Legal();
                             if (acts.Count == 0) break;
                             var pick = (string)req["policy"] == "random" ? acts[rng.Next(acts.Count)]! : acts[0]!;
                             s.Step(pick);
+                            s.NoteStep(pick);
                             n++; steps++;
                         }
                         reply["steps"] = n;
+                        reply["game_exceptions"] = Stubs.ExceptionCount - errors;
+                        if (Stubs.ExceptionCount != errors) reply["last_exception"] = Stubs.LastException;
                         reply["obs"] = s.Observe();
                         break;
                     }
@@ -118,6 +151,10 @@ public static class Serve
                     case "stats":
                         reply["steps"] = steps; reply["resets"] = resets; reply["engine_calls"] = Stubs.TotalCalls;
                         reply["managed_mb"] = GC.GetTotalMemory(false) / 1048576; reply["sanitize_ms"] = Sanitizer.LastMs;
+                        reply["draw_samples"] = DrawKnowledge.Samples; reply["draw_rejections"] = DrawKnowledge.Rejections;
+                        reply["draw_fallbacks"] = DrawKnowledge.Fallbacks; reply["draw_last_fallback"] = DrawKnowledge.LastFallback;
+                        reply["game_exceptions"] = Stubs.ExceptionCount;
+                        reply["slow_waits"] = new JsonArray(s.Ctx.SlowWaits.TakeLast(10).Select(x => (JsonNode)x).ToArray());
                         break;
                     case "quit": Reply(reply); return 0;
                     default: throw new ArgumentException("unknown cmd");

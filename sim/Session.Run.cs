@@ -5,8 +5,8 @@
 // EnterAct(0). After that the host never touches game state directly: every step goes through the same game calls the
 // interface would make (the event, rest-site, rewards and treasure synchronizers, which are also the co-op paths).
 //
-// Screens: combat, choice (any card, relic or bundle pick), rewards, event (the Ancient is an event), rest, shop,
-// treasure, map, game_over. The policy sees the screen, its options and the observation; it answers with an action.
+// Screens: combat, choice (any card, relic or bundle pick), minigame (the Crystal Sphere event), rewards, event (the
+// Ancient is an event), rest, shop, treasure, map, game_over. The policy sees the screen, its options and the observation; it answers with an action.
 using System.Text.Json.Nodes;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Merchant;
@@ -25,7 +25,9 @@ public sealed partial class Session
     object _rewardsRoom;                       // the room whose end-of-room rewards were offered already
     object _doneRoom;                          // the rest site, shop or treasure room that has been finished
     object _chestRoom;                         // the treasure room whose chest has been opened
+    object _proceededRoom;                     // the combat room whose rewards screen has been closed
     Task _pending;                             // a game task still running from the last run-level action
+    Task _eventTask;                           // the event options' task from the last event_option
     readonly HashSet<Reward> _failedRewards = new();   // rewards a take attempt did not claim (no room, refused, declined)
     Reward _lastReward;                                // the reward whose selection is in progress
     public int Floor => Run?.TotalFloor ?? 0;
@@ -55,8 +57,10 @@ public sealed partial class Session
         if (Run != null) { Rm.CleanUp(true); Ctx.Drain(); }
         Replay = null;
         Choices.Current = null;
-        _last = null; _pending = null; _rewards = null; _rewardsRoom = null; _doneRoom = null; _chestRoom = null;
+        _last = null; _pending = null; _eventTask = null; _rewards = null; _rewardsRoom = null; _doneRoom = null; _chestRoom = null; _proceededRoom = null;
         _failedRewards.Clear();
+        Choices.Minigame = null; Choices.Current = null;
+        ForgetOrigin();
         Applied = 0; PlayerIndex = 0; Victory = false;
         var character = ById(ModelDb.AllCharacters, (string)spec["character"] ?? "IRONCLAD", "character");
         // Unlocks decide which cards, relics and potions can appear (FI-5). Default: everything. With "unlocks_from":
@@ -75,6 +79,7 @@ public sealed partial class Session
         Run = RunState.CreateForNewRun(players, acts, Array.Empty<ModifierModel>(), GameMode.Standard, (int?)spec["ascension"] ?? 0, RunSeed);
         Rm.SetUpNewSingleplayer(Run, false, null);
         Rm.CombatStateSynchronizer.IsDisabled = true;
+        Rm.CombatReplayWriter.IsEnabled = false;   // in-memory fight recording: never written by the host, pure cost
         Rm.ChecksumTracker.IsEnabled = false;
         Ctx.RunUntil(Rm.FinalizeStartingRelics(), "FinalizeStartingRelics");
         Rm.Launch();
@@ -119,9 +124,17 @@ public sealed partial class Session
         if (Victory) return "game_over";
         if (Me.Creature.IsDead || Rm.IsGameOver || Run.IsGameOver) return "game_over";
         if (Choices.Current != null) return "choice";
+        if (Choices.Minigame is { IsFinished: false }) return "minigame";
         var room = Run.CurrentRoom;
         if (room is CombatRoom && CombatManager.Instance.IsInProgress) return "combat";
         if (_rewards != null && !Rm.RewardsSetSynchronizer.IsRewardsSetCompleted(_rewards)) return "rewards";
+        // The rewards of this combat room are done (or there were none): the interface's proceed button runs
+        // ProceedFromTerminalRewardsScreen once, which also returns to the parent event after an event's combat.
+        if (room is CombatRoom && _rewardsRoom == room && _proceededRoom != room && !CombatManager.Instance.IsInProgress)
+        {
+            FinishRewards();
+            return Screen();
+        }
         if (room is CombatRoom cr && _rewardsRoom != room && !CombatManager.Instance.IsInProgress)
         {
             _rewardsRoom = room;
@@ -129,6 +142,9 @@ public sealed partial class Session
             Track(MegaCrit.Sts2.Core.Commands.RewardsCmd.OfferForRoomEnd(Me, cr));
             return Screen();
         }
+        // an event option still running with nothing for the player to decide: offering the options again would let a
+        // driver pick into an unfinished option, so the host says it is blocked (a missing stub; see diag)
+        if (room is EventRoom && _eventTask is { IsCompleted: false }) return "blocked";
         if (room is EventRoom && Rm.EventSynchronizer.GetLocalEvent() is { IsFinished: false }) return "event";
         if (room is RestSiteRoom && _doneRoom != room) return "rest";
         if (room is MerchantRoom && _doneRoom != room) return "shop";
@@ -155,6 +171,19 @@ public sealed partial class Session
         switch (Screen())
         {
             case "combat": case "choice": return Legal();
+            case "minigame":
+            {
+                // Crystal Sphere: uncover cells with the small or the big tool until the divinations run out
+                var g = Choices.Minigame!;
+                // small tool: a hidden cell; big tool: any cell with a hidden cell in or around it
+                for (var x = 0; x < g.GridSize.X; x++)
+                    for (var y = 0; y < g.GridSize.Y; y++)
+                        if (g.cells[x, y].IsHidden) acts.Add(new JsonObject { ["type"] = "divine", ["tool"] = "Small", ["x"] = x, ["y"] = y });
+                for (var x = 0; x < g.GridSize.X; x++)
+                    for (var y = 0; y < g.GridSize.Y; y++)
+                        if (HiddenAround(g, x, y)) acts.Add(new JsonObject { ["type"] = "divine", ["tool"] = "Big", ["x"] = x, ["y"] = y });
+                break;
+            }
             case "rewards":
             {
                 var list = _rewards.Rewards;
@@ -215,6 +244,17 @@ public sealed partial class Session
         return acts;
     }
 
+    static bool HiddenAround(MegaCrit.Sts2.Core.Events.Custom.CrystalSphereEvent.CrystalSphereMinigame g, int x, int y)
+    {
+        for (var dx = -1; dx <= 1; dx++)
+            for (var dy = -1; dy <= 1; dy++)
+            {
+                int a = x + dx, b = y + dy;
+                if (a >= 0 && b >= 0 && a < g.GridSize.X && b < g.GridSize.Y && g.cells[a, b].IsHidden) return true;
+            }
+        return false;
+    }
+
     void AddDiscards(JsonArray acts)
     {
         var slots = Me.PotionSlots;
@@ -232,8 +272,36 @@ public sealed partial class Session
 
     public void RunStep(JsonNode action)
     {
+        var errors = Stubs.ExceptionCount;
+        try { RunStepInner(action); }
+        finally
+        {
+            // A game exception that the game caught and only logged leaves the run in a state the real game would not
+            // reach (an option that silently did nothing, a turn loop that died). Report it rather than let a driver retry.
+            if (Stubs.ExceptionCount != errors) LastStepError = Stubs.LastException;
+        }
+        if (Stubs.ExceptionCount != errors) throw new InvalidOperationException("game exception during the step: " + Stubs.LastException);
+    }
+
+    public string LastStepError = "";
+
+    void RunStepInner(JsonNode action)
+    {
         var type = (string)action["type"];
         var screen = Screen();
+        if (type == "divine")
+        {
+            if (screen != "minigame") throw new InvalidOperationException($"'divine' is not possible on the {screen} screen");
+            var g = Choices.Minigame!;
+            var tool = Enum.Parse<MegaCrit.Sts2.Core.Events.Custom.CrystalSphereEvent.CrystalSphereMinigame.CrystalSphereToolType>((string)action["tool"]);
+            int cx = (int)action["x"], cy = (int)action["y"];
+            var cell = g.cells[cx, cy];
+            if (tool == MegaCrit.Sts2.Core.Events.Custom.CrystalSphereEvent.CrystalSphereMinigame.CrystalSphereToolType.Big ? !HiddenAround(g, cx, cy) : !cell.IsHidden)
+                throw new ArgumentException("nothing hidden there");
+            g.SetTool(tool);
+            Track(g.CellClicked(cell));
+            return;
+        }
         if (type is "play" or "end_turn" or "potion" or "choose")
         {
             if (screen is not ("combat" or "choice")) throw new InvalidOperationException($"'{type}' is not possible on the {screen} screen");
@@ -273,7 +341,8 @@ public sealed partial class Session
             case "event_option":
                 Rm.EventSynchronizer.ChooseLocalOption((int)action["index"]);
                 Ctx.Drain();
-                Track(Rm.EventSynchronizer.AwaitPendingOptionTasks());
+                _eventTask = Rm.EventSynchronizer.AwaitPendingOptionTasks();
+                Track(_eventTask);
                 break;
             case "rest_option":
                 Track(Rm.RestSiteSynchronizer.ChooseLocalOption((int)action["index"]));
@@ -318,6 +387,8 @@ public sealed partial class Session
     // After the last reward is taken or the set is skipped, the interface's proceed button calls this.
     void FinishRewards()
     {
+        if (_proceededRoom == Run.CurrentRoom) return;
+        _proceededRoom = Run.CurrentRoom;
         _rewards = null;
         Track(Rm.ProceedFromTerminalRewardsScreen());
     }
@@ -353,6 +424,22 @@ public sealed partial class Session
             o["choice"] = new JsonObject { ["kind"] = pc.Kind, ["min"] = pc.Min, ["max"] = pc.Max, ["options"] = new JsonArray(pc.Labels().Select(x => (JsonNode)x).ToArray()) };
         switch (screen)
         {
+            case "minigame":
+            {
+                // only what the screen shows: uncovered cells and what lies on them, never the hidden item positions (FP-1)
+                var g = Choices.Minigame!;
+                var shown = new JsonArray();
+                for (var x = 0; x < g.GridSize.X; x++)
+                    for (var y = 0; y < g.GridSize.Y; y++)
+                        if (!g.cells[x, y].IsHidden)
+                            shown.Add(new JsonObject { ["x"] = x, ["y"] = y, ["item"] = g.cells[x, y].Item?.GetType().Name.Replace("CrystalSphere", "") });
+                o["minigame"] = new JsonObject
+                {
+                    ["id"] = "CRYSTAL_SPHERE", ["divinations"] = g.DivinationCount, ["width"] = g.GridSize.X, ["height"] = g.GridSize.Y,
+                    ["uncovered"] = shown,
+                };
+                break;
+            }
             case "rewards":
                 o["rewards"] = new JsonArray(_rewards.Rewards.Select(r => (JsonNode)new JsonObject
                 {

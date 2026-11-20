@@ -23,6 +23,12 @@
 - Run-level code goes through the game's own multiplayer-capable paths (the action queue, the choice synchronizer), not single-player shortcuts.
 - When a single-player milestone works, note in this log what a two-player version would need, and try a two-player smoke test where it is cheap.
 
+### What each milestone needs for two players (notes, 2026-11-20)
+- **Fights (replay and decision mode):** the session already indexes the acting player (`PlayerIndex`), observations carry `player_index` and `players`, the sanitizer re-samples every player's draw pile, and the replay path applies recorded events for any player. Missing: a recorded co-op fight to test it (needs a co-op session with the Player).
+- **Card choices:** now answered through the game's local selector, which the game consults only for the local player and then syncs through `PlayerChoiceSynchronizer`; a teammate's choices arrive as remote choices. This is the co-op path, not a single-player shortcut.
+- **Run level:** every room action goes through the multiplayer-capable synchronizers (events, rest sites, rewards, treasure, act changes, map). Missing: a two-player run in one process. `RunManager.SetUpNewMultiplayer` needs an `INetHostGameService`; a host-side service that delivers the second player's actions as if from a client (our policy playing both seats, or the Agent's seat against recorded teammate input) is the next step. Not cheap tonight; not started.
+- **Decision rules:** whatever the game does not show of the teammate (at least their draw order; whether their hand is visible is to be checked in the game) stays out of the Agent's observation (FP-1). To check when the two-player host exists.
+
 ## Stages
 | # | Stage | Done when | Status |
 |---|---|---|---|
@@ -36,7 +42,7 @@
 | 7 | Morning report | `docs/overnight-report-2026-11-20.md` | Todo |
 
 ## Resume here
-Stage 2: a new run from a seed. The run is created the way `NGame.StartNewSingleplayerRun` and `NGame.StartRun` do it (`Player.CreateForNewRun`, `RunState.CreateForNewRun`, `RunManager.SetUpNewSingleplayer`, `FinalizeStartingRelics`, `Launch`, `EnterAct(0)`). The Ancient is an `AncientEventModel` (an event). Next: how the game applies event options, map moves (`MoveToMapCoordAction` already runs on the test path), rewards, rest sites, shops and treasure; the STS2-Agent mod's `GameActionService.*` shows which game calls it uses in the real game.
+Stages 4 and 6 are being closed (see Progress). Next: commit and push, then stage 5 (real A1 run on profile 2: `modded/profile.save` says `last_profile_id: 2` and profile 2 has no unfinished run; launch through Steam, check `tools/sts.py health`, then `docs/runbooks/start-run.md`).
 
 ## Progress
 | Time | What | Result |

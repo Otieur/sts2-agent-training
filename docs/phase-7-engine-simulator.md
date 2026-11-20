@@ -166,7 +166,7 @@
 > - [ ] Known calls covered: `Godot.Time.GetTicksMsec` (`CardModel.OnPlayWrapper`), timers in `Cmd.Wait`, `ActionExecutor`, `RollingBoulderPower.AfterPlayerTurnStart`, `LordsParasol.PurchaseEverything`, node lookups in effects.
 > - [ ] Any call that cannot be made logic-neutral is a blocker, reported in the spike report.
 
-> **P7.E3.S3: Sandbox for saves, achievements, telemetry and Steam** · Size M · Status: In progress (2026-11-19: sandbox HOME, save, progress and replay writes stubbed; 0 files changed under the save folder and install in every run so far, checked by hand; no automated test, network not checked)
+> **P7.E3.S3: Sandbox for saves, achievements, telemetry and Steam** · Size M · Status: In progress (2026-11-20: sandbox HOME; stubs for every save, progress, run-history and replay write, save-file deletion, telemetry uploads (`MetricUtilities`), crash reports (`SentryService`), achievements, Steam stats and rich presence, daily scores; 0 files changed under the save folder and install across every host run so far. Automated 2026-11-20: `tools/sim.py sandbox` hashes the save folder before and after 20 fights from nothing and 5 whole runs (1,291 files unchanged), checks the sandbox home stays empty, and polls the host process with `lsof -i` every 0.5 s (27 polls, no socket): 3 of 3)
 > *As the Player, I want the simulator unable to touch my saves, achievements or the developer's servers, so that experiments are harmless (SA-1 to SA-4).*
 >
 > **Acceptance criteria**
@@ -189,7 +189,7 @@
 
 ### P7.E4: Combat interface
 
-> **P7.E4.S1: Load a fight** · Size M · Status: In progress (2026-11-19: from a replay; from a room-entry save copy not yet)
+> **P7.E4.S1: Load a fight** · Size M · Status: Done (2026-11-20: from a replay, and from nothing: `new_fight` builds a new run for any seed, deck, relics, potions and HP and enters any encounter; 85 of 85 encounters start and finish, `reports/phase7/encounter-sweep.md`)
 > *As the Agent, I want to start a simulated fight from a recorded room entry or from my own save copy, with the right unlocks and progress, so that generation inside the fight matches the game (FI-5, FI-6).*
 >
 > **Acceptance criteria**
@@ -202,7 +202,7 @@
 > **Acceptance criteria**
 > - [ ] `tools/sim.py` holds the table; a test maps every id in the live fixtures (`tools/tests/fixtures/live/`) and the replay corpus without a miss.
 
-> **P7.E4.S3: Legal actions and stepping** · Size L · Status: In progress (2026-11-20: `sim/Session.cs` and `sim/Choices.cs`: card plays with targets, end of turn, card choices; a replay driven by these actions ends exactly as recorded (39 of 45 events); potions are not steppable, other prompts are reported as blocked, and the legal list is not yet compared with the live game's)
+> **P7.E4.S3: Legal actions and stepping** · Size L · Status: Done for single-player (2026-11-20: card plays with targets, potions, discarding potions, end of turn, every card, relic and bundle choice; outside fights: rewards, events, rest sites, shops, treasure, map moves, act changes, the Crystal Sphere minigame. Card selections go through the game's own local selector (`CardSelectCmd.PushSelector`, local only), so the game computes the options and limits itself and syncs the answer as in co-op; this fixed enchant, removal and transform options that the host had approximated)
 > *As Phase 8 code, I want to list the legal actions, apply one and get the new observation, so that search can explore a fight.*
 >
 > **Acceptance criteria**
@@ -210,7 +210,7 @@
 > - [ ] Each step returns the observation (through the shared encoder, E6.S5), the events, and a status (EN-5).
 > - [ ] The legal-action list equals the live game's on the same state, tested on recorded fights.
 
-> **P7.E4.S4: Branching** · Size M · Status: In progress (2026-11-20: branching by replay from room entry, `reset(events, seed)`, 3–14 ms set-up plus the prefix; cloning live objects not started)
+> **P7.E4.S4: Branching** · Size M · Status: In progress (2026-11-20: branching by replay from room entry, `reset(events, seed)`, 3–14 ms set-up plus the prefix. Snapshot and restore by recipe (`sim/Session.Clone.cs`: origin plus the decision-mode steps and re-samples since): `tools/sim.py clone` restores 12 of 12 fights exactly (observation, draw order, every generator) and the same line then gives the same result; a restore of a fight from nothing takes a median 289 ms, too slow for search, being profiled. Cloning live objects not started. Run-level states are refused until FP-16's re-sampling exists)
 > *As Phase 8 code, I want to branch a fight at any point cheaply, so that search can try many lines (EN-2, EN-3).*
 >
 > **Acceptance criteria**
@@ -264,12 +264,12 @@
 
 ### P7.E6: Fair-play layer
 
-> **P7.E6.S1: Mode separation and the state sanitizer** · Size M · Status: In progress (2026-11-20: `sim/Sanitizer.cs`; `Step` refuses an unsanitized state; the inventory of pre-rolled hidden state (OQ7.3) is open)
+> **P7.E6.S1: Mode separation and the state sanitizer** · Size M · Status: In progress (2026-11-20: `sim/Sanitizer.cs`; `Step` refuses an unsanitized state; inventory of pre-rolled hidden state done: FP-16)
 > *As the Player, I want decisions made only from what a player could see, so that the Agent's results mean something (FP-1, FP-3, FP-15).*
 >
 > **Acceptance criteria**
 > - [ ] Fidelity mode and decision mode have separate entry points; decision mode refuses input that has not passed the sanitizer.
-> - [ ] The sanitizer rebuilds the current state, checks it equals the live observation (else stops and reports), hides the draw order, replaces the run seed and re-seeds every random generator (FP-2), and re-samples hidden pre-rolled state. The inventory of hidden pre-rolled state is documented (OQ7.3).
+> - [ ] The sanitizer rebuilds the current state, checks it equals the live observation (else stops and reports), hides the draw order, replaces the run seed and re-seeds every random generator (FP-2), and re-samples hidden pre-rolled state. The inventory of hidden pre-rolled state is documented (OQ7.3; done 2026-11-20, FP-16; the run-level re-sampling it requires belongs to P7.E4.S4 and P7.E8).
 
 > **P7.E6.S2: Re-seed every random generator** · Size M · Status: Done (2026-11-20: generators found by walking the run and combat objects; `tools/sim.py fairplay`: none keeps its state in 96 of 96 samples; about 2 ms per sanitize)
 > *As the Agent, I want the run seed and every random generator replaced per sampled world, so that no future roll is predictable (FP-2, FP-8, FP-9).*
@@ -327,22 +327,22 @@
 > - [x] `docs/runbooks/game-patch.md` (from P2.E7.S1) now runs `tools/game_facts.py` (the facts our rules cite), `tools/game_cards.py` and `tools/game_monsters.py` (numbers), and regenerates the notes.
 > - [ ] Added once they exist: run the fidelity suite, update the version guard.
 
-### P7.E8: Run-level simulation (after Phase 8 starts)
+### P7.E8: Run-level simulation (done early, 2026-11-20 night, at the Player's request)
 
-> **P7.E8.S1: Rewards after combat** · Size L · Status: Todo
+> **P7.E8.S1: Rewards after combat** · Size L · Status: Done (2026-11-20: room-end rewards offered through `RewardsCmd.OfferForRoomEnd` and taken through the rewards synchronizer; card rewards, potions, gold, relics; card rewards and shop stock reproduce the recorded run exactly, `reports/phase7/run-fidelity.md`)
 > *As Phase 9 code, I want card, potion and gold rewards generated in the simulator with sampled streams, so that drafting can be trained (FP-9).*
 >
 > **Acceptance criteria**
 > - [ ] Rewards come from the game's own factories with sampled `Rewards` streams and the profile's unlock state (FI-5); distributions checked against recorded rewards from real runs.
 
-> **P7.E8.S2: Map, rest sites, shops, events and treasure** · Size XL (split before starting) · Status: Todo
+> **P7.E8.S2: Map, rest sites, shops, events and treasure** · Size XL (split before starting) · Status: Done (2026-11-20: map, rest sites, shops, events including the three Ancients, treasure, act changes, through the game's own synchronizers; whole recorded run reproduced, 71 of 71 checks)
 > *As Phase 9 code, I want the rest of a run simulated, so that strategic decisions can be learned on whole runs.*
 >
 > **Acceptance criteria**
 > - [ ] Each room type runs through the game's own logic with sampled streams; event choices go through the same choice interface as combat prompts.
 > - [ ] Run-level fidelity checked on recorded runs where the true streams are known (fidelity mode only).
 
-> **P7.E8.S3: Full-run driver** · Size L · Status: Todo
+> **P7.E8.S3: Full-run driver** · Size L · Status: Done (2026-11-20: `tools/sim.py runs`: whole runs from new seeds with a pluggable policy; about 4 to 16 s per run on one host)
 > *As Phase 9 code, I want to play whole simulated runs with a pluggable policy, so that run outcomes can train strategic models.*
 >
 > **Acceptance criteria**
@@ -366,7 +366,7 @@
 |---|---|---|
 | OQ7.1 | Does `ModelDb` start without the Godot engine? Desk check: its own methods call no Godot method; `RelicModel`'s static constructor creates a `Godot.StringName` | E1.S2 |
 | OQ7.2 | ~~What enables `CombatReplayWriter`, and where does it write?~~ Answered 2026-11-19: always on outside TestMode; `replays/latest.mcr` per profile, overwritten each fight | E2.S1 (done) |
-| OQ7.3 | Which hidden state is pre-rolled and stored (beyond the draw order and random generators)? Known so far `[GAME]`: each monster stores `NextMove` (the move its shown intent comes from; hidden for Hidden intents) and a move state machine whose random branches roll at transition time; each monster has its own generator | E6.S1 (inventory from the IL of monster and power models) |
+| OQ7.3 | Which hidden state is pre-rolled and stored (beyond the draw order and random generators)? Known so far `[GAME]`: each monster stores `NextMove` (the move its shown intent comes from; hidden for Hidden intents) and a move state machine whose random branches roll at transition time; each monster has its own generator **Answered 2026-11-20** (inventory in `docs/simulator-integrity.md` FP-16): beyond the draw order, `NextMove` and the generators, the run stores each act's encounter and event sequences and its Ancient and bosses (`RoomSet`), pre-shuffled relic queues (`RelicGrabBag`), pity counters (`Odds`), event values rolled at start (`CalculateVars`) and the Crystal Sphere's item positions. None is in the host's observations; run-level search must re-sample them (P7.E4.S4, P7.E8). | E6.S1 (inventory from the IL of monster and power models) |
 | OQ7.4 | Is branching cheaper by replay or by cloning? | E4.S4 |
 | OQ7.5 | Can the in-progress fight's actions be read live (replay events or our own log) with enough detail to rebuild the state, including hook resumes and player choices? | E2.S2, E6.S1 |
 | OQ7.6 | Is 200 fights per second realistic? First measurement: 32 per core on a long boss fight, with the cost in the game's own logic rather than in the stubs. Needs profiling (allocations, hook dispatch) and cheap branching before the target is judged | E7.S1, E4.S4 |

@@ -34,7 +34,7 @@ class SimError(Exception):
 class Sim:
     """One host process. Requests and replies are JSON lines; replies start with '@@'."""
 
-    def __init__(self, start_timeout=240, log=False):
+    def __init__(self, start_timeout=600, log=False):
         self.proc = subprocess.Popen([str(PROJECT / "sim" / "run.sh"), "serve"] + (["log"] if log else []), cwd=PROJECT,
                                      stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
         self.noise = []
@@ -234,7 +234,153 @@ def cmd_fairplay(a):
             check("decision mode refuses an unsanitized state (FP-3)", False, "a step was accepted")
         except SimError as e:
             check("decision mode refuses an unsanitized state (FP-3)", "sanitized" in str(e))
+        # FP-5: a card the player put on top (Headbutt returns Bash from the discard pile) stays on top in every
+        # sample of the hidden state, while the order below it varies.
+        name = "known draw-pile positions: a card the player put on top stays on top in every sample (FP-5)"
+        deck = ["STRIKE_IRONCLAD"] * 4 + ["DEFEND_IRONCLAD"] * 4 + ["BASH", "HEADBUTT"]
+        for k in range(1, 80):
+            sim.new_fight("SLIMES_WEAK", seed=f"FPFIVE{k:06d}", sample_seed=k, deck=deck)
+            acts = sim.legal()
+            if not {"BASH", "HEADBUTT"} <= {x.get("card_id") for x in acts if x["type"] == "play"}:
+                continue
+            sim.step(next(x for x in acts if x.get("card_id") == "BASH"))
+            sim.step(next(x for x in sim.legal() if x.get("card_id") == "HEADBUTT"))
+            ch = sim.observe().get("choice")
+            if ch:
+                sim.step({"type": "choose", "cards": [ch["options"].index("BASH")]})
+            known = sim.hidden()["known"]
+            before = sim.call(cmd="stats")
+            tops, orders = 0, set()
+            for s2 in range(12):
+                sim.call(cmd="resample", sample_seed=1000 + s2)
+                h = sim.hidden()
+                tops += h["draw_order"][0] == "BASH"
+                orders.add(tuple(h["draw_order"][1:]))
+            st = sim.call(cmd="stats")
+            fb = st["draw_fallbacks"] - before["draw_fallbacks"]
+            check(name, known["known_top"][:1] == ["BASH"] and tops == 12 and len(orders) > 1 and fb == 0,
+                  f"known top {known['known_top']}; Bash on top in {tops} of 12 samples; {len(orders)} distinct orders below it; "
+                  f"{fb} fallbacks to a full shuffle")
+            break
+        else:
+            check(name, False, "no opening hand with Bash and Headbutt in 79 seeds")
     print(f"{sum(results)} of {len(results)} fair-play checks passed")
+    return 0 if all(results) else 1
+
+
+def cmd_clone(a):
+    """State cloning (P7.E4.S4): snapshot a decision-mode fight, play on, restore, and check the restored state equals
+    the snapshot (observation, draw order, every generator) and that the same actions then lead to the same result."""
+    import random
+    ok, times = 0, []
+    with Sim() as sim:
+        encs = [e["id"] for e in sim.encounters() if e["room_type"] in ("Monster", "Elite", "Boss")]
+        rng = random.Random(7)
+        for k in range(a.fights):
+            enc = encs[(k * 7) % len(encs)]
+            sim.new_fight(enc, seed=f"CLONE{k:07d}", sample_seed=k + 1)
+            for _ in range(rng.randint(2, 8)):          # play into the fight a little
+                acts = sim.legal()
+                if not acts or sim.observe()["status"] != "in_progress":
+                    break
+                sim.step(rng.choice(acts))
+            if sim.observe()["status"] != "in_progress":
+                continue
+            if k % 3 == 0:
+                sim.call(cmd="resample", sample_seed=500 + k)   # a re-sample is part of the recipe too
+            snap = sim.call(cmd="snapshot")["id"]
+            want_obs, want_hidden = sim.observe(), sim.hidden()
+            line = []
+            for _ in range(10):
+                acts = sim.legal()
+                if not acts or sim.observe()["status"] != "in_progress":
+                    break
+                act = rng.choice(acts)
+                line.append(act)
+                sim.step(act)
+            end_obs = sim.observe()
+            r = sim.call(cmd="restore", id=snap)
+            times.append(r["restore_ms"])
+            got_obs, got_hidden = sim.observe(), sim.hidden()
+            same_now = got_obs == want_obs and got_hidden["draw_order"] == want_hidden["draw_order"] and got_hidden["generators"] == want_hidden["generators"]
+            for act in line:
+                sim.step(act)
+            same_after = sim.observe() == end_obs
+            ok += same_now and same_after
+            print(f"{'ok  ' if same_now and same_after else 'FAIL'} {enc:36s} restored equal {same_now}, same line same result {same_after}, {r['restore_ms']:.1f} ms")
+    n = len(times)
+    print(f"{ok} of {n} restores exact; restore time median {sorted(times)[n // 2] if n else 0:.1f} ms")
+    return 0 if ok == n and n > 0 else 1
+
+
+def cmd_sandbox(a):
+    """SA-1, SA-2 (P7.E3.S3), automated: over fights from nothing and whole runs, the host leaves the game's save folder
+    unchanged (compared by size, time and hash, read only), writes nothing into its sandbox home, and opens no network
+    connection (its process is polled with lsof while it works)."""
+    import hashlib, random, re, threading
+    sys.path.insert(0, str(PROJECT / "tools"))
+    import plan_turn as pt
+    saves = Path.home() / "Library" / "Application Support" / "SlayTheSpire2"
+    sandbox = PROJECT / "data" / "sim" / "sandbox-home"
+    mask = lambda x: re.sub(r"\d{10,}", "<id>", x)          # Steam ids never appear in output
+
+    def tree(root):
+        out = {}
+        if root.exists():
+            for f in sorted(root.rglob("*")):
+                if f.is_file() and not f.is_symlink():
+                    st = f.stat()
+                    out[str(f.relative_to(root))] = (st.st_size, st.st_mtime_ns, hashlib.sha1(f.read_bytes()).hexdigest() if st.st_size < 50_000_000 else "")
+        return out
+
+    game_running = subprocess.run(["pgrep", "-f", "SlayTheSpire2.app/Contents/MacOS"], capture_output=True).returncode == 0
+    before, sand_before = tree(saves), tree(sandbox)
+    sockets, polls, stop = [], [0], threading.Event()
+    t0 = time.time()
+    with Sim() as sim:
+        pid = sim.proc.pid
+
+        def watch():
+            while not stop.is_set():
+                r = subprocess.run(["lsof", "-a", "-i", "-n", "-P", "-p", str(pid)], capture_output=True, text=True)
+                polls[0] += 1
+                sockets.extend(l for l in r.stdout.splitlines()[1:] if l.strip())
+                stop.wait(0.5)
+
+        th = threading.Thread(target=watch, daemon=True)
+        th.start()
+        encs = [e["id"] for e in sim.encounters()]
+        for k in range(a.fights):
+            sim.new_fight(encs[(k * 11) % len(encs)], seed=f"SANDBOX{k:05d}", sample_seed=k + 1)
+            sim.rollout(policy="random", seed=k + 1, max_steps=600)
+        rng = random.Random(1)
+        for k in range(a.runs):
+            obs = sim.call(cmd="new_run", spec={"seed": f"SANDRUN{k:05d}", "character": "IRONCLAD", "ascension": 0}, timeout=120)["obs"]
+            for _ in range(3000):
+                if obs["screen"] == "game_over":
+                    break
+                acts = sim.call(cmd="run_legal")["actions"]
+                if not acts:
+                    break
+                obs = sim.call(cmd="run_step", action=run_policy(pt, obs, acts, rng), timeout=120)["obs"]
+        stop.set()
+        th.join()
+    after, sand_after = tree(saves), tree(sandbox)
+    changed = sorted(mask(k) for k in set(before) | set(after) if before.get(k) != after.get(k))
+    sand_new = sorted(k for k in set(sand_before) | set(sand_after) if sand_before.get(k) != sand_after.get(k))
+    results = []
+
+    def check(name, good, detail):
+        results.append(good)
+        print(f"{'ok  ' if good else 'FAIL'} {name}: {detail}")
+
+    if game_running:
+        print("skip save-folder comparison: the game is running and may write its own files")
+    else:
+        check("save folder unchanged (SA-1)", not changed, f"{len(before)} files compared; changed: {changed[:5]}")
+    check("nothing written into the sandbox home (SA-1)", not sand_new, f"{len(sand_after)} files; new or changed: {sand_new[:5]}")
+    check("no network connection opened (SA-2)", not sockets and polls[0] > 3, f"{polls[0]} polls over {time.time() - t0:.0f} s; sockets seen: {len(sockets)}")
+    print(f"{sum(results)} of {len(results)} sandbox checks passed")
     return 0 if all(results) else 1
 
 
@@ -304,6 +450,9 @@ def cmd_sweep(a):
                     sim.new_fight(e["id"], seed=f"SWEEP{k:07d}", sample_seed=k + 1, deck=a.deck.split(",") if a.deck else None)
                     out = sim.rollout(policy="random", seed=k + 1, max_steps=600)
                     o = out["obs"]
+                    if out.get("game_exceptions"):
+                        res.append("ERROR game exception: " + out.get("last_exception", "")[:110])
+                        continue
                     res.append("blocked" if o.get("blocked") else ("unfinished" if o["status"] == "in_progress" else o["status"]))
                 except SimError as err:
                     res.append("ERROR " + str(err).split("(")[0][:110])
@@ -364,6 +513,7 @@ def cmd_runs(a):
     rows, t0 = [], time.time()
     screens = {}
     with Sim() as sim:
+        t_ready = time.time()
         for k in range(a.count):
             seed = f"{a.prefix}{k:06d}"
             rng = random.Random(k)
@@ -394,8 +544,10 @@ def cmd_runs(a):
             won = obs["screen"] == "game_over" and obs["player"]["hp"] > 0
             result = "won" if won else ("died" if obs["screen"] == "game_over" else ("stuck" if reason else "step limit"))
             rows.append((seed, result, obs["act"], obs["floor"], steps, time.time() - t1, reason))
-            print(f"{seed}: {result:10s} act {obs['act']} floor {obs['floor']:2d} HP {obs['player']['hp']:3d} steps {steps:4d} {time.time() - t1:5.1f} s {reason}")
+            print(f"{seed}: {result:10s} act {obs['act']} floor {obs['floor']:2d} HP {obs['player']['hp']:3d} steps {steps:4d} {time.time() - t1:5.1f} s {reason}", flush=True)
     dt = time.time() - t0
+    play = sum(r[5] for r in rows)
+    decisions = sum(r[4] for r in rows)
     REPORTS.mkdir(parents=True, exist_ok=True)
     done = [r for r in rows if r[1] in ("won", "died")]
     L = ["# Whole runs in the simulator", "",
@@ -404,12 +556,14 @@ def cmd_runs(a):
          f"Ironclad A{a.ascension}, played by `run_policy` (the rule planner in fights, simple rules elsewhere; it is a test driver, not a strong player).", "",
          f"- Finished (won or died): {len(done)} of {len(rows)}; won {sum(1 for r in rows if r[1] == 'won')}",
          f"- Stuck or failed: {sum(1 for r in rows if r[1] in ('stuck', 'error'))}; stopped at the step limit: {sum(1 for r in rows if r[1] == 'step limit')}",
-         f"- Total time {dt:.0f} s; {sum(r[4] for r in rows)} decisions; {3600 * len(rows) / max(dt, 1):.0f} runs per hour on one host",
+         f"- Total time {dt:.0f} s, of which host start {t_ready - t0:.0f} s; {decisions} decisions; "
+         f"{1000 * play / max(decisions, 1):.1f} ms per decision including the Python driver; {3600 * len(rows) / max(play, 1):.0f} runs per hour on one host "
+         + ("(most runs ended early, so this overstates the rate for full-length runs)" if sum(r[3] for r in rows) < 30 * max(len(rows), 1) else ""),
          f"- Screens visited (decisions): " + ", ".join(f"{k} {v}" for k, v in sorted(screens.items(), key=lambda x: -x[1])), "",
          "| Seed | Result | Act | Floor | Decisions | Seconds | Note |", "|---|---|---|---|---|---|---|"]
     L += [f"| {r[0]} | {r[1]} | {r[2]} | {r[3]} | {r[4]} | {r[5]:.1f} | {r[6]} |" for r in rows]
-    (REPORTS / "whole-runs.md").write_text("\n".join(L) + "\n")
-    print(f"{len(done)} of {len(rows)} runs finished in {dt:.0f} s. Report: reports/phase7/whole-runs.md")
+    (REPORTS / (a.report or "whole-runs.md")).write_text("\n".join(L) + "\n")
+    print(f"{len(done)} of {len(rows)} runs finished in {dt:.0f} s. Report: reports/phase7/{a.report or 'whole-runs.md'}")
     return 0
 
 
@@ -698,11 +852,19 @@ def main(argv=None):
     rp.add_argument("--ascension", type=int, default=0)
     rp.add_argument("--max-steps", type=int, default=4000)
     rp.add_argument("--test-max-hp", type=int, help="flow test only: start with this max HP so a weak driver reaches every room type")
+    rp.add_argument("--report", help="report file name under reports/phase7/")
     sw = sub.add_parser("sweep")
     sw.set_defaults(fn=cmd_sweep)
     sw.add_argument("--rollouts", type=int, default=2)
     sw.add_argument("--only", help="substring of the encounter id")
     sw.add_argument("--deck", help="comma-separated card ids replacing the starting deck")
+    sb = sub.add_parser("sandbox")
+    sb.set_defaults(fn=cmd_sandbox)
+    sb.add_argument("--fights", type=int, default=20)
+    sb.add_argument("--runs", type=int, default=5)
+    cl = sub.add_parser("clone")
+    cl.set_defaults(fn=cmd_clone)
+    cl.add_argument("--fights", type=int, default=12)
     for name, fn in (("smoke", cmd_smoke), ("fairplay", cmd_fairplay), ("planner", cmd_planner), ("fidelity", cmd_fidelity)):
         p = sub.add_parser(name)
         p.set_defaults(fn=fn)

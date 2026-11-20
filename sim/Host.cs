@@ -10,12 +10,22 @@ public static class Host
     {
         if (_installed) return;
         _installed = true;
+        // UI first. Every later patch compiles a replacement method at patch time, and the JIT may inline small callees
+        // into it; a UI method that is not yet inert would then run with its real body inside game logic. So the UI
+        // classes (and the game's own scene-node classes) are made inert before any game-logic method is patched.
+        Stages.Step("inert UI", () =>
+        {
+            var list = System.Text.Json.JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Environment.GetEnvironmentVariable("SIM_UI_TYPES")!))!;
+            var n = Stubs.MakeInertAll(list);
+            Console.WriteLine($"     {n} UI classes (the {list.Count} listed and the UI classes they return) and {Stubs.GameNodeTypes} game scene-node classes inert: {Stubs.InertMethods} methods replaced, {Stubs.InertFailed} could not be; {Stubs.InstanceFieldsFilled} Instance fields filled ({string.Join(", ", Stubs.FilledNames)})");
+        });
         Stages.Step("game-method stubs", () =>
         {
             var sm = typeof(MegaCrit.Sts2.Core.Saves.SaveManager);
             foreach (var m in new[] { "SaveRun", "SaveRunHistory", "SaveProgressFile", "SavePrefsFile", "SaveSettings", "SaveProfile" })
                 Stubs.Skip(sm, m, "SA-1: the simulator never writes saves");
             Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Assets.PreloadManager));   // assets only: preloads scenes and textures
+            Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Assets.AssetCache));       // assets only: loaded scenes and textures
             Stubs.Skip(typeof(RunManager), "WriteReplay", "SA-1: the game writes replays/latest.mcr into the save profile at the end of a fight and on clean-up");
             // Localised text is display and log text. The tables live in the game's resource pack, which only the
             // engine can read, so text lookups return an empty string.
@@ -50,7 +60,12 @@ public static class Host
                 ("MegaCrit.Sts2.Core.Models.Powers.SandpitPower", "UpdateCreaturePositions", "moves creature sprites"),
                 ("MegaCrit.Sts2.Core.Models.Powers.SandpitPower", "AfterRemoved", "moves creature sprites back (tweens only)"),
                 ("MegaCrit.Sts2.Core.Models.Monsters.DecimillipedeSegment", "AnimSegmentsAttack", "attack animation"),
-                ("MegaCrit.Sts2.Core.Models.Monsters.FakeMerchantMonster", "ShowDialogueForMove", "dialogue bubble") })
+                ("MegaCrit.Sts2.Core.Models.Monsters.FakeMerchantMonster", "ShowDialogueForMove", "dialogue bubble"),
+                // reached only when a creature node exists; its one logic call, MonsterModel.OnDieToDoom, is empty in the
+                // base class and visuals-only in its one override (TorchHeadAmalgam); the kill itself is CreatureCmd.Kill in DoomKill
+                ("MegaCrit.Sts2.Core.Models.Powers.DoomPower", "StartDoomAnim", "Doom death animation"),
+                // instantiates an effect scene on the event portrait; no random generator or game state involved
+                ("MegaCrit.Sts2.Core.Models.Events.Trial", "AddVfxAnchoredToPortrait", "effect on the event portrait") })
                 Stubs.Skip(asm.GetType(type)!, method, "display only: " + why);
             Stubs.AnswerTrue(typeof(MegaCrit.Sts2.Core.Localization.LocString), "Exists", "display text only: every text is treated as present (cards throw when their prompt text is missing)");
             Stubs.Skip(typeof(MegaCrit.Sts2.Core.Models.CardModel), "PlayPowerCardFlyVfx", "display only: the Power card's fly effect");
@@ -69,11 +84,52 @@ public static class Host
                 try { Stubs.TestPath(type, parts[1], "display only"); } catch (MissingMethodException) { }
             }
         });
-        Stages.Step("inert UI", () =>
-        {
-            var list = System.Text.Json.JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Environment.GetEnvironmentVariable("SIM_UI_TYPES")!))!;
-            var n = Stubs.MakeInertAll(list);
-            Console.WriteLine($"     {n} UI classes inert: {Stubs.InertMethods} methods replaced, {Stubs.InertFailed} could not be");
-        });
+        // Raw real-time pauses inside game logic (not the game's own Cmd.Wait, which fast mode skips). The call graph
+        // finds them only in the Amalgamator event's two options (between the sound cues of combining cards); the host
+        // does not wait in real time, so the option would stay unfinished. The pauses complete at once instead.
+        // Like every patch, after the inert UI step (a UI method not yet inert would be inlined into the rewritten method
+        // with its real body: NGame.ScreenShakeTrauma).
+        // Observers of the draw pile for the decision-mode sampler (FP-5); the inserts they wrap run unchanged.
+        Stages.Step("known draw-pile positions", DrawKnowledge.Install);
+        Stages.Step("no real-time pauses in game logic", () =>
+            NoRealTimeDelays(typeof(MegaCrit.Sts2.Core.Models.EventModel).Assembly.GetType("MegaCrit.Sts2.Core.Models.Events.Amalgamator")!, "CombineStrikes", "CombineDefends"));
     }
+
+    // Replaces Task.Delay calls inside the async methods named (their compiler-generated state machines) with a task
+    // that is already complete. Fails loudly when a named method has no such call, so a game update cannot hide it.
+    static void NoRealTimeDelays(Type owner, params string[] asyncMethods)
+    {
+        var transpiler = new HarmonyLib.HarmonyMethod(typeof(Host).GetMethod(nameof(DelayTranspiler), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic));
+        foreach (var name in asyncMethods)
+        {
+            var sm = owner.GetNestedTypes(System.Reflection.BindingFlags.NonPublic).SingleOrDefault(t => t.Name.StartsWith("<" + name + ">"))
+                     ?? throw new MissingMethodException(owner.FullName, name);
+            var moveNext = sm.GetMethod("MoveNext", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)!;
+            _replaced = 0;
+            Stubs.H.Patch(moveNext, transpiler: transpiler);
+            if (_replaced == 0) throw new InvalidOperationException($"{owner.Name}.{name} has no Task.Delay call to replace (game changed?)");
+        }
+    }
+
+    static int _replaced;
+
+    static IEnumerable<HarmonyLib.CodeInstruction> DelayTranspiler(IEnumerable<HarmonyLib.CodeInstruction> code)
+    {
+        foreach (var ins in code)
+        {
+            if (ins.operand is System.Reflection.MethodInfo m && m.DeclaringType == typeof(Task) && m.Name == "Delay")
+            {
+                var replacement = typeof(Host).GetMethod(nameof(NoDelay), m.GetParameters().Select(p => p.ParameterType).ToArray())
+                                  ?? throw new MissingMethodException("Host.NoDelay for " + m);
+                ins.operand = replacement;
+                _replaced++;
+            }
+            yield return ins;
+        }
+    }
+
+    public static Task NoDelay(int ms) => Task.CompletedTask;
+    public static Task NoDelay(TimeSpan t) => Task.CompletedTask;
+    public static Task NoDelay(int ms, CancellationToken c) => Task.CompletedTask;
+    public static Task NoDelay(TimeSpan t, CancellationToken c) => Task.CompletedTask;
 }

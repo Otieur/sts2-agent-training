@@ -186,11 +186,23 @@ public static class Stubs
         var skipDefault = new HarmonyLib.HarmonyMethod(typeof(Stubs).GetMethod(nameof(InertDefault), BindingFlags.Static | BindingFlags.NonPublic));
         var skipRef = new HarmonyLib.HarmonyMethod(typeof(Stubs).GetMethod(nameof(InertRef), BindingFlags.Static | BindingFlags.NonPublic));
         InertTypes.Add(t);
+        HelperTypes.Add(t);
         foreach (var m in t.GetMethods(flags))
         {
             if (m.IsAbstract || m.ContainsGenericParameters || m.GetMethodBody() == null || !Patched.Add(m)) continue;
             try { H.Patch(m, prefix: m.ReturnType == typeof(void) || m.ReturnType.IsValueType ? skipDefault : skipRef); InertMethods++; } catch { InertFailed++; }
         }
+    }
+
+    // Inert helper classes (asset preloader and cache, effect commands ...): an inert method returning one of them hands
+    // out a shared inert instance rather than null, so game code that calls on through it (PreloadManager.Cache.GetTexture2D
+    // in the Trial event) reaches inert methods instead of failing.
+    static readonly HashSet<Type> HelperTypes = new();
+    static readonly Dictionary<Type, object> HelperInstances = new();
+    static object HelperInstance(Type t)
+    {
+        if (!HelperInstances.TryGetValue(t, out var o)) HelperInstances[t] = o = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(t);
+        return o;
     }
 
     static readonly MethodInfo FromResult = typeof(Task).GetMethod(nameof(Task.FromResult))!;
@@ -204,6 +216,7 @@ public static class Stubs
             return FromResult.MakeGenericMethod(a).Invoke(null, new[] { a.IsValueType ? Activator.CreateInstance(a) : InertValue(a) });
         }
         if (rt == typeof(string)) return "";
+        if (HelperTypes.Contains(rt) && !rt.IsAbstract && !rt.IsInterface) return HelperInstance(rt);
         // UI classes and other engine objects (a Control, a Node2D ...) get an inert instance, not null: callers pass
         // them on (a container for an effect) and would fail on null. Engine methods on them reach the recording stubs.
         return IsUi(rt) || typeof(Godot.GodotObject).IsAssignableFrom(rt) ? InertInstance(rt) : null;
@@ -214,14 +227,53 @@ public static class Stubs
     {
         var asm = typeof(MegaCrit.Sts2.Core.TestSupport.TestMode).Assembly;
         var n = 0;
-        foreach (var name in typeNames)
+        // The listed classes plus every UI class an inert method can hand out (return types, followed to a fixed point):
+        // a class made inert only when first met could already be inlined, with its real body, into game code compiled
+        // before that (NEventRoom.Layout returns an NEventLayout; Trial.Accept calls its RemoveNodesOnPortrait).
+        var queue = new Queue<Type>(typeNames.Select(asm.GetType).Where(t => t != null && IsUi(t))!);
+        var seen = new HashSet<Type>();
+        var flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        while (queue.Count > 0)
         {
-            var t = asm.GetType(name);
-            if (t == null || !IsUi(t)) continue;
+            var t = queue.Dequeue();
+            if (!seen.Add(t)) continue;
             MakeInert(t);
             n++;
+            for (var x = t; x != null && IsUi(x); x = x.BaseType)
+                foreach (var m in x.GetMethods(flags))
+                {
+                    var rt = m.ReturnType;
+                    if (rt.IsGenericType && rt.GetGenericTypeDefinition() == typeof(Task<>)) rt = rt.GetGenericArguments()[0];
+                    if (IsUi(rt) && !rt.ContainsGenericParameters && !seen.Contains(rt)) queue.Enqueue(rt);
+                }
         }
+        // scene-node classes the game writes outside the UI namespaces (audio managers, effects): eagerly, not when first met
+        foreach (var t in asm.GetTypes())
+            if (IsGameNode(t) && !IsUi(t) && !t.IsAbstract && !t.ContainsGenericParameters && !InertTypes.Contains(t)) { MakeInert(t); GameNodeTypes++; }
+        FillInstanceFields(asm);
         return n;
+    }
+
+    // A static "Instance" auto-property getter is a single field load, which the JIT inlines into its callers; a patched
+    // getter is then never called and the caller reads the backing field (null). Game logic calls some of them without a
+    // null check (NGame.Instance.ScreenShakeTrauma in the Amalgamator event). The backing fields of inert UI singletons
+    // are filled with the inert instance, so inlined and patched reads agree.
+    public static int InstanceFieldsFilled, GameNodeTypes;
+    public static readonly List<string> FilledNames = new();
+    static void FillInstanceFields(Assembly asm)
+    {
+        foreach (var t in InertTypes.ToList())
+        {
+            if (t.IsAbstract || t.ContainsGenericParameters) continue;
+            var f = t.GetField("<Instance>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
+            if (f == null || !f.FieldType.IsAssignableFrom(t)) continue;
+            if (f.GetValue(null) != null) { FilledNames.Add(t.Name + "(set)"); continue; }
+            var o = InertInstance(t);
+            if (o == null) continue;
+            f.SetValue(null, o);
+            InstanceFieldsFilled++;
+            FilledNames.Add(t.Name);
+        }
     }
 
     // ---- Scoped test path. A few display helpers in game-logic classes check TestMode themselves and skip their
@@ -267,9 +319,15 @@ public static class Stubs
             var key = level + ": " + string.Join(" | ", text.Split('\n').Take(4).Select(l => l.Trim())).Replace("MegaCrit.Sts2.Core.", "");
             if (key.Length > 420) key = key[..420];
             if (ProblemSet.Add(key)) { Problems.Add(key); if (Problems.Count > 200) { ProblemSet.Remove(Problems[0]); Problems.RemoveAt(0); } }
+            // an exception the game caught and logged: in the real game this would be a game bug, in the host it
+            // usually means a stub is missing; run steps report it instead of carrying on (see Session.RunStep)
+            if (level == "Error" && text.Contains("Exception")) { ExceptionCount++; LastException = key; }
         }
         return false;
     }
+
+    public static long ExceptionCount;
+    public static string LastException = "";
 
     // A getter answered with a fixed object the host owns (preferences and settings that the game reads from files).
     static readonly Dictionary<MethodBase, object> Fixed = new();

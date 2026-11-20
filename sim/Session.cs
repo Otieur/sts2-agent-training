@@ -40,6 +40,7 @@ public sealed partial class Session
         if (Replay == null) throw new InvalidOperationException("no replay loaded");
         SynchronizationContext.SetSynchronizationContext(Ctx);
         if (Run != null) { Rm.CleanUp(true); Ctx.Drain(); }
+        RunMode = false;
         Run = RunState.FromSerializable(Replay.serializableRun);
         Rm.SetUpReplay(Run, Replay, Me.NetId);
         Rm.CombatStateSynchronizer.IsDisabled = true;
@@ -58,7 +59,8 @@ public sealed partial class Session
         Choices.Current = null;
         while (Applied < Replay.events.Count && (Applied < events || !IsDecision(Replay.events[Applied])))
             ApplyRecorded(Replay.events[Applied]);
-        if (sampleSeed.HasValue) { Sanitizer.Apply(this, sampleSeed.Value); Sanitized = true; Choices.Intercept = true; }
+        if (sampleSeed.HasValue) { Sanitizer.Apply(this, sampleSeed.Value); Sanitized = true; Choices.Intercept = true; NoteOrigin("replay", null, events, sampleSeed.Value); }
+        else ForgetOrigin();
     }
 
     static T ById<T>(IEnumerable<T> all, string id, string what) where T : AbstractModel
@@ -73,6 +75,7 @@ public sealed partial class Session
         SynchronizationContext.SetSynchronizationContext(Ctx);
         if (Run != null) { Rm.CleanUp(true); Ctx.Drain(); }
         Replay = null;
+        RunMode = false;
         Choices.Intercept = false;
         Choices.Current = null;
         _last = null;
@@ -87,6 +90,9 @@ public sealed partial class Session
         Rm.SetUpNewSingleplayer(Run, false, null);
         Rm.CombatStateSynchronizer.IsDisabled = true;
         Rm.ChecksumTracker.IsEnabled = false;
+        // the game records every fight in memory (initial run state, then every action) whenever TestMode is off; the
+        // host never writes the file (WriteReplay is stubbed), so the recording is pure cost
+        Rm.CombatReplayWriter.IsEnabled = false;
         Ctx.RunUntil(Rm.FinalizeStartingRelics(), "FinalizeStartingRelics");
         Rm.Launch();
         Rm.GenerateRooms();
@@ -121,6 +127,7 @@ public sealed partial class Session
         Sanitizer.Apply(this, sampleSeed);
         Sanitized = true;
         Choices.Intercept = true;
+        NoteOrigin("fight", spec, 0, sampleSeed);
     }
 
     // A recorded event the player decided: a card, a potion or ending the turn. Choice answers, resumes and the
@@ -403,7 +410,7 @@ public sealed partial class Session
     public JsonObject Hidden()
     {
         var order = new JsonArray(Me.PlayerCombatState.DrawPile.Cards.Select(c => (JsonNode)(c.Id.Entry + (c.IsUpgraded ? "+" : ""))).ToArray());
-        return new JsonObject { ["draw_order"] = order, ["generators"] = Sanitizer.Fingerprint(this) };
+        return new JsonObject { ["draw_order"] = order, ["generators"] = Sanitizer.Fingerprint(this), ["known"] = DrawKnowledge.Known(Me.PlayerCombatState.DrawPile) };
     }
 
     public object[] Roots() => new object[] { Run, Combat };

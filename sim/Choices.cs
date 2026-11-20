@@ -1,7 +1,13 @@
 // Card choices in decision mode (P7.E4.S3). Cards such as Headbutt, Armaments or True Grit ask the player to pick
 // cards. In the game that opens a selection screen; in a recorded fight the answer comes from the recording. In
-// decision mode the host intercepts the selection commands, exposes the options, and waits for the policy's answer.
-// The interception is off while recorded events are applied, so the past is replayed exactly as recorded.
+// decision mode the host exposes the options and waits for the policy's answer.
+//
+// Card selections go through the game's own local selector (CardSelectCmd.PushSelector with localOnly = true, the
+// mechanism the Whispering Earring relic and the game's AutoSlayer use in ordinary play). The game computes the
+// options, the minimum and the maximum itself (enchantable, removable, transformable or upgradable cards ...), asks the
+// selector only for the local player's choice, and syncs the answer through PlayerChoiceSynchronizer as in co-op.
+// Relic and bundle choices and card rewards have no selector path; they are intercepted at the command or screen.
+// The selector is pushed only while Intercept is on, so recorded events replay exactly as recorded.
 using System.Reflection;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -28,21 +34,62 @@ public static class Choices
             : Options.Select(c => c.Id.Entry + (c.IsUpgraded ? "+" : "")).Concat(Extra.Select(e => "alt:" + e));
     }
 
-    public static bool Intercept;
+    static bool _intercept;
+    static IDisposable _selectorScope;
+    public static bool Intercept
+    {
+        get => _intercept;
+        set
+        {
+            if (value == _intercept) return;
+            _intercept = value;
+            if (value) _selectorScope = CardSelectCmd.PushSelector(new HostSelector(), true);
+            else { _selectorScope?.Dispose(); _selectorScope = null; }
+        }
+    }
     public static Pending Current;
+    // The Crystal Sphere event's minigame: its logic class waits for cell clicks from its screen (inert in the host).
+    public static MegaCrit.Sts2.Core.Events.Custom.CrystalSphereEvent.CrystalSphereMinigame Minigame;
+    static void MinigamePrefix(MegaCrit.Sts2.Core.Events.Custom.CrystalSphereEvent.CrystalSphereMinigame __instance) { if (_intercept) Minigame = __instance; }
     static bool _installed;
+    static string _kind;          // the outermost selection command running, as a label for the observation
+    static int _kindDepth;
+
+    // The game hands the local player's card selections to this selector: options, minimum and maximum as the game
+    // computed them. The answer arrives later through Answer().
+    sealed class HostSelector : MegaCrit.Sts2.Core.TestSupport.ICardSelector
+    {
+        public Task<IEnumerable<CardModel>> GetSelectedCards(IEnumerable<CardModel> options, int minSelect, int maxSelect)
+        {
+            var list = options.ToList();
+            var max = Math.Min(maxSelect, list.Count);
+            var min = Math.Min(minSelect, max);
+            var tcs = new TaskCompletionSource<IEnumerable<CardModel>>();
+            if (list.Count <= min) tcs.SetResult(list);                                   // forced: every option is taken
+            else Current = new Pending { Options = list, Min = min, Max = max, Tcs = tcs, Kind = _kind ?? "Select" };
+            return tcs.Task;
+        }
+
+        // Card rewards consult only the global selector, which the host never sets.
+        public MegaCrit.Sts2.Core.TestSupport.CardRewardSelection GetSelectedCardReward(IReadOnlyList<CardCreationResult> options,
+            IReadOnlyList<MegaCrit.Sts2.Core.Entities.CardRewardAlternatives.CardRewardAlternative> alternatives)
+            => throw new InvalidOperationException("the host's selector is local-only; card rewards go through the reward screen");
+    }
+
+    static void KindPrefix(MethodBase __originalMethod) { if (_kindDepth++ == 0) _kind = __originalMethod.Name; }
+    static void KindFinalizer() { _kindDepth = Math.Max(0, _kindDepth - 1); }
 
     // Must run before the UI classes are made inert (the card reward screen is a UI class).
     public static void Install()
     {
         if (_installed) return;
         _installed = true;
-        var prefix = new HarmonyLib.HarmonyMethod(typeof(Choices).GetMethod(nameof(Prefix), BindingFlags.Static | BindingFlags.NonPublic));
-        foreach (var name in new[] { "FromCombatPile", "FromHand", "FromHandForDiscard", "FromHandForUpgrade", "FromSimpleGrid", "FromChooseACardScreen",
-                                     "FromSimpleGridForRewards", "FromDeckForUpgrade", "FromDeckForRemoval", "FromDeckGeneric",
-                                     "FromDeckForTransformation", "FromDeckForEnchantment" })
-            foreach (var m in typeof(CardSelectCmd).GetMethods(BindingFlags.Static | BindingFlags.Public).Where(m => m.Name == name))
-                Stubs.H.Patch(m, prefix: prefix);
+        var kindPrefix = new HarmonyLib.HarmonyMethod(typeof(Choices).GetMethod(nameof(KindPrefix), BindingFlags.Static | BindingFlags.NonPublic));
+        var kindFinalizer = new HarmonyLib.HarmonyMethod(typeof(Choices).GetMethod(nameof(KindFinalizer), BindingFlags.Static | BindingFlags.NonPublic));
+        foreach (var m in typeof(CardSelectCmd).GetMethods(BindingFlags.Static | BindingFlags.Public).Where(m => m.Name.StartsWith("From") && m.Name != "FromChooseABundleScreen"))
+            Stubs.H.Patch(m, prefix: kindPrefix, finalizer: kindFinalizer);
+        Stubs.H.Patch(typeof(MegaCrit.Sts2.Core.Events.Custom.CrystalSphereEvent.CrystalSphereMinigame).GetMethod("PlayMinigame")!,
+                      prefix: new HarmonyLib.HarmonyMethod(typeof(Choices).GetMethod(nameof(MinigamePrefix), BindingFlags.Static | BindingFlags.NonPublic)));
         var relic = typeof(RelicSelectCmd).GetMethod("FromChooseARelicScreen", BindingFlags.Static | BindingFlags.Public)!;
         Stubs.H.Patch(relic, prefix: new HarmonyLib.HarmonyMethod(typeof(Choices).GetMethod(nameof(RelicPrefix), BindingFlags.Static | BindingFlags.NonPublic)));
         var bundle = typeof(CardSelectCmd).GetMethod("FromChooseABundleScreen", BindingFlags.Static | BindingFlags.Public)!;
@@ -93,43 +140,6 @@ public static class Choices
         __result = tcs.Task;
         if (bundles.Count <= 1) tcs.SetResult(bundles.FirstOrDefault() ?? (IReadOnlyList<CardModel>)Array.Empty<CardModel>());
         else Current = new Pending { Bundles = bundles.Select(b => b.ToList()).ToList(), Min = 1, Max = 1, Single = true, Tcs = tcs, Kind = "ChooseABundle" };
-        return false;
-    }
-
-    static bool Prefix(MethodBase __originalMethod, object[] __args, ref object __result)
-    {
-        if (!Intercept) return true;
-        var m = (MethodInfo)__originalMethod;
-        var player = __args.OfType<Player>().FirstOrDefault();
-        var fromDeck = m.Name.StartsWith("FromDeck");
-        var cards = __args.OfType<CardPile>().FirstOrDefault()?.Cards
-                    ?? __args.OfType<IReadOnlyList<CardModel>>().FirstOrDefault()
-                    ?? __args.OfType<List<CardCreationResult>>().FirstOrDefault()?.Select(r => r.Card)
-                    ?? (fromDeck ? player!.Deck.Cards : (IEnumerable<CardModel>)player!.PlayerCombatState.Hand.Cards);
-        var filter = __args.OfType<Func<CardModel, bool>>().FirstOrDefault();
-        var options = cards.Where(c => filter == null || filter(c)).ToList();
-        if (m.Name is "FromHandForUpgrade" or "FromDeckForUpgrade") options = options.Where(c => c.IsUpgradable).ToList();
-        var single = m.ReturnType == typeof(Task<CardModel>);
-        int min = 1, max = 1;
-        if (__args.FirstOrDefault(a => a is CardSelectorPrefs) is CardSelectorPrefs prefs) { min = prefs.MinSelect; max = prefs.MaxSelect; }
-        if (m.Name == "FromChooseACardScreen" && __args.OfType<bool>().FirstOrDefault()) min = 0;
-        max = Math.Min(max, options.Count);
-        min = Math.Min(min, max);
-        if (single)
-        {
-            var tcs = new TaskCompletionSource<CardModel>();
-            __result = tcs.Task;
-            if (options.Count == 0) tcs.SetResult(null);
-            else if (options.Count == 1 && min >= 1) tcs.SetResult(options[0]);       // a forced pick needs no decision
-            else Current = new Pending { Options = options, Min = min, Max = 1, Single = true, Tcs = tcs, Kind = m.Name };
-        }
-        else
-        {
-            var tcs = new TaskCompletionSource<IEnumerable<CardModel>>();
-            __result = tcs.Task;
-            if (options.Count <= min) tcs.SetResult(options);                          // forced: every option is taken
-            else Current = new Pending { Options = options, Min = min, Max = max, Tcs = tcs, Kind = m.Name };
-        }
         return false;
     }
 
