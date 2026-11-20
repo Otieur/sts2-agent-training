@@ -311,7 +311,7 @@ def markdown_potions(folder):
     return "\n".join(L)
 
 
-def markdown(folder):
+def markdown(folder, alpha=0.025, h4=False):
     """Section 5 of reports/phase9/value-search-comparison.md: summary table, H1-H3 verdicts, paired tests."""
     recs = load(folder)
     man = json.loads((Path(folder) / "manifest.json").read_text())
@@ -333,8 +333,8 @@ def markdown(folder):
     L.append("")
     if ("mc6", "vleaf6") in tests:
         t = tests[("mc6", "vleaf6")]
-        L.append(f"- **H1** (`vleaf6` better than `mc6`, sign test p < 0.025): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
-                 + ("**holds**." if t["sign_p_one_sided"] < 0.025 and t["mean_diff"] > 0 else "**does not hold**."))
+        L.append(f"- **H1** (`vleaf6` better than `mc6`, sign test p < {alpha}): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
+                 + ("**holds**." if t["sign_p_one_sided"] < alpha and t["mean_diff"] > 0 else "**does not hold**."))
     if ("mc6", "vleaf2") in tests:
         t = tests[("mc6", "vleaf2")]
         ratio = summ["vleaf2"]["search_seconds_per_decision"] / max(summ["mc6"]["search_seconds_per_decision"], 1e-9)
@@ -343,8 +343,12 @@ def markdown(folder):
                  f"time ratio {ratio:.2f}: " + ("**holds**." if ok else "**does not hold**."))
     if ("planner", "vgreedy") in tests:
         t = tests[("planner", "vgreedy")]
-        L.append(f"- **H3** (`vgreedy` better than `planner`, sign test p < 0.025): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
-                 + ("**holds**." if t["sign_p_one_sided"] < 0.025 and t["mean_diff"] > 0 else "**does not hold**."))
+        L.append(f"- **H3** (`vgreedy` better than `planner`, sign test p < {alpha}): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
+                 + ("**holds**." if t["sign_p_one_sided"] < alpha and t["mean_diff"] > 0 else "**does not hold**."))
+    if h4 and ("planner", "qpolicy") in tests:
+        t = tests[("planner", "qpolicy")]
+        L.append(f"- **H4** (`qpolicy` better than `planner`, sign test p < {alpha}): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
+                 + ("**holds**." if t["sign_p_one_sided"] < alpha and t["mean_diff"] > 0 else "**does not hold**."))
     errs = [(r["fight"], r["sample"], n, v["error"][:120]) for r in recs for n, v in r["arms"].items() if "error" in v]
     blocked = [(r["fight"], r["sample"], n) for r in recs for n, v in r["arms"].items() if v.get("blocked")]
     L += ["", f"Jobs left out of pairs: {len(errs)} errors, {len(blocked)} blocked." + ("" if not errs else " " + "; ".join(f"fight {f} sample {s_} {n}: {e}" for f, s_, n, e in errs[:10]))]
@@ -371,11 +375,13 @@ def main(argv=None):
     ap.add_argument("--limit", type=int, help="only the first N jobs (testing)")
     ap.add_argument("--report", help="print the summary and paired tests of a finished folder")
     ap.add_argument("--baseline", default="mc", help="arm the others are compared with in --report")
+    ap.add_argument("--alpha", type=float, default=0.025, help="one-sided significance per directional hypothesis in --markdown")
+    ap.add_argument("--h4", action="store_true", help="--markdown also judges H4 (qpolicy better than planner)")
     ap.add_argument("--markdown", action="store_true", help="with --report: the results section of the value-search comparison")
     a = ap.parse_args(argv)
     if a.report and a.markdown:
         man = json.loads((Path(a.report) / "manifest.json").read_text())
-        print(markdown_potions(a.report) if any(n.endswith("p") for n in man["arms"]) else markdown(a.report))
+        print(markdown_potions(a.report) if any(n.endswith("p") for n in man["arms"]) else markdown(a.report, a.alpha, a.h4))
         return 0
     if a.report:
         recs = load(a.report)

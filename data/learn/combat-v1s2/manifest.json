@@ -1,0 +1,140 @@
+{
+ "dataset": "combat-v1s2",
+ "created": "2026-11-20 15:10",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "host_commit": "8459a9f-dirty",
+ "fidelity": "11 of 11 recorded fights reproduce exactly.** Phase 7 exit gate: at least 99% of at least 100 fights (M11).",
+ "encoder": "none (raw observations, docs/observation-spec.md)",
+ "teacher": {
+  "policy": "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)",
+  "k": 6,
+  "top": 2,
+  "rollout_policy": "plan_turn.py balanced",
+  "privileged": false
+ },
+ "spec_source": {
+  "file": "data/learn/specs/fight-specs-ironclad.json",
+  "about": {
+   "character": "IRONCLAD",
+   "created": "2026-11-20 12:21",
+   "fights": 591,
+   "skipped": {
+    "exam seed": 82
+   },
+   "by_act": {
+    "1": 334,
+    "2": 172,
+    "3": 85
+   },
+   "by_room": {
+    "Monster": 436,
+    "Elite": 80,
+    "Boss": 75
+   },
+   "approximations": [
+    "no enchantments",
+    "relics removed before the fight are missing",
+    "potions capped at 3",
+    "max HP as recorded for the floor",
+    "source builds older than the installed game"
+   ],
+   "valid": 586,
+   "invalid": {
+    "new_fight: ArgumentException: unknown encounter '\u2026' ": 5
+   }
+  }
+ },
+ "spec_generator": {
+  "version": "v1",
+  "starter": {
+   "IRONCLAD": [
+    "STRIKE_IRONCLAD",
+    "STRIKE_IRONCLAD",
+    "STRIKE_IRONCLAD",
+    "STRIKE_IRONCLAD",
+    "STRIKE_IRONCLAD",
+    "DEFEND_IRONCLAD",
+    "DEFEND_IRONCLAD",
+    "DEFEND_IRONCLAD",
+    "DEFEND_IRONCLAD",
+    "BASH"
+   ]
+  },
+  "rarity_weight": {
+   "Common": 0.55,
+   "Uncommon": 0.35,
+   "Rare": 0.1
+  },
+  "added_cards": {
+   "1": [
+    2,
+    6
+   ],
+   "2": [
+    6,
+    11
+   ],
+   "3": [
+    10,
+    16
+   ]
+  },
+  "upgraded_share": {
+   "1": 0.1,
+   "2": 0.3,
+   "3": 0.5
+  },
+  "strikes_removed": {
+   "1": [
+    0,
+    0
+   ],
+   "2": [
+    0,
+    2
+   ],
+   "3": [
+    1,
+    3
+   ]
+  },
+  "hp": "40-100% of 80",
+  "relics": "starting relic only",
+  "potions": "none",
+  "ascension": "0-10 uniform",
+  "act_weights": [
+   0.4,
+   0.35,
+   0.25
+  ],
+  "room_weights": {
+   "Monster": 0.7,
+   "Elite": 0.2,
+   "Boss": 0.1
+  }
+ },
+ "seed": 2,
+ "workers": 4,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 5059,
+ "summary": {
+  "fights": 586,
+  "errors": 0,
+  "won": 474,
+  "decisions": 11073,
+  "host_restarts": 0,
+  "blocked_fights": 0,
+  "by_act": {
+   "1": 333,
+   "2": 172,
+   "3": 81
+  },
+  "seconds": 20143.2
+ }
+}
