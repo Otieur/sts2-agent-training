@@ -99,7 +99,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 | Epic | Title | Status | Notes |
 |---|---|---|---|
-| P7.E1 | Feasibility spike | Done except timing | **Go, route R3** (2026-11-19, `reports/phase7/spike.md`): a recorded boss fight replays in our own process with all 26 turn-boundary states equal to the game's; S4 warm timing waits on the reset between fights |
+| P7.E1 | Feasibility spike | Done | **Go, route R3** (2026-11-19, `reports/phase7/spike.md`): a recorded boss fight replays in our own process with all 26 turn-boundary states equal to the game's; 400 warm passes all correct at 31 ms CPU per fight (about 32 fights per second per core: above the minimum of 20, short of the 200 target) |
 | P7.E2 | Ground truth from the real game | In progress | S1 done: the game records every fight itself (`replays/latest.mcr`); S2 implemented in `tools/play_turn.py`, first live run pending; no mod change needed |
 | P7.E3 | Engine host and sandbox | Todo | |
 | P7.E4 | Combat interface | Todo | |

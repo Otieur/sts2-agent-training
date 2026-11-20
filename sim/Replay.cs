@@ -66,6 +66,7 @@ public static class Replay
                 foreach (var m in new[] { "SaveRun", "SaveRunHistory", "SaveProgressFile", "SavePrefsFile", "SaveSettings", "SaveProfile" })
                     Stubs.Skip(sm, m, "SA-1: the simulator never writes saves");
                 Stubs.Skip(typeof(MegaCrit.Sts2.Core.Assets.PreloadManager), "LoadRoomCombatAssets", "assets only: preloads scenes and textures");
+                Stubs.Skip(typeof(RunManager), "WriteReplay", "SA-1: the game writes replays/latest.mcr into the save profile at the end of a fight and on clean-up");
                 // Localised text is display and log text. The tables live in the game's resource pack, which only the
                 // engine can read, so text lookups return an empty string.
                 foreach (var m in new[] { "GetFormattedText", "GetRawText" })
@@ -211,8 +212,19 @@ public static class Replay
             Console.WriteLine($"     checksums: {checks} generated, {same} states equal to the game's, {different} different, {unmatched} without a recorded partner; recorded {replay.checksumData.Count}; divergence events {diverged}");
             Console.WriteLine($"     posted continuations {ctx.Posted}; inert UI calls {Stubs.InertCalls}; game info lines {infos}");
             // Repeat the same fight in the same process: warm timing (P7.E1.S4) and a first isolation check (FI-11).
-            for (var pass = 2; pass <= 6 && !args.Contains("once"); pass++)
+            if (args.Contains("nolog"))
             {
+                // The game formats and prints a log line for most actions; in the host the print goes to an engine stub.
+                Stubs.Skip(typeof(MegaCrit.Sts2.Core.Logging.Logger), "LogMessage", "log output only");
+            }
+            var passes = int.Parse(args.FirstOrDefault(a => a.StartsWith("passes="))?.Split('=')[1] ?? "21");
+            var setups = new List<double>(); var fights = new List<double>(); var exact = 0;
+            var nocheck = args.Contains("nocheck");
+            var proc = System.Diagnostics.Process.GetCurrentProcess();
+            TimeSpan cpu0 = default; long eng0 = 0, inert0 = 0, test0 = 0; var counted = 0;
+            for (var pass = 2; pass <= passes && !args.Contains("once"); pass++)
+            {
+                if (pass == 2 + (passes - 1) / 2) { proc.Refresh(); cpu0 = proc.TotalProcessorTime; eng0 = Stubs.TotalCalls; inert0 = Stubs.InertCalls; test0 = Stubs.TestPathCalls; counted = passes - pass + 1; }
                 try
                 {
                     var sw2 = System.Diagnostics.Stopwatch.StartNew();
@@ -222,21 +234,46 @@ public static class Replay
                     Refill(); checks = same = different = unmatched = 0;
                     rm.SetUpReplay(run, replay, run.Players[0].NetId);
                     rm.CombatStateSynchronizer.IsDisabled = true;
-                    rm.ChecksumTracker.ChecksumGenerated += onChecksum;
+                    // "nocheck": plain simulation speed. No state comparison by the host, no checkpoint hashing and no
+                    // replay comparison by the game; the pass is judged by the final HP and the fight ending.
+                    if (nocheck) rm.ChecksumTracker.IsEnabled = false; else rm.ChecksumTracker.ChecksumGenerated += onChecksum;
                     rm.Launch();
                     ctx.RunUntil(rm.GenerateMap(), "GenerateMap");
                     rm.ActionQueueSet.FastForwardNextActionId(replay.nextActionId);
                     rm.ActionQueueSynchronizer.FastForwardHookId(replay.nextHookId);
-                    rm.ChecksumTracker.LoadReplayChecksums(replay.checksumData, replay.nextChecksumId);
+                    if (!nocheck) rm.ChecksumTracker.LoadReplayChecksums(replay.checksumData, replay.nextChecksumId);
                     rm.PlayerChoiceSynchronizer.FastForwardChoiceIds(replay.choiceIds);
                     rm.RewardsSetSynchronizer.FastForwardRewardIds(replay.rewardIds);
                     ctx.RunUntil(rm.LoadIntoLatestMapCoord(null), "enter the room");
                     var setup = sw2.Elapsed.TotalMilliseconds;
                     sw2.Restart();
                     foreach (var ev in replay.events) { ctx.Drain(); Apply(ev); ctx.Drain(); }
-                    Console.WriteLine($"     pass {pass}: set-up {setup:F1} ms, fight {sw2.Elapsed.TotalMilliseconds:F1} ms; states equal {same} of {checks} ({different} different); final HP {run.Players[0].Creature.CurrentHp}/{run.Players[0].Creature.MaxHp}; in progress {MegaCrit.Sts2.Core.Combat.CombatManager.Instance.IsInProgress}");
+                    var fight = sw2.Elapsed.TotalMilliseconds;
+                    setups.Add(setup); fights.Add(fight);
+                    var ok = (nocheck || (same == checks && different == 0 && checks == 26)) && run.Players[0].Creature.CurrentHp == 87 && !MegaCrit.Sts2.Core.Combat.CombatManager.Instance.IsInProgress;
+                    if (ok) exact++;
+                    if (pass <= 4 || !ok || args.Contains("trace"))
+                        Console.WriteLine($"     pass {pass}: set-up {setup:F1} ms, fight {fight:F1} ms; states equal {same} of {checks} ({different} different); final HP {run.Players[0].Creature.CurrentHp}/{run.Players[0].Creature.MaxHp}; in progress {MegaCrit.Sts2.Core.Combat.CombatManager.Instance.IsInProgress}");
                 }
-                catch (Exception e) { Console.WriteLine($"     pass {pass} FAILED: {e.GetType().Name}: {e.Message.Split('\n')[0]}"); break; }
+                catch (Exception e) { Console.WriteLine($"     pass {pass} FAILED: {e.GetType().Name}: {e.Message.Split('\n')[0]}\n{string.Join("\n", (e.StackTrace ?? "").Split('\n').Take(5))}"); break; }
+            }
+            if (fights.Count > 0)
+            {
+                double Med(List<double> xs) { var s = xs.OrderBy(x => x).ToList(); return s[s.Count / 2]; }
+                Console.WriteLine($"     WARM PASSES {fights.Count}{(nocheck ? " (checking off)" : " (checking on)")}: correct {exact} of {fights.Count} ({(nocheck ? "final HP 87, fight over" : "26 of 26 states equal, final HP 87, fight over")})");
+                var late = fights.Skip(fights.Count / 2).ToList();
+                Console.WriteLine($"     fight, second half of the passes only ({late.Count}): median {Med(late):F2} ms, min {late.Min():F2} ms");
+                Console.WriteLine($"     fight (45 events): median {Med(fights):F2} ms, min {fights.Min():F2} ms, max {fights.Max():F2} ms");
+                Console.WriteLine($"     set-up (rebuild run state, launch, map, enter room, start combat): median {Med(setups):F2} ms, min {setups.Min():F2} ms");
+                if (counted > 0 && fights.Count == passes - 1)
+                {
+                    proc.Refresh();
+                    // CPU time of the whole process (all threads, including the JIT and the garbage collector), so it
+                    // does not depend on how busy the machine is. Measured over the second half of the passes.
+                    Console.WriteLine($"     CPU time per fight including set-up (second half, {counted} passes): {(proc.TotalProcessorTime - cpu0).TotalMilliseconds / counted:F2} ms");
+                    Console.WriteLine($"     per fight: engine-stub calls {(Stubs.TotalCalls - eng0) / counted}, inert UI calls {(Stubs.InertCalls - inert0) / counted}, scoped test-path calls {(Stubs.TestPathCalls - test0) / counted}");
+                }
+                Console.WriteLine($"     whole fight including set-up: median {Med(fights.Zip(setups, (a, b) => a + b).ToList()):F2} ms; memory {GC.GetTotalMemory(false) / 1048576} MB managed");
             }
             Console.WriteLine($"     recorded checkpoints by kind: {string.Join("; ", replay.checksumData.GroupBy(c => System.Text.RegularExpressions.Regex.Replace(c.context, @"card: .*|potion.*", "...")).Select(g => g.Key + " x" + g.Count()))}");
             Console.WriteLine($"     host checkpoints without a recorded partner: {string.Join("; ", contexts.Select(kv => kv.Key + " x" + kv.Value))}");

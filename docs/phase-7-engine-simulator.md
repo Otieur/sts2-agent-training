@@ -14,7 +14,7 @@
 | | |
 |---|---|
 | **First milestone** | A 1–2 day feasibility spike (E1) ends in a go or no-go. Go means route R3 (our own process). If R3 fails, the spike tries route R4: an offline, headless game instance as a simulation server. If both fail, decision 0003 names the fallback. |
-| **Speed target** | Median full hallway fight at most 5 ms on one core (200 fights per second), with fixed actions. Minimum to be useful for Phase 8: 20 fights per second. The numbers are a hypothesis until E1.S4 measures them. |
+| **Speed target** | Median full hallway fight at most 5 ms on one core (200 fights per second), with fixed actions. Minimum to be useful for Phase 8: 20 fights per second. **Measured 2026-11-19: 31 ms CPU for a long boss fight (45 events), about 32 fights per second per core: above the minimum, about 6 times short of the target.** A hallway fight has fewer events and should be cheaper; not yet measured. |
 | **Exactness target** | At least 99% of recorded fights replay with matching checksums and field comparisons; every mismatch explained. |
 | **Player involvement** | Approve any offline-instance or console work (SA-6) and any downloaded package (SA-8). Recording fights needs nothing: the game already writes a replay of every fight (E2.S1). No involvement during simulator runs. |
 | **Downloads** | None expected. The host references `sts2.dll`, `GodotSharp.dll` and `0Harmony.dll` in the game's install folder; Harmony ships with the game, so engine-call stubs need no download. The .NET 9 SDK is already installed. |
@@ -95,7 +95,7 @@
 >
 > **Notes:** the save folder is read-only for analysis (the project instructions). Copy the file into the sandbox; never open it in place for writing.
 
-> **P7.E1.S4: First timing** · Size S · Status: In progress (one cold pass 1.4–1.6 s under heavy machine load; warm timing blocked on the reset between fights, P7.E3.S4)
+> **P7.E1.S4: First timing** · Size S · Status: Done (2026-11-19: 400 warm passes of a 45-event boss fight, all correct; 31 ms CPU per fight including set-up, about 32 fights per second per core; `reports/phase7/spike.md`)
 > *As the Agent, I want the cost of one fight measured, so that the speed target is grounded.*
 >
 > **Acceptance criteria**
@@ -368,5 +368,5 @@
 | OQ7.3 | Which hidden state is pre-rolled and stored (beyond the draw order and random generators)? Known so far `[GAME]`: each monster stores `NextMove` (the move its shown intent comes from; hidden for Hidden intents) and a move state machine whose random branches roll at transition time; each monster has its own generator | E6.S1 (inventory from the IL of monster and power models) |
 | OQ7.4 | Is branching cheaper by replay or by cloning? | E4.S4 |
 | OQ7.5 | Can the in-progress fight's actions be read live (replay events or our own log) with enough detail to rebuild the state, including hook resumes and player choices? | E2.S2, E6.S1 |
-| OQ7.6 | Is 200 fights per second realistic? | E1.S4, E7.S1 |
+| OQ7.6 | Is 200 fights per second realistic? First measurement: 32 per core on a long boss fight, with the cost in the game's own logic rather than in the stubs. Needs profiling (allocations, hook dispatch) and cheap branching before the target is judged | E7.S1, E4.S4 |
 | OQ7.7 | Does the game's own replay validation (`NMultiplayerTest.ValidateReplay`) pass on our recorded fights in the real game? This tells real-game determinism apart from host errors. | E5.S1 |
