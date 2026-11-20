@@ -1,0 +1,402 @@
+{
+ "name": "value-v1-sel-b",
+ "created": "2026-11-20 13:47",
+ "code_commit": "b3e9933",
+ "encoder": "enc-v1",
+ "vocab": {
+  "game_version": "v0.111.1",
+  "game_commit": "cc1f9462",
+  "source": "data/asm/sts2-index.txt (tools/learn/vocab.py)",
+  "rule": "index 0 = padding, 1 = unknown id; lists sorted",
+  "sizes": {
+   "cards": 598,
+   "relics": 301,
+   "powers": 267,
+   "potions": 67,
+   "monsters": 122,
+   "intent_types": 17,
+   "target_types": 12,
+   "card_types": 9
+  }
+ },
+ "torch": "2.15.0",
+ "device": "cpu",
+ "parameters": 227627,
+ "settings": {
+  "epochs": 80,
+  "lr": 0.001,
+  "wd": 0.0001,
+  "bs": 256,
+  "patience": 8,
+  "hidden": 256,
+  "card_dim": 32,
+  "drop": 0.1,
+  "split_seed": 7
+ },
+ "epochs_run": 32,
+ "best_val_loss": 0.5509427785873413,
+ "train_seconds": 69,
+ "data": [
+  {
+   "folder": "data/learn/combat-v1",
+   "manifest": {
+    "dataset": "combat-v1",
+    "created": "2026-11-20 13:44",
+    "game_version": "v0.111.1",
+    "game_commit": "cc1f9462",
+    "host_commit": "b2525a1",
+    "fidelity": "11 of 11 recorded fights reproduce exactly.** Phase 7 exit gate: at least 99% of at least 100 fights (M11).",
+    "encoder": "none (raw observations, docs/observation-spec.md)",
+    "teacher": {
+     "policy": "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)",
+     "k": 6,
+     "top": 2,
+     "rollout_policy": "plan_turn.py balanced",
+     "privileged": false
+    },
+    "spec_source": {
+     "file": "data/learn/specs/fight-specs-ironclad.json",
+     "about": {
+      "character": "IRONCLAD",
+      "created": "2026-11-20 12:21",
+      "fights": 591,
+      "skipped": {
+       "exam seed": 82
+      },
+      "by_act": {
+       "1": 334,
+       "2": 172,
+       "3": 85
+      },
+      "by_room": {
+       "Monster": 436,
+       "Elite": 80,
+       "Boss": 75
+      },
+      "approximations": [
+       "no enchantments",
+       "relics removed before the fight are missing",
+       "potions capped at 3",
+       "max HP as recorded for the floor",
+       "source builds older than the installed game"
+      ],
+      "valid": 586,
+      "invalid": {
+       "new_fight: ArgumentException: unknown encounter '\u2026' ": 5
+      }
+     }
+    },
+    "spec_generator": {
+     "version": "v1",
+     "starter": {
+      "IRONCLAD": [
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "DEFEND_IRONCLAD",
+       "BASH"
+      ]
+     },
+     "rarity_weight": {
+      "Common": 0.55,
+      "Uncommon": 0.35,
+      "Rare": 0.1
+     },
+     "added_cards": {
+      "1": [
+       2,
+       6
+      ],
+      "2": [
+       6,
+       11
+      ],
+      "3": [
+       10,
+       16
+      ]
+     },
+     "upgraded_share": {
+      "1": 0.1,
+      "2": 0.3,
+      "3": 0.5
+     },
+     "strikes_removed": {
+      "1": [
+       0,
+       0
+      ],
+      "2": [
+       0,
+       2
+      ],
+      "3": [
+       1,
+       3
+      ]
+     },
+     "hp": "40-100% of 80",
+     "relics": "starting relic only",
+     "potions": "none",
+     "ascension": "0-10 uniform",
+     "act_weights": [
+      0.4,
+      0.35,
+      0.25
+     ],
+     "room_weights": {
+      "Monster": 0.7,
+      "Elite": 0.2,
+      "Boss": 0.1
+     }
+    },
+    "seed": 1,
+    "workers": 6,
+    "worker_exit_codes": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "wall_seconds": 548,
+    "summary": {
+     "fights": 586,
+     "errors": 0,
+     "won": 480,
+     "decisions": 10895,
+     "host_restarts": 0,
+     "blocked_fights": 0,
+     "by_act": {
+      "1": 333,
+      "2": 172,
+      "3": 81
+     },
+     "seconds": 25308.5
+    }
+   }
+  }
+ ],
+ "split": {
+  "test_runs": [
+   "1790729234-5F54F0Z4JD",
+   "1790739811-GZCFQLZ3ZM",
+   "1790871555-ZU94KEL19C",
+   "1790887497-RYN479KJ98",
+   "1791147048-4F8KMAD56G",
+   "1791244489-JW8LUJHKBY",
+   "1793992106-5X0ETMK27U"
+  ],
+  "val_runs": [
+   "1790705796-1HTWD1ULUB",
+   "1790888112-HNK20GL1NK",
+   "1791083232-J61T7WBH9G",
+   "1791085449-2HEB9EZ1EP",
+   "1791213234-AJBPD2DHSF",
+   "1791247295-GK21D6LA3U",
+   "1791249694-B7RL6AZXGJ"
+  ],
+  "runs": 48,
+  "sizes": {
+   "train": 7069,
+   "val": 1072,
+   "test": 1523,
+   "bench": 1231
+  },
+  "fights": {
+   "train": 378,
+   "val": 60,
+   "test": 88,
+   "bench": 60
+  }
+ },
+ "baselines": {
+  "mean_value": -9.841986136652991,
+  "mean_win": 0.772527938888103,
+  "linear_val_loss": 1.0383648872375488
+ },
+ "results": {
+  "val": {
+   "network": {
+    "states": 1072,
+    "fights": 60,
+    "value_mae": 47.21929995537694,
+    "value_rmse": 73.55733381303509,
+    "value_r": 0.8335533639260706,
+    "win_brier": 0.12736695891383618,
+    "win_logloss": 0.3923615954314389,
+    "win_auc": 0.8979123262043455
+   },
+   "linear": {
+    "states": 1072,
+    "fights": 60,
+    "value_mae": 74.84888160039685,
+    "value_rmse": 91.77153892887611,
+    "value_r": 0.5161030855040124,
+    "win_brier": 0.13477434557419365,
+    "win_logloss": 0.4152213515999391,
+    "win_auc": 0.8377529278928147
+   },
+   "mean": {
+    "states": 1072,
+    "fights": 60,
+    "value_mae": 84.07844437981264,
+    "value_rmse": 105.71182926819847,
+    "value_r": null,
+    "win_brier": 0.18444837450029103,
+    "win_logloss": 0.5557636304925467,
+    "win_auc": 0.5
+   },
+   "search_estimate_subset": {
+    "network": {
+     "states": 867,
+     "fights": 60,
+     "value_mae": 46.85850836166461,
+     "value_rmse": 73.66389390650684,
+     "value_r": 0.8311889379526336
+    },
+    "search": {
+     "states": 867,
+     "fights": 60,
+     "value_mae": 13.479623221837755,
+     "value_rmse": 30.466349984094347,
+     "value_r": 0.9616478443319274
+    }
+   },
+   "fight_start": {
+    "network": {
+     "states": 60,
+     "fights": 60,
+     "value_mae": 37.92933125495911,
+     "value_rmse": 62.701267783758645,
+     "value_r": 0.8039611410988,
+     "win_brier": 0.0998128757613314,
+     "win_logloss": 0.3180415138481199,
+     "win_auc": 0.906
+    },
+    "linear": {
+     "states": 60,
+     "fights": 60,
+     "value_mae": 67.38336878617605,
+     "value_rmse": 83.38248668912293,
+     "value_r": 0.4485836957948625,
+     "win_brier": 0.11547850297386168,
+     "win_logloss": 0.3683642610928604,
+     "win_auc": 0.808
+    }
+   }
+  }
+ },
+ "calibration": {
+  "val": [
+   {
+    "bin": "0.2-0.3",
+    "states": 2,
+    "predicted": 0.2865670174360275,
+    "observed": 0.0
+   },
+   {
+    "bin": "0.3-0.4",
+    "states": 30,
+    "predicted": 0.34964907268683115,
+    "observed": 0.06666666666666667
+   },
+   {
+    "bin": "0.4-0.5",
+    "states": 41,
+    "predicted": 0.4529632402629387,
+    "observed": 0.21951219512195122
+   },
+   {
+    "bin": "0.5-0.6",
+    "states": 44,
+    "predicted": 0.5485027811743997,
+    "observed": 0.13636363636363635
+   },
+   {
+    "bin": "0.6-0.7",
+    "states": 55,
+    "predicted": 0.6500461415811019,
+    "observed": 0.2
+   },
+   {
+    "bin": "0.7-0.8",
+    "states": 81,
+    "predicted": 0.7572690726798258,
+    "observed": 0.5308641975308642
+   },
+   {
+    "bin": "0.8-0.9",
+    "states": 189,
+    "predicted": 0.8609641825080548,
+    "observed": 0.7248677248677249
+   },
+   {
+    "bin": "0.9-1.0",
+    "states": 630,
+    "predicted": 0.9465544024157145,
+    "observed": 0.9571428571428572
+   }
+  ]
+ },
+ "bootstrap_95": {
+  "val": {
+   "network_minus_linear_mae": [
+    -39.44927245806864,
+    -16.1693167134674
+   ],
+   "network_minus_search_mae": [
+    18.30864349943636,
+    48.60538725091912
+   ]
+  }
+ },
+ "speed_ms": {
+  "single_state": 1.774,
+  "batch_64": 12.033,
+  "collate_one": 0.195
+ },
+ "log": [
+  "10895 states from 586 fights (0 skipped); train 7069, val 1072, test 1523, bench 1231; unknown ids 0",
+  "linear baseline: val loss 1.0384 after 188 epochs",
+  "value network: 227627 parameters on cpu",
+  "epoch 1: train 288138437842.5750 val 41.7722",
+  "epoch 2: train 32326976266.0813 val 78.0005",
+  "epoch 3: train 57498187772.6862 val 4.1603",
+  "epoch 4: train 36405496912.4798 val 1.4078",
+  "epoch 5: train 28511096505.4863 val 1.6328",
+  "epoch 6: train 12620883565.3197 val 1.6985",
+  "epoch 7: train 5208907976.9479 val 1.1089",
+  "epoch 8: train 4798029497.9810 val 1.0951",
+  "epoch 9: train 5857525025.8143 val 0.8992",
+  "epoch 10: train 4273803620.9968 val 0.7476",
+  "epoch 11: train 98986068645.1856 val 0.9782",
+  "epoch 12: train 147637153207.2431 val 0.7564",
+  "epoch 13: train 17763218736.9249 val 0.7531",
+  "epoch 14: train 6502099551.4072 val 0.7606",
+  "epoch 15: train 12184118562.3063 val 0.7425",
+  "epoch 16: train 881550799.2016 val 0.7432",
+  "epoch 17: train 1674904829.7879 val 0.7333",
+  "epoch 18: train 1207796585.2951 val 0.7239",
+  "epoch 19: train 5179272951.1242 val 0.7087",
+  "epoch 20: train 9291085835.9251 val 0.6950",
+  "epoch 21: train 4228374493.8189 val 0.7265",
+  "epoch 22: train 4330704349.2482 val 0.6219",
+  "epoch 23: train 5570592552.9875 val 0.5936",
+  "epoch 24: train 2422939137.0897 val 0.5509",
+  "epoch 25: train 1161524618.5461 val 0.5791",
+  "epoch 26: train 5982725862.3679 val 0.6234",
+  "epoch 27: train 3651061395.1068 val 0.7880",
+  "epoch 28: train 2290866820.1609 val 0.7348",
+  "epoch 29: train 2701037925.7148 val 0.7255",
+  "epoch 30: train 8337143146.9341 val 1.5220",
+  "epoch 31: train 15279188261.3263 val 0.8543",
+  "epoch 32: train 5087833615.8395 val 0.5587"
+ ]
+}
