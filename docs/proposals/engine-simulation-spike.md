@@ -1,6 +1,6 @@
 # Spike: Using the Game's Own Engine for Fast Play and Simulation
 
-Status: **desk study done 2026-11-19; prototypes not started** (they need a mod change and game restarts, see "Needs the Player").
+Status: **desk study done 2026-11-19 (P7.E1.S0).** The plan that follows from it is [phase-7-engine-simulator.md](../phase-7-engine-simulator.md); the rules are [simulator-integrity.md](../simulator-integrity.md). The route order below is superseded: on 2026-11-19 the Player chose route R3 (our own process) as the first test.
 Game: v0.111.1 (`sts2.dll` in `SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/`).
 Method: metadata and IL of `sts2.dll` read with `tools/asm/asm.cs`, which uses only the .NET runtime (no decompiler, no third-party code). Indexes are written to `data/asm/` (ignored by git; they describe the game's code and change every patch). Labels follow `docs/README.md`: `[GAME]` means read from the game's code, with the type and method as the evidence pointer.
 

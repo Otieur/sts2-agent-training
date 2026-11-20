@@ -1,0 +1,163 @@
+# Simulator Integrity Rules
+
+Rules for running the game's own engine outside the game (Phases 7–9): what the Agent may know when it decides, how to keep simulations identical to the game, how to protect the Player's saves and accounts, and how to keep evaluation honest. Every phase 7–9 story that touches the simulator must satisfy the rules that apply to it, and its acceptance criteria name them by ID.
+
+Written 2026-11-19 from the desk study in [proposals/engine-simulation-spike.md](proposals/engine-simulation-spike.md) and an audit of the live API. Evidence pointers name types and methods in `sts2.dll` v0.111.1 (index: `tools/asm/asm.cs`, output in `data/asm/`). Labels follow [README.md](README.md#knowledge-provenance-labels).
+
+**Update this file** when a game patch changes any cited evidence, when a test disproves a rule, or when the Player changes a permission.
+
+---
+
+## 0. Summary: the twelve rules that matter most
+
+1. **Decisions use only what a player can see**, plus public knowledge. Never the seed, an RNG state, the draw order or a future roll (FP-1, FP-2).
+2. **Two modes, never mixed.** *Fidelity mode* replays recorded fights with the true RNG to test the simulator. *Decision mode* takes only states that passed the sanitizer, which hides the draw order and re-samples every hidden stream. Nothing from fidelity mode feeds a decision (FP-3, FP-15).
+3. **No save-scumming in disguise.** Replaying the current fight from room entry with the true RNG and picking the line that wins is a reload. It is forbidden in scored and practice runs alike (FP-4).
+4. **Never use `TestMode`** or any debug or test hook for anything whose result must match the game (FI-1, FI-2).
+5. **Same build, same runtime.** The simulator refuses a game build or model-id hash that differs from its own, and runs on .NET 9 with invariant culture (FI-3, FI-9).
+6. **Same unlocks and progress** as the profile being simulated: they change card and potion generation (FI-5).
+7. **A checksum match is necessary, not sufficient.** Compare monster state, intents and card details too (FI-12).
+8. **The simulator never writes saves, never touches achievements, Steam, leaderboards or telemetry, and never runs inside the live game** (SA-1 to SA-5).
+9. **Nothing from the game leaves this machine**: no game code, decompiled code, indexes or bundled DLLs in git or anywhere else (LG-1).
+10. **One observation encoder for live and simulated play**, built from the fields the live API exposes (ML-1).
+11. **Scored runs are clean**: unmodified game logic, no console, no restarts, every run counted, exam seeds never trained on (ML-5 to ML-8).
+12. **Downloaded libraries** (for example a neural-network framework) **need the Player's approval** after a security review, like any other downloaded code (SA-8).
+
+---
+
+## 1. Fair play: what the Agent may know
+
+The target is to be better than the Player under the same information. A decision that uses hidden information is not skill: it does not transfer to co-op or to a human teammate, and it makes every comparison with the Player's record meaningless.
+
+### 1.1 Visible and hidden information
+
+| Information | Visible to a player? | May a decision use it? |
+|---|---|---|
+| Hand, energy, HP, Block, powers, relics, potions, orbs | Yes | Yes |
+| Draw pile **contents** (as a set), discard pile, exhaust pile | Yes (the game shows the draw pile sorted, not in order) | Yes |
+| Draw pile **order** | No | No, except positions the player knows (FP-5) |
+| Current enemy intents, enemy HP, Block, powers | Yes | Yes |
+| Enemy move history in this fight | Yes, by watching | Yes |
+| Enemy move patterns and probabilities | Public knowledge (wiki, our notes) | Yes |
+| The enemy's next roll, random targets, random effects | No | Sample it |
+| Results of random card, potion and orb generation, random costs | No | Sample them |
+| Encounters behind map nodes, event outcomes, rewards, shop stock, treasure | No (room types only) | Sample or estimate; never read |
+| Run seed and RNG counters | The seed string can be shown; using it to predict is not playing | **Never** |
+| Exam-seed outcomes from earlier attempts | Memory of a replayed seed | Only as the Player could (no move-by-move lookup) |
+
+### 1.2 Rules
+
+| ID | Rule | Why and evidence | Enforced by |
+|---|---|---|---|
+| FP-1 | A decision may use only visible information (table above) plus public knowledge with a provenance label. | Goal: skill comparable with the Player's. | Observation encoder (ML-1); FP audit tests (P7.E6.S4) |
+| FP-2 | Never read, store or derive the run seed, an RNG counter or an RNG object for a decision. | `[GAME]` The run has 12 streams (`Runs.RunRngSet`: UpFront, Shuffle, UnknownMapPoint, CombatCardGeneration, CombatPotionGeneration, CombatCardSelection, CombatEnergyCosts, CombatTargets, MonsterAi, Niche, CombatOrbs, TreasureRoomRelics) and each player 3 (`Random.PlayerRngSet`: Rewards, Shops, Transformations). Streams carry over between fights, so their state predicts future fights as well as this one. | Decision-mode sampler replaces all 15 (P7.E6.S2); invariance test (P7.E6.S4) |
+| FP-3 | Fidelity mode (true RNG, recorded actions) and decision mode (re-sampled RNG) are separate code paths. Fidelity mode runs offline on finished fights only, and its outputs never reach a decision. | A replay of a recorded fight contains the true RNG at room entry (`Multiplayer.Replay.CombatReplay.serializableRun`). | Separate entry points; decision mode refuses a state that carries live RNG values (P7.E6.S1) |
+| FP-4 | No reloads in any form: no Load button, no save-and-quit to retry, no simulated replay of the live fight with its true RNG to find the winning line. | Equivalent to save-scumming. The Player's benchmark counts deaths. | Runbooks; FP-3 guard; post-mortem checklist |
+| FP-5 | Keep known draw-pile positions: cards the player's own effects put on top or bottom, and draw-pile order seen through card effects. After a shuffle, order is unknown again. | A human remembers what they put on top. Losing it plays worse; inventing it cheats. | Sampler constraint tests (P7.E6.S3) |
+| FP-6 | Enemy moves: use the visible intent for this turn. Sample later moves from the move pattern, re-seeding `MonsterAi`. The monster's move history (observable) may be used. Internal fields that cannot be observed may not. | `[GAME]` `MonsterModel.GetIntents`, `MonsterModel.PerformMove`; `[OBS]` intents are visible in the live API. | Sampler; state builder whitelist (P7.E6.S1) |
+| FP-7 | `combat.enemies[].move_id` (live API) is a gray zone: it names the current move, which a knowledgeable player usually infers from the intent and the pattern. Use it only to look up the visible move's effect, never to read anything about future moves. | `[OBS]` field present in the live state (fixtures, 2026-11-19). | Code review; observation encoder documents it |
+| FP-8 | Random targets of the player's own effects (Juggernaut, random-enemy attacks) are sampled, not read. | `[GAME]` `CombatTargets` stream. | Sampler |
+| FP-9 | Out of combat, never simulate a reward, shop, event, treasure or unknown node with the true streams. Strategic search (Phase 9) samples them. | `[GAME]` `PlayerRngSet.Rewards/Shops/Transformations`, `RunRngSet.UnknownMapPoint/TreasureRoomRelics/UpFront`. | Run-level sampler (P7.E8) |
+| FP-10 | Training may use privileged information (for example a teacher that sees the draw order) only if the deployed policy's inputs are the visible observation. The model card states this. | Standard practice (privileged teacher, student distillation). The rule is about the deployed policy. | Model card review (P9.E2.S5) |
+| FP-15 | **State sanitizer.** To search from a live state, the host rebuilds the fight from the room-entry state plus the actions so far. That rebuild uses the true RNG to reproduce the past, which the player has seen. Before any search, the sanitizer (1) checks the rebuilt state equals the live observation, and stops if not; (2) hides the draw order except known positions (FP-5); (3) re-seeds all 15 streams (FP-2); (4) re-samples any hidden pre-rolled state, such as monster moves beyond the visible intent. Only the sanitized state reaches decision mode. | `[GAME]` No mid-combat restore exists (EN-2), so a rebuild is the only exact way to reach the present. The past is legitimate knowledge; the future is not. | Sanitizer tests and the leak canary (P7.E6.S1, S4) |
+| FP-11 | The live API audit is repeated after every mod or game update: no field may expose hidden information without being listed in this table. | `[OBS]` 2026-11-19 audit: neither mod exposes the draw order. STS2-Agent groups the draw pile into stacks (`GameStateService.AgentView.BuildAgentCardStacks`); STS2MCP sorts it by rarity and id (`McpMod.StateBuilder`). Our tools never read it. The seed appears only on character select. | `tools/fuzz_advise.py`-style field scan in the fidelity suite (P7.E5.S5) |
+
+### 1.3 Search pitfalls caused by hidden information
+
+| ID | Pitfall | Mitigation |
+|---|---|---|
+| FP-12 | **Strategy fusion**: averaging perfect-information plans over sampled worlds assumes the Agent can act differently per world, which it cannot. | Choose one action at the root across all samples (determinized root voting or information-set MCTS); compare both in P8.E2. |
+| FP-13 | **Too few samples**: one sampled world is a guess. | Report the decision's stability across sample counts; minimum sample count set in P8.E2.S3. |
+| FP-14 | **Sampler bias**: a sampler that ignores constraints (known positions, cards already drawn) produces impossible worlds. | Sampler tests against recorded fights: every sampled world must be consistent with the observation (P7.E6.S3). |
+
+---
+
+## 2. Fidelity: the simulation must match the game
+
+### 2.1 Flags and hooks that change game logic
+
+`[GAME]` evidence from the call graph (methods outside UI code that read each flag):
+
+| ID | Flag or hook | What it changes | Rule |
+|---|---|---|---|
+| FI-1 | `TestSupport.TestMode.IsOn` | 107 game-logic methods read it (outside UI, audio, effects, localisation, logging and modding code), including `MonsterModel.PerformMove`, moves of Vantom, Flyconid, Myte, Bowlbug Silk and others, `MerchantPotionEntry.CalcCost`, `ActModel.GetRandomList`, `MapCmd.SetBossEncounter`, `CreatureCmd.Heal/Kill`, `CardCmd.Transform`, relic rewards (`CallingBell`, `Cauldron`, `LargeCapsule`, `ScrollBoxes`), cards `BouncingFlask`, `HandOfGreed`, `Nightmare`. Also makes `NonInteractiveMode` active. | **Never on.** A test checks it is off in every simulator process. |
+| FI-2 | Debug and test hooks: `CombatManager.DebugForcedTopCardOnNextShuffle` (read by `CardPileCmd.Shuffle`), `EncounterModel.DebugRandomizeRng` (seeds from `DateTime.UtcNow`), `RunManager.EnterRoomDebug`, `NGame.DebugSeedOverride`, `CardCreationOptions.RngOverride`, `TestSupport.TestRngInjector`, `AbstractModel.NeverEverCallThisOutsideOfTests_SetIsMutable`, `CardModel.NeverEverCallThisOutsideOfTests_ClearOwner`, `Slither.TestEnergyCostOverride`, `ModManager.ResetForTests`, mock cards and pools (`Cards.Mocks.*`, `CardPools.MockCardPool`) | Shuffles, RNG seeding, encounter setup, card creation, energy costs | **Never used.** The one exception is an explicitly documented need (for example re-seeding a stream in decision mode), reviewed and tested for logic neutrality. |
+| FI-2b | `NonInteractiveMode.IsActive` (`TestMode.IsOn \|\| AutoSlayerCheck()`) | Outside UI code: only `Cmd.Wait`, `Cmd.CustomScaledWait`, `ActionExecutor.ExecuteActions/Pause/WaitForUnpause`, `GameAction.Execute`, `CombatManager.Pause/Unpause/WaitForUnpause` | Allowed: set `AutoSlayerCheck` to return true. Never through TestMode. |
+| FI-2c | `AutoSlay.AutoSlayer` (`--autoslay`) | Adds 200 Strength a turn from turn 3 (`AutoSlayConfig.combatStrengthRampPerTurn = 200`); random choices | Never used for data, benchmarks or play. |
+| FI-2d | Developer console (`DevConsole.ConsoleCommands`: `fight`, `card`, `relic`, `power`, `godmode`, `win` and others) | Arbitrary state | Never in scored runs; in practice only with the Player's approval (SA-6). Fights started with `fight` use `DebugRandomizeRng` and are not representative of real RNG. |
+
+### 2.2 Other fidelity rules
+
+| ID | Rule | Why and evidence | Enforced by |
+|---|---|---|---|
+| FI-3 | The simulator checks the game build (`release_info.json` commit) and the model-id hash (`ModelIdSerializationCache.Hash`) against the replay or state it loads, and refuses a mismatch. | `[GAME]` `CombatReplay.gitCommit`, `modelIdHash`; `NMultiplayerTest.RunReplay` warns on commit mismatch. Early access patches often. | Version guard (P7.E3.S5) |
+| FI-4 | After every game update: rebuild the assembly index, re-run this file's evidence checks and the fidelity suite before any simulator result is used. | v0.107.1 → v0.111.1 already changed cards. | Patch checklist (P7.E7.S4) |
+| FI-5 | Load the same unlock state and progress as the profile simulated. | `[GAME]` `Player.UnlockState` is read by `CardFactory`, `PotionFactory`, `MerchantInventory`, `UnknownMapPointOdds.Roll` and in combat by `Abundance.OnPlay`; `ExtraRunFields.TestSubjectKills` is read by `TestSubject.TriggerDeadState`. | State loader takes them from `SerializablePlayer` and `SerializableRun` (P7.E4.S1) |
+| FI-6 | Solo simulations run as single-player; co-op simulations need every player. | `[GAME]` `RunManager.IsSingleplayerOrFakeMultiplayer` is read by `CombatManager.AllPlayersReadyToEndTurn`; `CombatState.MultiplayerScalingModel`. | Loader asserts the player count |
+| FI-7 | Every native Godot call reached by combat logic gets a stub that is proven logic-neutral, or the route is abandoned. | `[GAME]` reached from logic: `Godot.Time.GetTicksMsec` in `CardModel.OnPlayWrapper`; timers via `Engine.GetMainLoop`/`SceneTree.CreateTimer` in `Cmd.Wait`, `ActionExecutor`, `RollingBoulderPower.AfterPlayerTurnStart`, `LordsParasol.PurchaseEverything`; node lookups in about 75 card and 116 monster methods (effects). Godot value types (`Color`, `Vector2`) need no engine. | Stub list with a test per stub (P7.E3.S2) |
+| FI-8 | Async code runs on one thread with a deterministic scheduler; no thread pool. | `[HYPOTHESIS]` The game awaits on Godot's main-thread context. On the default .NET thread pool, continuation order could vary. `[GAME]` No `Task.Run`/thread use in combat logic (only in save file I/O). | Single-threaded `SynchronizationContext` in the host; same-replay-twice test (FI-11) |
+| FI-9 | Run on .NET 9 (the game ships runtime 9.0.7) with the invariant culture. | `[GAME]` `sts2.runtimeconfig.json`. `[GAME]` `Random.Rng` seeds from `StringHelper.GetDeterministicHashCode`, not `string.GetHashCode`, so string hashing is safe; seeded `System.Random` behaviour is stable within a runtime. | Host pins the runtime; culture set at start |
+| FI-10 | No wall-clock or unseeded randomness may influence results. | `[GAME]` None in combat logic except `CardModel.OnPlayWrapper` (`GetTicksMsec`, assumed timing only) and `DebugRandomizeRng` (FI-2). No `new Random()`, `Random.Shared` or `Guid.NewGuid` in logic. | Stub returns a constant; fidelity suite would catch a dependency |
+| FI-11 | No state may leak between simulated fights in one process: singletons (`RunManager.Instance`, `CombatManager.Instance`), static caches, event subscriptions. | `[HYPOTHESIS]` Singletons are global; static caches exist. | Test: the same replay twice in one process gives identical checksums, and a different replay in between changes nothing (P7.E3.S4) |
+| FI-12 | A checksum match is necessary, not sufficient. Also compare intents, monster move state, card costs and upgrades, pile order and the RNG counters at checkpoints. | `[GAME]` `NetFullCombatState` (hashed by `ChecksumTracker` with XxHash32) holds creatures (HP, Block, powers as id and amount), players (piles, potions, relics, energy) and RNG, but no monster move state. | Field-level comparison in the fidelity suite (P7.E5.S2) |
+| FI-13 | Dictionary and HashSet enumeration in combat logic (for example `Misery.OnPlay`, `DampenPower.AfterRemoved`, `PainfulStabsPower.AfterAttack`, `MonsterModel.GetIntents`) is deterministic only for identical insert and remove sequences. | `[GAME]` call graph. Co-op checksums already depend on it. | Covered by the fidelity suite; no extra work unless a mismatch points here |
+| FI-14 | The live game must not differ from the simulator because of mods. | `[OBS]` STS2-Agent applies no Harmony patches (no `HarmonyPatch`/`Patch` calls in its source, commit `5d7c306`); it reads state and calls game methods. Re-check after any mod update. | Mod review checklist |
+| FI-15 | The simulator's correctness is measured, never assumed: every simulator-derived number in a report states the fidelity-suite version and pass rate it was produced under. | Reports elsewhere in the project carry provenance; simulator output is `[HYPOTHESIS]` until the suite passes. | Report template (P7.E5.S4) |
+
+---
+
+## 3. Safety: the Player's saves, accounts and machine
+
+| ID | Rule | Evidence | Enforced by |
+|---|---|---|---|
+| SA-1 | The simulator never writes saves and has no path to the Steam save folders. It runs with its own sandbox user folder, and save calls are stubbed. | `[GAME]` `CombatManager.EndCombatInternal` → `SaveManager.SaveRun`; `RunManager.EnterMapPointInternal` → `SaveRun`; `EventRoom.OnEventStateChanged` → `SaveRun`; `RunHistoryUtilities.CreateRunHistoryEntry` → `SaveRunHistory`. | Stub test: a full simulated fight leaves the sandbox folder unchanged; the host refuses to start if its user folder is under `~/Library/Application Support/SlayTheSpire2` (P7.E3.S3) |
+| SA-2 | No achievements, stats or Steam calls. The simulator never initialises the Steam API. | `[GAME]` `EndCombatInternal` → `AchievementsHelper.CheckForDefeatedAllEnemiesAchievement`; `Models.Achievements`, `Steamworks.NET`. Achievements belong to the Player's Steam account, across all profiles. | Stubs; Steam assembly never loaded (P7.E3.S3) |
+| SA-3 | No telemetry or crash reports to the developer. | `[GAME]` `RunManager.OnEnded` → `MetricUtilities.UploadRunMetrics`; `UploadAchievementMetric`, `UploadEpochMetric`, `UploadSettingsMetric`; `SentryService.Initialize`. Simulated runs would send fake data to the developer. | Stubs; the host runs with outbound network blocked where possible (P7.E3.S3) |
+| SA-4 | No leaderboards, daily runs or time server. | `[GAME]` `Leaderboard*`, `Daily.TimeServer`. | Never called; stubs if reached |
+| SA-5 | The simulator never runs inside or attaches to the live game process. | Live play must stay unaffected. | Separate process by design |
+| SA-6 | The developer console on a Steam profile (including profile 2) needs the Player's explicit approval each time it is proposed. Gym work goes to an offline instance (`--force-steam off --clientId <n>`), which has its own user folder. | Achievements are per account; `[OBS]` STS2-Agent's companion launcher uses offline instances. | Phase 7–9 stories that need it are marked Player-gated |
+| SA-7 | Machine load: simulator workers default to at most half the CPU cores, at low priority; long jobs run only when the Player allows; logs and replays are rotated. | The Mac is the Player's daily machine. | Worker config (P7.E7.S2) |
+| SA-8 | Downloaded code (NuGet packages beyond the .NET SDK's own, Python packages such as a neural-network framework) needs a security review approved by the Player before it is built or run. | The project instructions hard rule. `tools/asm/asm.cs` sets `PublishAot=false` so the SDK does not fetch the AOT compiler package. | Story gates in Phases 7–9 |
+| SA-9 | Back up saves before any mod change or install (P0.E1). | The project instructions hard rule. | Runbook |
+
+---
+
+## 4. Legal and accounts
+
+| ID | Rule |
+|---|---|
+| LG-1 | Local research only. Game assemblies are referenced from the install folder and never copied into the repository. Decompiled code is not produced, and assembly indexes stay in `data/asm/` (ignored by git). Nothing from the game is published or shared. |
+| LG-2 | The game's terms of use are the Player's to judge. The Agent does not claim any reading of them; it keeps everything private and local, and stops if the Player says so. |
+| LG-3 | The Agent plays online only with the Player (co-op), never in public lobbies or on leaderboards. |
+| LG-4 | The Player's personal details never enter simulator inputs, logs or datasets: save paths use `<id>`, and replays are stored with the game's own anonymisation where available (`CombatReplay.Anonymized`). |
+
+---
+
+## 5. Learning and evaluation
+
+| ID | Rule | Why |
+|---|---|---|
+| ML-1 | One observation encoder for live and simulated play, built only from fields the live API exposes (or would expose: FP-11). The simulator produces observations through the same encoder. | Otherwise models trained in simulation see inputs they will never get live (train and test mismatch). |
+| ML-2 | Every dataset, model and report records the game build, simulator version, fidelity pass rate, encoder version and training seeds. | Patches and code changes invalidate old results. |
+| ML-3 | Rewards for learning reflect run outcomes, not only fight outcomes: HP lost has a cost that depends on the run's future; potions and cards used have a cost. | A fight-level reward alone teaches hoarding or reckless HP trades. |
+| ML-4 | Watch for reward hacking and degenerate loops: stalling fights, infinite combos, simulator bugs that a policy learns to exploit. | A policy exploits any simulator error it finds. Fidelity suite plus live A/B tests catch it. |
+| ML-5 | **Scored runs** (everything that counts towards M-milestones or comparisons with the Player) use unmodified game logic through the normal mod API. Instant mode is allowed, because it changes only waits (FI-2b). No console, no debug hooks. | Comparability with the Player. |
+| ML-6 | No restarts and no abandon-and-retry. Abandoned or crashed runs count as losses unless the cause is a tool fault fixed before the next run, recorded in the scoreboard. | The Player's record counts every death. |
+| ML-7 | Exam seeds are held out: never used for training, tuning or hyperparameter search. | Overfitting to known seeds inflates results. |
+| ML-8 | Comparisons with the Player: same ascension band, the version gap stated (Player data v0.107.1, Agent v0.111.1 or later), counts next to rates, confidence intervals. At an 8% baseline, telling 15% from 8% needs on the order of 100 runs. | Small samples mislead. |
+| ML-9 | Every model has a model card: inputs, training data, version, evaluation results, known failure modes, and whether privileged information was used in training (FP-10). | Auditability for the Next Session. |
+| ML-10 | The rule-based planner stays as a fallback and a baseline. A learned component replaces it only after it wins a pre-registered A/B comparison. | Prevents regressions. |
+
+---
+
+## 6. Engineering pitfalls
+
+| ID | Pitfall | Mitigation |
+|---|---|---|
+| EN-1 | The model database (`ModelDb`) may load assets through Godot during initialisation (character and card-pool models call Godot in 33 and 20 methods). | First spike story tests initialisation alone (P7.E1.S2); fall back to an offline headless game instance (route R4) if it cannot be stubbed. |
+| EN-2 | No mid-combat restore exists: `NetFullCombatState` is produced only for checksums, and there is no serializable combat. | Branching by replay from room entry, or by cloning live objects (`AbstractModel.MutableClone`); measure both (P7.E4.S4). |
+| EN-3 | Replay cost grows with fight length. | Cache prefixes; reuse a process per fight; measure fights per second against the target (P7.E7.S1). |
+| EN-4 | Memory growth over millions of simulations. | Restart workers after N fights; leak test (P7.E7.S2). |
+| EN-5 | Exceptions inside game code abort a simulation silently. | Every simulation returns a status; failures are counted and sampled for review; a failure rate above 0.1% blocks use. |
+| EN-6 | The live state from the mod and the simulator's state drift in naming (card ids, power ids, upgrades). | One mapping table, tested against live fixtures (P7.E4.S2). |
+| EN-7 | Long jobs and the Player's machine: sleep, thermal limits, updates by Steam that replace the game files mid-job. | Keep-awake requests, job checkpoints, the version guard (FI-3) on every job start. |

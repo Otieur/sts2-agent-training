@@ -17,6 +17,9 @@ Progress is tracked in [STATUS.md](STATUS.md).
 | 4 | [phase-4-solo-practice.md](phase-4-solo-practice.md) | Agent plays full solo runs, reviews them, climbs ascension | 0, 2 (3 recommended) | 10+ runs × 1.5–3 h | Minimal |
 | 5 | [phase-5-second-character.md](phase-5-second-character.md) | Necrobinder through the same pipeline, faster | 1–4 | About half of Phases 1–4 | ~2–3 runs shadowed |
 | 6 | [phase-6-coop.md](phase-6-coop.md) | Co-op runs with the Agent as teammate, first co-op win | 4 (5 recommended) | Open-ended | Every co-op run |
+| 7 | [phase-7-engine-simulator.md](phase-7-engine-simulator.md) | The game's own combat logic in our own process: exact, a few ms per fight, fair-play layer | 0; replays from 4 | Spike 1–2 days; phase several sessions | Approvals only (mod change, offline instance) |
+| 8 | [phase-8-combat-search.md](phase-8-combat-search.md) | Search over the simulator beats the rule planner; live combat without language-model calls | 7 | Several sessions | Sign-off before autopilot runs |
+| 9 | [phase-9-learning.md](phase-9-learning.md) | Neural combat models by expert iteration; learned strategy on simulated runs; M8, then M9 | 8 (strategy also P7.E8) | Open-ended | Framework approval; training schedule |
 
 ```
 Phase 0 ──┬──> Phase 2 ──> Phase 3 ──> Phase 4 ──> Phase 5 ──> Phase 6
@@ -24,6 +27,18 @@ Phase 1 ──┘                  (shadowing)  (solo)    (2nd char)  (co-op)
 ```
 
 Phase 1 needs neither the game nor the mod, so it can run while Phase 0 is in progress.
+
+The engine track runs alongside Phases 4–6 and feeds them:
+
+```
+Phase 0 ──> Phase 7 ──> Phase 8 ──> Phase 9
+(setup)    (engine     (combat     (learned models,
+            simulator)  search,     reinforcement learning)
+                        autopilot)
+Phase 4 runs supply recorded fights to Phase 7; Phases 8 and 9 make Phases 4–6 faster and stronger.
+```
+
+Every story in Phases 7–9 follows [simulator-integrity.md](simulator-integrity.md): what the Agent may know when it decides, how the simulator stays exact, and how saves, accounts and evaluation stay safe and honest.
 
 ---
 

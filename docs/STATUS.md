@@ -3,6 +3,7 @@
 Update this file whenever a story changes status. Story-level status lives in each phase document; this board tracks epics.
 
 **Active phase:** Phase 0 is nearly done (2026-11-19: mod live on v0.111.1, first session complete; the items left need the game or the Player) and Phase 3 shadowing runs live. Next: Phase 4, the Agent's own practice runs, once the Player agrees how the game is shared (a separate profile is proposed). Phases 1 and 2 are done offline; Phase 4 tooling is ready and untested live. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md` (Needs-the-Player checklist in section 5).
+**Engine track (2026-11-19):** Phases 7–9 (engine simulator, combat search, learned models) are specified; the desk study is done and Phase 7 starts with the feasibility spike (P7.E1). Direction: `docs/decisions/0003-engine-simulator-and-learning.md`; rules: `docs/simulator-integrity.md`.
 **Last updated:** 2026-11-19
 
 ---
@@ -68,7 +69,6 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P4.E5 | Evaluation | In progress | Scoreboard, milestones, exam seeds ready |
 | P4.E6 | Ascension ladder | In progress | Rules written |
 | P4.E7 | Operations | Todo | |
-| P4.R1 | Engine simulation spike | Desk study done | `docs/proposals/engine-simulation-spike.md`: hidden Instant fast mode, deterministic replays with checksums, combat logic mostly free of Godot calls; prototypes (Instant mode, replay capture, simulator host) wait on the Player (mod change) |
 
 ## Phase 5: Second character ([doc](phase-5-second-character.md))
 
@@ -95,16 +95,63 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 ---
 
+## Phase 7: Engine simulator ([doc](phase-7-engine-simulator.md))
+
+| Epic | Title | Status | Notes |
+|---|---|---|---|
+| P7.E1 | Feasibility spike | In progress | S0 desk study done (`docs/proposals/engine-simulation-spike.md`, `tools/asm/asm.cs`); S1–S5 next; S6 (route R4) only if R3 fails |
+| P7.E2 | Ground truth from the real game | Todo | S2 needs the Player (mod change) |
+| P7.E3 | Engine host and sandbox | Todo | |
+| P7.E4 | Combat interface | Todo | |
+| P7.E5 | Fidelity suite | Todo | |
+| P7.E6 | Fair-play layer | Todo | Rules in `docs/simulator-integrity.md` |
+| P7.E7 | Performance and operations | Todo | |
+| P7.E8 | Run-level simulation | Todo | After Phase 8 starts |
+
+---
+
+## Phase 8: Combat search and autopilot ([doc](phase-8-combat-search.md))
+
+| Epic | Title | Status | Notes |
+|---|---|---|---|
+| P8.E1 | Evaluation harness | Todo | |
+| P8.E2 | Search | Todo | |
+| P8.E3 | Leaf evaluation | Todo | |
+| P8.E4 | Run-context costs | Todo | |
+| P8.E5 | Live combat autopilot | Todo | S5 needs the Player's sign-off |
+| P8.E6 | Validation in the real game | Todo | |
+
+---
+
+## Phase 9: Learned models and reinforcement learning ([doc](phase-9-learning.md))
+
+| Epic | Title | Status | Notes |
+|---|---|---|---|
+| P9.E1 | Data and encoding | Todo | |
+| P9.E2 | Combat value network | Todo | |
+| P9.E3 | Combat policy and expert iteration | Todo | |
+| P9.E4 | Strategic decisions | Todo | S2 needs P7.E8 |
+| P9.E5 | Training infrastructure | Todo | S1 needs the Player (framework security review) |
+| P9.E6 | Evaluation and the ascension ladder | Todo | |
+| P9.E7 | Patch resilience | Todo | |
+
+---
+
 ## Milestones
 
 | # | Milestone | Status | Date | Evidence |
 |---|---|---|---|---|
 | M1 | Clean full run | — | | |
 | M2 | Act 1 boss in 3 of 5 | — | | |
-| M3 | First solo win (A0) | — | | |
+| M3 | First solo win (A0) | Done | 2026-11-19 | runs/2026-11-19-1ZWEN4BFQUZL |
 | M4 | Damage at or below the Player's median (Acts 1–2 hallway, same ascension band) | — | | |
 | M5 | Solo win at A5 | — | | |
 | M6 | First co-op win | — | | |
 | M7 | Solo win at A10 (stretch) | — | | |
 | M8 | Better than the Player (band win rate over 10+ runs: A5–9 above 25%, A10 above 8%) | — | | |
 | M9 | 3 A10 wins in 10 consecutive A10 runs (stretch) | — | | |
+| M10 | Engine spike verdict: the game's combat runs in our own process (or route R4) | — | | |
+| M11 | Simulator fidelity (99% of 100+ recorded fights exact) and speed (20+ fights/s per core; target 200) | — | | |
+| M12 | Combat autopilot: every fight of 3 real runs, no language-model calls, median decision 1 s or less | — | | |
+| M13 | Search beats the rule planner (pre-registered) | — | | |
+| M14 | Learned combat models beat search with heuristic evaluation (pre-registered) | — | | |

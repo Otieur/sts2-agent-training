@@ -8,7 +8,9 @@ Goal: the Agent plays Slay the Spire 2 competently, first solo and then as a co-
 
 Written 2026-11-18. Update this file when a phase finishes or the plan changes.
 
-**Where things stand (2026-11-19, after the overnight session):** Phases 1 and 2 are done offline; the Phase 4 toolchain (turn planner, path planner, draft scorer, deck check, fight simulator, one `advise.py` entry point, both mods) is written and tested offline only; Phase 0 waits on the player (security verdict, branch switch to v0.111.1, mod choice), then a 30-minute first session (`docs/runbooks/first-session.md`). Summary: `docs/overnight-report.md`.
+**Engine track (2026-11-19):** the Player asked for a fast final product and an AI that clears A10 with a high win rate. Phases 7–9 add a simulator built on the game's own engine, search over it, and learned models trained by self-play (decision record `docs/decisions/0003-engine-simulator-and-learning.md`; rules `docs/simulator-integrity.md`). The first Agent run won at A0 on 2026-11-19 (M3).
+
+**Where things stood (2026-11-19, after the overnight session):** Phases 1 and 2 are done offline; the Phase 4 toolchain (turn planner, path planner, draft scorer, deck check, fight simulator, one `advise.py` entry point, both mods) is written and tested offline only; Phase 0 waits on the player (security verdict, branch switch to v0.111.1, mod choice), then a 30-minute first session (`docs/runbooks/first-session.md`). Summary: `docs/overnight-report.md`.
 
 **Detailed phase documents** (epics, user stories, acceptance criteria, what to expect, exit gates) are in [docs/](docs/README.md). Progress is tracked in [docs/STATUS.md](docs/STATUS.md). This file is the overview; the phase documents are the specification.
 
@@ -27,6 +29,16 @@ The Agent's model weights do not change between sessions. Every session starts w
 | Scoreboard | Metrics across runs, used to judge whether a playbook change actually helped | `metrics/scoreboard.csv` |
 
 The training loop is: **play → log every decision with a reason → review the run → change the playbook only on evidence → replay**. The playbook keeps a changelog, so a bad change can be found and reverted.
+
+**Learned components (Phases 7–9, added 2026-11-19).** Written knowledge alone is slow to apply (every decision is a model round trip) and capped by the quality of hand-written rules. The engine track adds parts that learn from data:
+
+| Component | What it does | Phase |
+|---|---|---|
+| Engine simulator | Runs the game's own combat logic outside the game, exactly and in milliseconds, with hidden information re-sampled for every decision | 7 |
+| Combat search | Chooses combat actions by searching sampled futures in the simulator; plays live fights without language-model calls | 8 |
+| Neural models | Value and policy networks for combat (expert iteration from search), and strategic models for drafting, pathing, shops, rest sites and events (outcome data, then reinforcement learning on simulated runs) | 9 |
+
+The language model keeps the roles where it is strongest: reviewing runs, writing and checking rules, unusual situations, co-op communication, and supervising the automated parts. Every learned or simulated result follows `docs/simulator-integrity.md`: decisions use only what a player can see, the simulator is checked against recorded fights, and scored runs stay clean.
 
 ---
 
@@ -174,6 +186,31 @@ Repeat Phases 1–4 for Necrobinder, reusing the knowledge base. It should go fa
 4. **Co-op playbook:** role split by character, map-vote policy, who takes which rewards, how to share HP pressure.
 5. **Ladder:** A0 co-op first, then climb the same way as in Phase 4.
 
+### Phase 7: Engine simulator
+
+The game's combat logic is deterministic, can be replayed from room entry and checked with the game's own checksums, and rarely calls the Godot engine (desk study: `docs/proposals/engine-simulation-spike.md`). Phase 7 loads the game's assemblies into a separate process of our own, stubs the few engine, save, achievement and telemetry calls, and runs fights headless.
+
+1. **Feasibility spike (1–2 days):** model database start-up without the engine, one real fight in our process, first timing; go or no-go. Fallback: an offline headless game instance.
+2. **Ground truth:** record a replay of every Agent fight in the real game (needs a mod change approved by the player).
+3. **Host and sandbox:** deterministic single-thread scheduler, engine-call stubs, no saves, achievements, Steam or telemetry, no state shared between fights, a version guard.
+4. **Combat interface and Python bridge:** load, legal actions, step, branch, batch.
+5. **Fidelity suite:** recorded fights replayed with checksums and field comparisons; live observations compared too.
+6. **Fair-play layer:** a sanitizer that keeps only what a player could know, re-seeds all 15 random streams and samples the draw order with known positions kept; invariance audit and leak canary.
+
+**Done when:** at least 99% of at least 100 recorded fights match exactly, at least 20 fights per second per core (target 200), and the integrity tests pass.
+
+### Phase 8: Combat search and autopilot
+
+Search over the simulator replaces the language model for combat: turn-level search with exact outcomes first, then information-set Monte Carlo tree search across turns, with run-context prices for HP, potions and cards. `play_turn.py --auto` plays live fights, rebuilding and sanitizing the state at each decision, escalating to the language model only on mismatches, low confidence or danger.
+
+**Done when:** search beats the rule planner on a fixed benchmark set by pre-registered margins, and autopilot plays every fight of 3 real runs with no illegal actions and a median decision time of 1 s or less.
+
+### Phase 9: Learned models and reinforcement learning
+
+Expert iteration for combat: a value network replaces the heuristic leaf evaluation, a policy network focuses search, and self-play generations are promoted only through pre-registered gates. Strategic models start from outcome data (never imitation of the player) and move to reinforcement learning on a run-level simulator. A neural-network framework is downloaded code and needs a security review approved by the player first.
+
+**Done when:** learned combat models beat search with heuristic evaluation at equal time budget, strategic models beat the rule tools, and M8 is reached under the scored-run protocol; M9 attempted.
+
 ---
 
 ## 4. Milestones
@@ -189,6 +226,11 @@ Repeat Phases 1–4 for Necrobinder, reusing the knowledge base. It should go fa
 | M7 | Solo win at A10 (stretch) | Scoreboard |
 | M8 | Better than the player: higher win rate than the player's in the same ascension band over at least 10 finished runs (A5–9: above 25%; A10: above 8%) | Scoreboard against the Phase 1 baseline |
 | M9 | Consistent at A10: 3 wins in any 10 consecutive A10 runs (stretch) | Scoreboard |
+| M10 | Engine spike verdict: the game's combat runs in our own process (or the fallback route) | `reports/phase7/spike.md` |
+| M11 | Simulator exact on at least 99% of at least 100 recorded fights; at least 20 fights per second per core (target 200) | `reports/phase7/fidelity.md`, `performance.md` |
+| M12 | Combat autopilot plays every fight of 3 real runs without language-model calls; median decision 1 s or less | Decision logs, scoreboard |
+| M13 | Search beats the rule planner (pre-registered comparison) | `reports/phase8/` |
+| M14 | Learned combat models beat search with heuristic evaluation at equal time budget (pre-registered) | `reports/phase9/experiments.md` |
 
 ---
 
@@ -205,3 +247,9 @@ Repeat Phases 1–4 for Necrobinder, reusing the knowledge base. It should go fa
 | Small sample sizes (12 Ironclad wins) | Report counts next to rates; treat win correlations as hypotheses |
 | Overfitting the playbook to one run | Changes need evidence; changelog; exam seeds catch regressions |
 | Token usage (the STS2MCP author reports about 8M tokens per run for a smaller model) | Record tokens per run in the scoreboard so the real cost is known |
+| Decisions that use hidden information (seed, RNG state, draw order, future rolls) make results meaningless | `docs/simulator-integrity.md` §1: sanitizer, re-seeded streams, invariance audit, leak canary |
+| The simulator differs from the game (test flags, debug hooks, engine stubs, version drift, unlock state) | Integrity rules FI-1 to FI-15; fidelity suite on recorded fights; version guard; patch runbook |
+| Simulator touches the player's saves, achievements, Steam or the developer's telemetry | Sandbox and stubs (SA-1 to SA-4), tested; never inside the live game |
+| The game's model database cannot start without the Godot engine | Feasibility spike tests it first; fallback to an offline headless game instance |
+| Learned models exploit simulator bugs or overfit | Exploit watch, real-game validation, pre-registered promotion gates, rule stack kept as fallback |
+| Game patches invalidate the simulator and models | Version guard, patch runbook, retraining procedure |
