@@ -14,7 +14,7 @@ public static class Serve
 
     public static int Run(string[] args)
     {
-        try { Stages.Boot(false); Host.InstallStubs(); Choices.Install(); } catch (Stages.StageFailed) { return 1; }
+        try { Stages.Boot(false); Choices.Install(); Host.InstallStubs(); } catch (Stages.StageFailed) { return 1; }
         if (!args.Contains("log")) Stubs.CaptureLog();
         var s = new Session();
         SynchronizationContext.SetSynchronizationContext(s.Ctx);
@@ -55,11 +55,24 @@ public static class Serve
                         reply["generators_reseeded"] = req["seed"] == null ? 0 : Sanitizer.LastCount;
                         break;
                     case "new_fight":
-                        s.NewFight(req["spec"]!, (ulong)(req["sample_seed"] ?? 1));
+                        s.NewFight(req["spec"]!, (ulong)(req["sample_seed"]?.GetValue<long>() ?? 1L));
                         resets++;
                         reply["obs"] = s.Observe();
                         reply["generators_reseeded"] = Sanitizer.LastCount;
                         break;
+                    case "new_run":
+                        s.NewRun(req["spec"]!, (ulong)(req["sample_seed"]?.GetValue<long>() ?? 1L));
+                        resets++;
+                        reply["obs"] = s.RunObserve();
+                        break;
+                    case "run_legal": reply["actions"] = s.RunLegal(); break;
+                    case "run_step":
+                        s.RunStep(req["action"]!);
+                        s.AfterRewardTaken();
+                        steps++;
+                        reply["obs"] = s.RunObserve();
+                        break;
+                    case "run_observe": reply["obs"] = s.RunObserve(); break;
                     case "encounters":
                         reply["encounters"] = new JsonArray(MegaCrit.Sts2.Core.Models.ModelDb.AllEncounters
                             .Select(e => (JsonNode)new JsonObject { ["id"] = e.Id.Entry, ["room_type"] = e.RoomType.ToString(), ["weak"] = e.IsWeak }).ToArray());

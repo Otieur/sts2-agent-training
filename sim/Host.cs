@@ -15,13 +15,15 @@ public static class Host
             var sm = typeof(MegaCrit.Sts2.Core.Saves.SaveManager);
             foreach (var m in new[] { "SaveRun", "SaveRunHistory", "SaveProgressFile", "SavePrefsFile", "SaveSettings", "SaveProfile" })
                 Stubs.Skip(sm, m, "SA-1: the simulator never writes saves");
-            Stubs.Skip(typeof(MegaCrit.Sts2.Core.Assets.PreloadManager), "LoadRoomCombatAssets", "assets only: preloads scenes and textures");
+            Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Assets.PreloadManager));   // assets only: preloads scenes and textures
             Stubs.Skip(typeof(RunManager), "WriteReplay", "SA-1: the game writes replays/latest.mcr into the save profile at the end of a fight and on clean-up");
             // Localised text is display and log text. The tables live in the game's resource pack, which only the
             // engine can read, so text lookups return an empty string.
             foreach (var m in new[] { "GetFormattedText", "GetRawText" })
                 Stubs.Skip(typeof(MegaCrit.Sts2.Core.Localization.LocString), m, "display and log text only");
             Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Helpers.GodotTreeExtensions));
+            Console.WriteLine($"     {Stubs.NullEngineResources(sm.Assembly)} game methods returning engine resources (textures, scenes) answer null");
+            Console.WriteLine($"     {Stubs.EmptyHoverTips(sm.Assembly)} hover-tip getters answer empty");
             // Speech bubbles are display only.
             Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Commands.TalkCmd));
             // The game reads preferences and settings from files in the save folder. The host gives it default objects
@@ -29,6 +31,15 @@ public static class Host
             var prefs = new MegaCrit.Sts2.Core.Saves.PrefsSave { FastMode = MegaCrit.Sts2.Core.Settings.FastModeType.Instant };
             Stubs.Return(sm, "get_PrefsSave", prefs, "preferences object owned by the host (no file)");
             Stubs.Return(sm, "get_SettingsSave", Activator.CreateInstance(typeof(MegaCrit.Sts2.Core.Saves.SettingsSave), true), "settings object owned by the host (no file)");
+            // End of a run (SA-1 to SA-4): no telemetry upload, no achievements or Steam stats, no daily score, no
+            // run history, no progress update, and above all no deletion of the current-run save file.
+            foreach (var name in new[] { "MegaCrit.Sts2.Core.Runs.Metrics.MetricUtilities", "MegaCrit.Sts2.Core.Achievements.AchievementsHelper",
+                                         "MegaCrit.Sts2.Core.Platform.StatsManager", "MegaCrit.Sts2.Core.Daily.DailyRunUtility",
+                                         "MegaCrit.Sts2.Core.Debug.SentryService", "MegaCrit.Sts2.Core.Runs.RunHistoryUtilities" })
+                Stubs.MakeInertHelper(sm.Assembly.GetType(name)!);
+            foreach (var m in new[] { "UpdateProgressWithRunData", "BeginSaveBatch", "DeleteCurrentRun", "DeleteCurrentMultiplayerRun" })
+                Stubs.Skip(sm, m, "SA-1: no progress update and no save-file deletion");
+            Stubs.Skip(typeof(RunManager), "UpdateRichPresence", "SA-2: no Steam rich presence");
             // Display-only methods inside monster and power classes, found by the encounter sweep (reports/phase7/encounter-sweep.md).
             var asm = sm.Assembly;
             foreach (var (type, method, why) in new[] {

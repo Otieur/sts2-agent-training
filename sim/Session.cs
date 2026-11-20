@@ -16,7 +16,7 @@ using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.Multiplayer.Replay;
 using MegaCrit.Sts2.Core.Runs;
 
-public sealed class Session
+public sealed partial class Session
 {
     public CombatReplay Replay;
     public RunState Run;
@@ -223,18 +223,19 @@ public sealed class Session
     public JsonArray Legal()
     {
         var acts = new JsonArray();
-        if (Status() != "in_progress" || Blocked) return acts;
-        if (Choices.Current is { } ch)
+        if (Choices.Current is { } ch)   // a pending card, relic or bundle choice: in a fight or anywhere in the run
         {
             // one card: every option (and "none" if allowed); several: the first combinations of exactly Max cards
             if (ch.Min == 0) acts.Add(new JsonObject { ["type"] = "choose", ["cards"] = new JsonArray() });
+            var labels = ch.Labels().ToList();
             if (ch.Max <= 1 || ch.Min != ch.Max)
-                for (var i = 0; i < ch.Options.Count; i++) acts.Add(new JsonObject { ["type"] = "choose", ["cards"] = new JsonArray(i), ["card_id"] = ch.Options[i].Id.Entry });
+                for (var i = 0; i < ch.Count; i++) acts.Add(new JsonObject { ["type"] = "choose", ["cards"] = new JsonArray(i), ["card_id"] = labels[i] });
             else
-                foreach (var combo in Combinations(ch.Options.Count, ch.Max).Take(40))
+                foreach (var combo in Combinations(ch.Count, ch.Max).Take(40))
                     acts.Add(new JsonObject { ["type"] = "choose", ["cards"] = new JsonArray(combo.Select(i => (JsonNode)i).ToArray()) });
             return acts;
         }
+        if (Status() != "in_progress" || Blocked) return acts;
         var hand = Me.PlayerCombatState.Hand.Cards.ToList();
         var enemies = Enemies;
         for (var i = 0; i < hand.Count; i++)
@@ -383,7 +384,7 @@ public sealed class Session
         {
             ["screen"] = "COMBAT", ["status"] = Status(), ["turn"] = pcs.TurnNumber, ["waiting_for_choice"] = Waiting, ["blocked"] = Blocked,
             ["choice"] = Choices.Current is { } pc ? new JsonObject { ["kind"] = pc.Kind, ["min"] = pc.Min, ["max"] = pc.Max,
-                ["options"] = new JsonArray(pc.Options.Select(c => (JsonNode)(c.Id.Entry + (c.IsUpgraded ? "+" : ""))).ToArray()) } : null,
+                ["options"] = new JsonArray(pc.Labels().Select(x => (JsonNode)x).ToArray()) } : null,
             ["applied_events"] = Applied, ["sanitized"] = Sanitized, ["player_index"] = PlayerIndex, ["players"] = Run.Players.Count,
             ["run"] = new JsonObject { ["ascension"] = Run.AscensionLevel, ["max_hp"] = me.MaxHp, ["current_hp"] = me.CurrentHp, ["relics"] = relics, ["potions"] = potions },
             ["combat"] = new JsonObject

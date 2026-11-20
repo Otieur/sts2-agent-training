@@ -131,6 +131,9 @@ public static class Stubs
     static readonly FieldInfo NativePtrField = typeof(Godot.GodotObject).GetField("NativePtr", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!;
 
     // One UI namespace is spelled with a lower-case "sts2" in the game (MegaCrit.sts2.Core.Nodes.TopBar).
+    // A method another part of the host patches itself (so making its class inert must leave it alone).
+    public static void Reserve(MethodBase m) => Patched.Add(m);
+
     static bool IsUi(Type t) => t?.Namespace != null && (t.Namespace.StartsWith("MegaCrit.Sts2.Core.Nodes", StringComparison.OrdinalIgnoreCase)
                                                         || t.Namespace.StartsWith("MegaCrit.Sts2.addons", StringComparison.OrdinalIgnoreCase));
 
@@ -278,6 +281,60 @@ public static class Stubs
     }
 
     static bool FixedPrefix(MethodBase __originalMethod, ref object __result) { __result = Fixed[__originalMethod]; return false; }
+
+    // Every game-logic method that returns an engine resource (a texture, scene, material, font ...) answers null. Those
+    // resources only feed icons, hover tips and scenes; loading them needs the engine. Returns the number of methods.
+    public static int NullEngineResources(Assembly asm)
+    {
+        var flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        var prefix = new HarmonyLib.HarmonyMethod(typeof(Stubs).GetMethod(nameof(NullResource), BindingFlags.Static | BindingFlags.NonPublic));
+        var n = 0;
+        foreach (var type in asm.GetTypes())
+        {
+            if (IsUi(type) || type.Namespace == null || !type.Namespace.StartsWith("MegaCrit.Sts2.Core")) continue;
+            foreach (var m in type.GetMethods(flags))
+            {
+                if (m.IsAbstract || m.ContainsGenericParameters || m.GetMethodBody() == null || Patched.Contains(m)) continue;
+                if (!typeof(Godot.Resource).IsAssignableFrom(m.ReturnType)) continue;
+                try { H.Patch(m, prefix: prefix); Patched.Add(m); n++; } catch { InertFailed++; }
+            }
+        }
+        return n;
+    }
+
+    static bool NullResource(ref object __result) { __result = null; return false; }
+
+    // Hover tips (the text boxes shown when the mouse is over a card, relic or power) are display only. Every getter of
+    // them answers an empty list; a single tip answers its default value.
+    static readonly Dictionary<MethodBase, object> EmptyValue = new();
+
+    public static int EmptyHoverTips(Assembly asm)
+    {
+        var flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        var prefix = new HarmonyLib.HarmonyMethod(typeof(Stubs).GetMethod(nameof(EmptyPrefix), BindingFlags.Static | BindingFlags.NonPublic));
+        var n = 0;
+        foreach (var type in asm.GetTypes())
+        {
+            if (IsUi(type) || type.Namespace == null || !type.Namespace.StartsWith("MegaCrit.Sts2.Core")) continue;
+            foreach (var m in type.GetMethods(flags))
+            {
+                if (!m.Name.StartsWith("get_") || !m.Name.Contains("HoverTip") || m.IsAbstract || m.ContainsGenericParameters || m.GetMethodBody() == null || Patched.Contains(m)) continue;
+                var rt = m.ReturnType;
+                object value = null;
+                var en = rt.IsGenericType && rt.GetGenericTypeDefinition() == typeof(IEnumerable<>) ? rt.GetGenericArguments()[0]
+                       : rt.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>))?.GetGenericArguments()[0];
+                if (rt == typeof(string)) value = "";
+                else if (en != null && rt.IsAssignableFrom(en.MakeArrayType())) value = Array.CreateInstance(en, 0);
+                else if (rt.IsValueType) value = Activator.CreateInstance(rt);
+                else if (en != null) continue;   // a collection type an empty array cannot stand for: leave it
+                EmptyValue[m] = value;
+                try { H.Patch(m, prefix: prefix); Patched.Add(m); n++; } catch { InertFailed++; }
+            }
+        }
+        return n;
+    }
+
+    static bool EmptyPrefix(MethodBase __originalMethod, ref object __result) { __result = EmptyValue[__originalMethod]; return false; }
 
     public static void ReportSkips()
     {
