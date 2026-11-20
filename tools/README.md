@@ -57,6 +57,11 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 ## Shared
 `stslib.py` (database, statistics, tables), `knowledge/data/card-patches.json` (card changes after the extract).
 
+## Simulator (Phase 7; host in `sim/`, C# on .NET 9)
+| Tool | What it does | Typical call |
+|---|---|---|
+| `sim.py` | Bridge to the simulator host: the game's own combat logic outside the game. `smoke` positions a recorded fight and rolls it out; `fidelity` replays every recorded fight against the game's recorded states; `fairplay` runs the sanitizer, determinism, invariance and leak-canary checks; `planner` runs `plan_turn.py` as the policy on sampled futures | `sim.py fidelity` · `sim.py planner --seeds 10` |
+
 ## Checks against the game's own code (run after every game update: `docs/runbooks/game-patch.md`)
 | Tool | What it does | Typical call |
 |---|---|---|

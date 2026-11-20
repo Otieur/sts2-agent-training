@@ -101,10 +101,10 @@ Update this file whenever a story changes status. Story-level status lives in ea
 |---|---|---|---|
 | P7.E1 | Feasibility spike | Done | **Go, route R3** (2026-11-19, `reports/phase7/spike.md`): a recorded boss fight replays in our own process with all 26 turn-boundary states equal to the game's; 400 warm passes all correct at 31 ms CPU per fight (about 32 fights per second per core: above the minimum of 20, short of the 200 target) |
 | P7.E2 | Ground truth from the real game | In progress | S1 done: the game records every fight itself (`replays/latest.mcr`); S2 implemented in `tools/play_turn.py`, first live run pending; no mod change needed |
-| P7.E3 | Engine host and sandbox | Todo | |
-| P7.E4 | Combat interface | Todo | |
-| P7.E5 | Fidelity suite | Todo | |
-| P7.E6 | Fair-play layer | Todo | Rules in `docs/simulator-integrity.md` |
+| P7.E3 | Engine host and sandbox | In progress | `sim/`: fake engine, inert UI, stubs, single-thread scheduler, sandbox HOME, version check on load; automated sandbox and isolation tests open |
+| P7.E4 | Combat interface | In progress | Decision mode works: reset to a decision point, observe, legal actions, step, card choices; Python bridge `tools/sim.py`; potions and cloning open |
+| P7.E5 | Fidelity suite | In progress | `tools/sim.py fidelity`: 1 of 1 recorded fights exact (26 of 26 states; own-action replay identical). Needs 100 fights from real runs for M11 |
+| P7.E6 | Fair-play layer | In progress | Sanitizer (every generator re-seeded, draw pile shuffled), `tools/sim.py fairplay` 7 of 7; known draw positions and the pre-rolled-state inventory open; `docs/observation-spec.md` v1 |
 | P7.E7 | Performance and operations | In progress | S4: patch runbook extended with `tools/game_facts.py`, `game_cards.py`, `game_monsters.py` |
 | P7.E8 | Run-level simulation | Todo | After Phase 8 starts |
 

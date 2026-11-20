@@ -14,6 +14,7 @@ public static class Stages
             case "sig": return Sig(args);
             case "modeldb": return ModelDbStage(args);
             case "replay": return Replay.Run(args);
+            case "serve": return Serve.Run(args);
             default: Console.Error.WriteLine("unknown stage " + stage); return 2;
         }
     }

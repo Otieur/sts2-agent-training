@@ -135,7 +135,7 @@
 > - [ ] A full live run yields one replay per fight (count equals the journal's fight count).
 > - [ ] Fights ended outside `play_turn.py` (a manual `sts.py act`) are covered, or the gap is documented.
 
-> **P7.E2.S3: Replay corpus index** · Size S · Status: Todo
+> **P7.E2.S3: Replay corpus index** · Size S · Status: In progress (2026-11-20: `tools/sim.py fidelity` lists and checks every replay under `data/sim/replays/`; no separate index file yet; one fight recorded)
 > *As the Next Session, I want an index of recorded fights, so that tests and benchmarks pick fights by act, type and encounter.*
 >
 > **Acceptance criteria**
@@ -150,14 +150,14 @@
 
 ### P7.E3: Engine host and sandbox
 
-> **P7.E3.S1: Deterministic scheduler** · Size M · Status: Todo
+> **P7.E3.S1: Deterministic scheduler** · Size M · Status: Done except the thread check (2026-11-19: `sim/SimContext.cs`; 5 posted continuations in a whole fight, the rest inline; the thread-id assertion is not added)
 > *As the Agent, I want the game's async code to run on one thread in a fixed order, so that results never depend on timing (FI-8).*
 >
 > **Acceptance criteria**
 > - [ ] A single-threaded `SynchronizationContext` drives all game tasks to completion; no thread-pool continuations (checked by asserting the thread id inside game callbacks).
 > - [ ] NonInteractiveMode on, TestMode off, asserted at start and after every fight (FI-1, FI-2b).
 
-> **P7.E3.S2: Engine-call stubs** · Size M · Status: Todo
+> **P7.E3.S2: Engine-call stubs** · Size M · Status: In progress (2026-11-19: fake engine table, 36 singletons, 165 inert UI classes, 26 scoped test-path methods, 12 game-method stubs; neutrality shown by exact replay of one fight, not by a test per stub)
 > *As the Agent, I want every native Godot call reached by combat logic replaced by a tested stub, so that the engine is never needed (FI-7).*
 >
 > **Acceptance criteria**
@@ -165,7 +165,7 @@
 > - [ ] Known calls covered: `Godot.Time.GetTicksMsec` (`CardModel.OnPlayWrapper`), timers in `Cmd.Wait`, `ActionExecutor`, `RollingBoulderPower.AfterPlayerTurnStart`, `LordsParasol.PurchaseEverything`, node lookups in effects.
 > - [ ] Any call that cannot be made logic-neutral is a blocker, reported in the spike report.
 
-> **P7.E3.S3: Sandbox for saves, achievements, telemetry and Steam** · Size M · Status: Todo
+> **P7.E3.S3: Sandbox for saves, achievements, telemetry and Steam** · Size M · Status: In progress (2026-11-19: sandbox HOME, save, progress and replay writes stubbed; 0 files changed under the save folder and install in every run so far, checked by hand; no automated test, network not checked)
 > *As the Player, I want the simulator unable to touch my saves, achievements or the developer's servers, so that experiments are harmless (SA-1 to SA-4).*
 >
 > **Acceptance criteria**
@@ -173,14 +173,14 @@
 > - [ ] Test: after 1,000 simulated fights, the sandbox user folder is unchanged except for the host's own log, and no file under `~/Library/Application Support/SlayTheSpire2` has a newer modification time.
 > - [ ] Test: no outbound connection during a simulation batch (checked with `lsof -i` or a firewall rule for the host binary).
 
-> **P7.E3.S4: No state shared between fights** · Size M · Status: Todo
+> **P7.E3.S4: No state shared between fights** · Size M · Status: In progress (2026-11-19: the same fight replayed 421 times in one process with identical results; the A-B-A test needs a second recorded fight)
 > *As the Agent, I want each simulated fight independent of the ones before it, so that results do not drift over a batch (FI-11).*
 >
 > **Acceptance criteria**
 > - [ ] Singletons and static caches touched by a fight are reset, or each fight runs in a fresh context; the reset list is documented.
 > - [ ] Test: replay A, replay B, replay A again in one process: both A runs give identical checksums and field comparisons.
 
-> **P7.E3.S5: Version guard** · Size S · Status: Todo
+> **P7.E3.S5: Version guard** · Size S · Status: Done for loading (2026-11-20: `sim/Serve.cs` refuses a recording whose model-id hash or game commit differs from the installed game's)
 > *As the Next Session, I want the host to refuse a game build it was not checked against, so that a Steam update cannot silently corrupt results (FI-3, EN-7).*
 >
 > **Acceptance criteria**
@@ -188,20 +188,20 @@
 
 ### P7.E4: Combat interface
 
-> **P7.E4.S1: Load a fight** · Size M · Status: Todo
+> **P7.E4.S1: Load a fight** · Size M · Status: In progress (2026-11-19: from a replay; from a room-entry save copy not yet)
 > *As the Agent, I want to start a simulated fight from a recorded room entry or from my own save copy, with the right unlocks and progress, so that generation inside the fight matches the game (FI-5, FI-6).*
 >
 > **Acceptance criteria**
 > - [ ] Loading from a replay (`CombatReplay.serializableRun` plus synchronizer ids) and from a room-entry `SerializableRun` both work.
 > - [ ] Unlock state and progress fields come from the loaded data; solo fights load as single-player.
 
-> **P7.E4.S2: One naming table for live and engine ids** · Size S · Status: Todo
+> **P7.E4.S2: One naming table for live and engine ids** · Size S · Status: In progress (2026-11-20: observations use the game's own ids, the same `Id.Entry` the live API sends; the test against live fixtures is not written)
 > *As the Agent, I want live-API card, power, relic, potion and monster ids mapped to engine models in one place, so that live states and simulated states line up (EN-6).*
 >
 > **Acceptance criteria**
 > - [ ] `tools/sim.py` holds the table; a test maps every id in the live fixtures (`tools/tests/fixtures/live/`) and the replay corpus without a miss.
 
-> **P7.E4.S3: Legal actions and stepping** · Size L · Status: Todo
+> **P7.E4.S3: Legal actions and stepping** · Size L · Status: In progress (2026-11-20: `sim/Session.cs` and `sim/Choices.cs`: card plays with targets, end of turn, card choices; a replay driven by these actions ends exactly as recorded (39 of 45 events); potions are not steppable, other prompts are reported as blocked, and the legal list is not yet compared with the live game's)
 > *As Phase 8 code, I want to list the legal actions, apply one and get the new observation, so that search can explore a fight.*
 >
 > **Acceptance criteria**
@@ -209,14 +209,14 @@
 > - [ ] Each step returns the observation (through the shared encoder, E6.S5), the events, and a status (EN-5).
 > - [ ] The legal-action list equals the live game's on the same state, tested on recorded fights.
 
-> **P7.E4.S4: Branching** · Size M · Status: Todo
+> **P7.E4.S4: Branching** · Size M · Status: In progress (2026-11-20: branching by replay from room entry, `reset(events, seed)`, 3–14 ms set-up plus the prefix; cloning live objects not started)
 > *As Phase 8 code, I want to branch a fight at any point cheaply, so that search can try many lines (EN-2, EN-3).*
 >
 > **Acceptance criteria**
 > - [ ] Two methods implemented and measured: replay from room entry with cached prefixes, and cloning live objects (`AbstractModel.MutableClone` and the combat containers). The cheaper correct one becomes the default; both results go in the performance report.
 > - [ ] A branch never changes its parent (test).
 
-> **P7.E4.S5: Python bridge** · Size M · Status: Todo
+> **P7.E4.S5: Python bridge** · Size M · Status: Done, basic (2026-11-20: `tools/sim.py`, JSON lines, errors as statuses; batching through `rollout` only; no watchdog restart)
 > *As the Agent, I want the simulator callable from Python with batching, so that the existing tools can use it.*
 >
 > **Acceptance criteria**
@@ -225,13 +225,13 @@
 
 ### P7.E5: Fidelity suite
 
-> **P7.E5.S1: Replay the corpus** · Size M · Status: Todo
+> **P7.E5.S1: Replay the corpus** · Size M · Status: In progress (2026-11-20: `tools/sim.py fidelity`, `reports/phase7/fidelity.md`: 1 of 1 recorded fights exact; needs fights from more runs)
 > *As the Agent, I want every recorded fight replayed in fidelity mode with checksums compared, so that exactness is measured.*
 >
 > **Acceptance criteria**
 > - [ ] `tools/sim.py fidelity` replays the corpus and compares the game's recorded checksums step by step. It reports the match rate and the first divergence per failure (action id, state diff).
 
-> **P7.E5.S2: Compare more than the checksum** · Size M · Status: Todo
+> **P7.E5.S2: Compare more than the checksum** · Size M · Status: In progress (2026-11-19: the comparison is on the full recorded state text, which is stronger than the hash; monster move state is not in that text)
 > *As the Agent, I want intents, monster move state, card costs and upgrades, pile order and RNG counters compared at checkpoints, so that a checksum match cannot hide an error (FI-12).*
 >
 > **Acceptance criteria**
@@ -243,7 +243,7 @@
 > **Acceptance criteria**
 > - [ ] For recorded fights with an API trace, every step's encoded observation matches, or the difference is documented as a known encoding gap.
 
-> **P7.E5.S4: Reports carry their fidelity** · Size S · Status: Todo
+> **P7.E5.S4: Reports carry their fidelity** · Size S · Status: In progress (2026-11-20: `reports/phase7/fidelity.md` is generated with build and pass count; the shared report header is not in `templates/` yet)
 > *As the Next Session, I want every simulator-based number stamped with the suite version and pass rate, so that results from a broken simulator are recognisable (FI-15).*
 >
 > **Acceptance criteria**
@@ -263,28 +263,28 @@
 
 ### P7.E6: Fair-play layer
 
-> **P7.E6.S1: Mode separation and the state sanitizer** · Size M · Status: Todo
+> **P7.E6.S1: Mode separation and the state sanitizer** · Size M · Status: In progress (2026-11-20: `sim/Sanitizer.cs`; `Step` refuses an unsanitized state; the inventory of pre-rolled hidden state (OQ7.3) is open)
 > *As the Player, I want decisions made only from what a player could see, so that the Agent's results mean something (FP-1, FP-3, FP-15).*
 >
 > **Acceptance criteria**
 > - [ ] Fidelity mode and decision mode have separate entry points; decision mode refuses input that has not passed the sanitizer.
 > - [ ] The sanitizer rebuilds the current state, checks it equals the live observation (else stops and reports), hides the draw order, replaces the run seed and re-seeds every random generator (FP-2), and re-samples hidden pre-rolled state. The inventory of hidden pre-rolled state is documented (OQ7.3).
 
-> **P7.E6.S2: Re-seed every random generator** · Size M · Status: Todo
+> **P7.E6.S2: Re-seed every random generator** · Size M · Status: Done (2026-11-20: generators found by walking the run and combat objects; `tools/sim.py fairplay`: none keeps its state in 96 of 96 samples; about 2 ms per sanitize)
 > *As the Agent, I want the run seed and every random generator replaced per sampled world, so that no future roll is predictable (FP-2, FP-8, FP-9).*
 >
 > **Acceptance criteria**
 > - [ ] The run seed, the 12 `RunRngSet` streams, the 3 `PlayerRngSet` streams and every other `Rng` instance reachable from the run and combat objects (each monster's `_rng`, event generators, relic-held ones) are re-seeded per sample from a logged sampler seed. The generators are found by walking the objects, not from a fixed list.
 > - [ ] Test: after sanitizing, no reachable `Rng` has the state it had before. Two samples with different sampler seeds diverge on the next shuffle and the next monster roll.
 
-> **P7.E6.S3: Draw-pile sampler** · Size M · Status: Todo
+> **P7.E6.S3: Draw-pile sampler** · Size M · Status: In progress (2026-11-20: the draw pile is shuffled per sample; positions the player knows are not kept yet)
 > *As the Agent, I want sampled draw orders consistent with what the player knows, so that search neither cheats nor forgets (FP-5, FP-14).*
 >
 > **Acceptance criteria**
 > - [ ] Known positions (cards the player put on top or bottom; order revealed by card effects) are kept; everything else is shuffled.
 > - [ ] Test on recorded fights: every sampled world is consistent with the observation at that moment.
 
-> **P7.E6.S4: Invariance audit and leak canary** · Size L · Status: Todo
+> **P7.E6.S4: Invariance audit and leak canary** · Size L · Status: In progress (2026-11-20: `tools/sim.py fairplay`, 7 of 7 checks on 8 decision points and 12 seeds: observation unchanged, generators changed, determinism, draw order varies, canary 0 of 84, planner invariant, unsanitized step refused; 200 decision points and a search policy need more fights and Phase 8)
 > *As the Player, I want proof that decisions do not depend on hidden information, so that I can trust the comparisons with my record.*
 >
 > **Acceptance criteria**
@@ -292,7 +292,7 @@
 > - [ ] Canary: a test plants a hidden advantage (for example the true draw order puts a lethal card next) and checks the decision does not use it more often than chance.
 > - [ ] Both run in the fidelity suite and block decision mode when they fail.
 
-> **P7.E6.S5: Observation encoder** · Size M · Status: Todo
+> **P7.E6.S5: Observation encoder** · Size M · Status: In progress (2026-11-20: `docs/observation-spec.md` v1, implemented in `sim/Session.cs`; read by `tools/plan_turn.py` unchanged; the live-fixture comparison is P7.E5.S3)
 > *As Phase 8 and 9 code, I want one documented observation format, built only from live-API fields, so that live and simulated play look the same to every model (ML-1, FP-7).*
 >
 > **Acceptance criteria**
@@ -301,7 +301,7 @@
 
 ### P7.E7: Performance and operations
 
-> **P7.E7.S1: Benchmarks** · Size S · Status: Todo
+> **P7.E7.S1: Benchmarks** · Size S · Status: In progress (2026-11-19/20: 31 ms CPU per 45-event boss fight; about 1 ms per step through the bridge; sanitize 2 ms; no hallway or elite fights recorded yet)
 > *As the Agent, I want fights per second, step latency, branch cost and memory measured, so that Phase 8 can size its search budget.*
 >
 > **Acceptance criteria**
