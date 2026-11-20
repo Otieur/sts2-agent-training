@@ -456,6 +456,45 @@ class TestPlanTurn(unittest.TestCase):
         res = pt.plans(h, pt.Player(energy=1, hp=6), e)
         self.assertTrue(strike_only and next(x for x in res if x["plays"] and x["plays"][0].startswith("Strike"))["dies"])
 
+    def test_juggernaut_and_daughter_of_the_wind(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        e = [pt.parse_enemy("A:50:0:0", 0)]
+        o = pt.simulate(ids("DEFEND_IRONCLAD"), [None], pt.Player(energy=1, juggernaut=6), e)
+        self.assertEqual((o["dealt"], o["block"]), (6, 5))       # a Block gain hits for the Juggernaut amount
+        o = pt.simulate(ids("JUGGERNAUT", "DEFEND_IRONCLAD"), [None, None], pt.Player(energy=3), [pt.parse_enemy("A:50:0:0", 0)])
+        self.assertEqual(o["dealt"], 6)                          # Juggernaut played this turn counts for later Block
+        o = pt.simulate(ids("STRIKE_IRONCLAD"), [0], pt.Player(energy=1, juggernaut=6, block_per_attack=1),
+                        [pt.parse_enemy("A:50:0:0", 0)])
+        self.assertEqual((o["dealt"], o["block"]), (12, 1))      # Strike 6, Daughter's 1 Block triggers Juggernaut 6
+        e = pt.parse_enemy("A:50:4:0:vuln", 0)
+        o = pt.simulate(ids("DEFEND_IRONCLAD"), [None], pt.Player(energy=1, juggernaut=6, strength=3), [e])
+        self.assertEqual(o["dealt"], 2)                          # flat: no Strength, no Vulnerable; enemy Block absorbs 4
+        order = [c.card_id for c in sorted(ids("DEFEND_IRONCLAD", "JUGGERNAUT"), key=lambda c: pt.ORDER[pt.phase(c)])]
+        self.assertEqual(order[0], "JUGGERNAUT")
+
+    def test_juggernaut_from_state(self):
+        st = {"screen": "COMBAT", "run": {"relics": [{"relic_id": "DAUGHTER_OF_THE_WIND"}]},
+              "combat": {"player": {"energy": 3, "current_hp": 50, "powers": [{"power_id": "JUGGERNAUT_POWER", "amount": 8}]},
+                         "hand": [], "enemies": []}}
+        player = pt.from_state(st)[1]
+        self.assertEqual((player.juggernaut, player.block_per_attack), (8, 1))
+
+    def test_stomp_cost_down_per_attack(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        h = ids("STRIKE_IRONCLAD", "STRIKE_IRONCLAD", "STOMP")
+        o = pt.simulate(h, [0, 0, None], pt.Player(energy=3), [pt.parse_enemy("A:100:0:0", 0)])
+        self.assertEqual((o["dealt"], o["energy_left"]), (24, 0))   # Stomp costs 1 after two Attacks
+        o = best(h, pt.Player(energy=3), [pt.parse_enemy("A:100:0:0", 0)], "balanced")
+        self.assertEqual(len(o["plays"]), 3)                        # the plan search finds the 3-card line
+        self.assertEqual(o["plays"][-1].split(" →")[0], "Stomp")
+
+    def test_lasting_strength_from_a_skill(self):
+        ids = lambda *c: [pt.card_from_extract(i, x) for i, x in enumerate(c)]  # noqa: E731
+        o = pt.simulate(ids("BRAND"), [None], pt.Player(energy=1, hp=50), [pt.parse_enemy("A:100:0:0", 0)])
+        self.assertEqual(o["powers"], 1)                            # Brand's Strength lasts the fight
+        o = pt.simulate(ids("INFLAME"), [None], pt.Player(energy=1), [pt.parse_enemy("A:100:0:0", 0)])
+        self.assertEqual(o["powers"], 1)                            # a Power is not counted twice
+
 
 if __name__ == "__main__":
     unittest.main()

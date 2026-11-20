@@ -103,6 +103,8 @@ class Card:
     colossus: bool = False      # Colossus: half damage from Vulnerable enemies this turn
     doom: int = 0               # Doom applied to the target (Scourge 13, End of Days 29)
     self_doom: int = 0          # Doom on yourself (Borrowed Time 3)
+    juggernaut: int = 0         # Juggernaut gained: damage to a random enemy whenever you gain Block (live value)
+    cost_down_per_attack: int = 0  # costs this much less per Attack played earlier this turn (Stomp 1)
 
 
 @dataclass
@@ -160,6 +162,8 @@ class Player:
     doom: int = 0               # Doom on you: you die at the end of your turn if your HP is at or below it
     hexed: bool = False         # Hex (Spectral Knight): every card is Ethereal, so cards left in hand are exhausted
     shrunk: bool = False        # Shrink (Shrinker Beetle): your attacks deal 30% less (after Strength)
+    juggernaut: int = 0         # Juggernaut on you: this much damage to a random enemy whenever you gain Block
+    block_per_attack: int = 0   # Block for every Attack played (Daughter of the Wind relic: 1)
 
 
 def parse_effect(c):
@@ -260,6 +264,10 @@ def _card_from_extract(index, card_id, live=None, cost=None, playable=True):
         m = re.search(pat, eff)
         setattr(card, attr, int(m.group(1)) if m else 0)
     card.colossus = bool(re.search(r"Gain \d+ Colossus", eff))
+    if card.card_id == "JUGGERNAUT":  # flat damage per Block gained, not raised by Strength or Vulnerable (seen live 2026-11-19)
+        card.juggernaut = int((live or {}).get("JuggernautPower") or (8 if card.upgraded else 6))
+    if card.card_id == "STOMP":  # costs 1 less per Attack played this turn (card text); the live cost already counts earlier ones
+        card.cost_down_per_attack = 1
     m = re.search(r"Apply (\d+) Doom", eff)
     card.doom = int(m.group(1)) if m else 0
     m = re.search(r"Gain (\d+) Doom", eff)
@@ -448,6 +456,10 @@ EXHAUST_HAND = {"FIEND_FIRE"}                   # exhausts the rest of the hand:
 
 
 def phase(card):
+    if card.juggernaut:
+        return "strength"  # Juggernaut before the Block it turns into damage
+    if card.cost_down_per_attack:
+        return "after_block"  # Stomp after the Attacks that make it cheaper
     if card.card_id in BLOCK_DAMAGE:
         return "after_block"  # Body Slam: its damage is your Block when played
     if card.energy and not card.dmg:
@@ -461,6 +473,23 @@ def phase(card):
     if card.block:
         return "block"
     return "other"
+
+
+def power_hit(enemy, dmg):
+    """Damage from a power (Juggernaut): not an Attack, so no Strength, Vulnerable, Flutter or Slippery. Block, Hard to
+    Kill and Hardened Shell still apply."""
+    if enemy.hp <= 0 or dmg <= 0:
+        return 0
+    absorbed = min(enemy.block, dmg)
+    enemy.block -= absorbed
+    dealt = min(enemy.hp, dmg - absorbed)
+    if enemy.hit_cap is not None:
+        dealt = min(dealt, enemy.hit_cap)
+    if enemy.hp_cap is not None:
+        dealt = max(0, min(dealt, enemy.hp_cap - enemy.lost_turn))
+    enemy.hp -= dealt
+    enemy.lost_turn += dealt
+    return dealt
 
 
 def simulate(cards, targets, player, enemies):
@@ -480,9 +509,25 @@ def simulate(cards, targets, player, enemies):
     rage, free, fnp = 0, 0, player.fnp  # Rage block per Attack, free Attacks, Feel No Pain block per exhaust
     colossus = player.colossus
     my_doom = player.doom
+    jugg, jugg_hits, attacks_done = player.juggernaut, 0, 0
+
+    def gain_block(amount):
+        """Add Block; with Juggernaut, each gain hits a random enemy (spread over the living ones in turn)."""
+        nonlocal block, dealt, jugg_hits
+        if amount <= 0:
+            return
+        block += amount
+        if jugg:
+            live_now = [e for e in es if e.hp > 0]
+            if live_now:
+                dealt += power_hit(live_now[jugg_hits % len(live_now)], jugg)
+                jugg_hits += 1
+
     for card, tgt in zip(cards, targets):
         cost = energy if card.x_cost else card.cost
         is_attack = bool(card.dmg) or card.card_id in BLOCK_DAMAGE
+        if card.cost_down_per_attack and not card.x_cost:
+            cost = max(0, cost - card.cost_down_per_attack * attacks_done)
         if free and is_attack and cost > 0 and not card.x_cost:
             cost, free = 0, free - 1  # Unrelenting: the next Attack costs 0
         if cost > energy:
@@ -499,6 +544,8 @@ def simulate(cards, targets, player, enemies):
         dex_gained += card.dex
         potions += card.potion
         powers += max(1, cost) if card.power else 0  # energy spent on Powers
+        if card.strength > 0 and not card.power and not card.potion:
+            powers += 1  # Strength for the rest of the fight from a Skill or Attack (Brand): valued like a 1-energy Power
         alive = [e for e in es if e.hp > 0]
         if card.card_id in BLOCK_DAMAGE:  # damage = Block now (Strength, Vulnerable and Weak still apply)
             card = Card(**{**vars(card), "dmg": block, "live": False})
@@ -561,7 +608,12 @@ def simulate(cards, targets, player, enemies):
                     e.intent_per_hit = max(0, e.intent_per_hit - card.str_down)
         retaliate += card.retaliate
         if is_attack and rage:
-            block += rage  # Rage: flat Block for each Attack after it (assumed unaffected by Dexterity) [HYPOTHESIS]
+            gain_block(rage)  # Rage: flat Block for each Attack after it (assumed unaffected by Dexterity) [HYPOTHESIS]
+        if is_attack and player.block_per_attack and not card.potion:
+            gain_block(player.block_per_attack)  # Daughter of the Wind
+        if is_attack and not card.potion:
+            attacks_done += 1
+        jugg += card.juggernaut
         rage += card.rage
         free += card.free_attacks
         colossus = colossus or card.colossus
@@ -571,11 +623,11 @@ def simulate(cards, targets, player, enemies):
                 e.doom += card.doom
         if card.block:
             if card.flat:
-                block += card.block
+                gain_block(card.block)
             elif card.live:
-                block += card.block + dex_gained
+                gain_block(card.block + dex_gained)
             else:
-                block += calc.block_gain(card.block, player.dexterity + dex_gained, player.frail)
+                gain_block(calc.block_gain(card.block, player.dexterity + dex_gained, player.frail))
         if card.kills_osty:
             osty = 0
         if not card.potion:
@@ -586,7 +638,7 @@ def simulate(cards, targets, player, enemies):
             dex_gained -= player.tender
         if card.exhausts:
             exhausted = True
-            block += fnp * ((card.hits + 1) if card.card_id in EXHAUST_HAND else 1)  # Feel No Pain, flat
+            gain_block(fnp * ((card.hits + 1) if card.card_id in EXHAUST_HAND else 1))  # Feel No Pain, flat
         fnp += card.fnp
         seq.append((card, es[tgt].ref if (card.target == "AnyEnemy" and tgt is not None and es[tgt].ref is not None)
                     else (tgt if card.target == "AnyEnemy" else None)))
@@ -664,7 +716,10 @@ def plans(hand, player, enemies):
         for subset in itertools.combinations(playable, r):
             if player.max_cards is not None and sum(1 for c in subset if not c.potion) > player.max_cards:
                 continue
-            if sum(0 if c.x_cost else c.cost for c in subset) > player.energy + max_gain:
+            n_att = sum(1 for c in subset if (c.dmg or c.card_id in BLOCK_DAMAGE) and not c.potion)
+            if (sum(0 if c.x_cost else c.cost for c in subset)
+                    - sum(min(c.cost, c.cost_down_per_attack * (n_att - 1)) for c in subset if c.cost_down_per_attack)
+                    > player.energy + max_gain):
                 continue
             slow = any(e.slow for e in enemies)  # against Slow, small attacks first and the big one last
             ordered = sorted(subset, key=lambda c: (ORDER[phase(c)], -(c.strength + c.temp_str + 3 * c.free_attacks),  # boosters first
@@ -818,6 +873,9 @@ def from_state(st):
                     max_hp=_num(p.get("max_hp")), tender=1 if any(k.startswith("TENDER") for k in powers) else 0,
                     colossus=any(k.startswith("COLOSSUS") for k in powers), hexed=any(k.startswith("HEX") for k in powers),
                     shrunk=any(k.startswith("SHRINK") for k in powers),
+                    juggernaut=_int(powers.get("JUGGERNAUT_POWER", powers.get("JUGGERNAUT", 0)) or 0),
+                    block_per_attack=1 if any(isinstance(r, dict) and r.get("relic_id") == "DAUGHTER_OF_THE_WIND"
+                                              for r in _list((st.get("run") or {}).get("relics"))) else 0,
                     doom=_int(powers.get("DOOM_POWER", powers.get("DOOM", 0)) or 0))
     # Card limits: Sloth (at most N cards a turn; cards already played this turn are not in the state, so this assumes
     # none) and Ringing (Ceremonial Beast's Beast Cry: one card this turn [COMMUNITY])
