@@ -33,4 +33,6 @@ Written before the run (P8.E1.S3, ML-10) on 2026-11-20 at 13:15, while the train
 Pending.
 
 ## 6. Deviations and notes
-None yet.
+Written before the run started (2026-11-20, 13:40):
+- The simulator host changed after sections 1–4 were written, in two ways that leave every fight trajectory unchanged: fights from nothing no longer generate the map (190 history fights, 3,330 states identical with and without it), and Rolling Boulder's power runs on the scoped test path (before, any deck with it hung the host; such fights were errors, not data). Restores now cost 13–60 ms instead of about 100–250 ms, so rollout steps weigh more in search time than when H2's time ratio was set; the ratio is still measured in the run and judged as written.
+- One exploratory arm is added to the same jobs: `qpolicy` (the action-value network `q-v1` scores the planner's candidates; no restore). It is not part of H1–H3 and decides nothing; it is reported for information.
