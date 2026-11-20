@@ -50,12 +50,12 @@ BENCH = PROJECT / "data" / "sim" / "benchmark-v1.json"
 SEED_BASE = 7_000_000
 
 
-def planner_search(sim, obs, d, done):
-    return [S.planner_action(pt, obs, "balanced")], [None], 0
+def planner_search(sim, obs, d, done, potions=None):
+    return [S.planner_action(pt, obs, "balanced", potions)], [None], 0
 
 
-def mc_search(k, top=2, mode="balanced"):
-    return lambda sim, obs, d, done: SP.scored_search(sim, obs, mode, k, top, d, done)
+def mc_search(k, top=2, mode="balanced", potions=None):
+    return lambda sim, obs, d, done: SP.scored_search(sim, obs, mode, k, top, d, done, potions)
 
 
 def _to_next_turn(sim, obs, limit=80):
@@ -177,12 +177,14 @@ class QPolicy:
         return cands, values, max(range(len(cands)), key=lambda i: values[i])
 
 
-def make_arm(name, model_path, q_path=None):
-    if name == "planner":
-        return planner_search
-    m = re.fullmatch(r"mc(\d*)", name)
+def make_arm(name, model_path, q_path=None, room=None):
+    """Arms; a trailing `p` (plannerp, mc6p) lets the planner and its rollouts drink potions at the room's price."""
+    if name in ("planner", "plannerp"):
+        pots = room if name.endswith("p") else None
+        return lambda sim, obs, d, done: planner_search(sim, obs, d, done, pots)
+    m = re.fullmatch(r"mc(\d*)(p?)", name)
     if m:
-        return mc_search(int(m.group(1) or 6))
+        return mc_search(int(m.group(1) or 6), potions=room if m.group(2) else None)
     m = re.fullmatch(r"vleaf(\d*)", name)
     if m:
         return ValueLeaf(model_path, int(m.group(1) or 6))
@@ -208,7 +210,7 @@ def worker(a):
         for line in f.open():
             r = json.loads(line)
             done_jobs.add((r["fight"], r["sample"]))
-    arms = {name: make_arm(name, a.model, a.q_model) for name in a.arms}
+    arms = {name: make_arm(name, a.model, a.q_model) for name in a.arms if not name.endswith("p")}
     host = SP.Host()
     try:
         for i, s in jobs:
@@ -217,12 +219,15 @@ def worker(a):
             spec = fights[i]
             seed = SEED_BASE + i * 10 + s
             rec = {"fight": i, "sample": s, "seed": seed, "encounter": spec["encounter"], "room": spec["room"], "act": spec["act"], "arms": {}}
-            for name, search in arms.items():
+            job_arms = {n: (arms[n] if n in arms else make_arm(n, a.model, a.q_model, spec["room"])) for n in a.arms}
+            for name, search in job_arms.items():
                 t0 = time.time()
                 try:
                     r = SP.play(host, spec, seed, search)
                     o = r["outcome"]
+                    used = o.get("potions_used", 0)
                     rec["arms"][name] = {"status": o["status"], "hp": o["hp"], "enemy_hp_left": o["enemy_hp_left"], "value": value_of(o),
+                                         "potions_used": used, "value_priced": value_of(o) - S.POTION_PRICE[spec["room"]] * used,
                                          "decisions": o["decisions"], "turns": o["turns"], "seconds": round(time.time() - t0, 2),
                                          "search_seconds": o["search_seconds"], "restarts": o["host_restarts"], "blocked": o["blocked"]}
                 except S.SimError as e:

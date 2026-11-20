@@ -84,14 +84,16 @@ class Host:
         self.sim.close()
 
 
-def scored_search(sim, obs, mode, k, top, decision, done=None):
+def scored_search(sim, obs, mode, k, top, decision, done=None, potions=None):
     """search_action with every candidate's mean value kept (the teacher's distribution). `done` maps (candidate,
     sample) to a value already computed, or None for a rollout that got stuck; it survives a host restart, so the search
     resumes where it stopped and skips the stuck rollout. Stuck rollouts are left out of the means."""
     done = {} if done is None else done
-    cands = S.search_candidates(sim, pt, obs, top)
+    cands = S.search_candidates(sim, pt, obs, top, potions)
     if len(cands) == 1:
         return cands, [None], 0
+    held = S.potions_held(obs)
+    price = S.POTION_PRICE[potions] if potions else 0.0
     snap = sim.call(cmd="snapshot")["id"]
     for ci, a in enumerate(cands):
         for j in range(k):
@@ -105,11 +107,11 @@ def scored_search(sim, obs, mode, k, top, decision, done=None):
             except S.SimError:
                 done[(ci, j)] = -1000.0
                 continue
-            f = S._finish_with_planner(sim, pt, o, mode)
+            f = S._finish_with_planner(sim, pt, o, mode, potions=potions)
             if f["status"] == "in_progress":
                 done[(ci, j)] = None
                 raise Tainted(f"rollout stuck (candidate {ci}, sample {j}, blocked {bool(f.get('blocked'))})")
-            done[(ci, j)] = float(S._value(f))
+            done[(ci, j)] = float(S._value(f, max(0, held - S.potions_held(f)), price))
     if sim.call(cmd="restore", id=snap)["obs"]["status"] != "in_progress":
         raise Tainted("restore did not give back the decision state")
     values = []
@@ -146,6 +148,7 @@ def play(host, spec, seed, search, stuck_log=None, max_restarts=3):
     obs = start_fight(host.sim, spec, seed)
     if obs["status"] != "in_progress":
         raise S.SimError(f"the fight did not start (status {obs['status']})")
+    held_at_start = S.potions_held(obs)
     decisions, applied, d, restarts, stuck = [], [], 0, 0, 0
     done = {}
     t_search = 0.0
@@ -181,7 +184,8 @@ def play(host, spec, seed, search, stuck_log=None, max_restarts=3):
         done = {}
     outcome = {"status": obs["status"], "hp": obs["combat"]["player"]["current_hp"], "enemy_hp_left": S._enemy_hp_left(obs),
                "turns": obs.get("turn"), "decisions": d, "blocked": bool(obs.get("blocked")), "host_restarts": restarts,
-               "stuck_rollouts": stuck, "search_seconds": round(t_search, 2)}
+               "stuck_rollouts": stuck, "search_seconds": round(t_search, 2),
+               "potions_used": max(0, held_at_start - S.potions_held(obs))}
     return {"spec": spec, "seed": seed, "outcome": outcome, "decisions": decisions}
 
 

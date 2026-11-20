@@ -400,27 +400,49 @@ def cmd_sandbox(a):
     return 0 if all(results) else 1
 
 
+# Price of spending a potion in a fight, in HP, by room type: the planner's potion cost (plan_turn.POTION_COST,
+# [HYPOTHESIS]). Used when search and rollouts may drink potions (`potions=<room>`), so that a fight value counts a
+# spent potion as lost HP instead of free.
+POTION_PRICE = {"Monster": 25.0, "Elite": 6.0, "Boss": 2.0}
+
+
 def _act_from(card, ref):
-    act = {"type": "play", "card": card.index}
+    act = {"type": "potion", "slot": card.index} if card.potion else {"type": "play", "card": card.index}
     if card.target == "AnyEnemy" and ref is not None:
         act["target"] = ref
     return act
 
 
 def _same_action(a, b):
-    return all(a.get(k) == b.get(k) for k in ("type", "card", "target", "cards"))
+    return all(a.get(k) == b.get(k) for k in ("type", "card", "slot", "target", "cards"))
 
 
-def search_candidates(sim, pt, obs, top):
-    """First actions of the rule planner's top plans in both modes, plus ending the turn; only legal ones."""
+def potions_held(obs):
+    return sum(1 for p in ((obs.get("run") or {}).get("potions") or []) if p.get("occupied"))
+
+
+def _hand_for(pt, obs, potions):
+    """Planner inputs; potion slots are kept only when potions may be used (`potions` = room type for the price)."""
+    hand, player, enemies = pt.from_state(obs)
+    if not potions:
+        hand = [c for c in hand if not c.potion]
+    return hand, player, enemies
+
+
+def _rank(pt, results, mode, potions):
+    return pt.rank(results, mode, potion_cost=POTION_PRICE[potions]) if potions else pt.rank(results, mode)
+
+
+def search_candidates(sim, pt, obs, top, potions=None):
+    """First actions of the rule planner's top plans in both modes, plus ending the turn; only legal ones. With
+    `potions` (the room type), the plans may drink potions at that room's price."""
     if obs.get("choice"):
         return [planner_action(pt, obs, "safe")]
-    hand, player, enemies = pt.from_state(obs)
-    hand = [c for c in hand if not c.potion]
+    hand, player, enemies = _hand_for(pt, obs, potions)
     cands = []
     if enemies and hand:
         for mode in ("safe", "balanced"):
-            for plan in pt.rank(pt.plans(hand, player, enemies), mode)[:top]:
+            for plan in _rank(pt, pt.plans(hand, player, enemies), mode, potions)[:top]:
                 seq = plan.get("seq") or []
                 a = _act_from(*seq[0]) if seq else {"type": "end_turn"}
                 if not any(_same_action(a, c) for c in cands):
@@ -431,12 +453,12 @@ def search_candidates(sim, pt, obs, top):
     return [c for c in cands if any(_same_action(c, l) for l in legal)] or [{"type": "end_turn"}]
 
 
-def _finish_with_planner(sim, pt, obs, mode, limit=300):
+def _finish_with_planner(sim, pt, obs, mode, limit=300, potions=None):
     for _ in range(limit):
         if obs["status"] != "in_progress" or obs.get("blocked"):
             break
         try:
-            obs = sim.step(planner_action(pt, obs, mode))
+            obs = sim.step(planner_action(pt, obs, mode, potions))
         except SimError:
             obs = sim.step({"type": "end_turn"})
     return obs
@@ -446,9 +468,11 @@ def _enemy_hp_left(obs):
     return sum(e.get("current_hp", 0) for e in (obs.get("combat") or {}).get("enemies", []) if e.get("current_hp", 0) > 0)
 
 
-def _value(obs):
-    """HP left after a win; after a loss, -100 minus the enemies' HP left (losing closer to a win is better)."""
-    return obs["combat"]["player"]["current_hp"] if obs["status"] == "won" else -100 - _enemy_hp_left(obs)
+def _value(obs, spent=0, price=0.0):
+    """HP left after a win; after a loss, -100 minus the enemies' HP left (losing closer to a win is better); minus
+    `price` HP per potion spent when potions are in play."""
+    base = obs["combat"]["player"]["current_hp"] if obs["status"] == "won" else -100 - _enemy_hp_left(obs)
+    return base - price * spent
 
 
 def search_action(sim, pt, obs, mode, k, top, decision):
@@ -614,23 +638,19 @@ def cmd_baselines(a):
     return 0
 
 
-def planner_action(pt, obs, mode):
-    """The rule planner's next action for a simulated observation: the first play of its top plan, or end the turn."""
+def planner_action(pt, obs, mode, potions=None):
+    """The rule planner's next action for a simulated observation: the first play of its top plan, or end the turn.
+    Potions are used only when `potions` names the room type (their price in the planner's ranking)."""
     if obs.get("choice"):  # the planner has no view on card choices yet: take the first options
         return {"type": "choose", "cards": list(range(max(1, obs["choice"]["min"]) if obs["choice"]["max"] else 0))}
-    hand, player, enemies = pt.from_state(obs)
-    hand = [c for c in hand if not c.potion]  # potions are not steppable in the host yet
+    hand, player, enemies = _hand_for(pt, obs, potions)
     if not enemies or not hand:
         return {"type": "end_turn"}
-    best = pt.rank(pt.plans(hand, player, enemies), mode)[0]
+    best = _rank(pt, pt.plans(hand, player, enemies), mode, potions)[0]
     seq = best.get("seq") or []
     if not seq:
         return {"type": "end_turn"}
-    card, ref = seq[0]
-    act = {"type": "play", "card": card.index}
-    if card.target == "AnyEnemy" and ref is not None:
-        act["target"] = ref
-    return act
+    return _act_from(*seq[0])
 
 
 def cmd_planner(a):

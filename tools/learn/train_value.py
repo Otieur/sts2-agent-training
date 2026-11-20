@@ -83,16 +83,27 @@ def split(ex, seed, test_share=0.15, val_share=0.15):
 
 def tensors(part):
     b = M.collate([e["enc"] for e in part])
-    y = torch.tensor([[e["won"], e["hp"], e["left"]] for e in part], dtype=torch.float32)
+    y = torch.tensor([[e["won"], e["hp"], e["left"], (e["search"] if e["search"] is not None else 0.0) / 100.0,
+                       1.0 if e["search"] is not None else 0.0] for e in part], dtype=torch.float32)
     return b, y
 
 
+SEARCH_WEIGHT = 0.0
+
+
 def loss_fn(out, y):
+    """Outcome losses for the three heads; with SEARCH_WEIGHT > 0, also a Huber loss pulling the combined value toward
+    the search's own estimate of the state (6 rollouts; much less noisy than one realized outcome)."""
     won = y[:, 0]
     l_win = torch.nn.functional.binary_cross_entropy_with_logits(out[:, 0], won)
     l_hp = ((out[:, 1] - y[:, 1]) ** 2 * won).sum() / won.sum().clamp(min=1)
     l_left = ((out[:, 2] - y[:, 2]) ** 2 * (1 - won)).sum() / (1 - won).sum().clamp(min=1)
-    return l_win + l_hp + l_left
+    loss = l_win + l_hp + l_left
+    if SEARCH_WEIGHT and y.shape[1] > 3:
+        m = y[:, 4]
+        h = torch.nn.functional.smooth_l1_loss(M.expected_value(out) / 100.0, y[:, 3], reduction="none")
+        loss = loss + SEARCH_WEIGHT * (h * m).sum() / m.sum().clamp(min=1)
+    return loss
 
 
 def predict(model, b, device, bs=2048):
@@ -287,10 +298,13 @@ def main(argv=None):
     ap.add_argument("--drop", type=float, default=0.1)
     ap.add_argument("--threads", type=int, default=3)
     ap.add_argument("--device", default="cpu")
+    ap.add_argument("--search-weight", type=float, default=0.0, help="weight of the auxiliary loss toward the search's estimate")
     ap.add_argument("--dev", action="store_true", help="development run: report the validation split only (test splits stay unread)")
     a = ap.parse_args(argv)
     torch.set_num_threads(a.threads)
     torch.manual_seed(0)
+    global SEARCH_WEIGHT
+    SEARCH_WEIGHT = a.search_weight
     out_dir = PROJECT / "models" / a.name
     out_dir.mkdir(parents=True, exist_ok=True)
     log_lines = []
@@ -374,7 +388,7 @@ def main(argv=None):
         manifests.append(json.loads(mf.read_text()) if mf.exists() else {"dataset": Path(folder).name, "manifest": "missing (batch still running)"})
     meta = {"name": a.name, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": git_commit(), "encoder": E.ENCODER_VERSION,
             "vocab": enc.about, "torch": torch.__version__, "device": a.device, "parameters": params,
-            "settings": {k: getattr(a, k) for k in ("epochs", "lr", "wd", "bs", "patience", "hidden", "card_dim", "drop", "split_seed")},
+            "settings": {k: getattr(a, k) for k in ("epochs", "lr", "wd", "bs", "patience", "hidden", "card_dim", "drop", "split_seed", "search_weight")},
             "epochs_run": epochs, "best_val_loss": best_val, "train_seconds": train_seconds,
             "data": [{"folder": str(Path(f).resolve().relative_to(PROJECT)), "manifest": m} for f, m in zip(a.data, manifests)],
             "split": split_info | {"sizes": {k: len(v) for k, v in parts.items()}, "fights": {k: len({e["fight"] for e in v}) for k, v in parts.items()}},
