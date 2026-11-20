@@ -50,6 +50,9 @@ def label(arm):
     m = re.fullmatch(r"mc(\d+)", arm)
     if m:
         return ("Monte Carlo search", f"{m.group(1)} sampled futures per move")
+    m = re.fullmatch(r"mcw(\d+)", arm)
+    if m:
+        return ("Monte Carlo search, wide", f"all distinct moves, {m.group(1)} futures each")
     m = re.fullmatch(r"vleaf(\d+)", arm)
     if m:
         return ("Search with value network", f"{m.group(1)} futures, network at the leaves")
@@ -139,7 +142,7 @@ def chart_arms(arms):
     pick = ["planner"]
     pick += [a for a in arms if a == "qpolicy"]
     pick += [a for a in arms if re.fullmatch(r"(vleaf\d+|vgreedy)", a) and arms[a][0]["won"] >= base]
-    pick += sorted((a for a in arms if re.fullmatch(r"mc\d+", a)), key=lambda a: int(a[2:]))
+    pick += sorted((a for a in arms if re.fullmatch(r"mcw?\d+", a)), key=lambda a: (a.startswith("mcw"), int(re.sub(r"\D", "", a))))
     return pick
 
 

@@ -110,12 +110,12 @@ def augment(spec, rng, pool):
     return s
 
 
-def scored_search(sim, obs, mode, k, top, decision, done=None, potions=None):
+def scored_search(sim, obs, mode, k, top, decision, done=None, potions=None, wide=False):
     """search_action with every candidate's mean value kept (the teacher's distribution). `done` maps (candidate,
     sample) to a value already computed, or None for a rollout that got stuck; it survives a host restart, so the search
     resumes where it stopped and skips the stuck rollout. Stuck rollouts are left out of the means."""
     done = {} if done is None else done
-    cands = S.search_candidates(sim, pt, obs, top, potions)
+    cands = (S.search_candidates_wide(sim, pt, obs, top, potions=potions) if wide else S.search_candidates(sim, pt, obs, top, potions))
     if len(cands) == 1:
         return cands, [None], 0
     held = S.potions_held(obs)

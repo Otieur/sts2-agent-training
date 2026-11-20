@@ -453,6 +453,33 @@ def search_candidates(sim, pt, obs, top, potions=None):
     return [c for c in cands if any(_same_action(c, l) for l in legal)] or [{"type": "end_turn"}]
 
 
+def search_candidates_wide(sim, pt, obs, top, cap=8, potions=None):
+    """The planner's candidates first, then every other legal card play, one per distinct card (id and upgrade) and
+    target, up to `cap` candidates in all; ending the turn is always included. Lets search find moves the planner's
+    own plans never propose."""
+    base = search_candidates(sim, pt, obs, top, potions)
+    if obs.get("choice") or any(c["type"] == "choose" for c in base):
+        return base
+    hand = (obs.get("combat") or {}).get("hand") or []
+    def key(a):
+        if a["type"] != "play":
+            return (a["type"], a.get("slot"), a.get("target"))
+        h = hand[a["card"]] if a["card"] < len(hand) else {}
+        return ("play", h.get("card_id"), h.get("upgraded"), a.get("target"))
+    seen = {key(a) for a in base}
+    out = [a for a in base if a["type"] != "end_turn"]
+    for l in sim.legal():
+        if len(out) >= cap - 1:
+            break
+        if l.get("type") != "play":
+            continue
+        a = {k: l[k] for k in ("type", "card", "target") if k in l}
+        if key(a) not in seen:
+            seen.add(key(a))
+            out.append(a)
+    return out + [{"type": "end_turn"}]
+
+
 def _finish_with_planner(sim, pt, obs, mode, limit=300, potions=None):
     for _ in range(limit):
         if obs["status"] != "in_progress" or obs.get("blocked"):

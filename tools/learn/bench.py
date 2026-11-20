@@ -15,6 +15,8 @@ Policies (arms):
 - `vleaf`: the same candidates and re-sampled worlds, but each rollout stops at the start of the next player turn (the
   planner plays the rest of the current turn) and the value network scores the position; positions where the fight has
   ended are scored exactly. Leaves are scored in one batch per decision.
+- `mcwK` (for example `mcw6`): flat Monte Carlo over a wider candidate set: the planner's candidates plus every other
+  legal card play (one per distinct card and target), at most 8 candidates (`tools/sim.py search_candidates_wide`).
 - `vleafK` (for example `vleaf2`): `vleaf` with K worlds per candidate.
 - `qpolicy`: the action-value network (`tools/learn/train_q.py`) scores the planner's candidates; no restore at all.
 - `vgreedy` / `vgreedyK`: one ply; each candidate played on K re-sampled worlds (default 1) and the position right after
@@ -54,8 +56,8 @@ def planner_search(sim, obs, d, done, potions=None):
     return [S.planner_action(pt, obs, "balanced", potions)], [None], 0
 
 
-def mc_search(k, top=2, mode="balanced", potions=None):
-    return lambda sim, obs, d, done: SP.scored_search(sim, obs, mode, k, top, d, done, potions)
+def mc_search(k, top=2, mode="balanced", potions=None, wide=False):
+    return lambda sim, obs, d, done: SP.scored_search(sim, obs, mode, k, top, d, done, potions, wide)
 
 
 def _to_next_turn(sim, obs, limit=80):
@@ -182,9 +184,9 @@ def make_arm(name, model_path, q_path=None, room=None):
     if name in ("planner", "plannerp"):
         pots = room if name.endswith("p") else None
         return lambda sim, obs, d, done: planner_search(sim, obs, d, done, pots)
-    m = re.fullmatch(r"mc(\d*)(p?)", name)
+    m = re.fullmatch(r"mc(w?)(\d*)(p?)", name)
     if m:
-        return mc_search(int(m.group(1) or 6), potions=room if m.group(2) else None)
+        return mc_search(int(m.group(2) or 6), potions=room if m.group(3) else None, wide=bool(m.group(1)))
     m = re.fullmatch(r"vleaf(\d*)", name)
     if m:
         return ValueLeaf(model_path, int(m.group(1) or 6))
