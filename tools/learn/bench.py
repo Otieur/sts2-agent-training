@@ -16,6 +16,7 @@ Policies (arms):
   planner plays the rest of the current turn) and the value network scores the position; positions where the fight has
   ended are scored exactly. Leaves are scored in one batch per decision.
 - `vleafK` (for example `vleaf2`): `vleaf` with K worlds per candidate.
+- `qpolicy`: the action-value network (`tools/learn/train_q.py`) scores the planner's candidates; no restore at all.
 - `vgreedy` / `vgreedyK`: one ply; each candidate played on K re-sampled worlds (default 1) and the position right after
   it scored by the network. The fast policy.
 
@@ -153,7 +154,30 @@ class ValueGreedy(ValueLeaf):
         return cands, values, max(range(len(cands)), key=lambda i: values[i])
 
 
-def make_arm(name, model_path):
+class QPolicy:
+    """No host call beyond listing legal actions: the action-value network scores the planner's candidates."""
+    def __init__(self, model_path, top=2):
+        import torch
+        import encode as E
+        import model as M
+        torch.set_num_threads(1)
+        self.torch, self.M = torch, M
+        self.model, _ = M.load(model_path)
+        self.enc = E.Encoder()
+        self.top = top
+
+    def __call__(self, sim, obs, d, done):
+        cands = S.search_candidates(sim, pt, obs, self.top)
+        if len(cands) == 1 or any(c["type"] == "choose" for c in cands):
+            return cands, [None], 0
+        cands = cands[:self.M.MAX_CANDS]
+        with self.torch.no_grad():
+            q = self.model(self.M.collate([self.enc.encode(obs)]) | self.M.collate_actions([cands]))[0, :len(cands)] * 100
+        values = q.tolist()
+        return cands, values, max(range(len(cands)), key=lambda i: values[i])
+
+
+def make_arm(name, model_path, q_path=None):
     if name == "planner":
         return planner_search
     m = re.fullmatch(r"mc(\d*)", name)
@@ -162,6 +186,8 @@ def make_arm(name, model_path):
     m = re.fullmatch(r"vleaf(\d*)", name)
     if m:
         return ValueLeaf(model_path, int(m.group(1) or 6))
+    if name == "qpolicy":
+        return QPolicy(q_path)
     m = re.fullmatch(r"vgreedy(\d*)", name)
     if m:
         return ValueGreedy(model_path, int(m.group(1) or 1))
@@ -182,7 +208,7 @@ def worker(a):
         for line in f.open():
             r = json.loads(line)
             done_jobs.add((r["fight"], r["sample"]))
-    arms = {name: make_arm(name, a.model) for name in a.arms}
+    arms = {name: make_arm(name, a.model, a.q_model) for name in a.arms}
     host = SP.Host()
     try:
         for i, s in jobs:
@@ -255,6 +281,7 @@ def main(argv=None):
     ap.add_argument("--out")
     ap.add_argument("--arms", nargs="+", default=["planner", "mc", "vleaf"])
     ap.add_argument("--model")
+    ap.add_argument("--q-model", help="action-value network for the qpolicy arm")
     ap.add_argument("--seeds", type=int, default=2)
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
@@ -279,14 +306,14 @@ def main(argv=None):
     t0 = time.time()
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--out", str(out), "--seeds", str(a.seeds), "--arms", *a.arms]
                               + (["--limit", str(a.limit)] if a.limit else [])
-                              + (["--model", a.model] if a.model else [])) for w in range(a.workers)]
+                              + (["--model", a.model] if a.model else []) + (["--q-model", a.q_model] if a.q_model else [])) for w in range(a.workers)]
     codes = [p.wait() for p in procs]
     info = Path.home() / "Library/Application Support/Steam/steamapps/common/Slay the Spire 2/SlayTheSpire2.app/Contents/Resources/release_info.json"
     build = json.loads(info.read_text()) if info.exists() else {}
     recs = load(out)
     manifest = {"name": out.name, "created": time.strftime("%Y-%m-%d %H:%M"), "benchmark": str(BENCH.relative_to(PROJECT)),
                 "game_version": build.get("version"), "game_commit": build.get("commit"), "code_commit": head, "arms": a.arms,
-                "model": a.model, "seeds": a.seeds, "seed_base": SEED_BASE, "workers": a.workers, "worker_exit_codes": codes,
+                "model": a.model, "q_model": a.q_model, "seeds": a.seeds, "seed_base": SEED_BASE, "workers": a.workers, "worker_exit_codes": codes,
                 "wall_seconds": round(time.time() - t0), "jobs": len(recs), "summary": summarize(recs, a.arms)}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1))
     print(json.dumps(manifest["summary"], indent=1))

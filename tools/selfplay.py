@@ -235,6 +235,11 @@ def worker(a):
             fh.write(json.dumps(rec) + "\n")
 
     finished = done_seeds(out)
+    teacher = None
+    if a.teacher != "mc":
+        sys.path.insert(0, str(PROJECT / "tools" / "learn"))
+        import bench                                   # needs the project's PyTorch environment (.venv-learn)
+        teacher = bench.make_arm(a.teacher, a.model)
     host = Host()
     try:
         history = load_specs(a.specs) if a.specs else None
@@ -253,7 +258,10 @@ def worker(a):
             rec = None
             for attempt in range(2):
                 try:
-                    rec = play_fight(host, spec, seed, a.k, a.top, a.mode, stuck_log)
+                    if teacher is None:
+                        rec = play_fight(host, spec, seed, a.k, a.top, a.mode, stuck_log)
+                    else:
+                        rec = play(host, spec, seed, teacher, stuck_log)
                     break
                 except S.SimError as e:
                     rec = {"spec": spec, "seed": seed, "error": str(e)[:300], "decisions": []}
@@ -305,6 +313,9 @@ def main(argv=None):
     ap.add_argument("--mode", default="balanced")
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--specs", help="fight specs from tools/fight_specs.py (default: the synthetic generator)")
+    ap.add_argument("--teacher", default="mc", help="mc (flat Monte Carlo, k worlds) or a value-network arm of tools/learn/bench.py "
+                    "(vleafK, vgreedyK; needs --model and .venv-learn/bin/python)")
+    ap.add_argument("--model", help="value network checkpoint for a value-network teacher")
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     ap.add_argument("--summary", help="print the summary of a dataset folder")
     a = ap.parse_args(argv)
@@ -322,7 +333,8 @@ def main(argv=None):
         print(f"resuming: dropped {dropped} invalid records; {len(done_seeds(out))} fights already done", flush=True)
     t0 = time.time()
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--fights", str(a.fights),
-                               "--k", str(a.k), "--top", str(a.top), "--mode", a.mode, "--seed", str(a.seed), "--out", str(out)]
+                               "--k", str(a.k), "--top", str(a.top), "--mode", a.mode, "--seed", str(a.seed), "--out", str(out),
+                               "--teacher", a.teacher] + (["--model", a.model] if a.model else [])
                               + (["--specs", a.specs] if a.specs else []))
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
@@ -332,8 +344,9 @@ def main(argv=None):
     manifest = {
         "dataset": out.name, "created": time.strftime("%Y-%m-%d %H:%M"), "game_version": build.get("version"), "game_commit": build.get("commit"),
         "host_commit": git_commit(), "fidelity": fid, "encoder": "none (raw observations, docs/observation-spec.md)",
-        "teacher": {"policy": "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)", "k": a.k, "top": a.top,
-                    "rollout_policy": f"plan_turn.py {a.mode}", "privileged": False},
+        "teacher": ({"policy": "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)", "k": a.k, "top": a.top,
+                     "rollout_policy": f"plan_turn.py {a.mode}", "privileged": False} if a.teacher == "mc" else
+                    {"policy": f"{a.teacher} (tools/learn/bench.py)", "model": a.model, "privileged": False}),
         "spec_source": ({"file": str(Path(a.specs).resolve().relative_to(PROJECT)), "about": json.loads(Path(a.specs).read_text())["about"]}
                         if a.specs else "synthetic generator (spec_generator)"),
         "spec_generator": {"version": SPEC_VERSION, "starter": STARTER, "rarity_weight": RARITY_WEIGHT, "added_cards": ADDED,

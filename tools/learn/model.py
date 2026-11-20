@@ -119,7 +119,8 @@ class ValueNet(nn.Module):
             x = x + upg.unsqueeze(-1) * self.upg
         return x
 
-    def forward(self, b):
+    def features(self, b):
+        """Shared state encoding: the trunk input, per-card hand vectors [B, H, 64] and per-enemy vectors [B, E, 64]."""
         hm = (b["hand_ids"] > 0).float()
         hand = self.hand(torch.cat([self.cards(b["hand_ids"], b["hand_feats"][..., 0]), b["hand_feats"]], -1))
         piles = [_mean(self.cards(b[p + "_ids"], b[p + "_upg"]), (b[p + "_ids"] > 0).float()) for p in ("draw", "discard", "exhaust")]
@@ -138,6 +139,10 @@ class ValueNet(nn.Module):
         potions = (self.potion(b["potion_ids"]) * (b["potion_ids"] > 0).float().unsqueeze(-1)).sum(1)
         mates = _pool(self.mate(b["mates"]), b["mates_mask"])
         x = torch.cat([b["glob"], _pool(hand, hm), *piles, choice, ppow, _pool(enemy, em), relics, potions, mates], -1)
+        return x, hand, enemy
+
+    def forward(self, b):
+        x, _, _ = self.features(b)
         h = self.head(self.trunk(x))
         # Residual outputs: HP left = current HP + predicted change; enemy HP left = current enemy HP + predicted change.
         g = b["glob"]
@@ -152,6 +157,50 @@ def expected_value(out):
     return p * hp + (1 - p) * (-100 - left)
 
 
+MAX_CANDS = 6
+
+
+def collate_actions(cands_list):
+    """Candidate actions (play a hand card at an optional target, or end the turn) to tensors; choices are not scored."""
+    b = len(cands_list)
+    kind = torch.zeros(b, MAX_CANDS, dtype=torch.long)       # 0 none, 1 play, 2 end turn
+    card = torch.zeros(b, MAX_CANDS, dtype=torch.long)
+    target = torch.zeros(b, MAX_CANDS, dtype=torch.long)
+    has_target = torch.zeros(b, MAX_CANDS)
+    for i, cands in enumerate(cands_list):
+        for j, a in enumerate(cands[:MAX_CANDS]):
+            if a["type"] == "play":
+                kind[i, j] = 1
+                card[i, j] = min(a.get("card", 0), E.MAX_HAND - 1)
+                if a.get("target") is not None:
+                    target[i, j] = min(a["target"], E.MAX_ENEMIES - 1)
+                    has_target[i, j] = 1
+            elif a["type"] == "end_turn":
+                kind[i, j] = 2
+    return {"act_kind": kind, "act_card": card, "act_target": target, "act_has_target": has_target}
+
+
+class QNet(ValueNet):
+    """Action values (P9.E3.S1): the value network's state encoding plus, for each candidate, the vector of the card it
+    plays and of its target; predicts the search's value of that candidate (/100). Scoring candidates needs no host
+    call at all, so it is the fastest policy (and a prior for search)."""
+    def __init__(self, sizes, card_dim=32, hidden=256, drop=0.1):
+        super().__init__(sizes, card_dim, hidden, drop)
+        self.config["kind"] = "q"
+        self.kind_emb = nn.Embedding(3, 16)
+        self.q = nn.Sequential(nn.Linear(128 + 16 + 64 + 64 + 1, 128), nn.ReLU(), nn.Dropout(drop), nn.Linear(128, 1))
+
+    def forward(self, b):
+        x, hand, enemy = self.features(b)
+        s = self.trunk(x)                                                      # [B, 128]
+        c = b["act_kind"].shape[1]
+        gather = lambda t, idx: torch.gather(t, 1, idx.unsqueeze(-1).expand(-1, -1, t.shape[-1]))
+        card_v = gather(hand, b["act_card"]) * (b["act_kind"] == 1).float().unsqueeze(-1)
+        tgt_v = gather(enemy, b["act_target"]) * b["act_has_target"].unsqueeze(-1)
+        z = torch.cat([s.unsqueeze(1).expand(-1, c, -1), self.kind_emb(b["act_kind"]), card_v, tgt_v, b["act_has_target"].unsqueeze(-1)], -1)
+        return self.q(z).squeeze(-1)                                           # [B, C], search value / 100
+
+
 def save(model, path, extra=None):
     torch.save({"config": model.config, "state": model.state_dict(), "extra": extra or {}}, path)
 
@@ -159,7 +208,7 @@ def save(model, path, extra=None):
 def load(path, device="cpu"):
     ck = torch.load(path, map_location=device, weights_only=True)
     cfg = ck["config"]
-    m = ValueNet(cfg["sizes"], cfg["card_dim"], cfg["hidden"], cfg["drop"])
+    m = (QNet if cfg.get("kind") == "q" else ValueNet)(cfg["sizes"], cfg["card_dim"], cfg["hidden"], cfg["drop"])
     m.load_state_dict(ck["state"])
     m.eval()
     return m, ck.get("extra", {})

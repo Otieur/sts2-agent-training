@@ -217,6 +217,57 @@ def bootstrap_diff(abs_a, abs_b, part, reps=2000, seed=0):
     return [diffs[int(0.025 * reps)], diffs[int(0.975 * reps)]]
 
 
+def model_card(m):
+    """MODEL_CARD.md from the training record (P9.E2.S4, ML-9)."""
+    def row(name, r):
+        f = lambda k: f"{r[k]:.3f}" if isinstance(r.get(k), float) else "–"
+        return f"| {name} | {r.get('states', '–')} | {f('value_mae')} | {f('value_rmse')} | {f('value_r')} | {f('win_brier')} | {f('win_auc')} |"
+    lines = [f"# Model card: {m['name']}", "",
+             f"Combat value network (P9.E2.S1). Trained {m['created']} at code commit `{m['code_commit']}` with PyTorch {m['torch']} on {m['device']}; "
+             f"{m['parameters']} parameters; encoder {m['encoder']}; vocabulary of game {m['vocab'].get('game_version')} ({m['vocab'].get('game_commit')}).", "",
+             "## What it predicts",
+             "From one combat observation: the chance to win the fight, the HP left if it wins, and the enemies' HP left if it loses, under the "
+             "policy that generated the data (the search teacher below). `model.expected_value` combines them on the search's value scale "
+             "(HP left after a win; -100 minus enemy HP left after a loss). The last two outputs are residuals on the current HP and the current enemy HP.", "",
+             "## Inputs (FP-10)",
+             "The observation encoder only (`tools/learn/encode.py`, `docs/observation-spec.md`): what a player can see. No seed, generator state, "
+             "draw order or future intent is an input; the observation contains none. The training targets are fight outcomes, which are not inputs at play time.", "",
+             "## Data (ML-2)"]
+    for d in m["data"]:
+        man = d["manifest"]
+        lines.append(f"- `{d['folder']}`: {man.get('summary', {}).get('fights', '?')} fights, created {man.get('created', '?')}, game {man.get('game_version', '?')}, "
+                     f"host `{man.get('host_commit', '?')}`, teacher {json.dumps(man.get('teacher', {}))}.")
+    sp = m["split"]
+    lines += [f"- Split by source run of the Player's history (seed {m['settings']['split_seed']}; {sp['runs']} runs): states {sp['sizes']}, fights {sp['fights']}. "
+              "The benchmark's (source run, floor) pairs are a separate test split and never trained on.", "",
+              "## Training", f"- Settings: {json.dumps(m['settings'])}; epochs run {m['epochs_run']} (early stopping on validation loss {m['best_val_loss']:.4f}); "
+              f"{m['train_seconds']} s.", "",
+              "## Evaluation", "Errors are on the search's value scale against the realized outcome of each state's fight. "
+              "Baselines: the training mean; a linear model on the encoder's global features (stand-in for the hand-made leaf heuristic of P8.E3.S1, not built); "
+              "the search's own estimate stored with each decision (6 planner rollouts of the chosen action, about 2 s per decision).", ""]
+    for split_name, res in m["results"].items():
+        lines += [f"### {split_name}", "", "| Model | States | Value MAE | RMSE | r | Win Brier | Win AUC |", "|---|---|---|---|---|---|---|",
+                  row("network", res["network"]), row("linear", res["linear"]), row("mean", res["mean"])]
+        ss = res.get("search_estimate_subset") or {}
+        if ss.get("search"):
+            lines += [row("network (states with a search estimate)", ss["network"]), row("search estimate", ss["search"])]
+        ci = m["bootstrap_95"].get(split_name, {})
+        lines += ["", "Bootstrap 95% intervals (fights resampled): " + "; ".join(f"{k} {v[0]:.2f} to {v[1]:.2f}" for k, v in ci.items()), ""]
+        cal = m["calibration"].get(split_name) or []
+        if cal:
+            lines += ["Calibration of the win probability: " + "; ".join(f"{c['bin']}: predicted {c['predicted']:.2f}, observed {c['observed']:.2f} ({c['states']})" for c in cal), ""]
+    sp_ms = m["speed_ms"]
+    lines += ["## Speed (P9.E2.S3)", f"CPU, one thread per process under load: one state {sp_ms['single_state']} ms, a batch of 64 {sp_ms['batch_64']} ms, "
+              f"turning one encoding into tensors {sp_ms['collate_one']} ms.", "",
+              "## Known limits",
+              "- It predicts outcomes under the teacher's play, not under perfect play; positions the teacher misplays are valued pessimistically.",
+              "- Trained on simulated fights only; the simulator's known differences (`docs/simulator-integrity.md`) carry over. Live use needs pile contents, "
+              "which the live state does not list (`piles_known` = 0 there); not yet checked on live fights.",
+              "- Fight specs come from the Player's history (mostly v0.107.1 runs) replayed on v0.111.1: enchantments missing, relics removed before a fight missing, potions capped at 3.",
+              "- Ids added by a later patch map to the unknown entry until the vocabulary is rebuilt and the model retrained (P9.E7.S1).", ""]
+    return "\n".join(lines) + "\n"
+
+
 def git_commit():
     return subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT, capture_output=True, text=True).stdout.strip()
 
@@ -331,6 +382,8 @@ def main(argv=None):
             "results": results, "calibration": calib, "bootstrap_95": cis,
             "speed_ms": {"single_state": round(single_ms, 3), "batch_64": round(batch_ms, 3), "collate_one": round(collate_ms, 3)},
             "log": log_lines}
+    if not a.dev:
+        (out_dir / "MODEL_CARD.md").write_text(model_card(meta))
     M.save(model, out_dir / "model.pt", {"name": a.name, "encoder": E.ENCODER_VERSION, "vocab_version": enc.about.get("game_version")})
     (out_dir / "metrics.json").write_text(json.dumps(meta, indent=1))
     log(json.dumps({k: {m: {x: round(y, 3) if isinstance(y, float) else y for x, y in v.items()} for m, v in r.items() if m in ("network", "linear", "mean")}
