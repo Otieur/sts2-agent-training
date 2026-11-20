@@ -11,4 +11,5 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_gcServer=0
 export SIM_UI_TYPES="$ROOT/data/asm/ui-types-from-logic.json" SIM_TESTPATH="$ROOT/data/asm/testpath-methods.json"
 SANDBOX="$ROOT/data/sim/sandbox-home"
 mkdir -p "$SANDBOX"
-HOME="$SANDBOX" exec "$DOTNET_ROOT/dotnet" "$ROOT/sim/bin/Release/net9.0/SimHost.dll" "$@"
+# SIM_CONFIG=Debug runs a separately built test host (bin/Debug) while batches use the Release build
+HOME="$SANDBOX" exec "$DOTNET_ROOT/dotnet" "$ROOT/sim/bin/${SIM_CONFIG:-Release}/net9.0/SimHost.dll" "$@"

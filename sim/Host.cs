@@ -83,6 +83,15 @@ public static class Host
                 if (type == null) continue;
                 try { Stubs.TestPath(type, parts[1], "display only"); } catch (MissingMethodException) { }
             }
+            // One power drives its damage from a visual effect's signal outside the test path: Rolling Boulder creates
+            // the boulder effect, deals damage to each creature in the effect's hit callback and awaits the effect's end
+            // signal. The inert effect never signals, so the turn would hang (found 2026-11-20: every rollout of a deck
+            // with Rolling Boulder stuck at the next turn start). Its test path deals the same damage to all hittable
+            // enemies at once, then grows the power the same way; the order of the hits within the call may differ.
+            // The call graph lists no other model logic that awaits a Godot signal (only CombatState.GodotTimerTask,
+            // which checks TestMode itself).
+            Stubs.TestPath(asm.GetType("MegaCrit.Sts2.Core.Models.Powers.RollingBoulderPower")!, "AfterPlayerTurnStart",
+                           "damage is dealt in the inert boulder effect's signal callback outside the test path");
         });
         // Raw real-time pauses inside game logic (not the game's own Cmd.Wait, which fast mode skips). The call graph
         // finds them only in the Amalgamator event's two options (between the sound cues of combining cards); the host

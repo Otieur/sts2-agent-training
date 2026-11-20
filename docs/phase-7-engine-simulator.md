@@ -158,7 +158,7 @@
 > - [ ] A single-threaded `SynchronizationContext` drives all game tasks to completion; no thread-pool continuations (checked by asserting the thread id inside game callbacks).
 > - [ ] NonInteractiveMode on, TestMode off, asserted at start and after every fight (FI-1, FI-2b).
 
-> **P7.E3.S2: Engine-call stubs** · Size M · Status: In progress (2026-11-19: fake engine table, 36 singletons, 165 inert UI classes, 26 scoped test-path methods, 12 game-method stubs; neutrality shown by exact replay of one fight, not by a test per stub)
+> **P7.E3.S2: Engine-call stubs** · Size M · Status: In progress (2026-11-19: fake engine table, 36 singletons, 165 inert UI classes, 26 scoped test-path methods, 12 game-method stubs; neutrality shown by exact replay of one fight, not by a test per stub; 2026-11-20: `RollingBoulderPower.AfterPlayerTurnStart` put on the test path: outside it the power deals its damage in the boulder effect's signal callback and awaits the effect's end signal, which the inert effect never sends, so every turn start with the power hung (self-play found it: all rollouts of one history deck stuck; 0 of 12 after the fix). Its test path deals the same damage to all hittable enemies at once; hit order within the call may differ from the real game, not yet checked against a recording)
 > *As the Agent, I want every native Godot call reached by combat logic replaced by a tested stub, so that the engine is never needed (FI-7).*
 >
 > **Acceptance criteria**
