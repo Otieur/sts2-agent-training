@@ -1,1 +1,2 @@
 date,run_id,character,ascension,seed,exam_seed,playbook_version,mod,win,floor_reached,act_reached,killed_by,elites_killed,total_damage_taken,fights_above_p75,errors,actions,wall_minutes,tokens,notes
+2026-11-19,1795126443-1ZWEN4BFQUZL,IRONCLAD,0,1ZWEN4BFQUZL,no,v2.18,sts2agent,1,48,3,,3,,11,5,599,120,,first Agent run (profile 2); won at 87/102

@@ -1,0 +1,2021 @@
+{
+ "state_version": 16,
+ "native_profile_id": 2,
+ "run_id": "1ZWEN4BFQUZL",
+ "screen": "GAME_OVER",
+ "session": {
+  "mode": "singleplayer",
+  "phase": "run",
+  "control_scope": "local_player"
+ },
+ "in_combat": false,
+ "turn": null,
+ "available_actions": [
+  "return_to_main_menu"
+ ],
+ "combat": null,
+ "run": {
+  "character_id": "IRONCLAD",
+  "character_name": "The Ironclad",
+  "ascension": 0,
+  "ascension_effects": [],
+  "floor": 48,
+  "current_hp": 0,
+  "max_hp": 102,
+  "gold": 84,
+  "max_energy": 3,
+  "base_orb_slots": 0,
+  "act_id": "2",
+  "boss_id": "TEST_SUBJECT_BOSS",
+  "deck": [
+   {
+    "index": 0,
+    "card_id": "STRIKE_IRONCLAD",
+    "name": "Strike",
+    "upgraded": false,
+    "card_type": "Attack",
+    "rarity": "Basic",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Deal {Damage:diff()} damage.",
+    "resolved_rules_text": "Deal 6 damage.",
+    "dynamic_values": [
+     {
+      "name": "Damage",
+      "base_value": 6,
+      "current_value": 6,
+      "enchanted_value": 6,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 1,
+    "card_id": "STRIKE_IRONCLAD",
+    "name": "Strike",
+    "upgraded": false,
+    "card_type": "Attack",
+    "rarity": "Basic",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Deal {Damage:diff()} damage.",
+    "resolved_rules_text": "Deal 6 damage.",
+    "dynamic_values": [
+     {
+      "name": "Damage",
+      "base_value": 6,
+      "current_value": 6,
+      "enchanted_value": 6,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 2,
+    "card_id": "DEFEND_IRONCLAD",
+    "name": "Defend",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Basic",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block.",
+    "resolved_rules_text": "Gain 5 Block.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 5,
+      "current_value": 5,
+      "enchanted_value": 5,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 3,
+    "card_id": "DEFEND_IRONCLAD",
+    "name": "Defend",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Basic",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block.",
+    "resolved_rules_text": "Gain 5 Block.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 5,
+      "current_value": 5,
+      "enchanted_value": 5,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 4,
+    "card_id": "DEFEND_IRONCLAD",
+    "name": "Defend",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Basic",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block.",
+    "resolved_rules_text": "Gain 5 Block.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 5,
+      "current_value": 5,
+      "enchanted_value": 5,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 5,
+    "card_id": "DEFEND_IRONCLAD",
+    "name": "Defend",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Basic",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block.",
+    "resolved_rules_text": "Gain 5 Block.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 5,
+      "current_value": 5,
+      "enchanted_value": 5,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 6,
+    "card_id": "BASH",
+    "name": "Bash",
+    "upgraded": false,
+    "card_type": "Attack",
+    "rarity": "Basic",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 2,
+    "star_cost": 0,
+    "rules_text": "Deal {Damage:diff()} damage. Apply {VulnerablePower:diff()} Vulnerable.",
+    "resolved_rules_text": "Deal 8 damage. Apply 2 Vulnerable.",
+    "dynamic_values": [
+     {
+      "name": "Damage",
+      "base_value": 8,
+      "current_value": 8,
+      "enchanted_value": 8,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "VulnerablePower",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 7,
+    "card_id": "DEMON_FORM",
+    "name": "Demon Form+",
+    "upgraded": true,
+    "card_type": "Power",
+    "rarity": "Rare",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 3,
+    "star_cost": 0,
+    "rules_text": "At the start of your turn, gain {StrengthPower:diff()} Strength.",
+    "resolved_rules_text": "At the start of your turn, gain 4 Strength.",
+    "dynamic_values": [
+     {
+      "name": "StrengthPower",
+      "base_value": 4,
+      "current_value": 4,
+      "enchanted_value": 4,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 8,
+    "card_id": "SHRUG_IT_OFF",
+    "name": "Shrug It Off",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Common",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block. Draw {Cards:diff()} card.",
+    "resolved_rules_text": "Gain 8 Block. Draw 1 card.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 8,
+      "current_value": 8,
+      "enchanted_value": 8,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Cards",
+      "base_value": 1,
+      "current_value": 1,
+      "enchanted_value": 1,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 9,
+    "card_id": "STOMP",
+    "name": "Stomp",
+    "upgraded": false,
+    "card_type": "Attack",
+    "rarity": "Uncommon",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 3,
+    "star_cost": 0,
+    "rules_text": "Deal {Damage:diff()} damage to ALL enemies. Costs 1 less {energyPrefix:energyIcons(1)} for each Attack played this turn.",
+    "resolved_rules_text": "Deal 12 damage to ALL enemies. Costs 1 less res://images/packed/sprite_fonts/ironclad_energy_icon.png for each Attack played this turn.",
+    "dynamic_values": [
+     {
+      "name": "Damage",
+      "base_value": 12,
+      "current_value": 12,
+      "enchanted_value": 12,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 10,
+    "card_id": "HEADBUTT",
+    "name": "Headbutt",
+    "upgraded": false,
+    "card_type": "Attack",
+    "rarity": "Common",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Deal {Damage:diff()} damage. Put a card from your Discard Pile on top of your Draw Pile.",
+    "resolved_rules_text": "Deal 9 damage. Put a card from your Discard Pile on top of your Draw Pile.",
+    "dynamic_values": [
+     {
+      "name": "Damage",
+      "base_value": 9,
+      "current_value": 9,
+      "enchanted_value": 9,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 11,
+    "card_id": "JUGGERNAUT",
+    "name": "Juggernaut+",
+    "upgraded": true,
+    "card_type": "Power",
+    "rarity": "Rare",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 2,
+    "star_cost": 0,
+    "rules_text": "Whenever you gain Block, deal {JuggernautPower:diff()} damage to a random enemy.",
+    "resolved_rules_text": "Whenever you gain Block, deal 8 damage to a random enemy.",
+    "dynamic_values": [
+     {
+      "name": "JuggernautPower",
+      "base_value": 8,
+      "current_value": 8,
+      "enchanted_value": 8,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 12,
+    "card_id": "FEED",
+    "name": "Feed+",
+    "upgraded": true,
+    "card_type": "Attack",
+    "rarity": "Rare",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Deal {Damage:diff()} damage. If Fatal, raise your Max HP by {MaxHp:diff()}.",
+    "resolved_rules_text": "Deal 12 damage. If Fatal, raise your Max HP by 4. Exhaust.",
+    "dynamic_values": [
+     {
+      "name": "Damage",
+      "base_value": 12,
+      "current_value": 12,
+      "enchanted_value": 12,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "MaxHp",
+      "base_value": 4,
+      "current_value": 4,
+      "enchanted_value": 4,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 13,
+    "card_id": "TORIC_TOUGHNESS",
+    "name": "Toric Toughness",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Event",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 2,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block. Gain {Block:diff()} Block at the start of the next {Turns:diff()} {Turns:plural:turn|turns}.",
+    "resolved_rules_text": "Gain 5 Block. Gain 5 Block at the start of the next 2 turns.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 5,
+      "current_value": 5,
+      "enchanted_value": 5,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Turns",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 14,
+    "card_id": "OFFERING",
+    "name": "Offering+",
+    "upgraded": true,
+    "card_type": "Skill",
+    "rarity": "Rare",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 0,
+    "star_cost": 0,
+    "rules_text": "Lose {HpLoss:diff()} HP. Gain {Energy:energyIcons()}. Draw {Cards:diff()} cards.",
+    "resolved_rules_text": "Lose 6 HP. Gain res://images/packed/sprite_fonts/ironclad_energy_icon.pngres://images/packed/sprite_fonts/ironclad_energy_icon.png. Draw 5 cards. Exhaust.",
+    "dynamic_values": [
+     {
+      "name": "Cards",
+      "base_value": 5,
+      "current_value": 5,
+      "enchanted_value": 5,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Energy",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "HpLoss",
+      "base_value": 6,
+      "current_value": 6,
+      "enchanted_value": 6,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 15,
+    "card_id": "CRIMSON_MANTLE",
+    "name": "Crimson Mantle",
+    "upgraded": false,
+    "card_type": "Power",
+    "rarity": "Rare",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "At the start of your turn, lose 1 HP and gain {CrimsonMantlePower:diff()} Block.",
+    "resolved_rules_text": "At the start of your turn, lose 1 HP and gain 7 Block.",
+    "dynamic_values": [
+     {
+      "name": "CrimsonMantlePower",
+      "base_value": 7,
+      "current_value": 7,
+      "enchanted_value": 7,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 16,
+    "card_id": "RELAX",
+    "name": "Relax",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Ancient",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 3,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block. Next turn, draw {Cards:diff()} {Cards:plural:card|cards} and gain {Energy:energyIcons()}.",
+    "resolved_rules_text": "Gain 16 Block. Next turn, draw 2 cards and gain res://images/packed/sprite_fonts/ironclad_energy_icon.pngres://images/packed/sprite_fonts/ironclad_energy_icon.png. Exhaust.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 16,
+      "current_value": 16,
+      "enchanted_value": 16,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Cards",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Energy",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 17,
+    "card_id": "RELAX",
+    "name": "Relax",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Ancient",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 3,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block. Next turn, draw {Cards:diff()} {Cards:plural:card|cards} and gain {Energy:energyIcons()}.",
+    "resolved_rules_text": "Gain 16 Block. Next turn, draw 2 cards and gain res://images/packed/sprite_fonts/ironclad_energy_icon.pngres://images/packed/sprite_fonts/ironclad_energy_icon.png. Exhaust.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 16,
+      "current_value": 16,
+      "enchanted_value": 16,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Cards",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Energy",
+      "base_value": 2,
+      "current_value": 2,
+      "enchanted_value": 2,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 18,
+    "card_id": "TAUNT",
+    "name": "Taunt",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Common",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block. Apply {VulnerablePower:diff()} Vulnerable.",
+    "resolved_rules_text": "Gain 6 Block. Apply 1 Vulnerable.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 6,
+      "current_value": 6,
+      "enchanted_value": 6,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "VulnerablePower",
+      "base_value": 1,
+      "current_value": 1,
+      "enchanted_value": 1,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 19,
+    "card_id": "CASCADE",
+    "name": "Cascade+",
+    "upgraded": true,
+    "card_type": "Skill",
+    "rarity": "Rare",
+    "costs_x": true,
+    "star_costs_x": false,
+    "energy_cost": 0,
+    "star_cost": 0,
+    "rules_text": "Play the top X{IfUpgraded:show:+1} cards of your Draw Pile.",
+    "resolved_rules_text": "Play the top X+1 cards of your Draw Pile.",
+    "dynamic_values": []
+   },
+   {
+    "index": 20,
+    "card_id": "POMMEL_STRIKE",
+    "name": "Pommel Strike",
+    "upgraded": false,
+    "card_type": "Attack",
+    "rarity": "Common",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Deal {Damage:diff()} damage. Draw {Cards:diff()} {Cards:plural:card|cards}.",
+    "resolved_rules_text": "Deal 11 damage. Draw 1 card.",
+    "dynamic_values": [
+     {
+      "name": "Cards",
+      "base_value": 1,
+      "current_value": 1,
+      "enchanted_value": 1,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Damage",
+      "base_value": 9,
+      "current_value": 11,
+      "enchanted_value": 11,
+      "is_modified": true,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 21,
+    "card_id": "POMMEL_STRIKE",
+    "name": "Pommel Strike",
+    "upgraded": false,
+    "card_type": "Attack",
+    "rarity": "Common",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Deal {Damage:diff()} damage. Draw {Cards:diff()} {Cards:plural:card|cards}.",
+    "resolved_rules_text": "Deal 9 damage. Draw 1 card.",
+    "dynamic_values": [
+     {
+      "name": "Cards",
+      "base_value": 1,
+      "current_value": 1,
+      "enchanted_value": 1,
+      "is_modified": false,
+      "was_just_upgraded": false
+     },
+     {
+      "name": "Damage",
+      "base_value": 9,
+      "current_value": 9,
+      "enchanted_value": 9,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 22,
+    "card_id": "IMPERVIOUS",
+    "name": "Impervious",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Rare",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 2,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block.",
+    "resolved_rules_text": "Gain 30 Block. Exhaust.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 30,
+      "current_value": 30,
+      "enchanted_value": 30,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 23,
+    "card_id": "FORGOTTEN_RITUAL",
+    "name": "Forgotten Ritual+",
+    "upgraded": true,
+    "card_type": "Skill",
+    "rarity": "Uncommon",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Gain {Energy:energyIcons()}.",
+    "resolved_rules_text": "Gain 4res://images/packed/sprite_fonts/ironclad_energy_icon.png. Exhaust.",
+    "dynamic_values": [
+     {
+      "name": "Energy",
+      "base_value": 4,
+      "current_value": 4,
+      "enchanted_value": 4,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 24,
+    "card_id": "DEMON_FORM",
+    "name": "Demon Form+",
+    "upgraded": true,
+    "card_type": "Power",
+    "rarity": "Rare",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 3,
+    "star_cost": 0,
+    "rules_text": "At the start of your turn, gain {StrengthPower:diff()} Strength.",
+    "resolved_rules_text": "At the start of your turn, gain 4 Strength.",
+    "dynamic_values": [
+     {
+      "name": "StrengthPower",
+      "base_value": 4,
+      "current_value": 4,
+      "enchanted_value": 4,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 25,
+    "card_id": "TWIN_STRIKE",
+    "name": "Twin Strike+",
+    "upgraded": true,
+    "card_type": "Attack",
+    "rarity": "Common",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Deal {Damage:diff()} damage twice.",
+    "resolved_rules_text": "Deal 7 damage twice.",
+    "dynamic_values": [
+     {
+      "name": "Damage",
+      "base_value": 7,
+      "current_value": 7,
+      "enchanted_value": 7,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 26,
+    "card_id": "ULTIMATE_DEFEND",
+    "name": "Ultimate Defend",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Uncommon",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 1,
+    "star_cost": 0,
+    "rules_text": "Gain {Block:diff()} Block.",
+    "resolved_rules_text": "Gain 11 Block.",
+    "dynamic_values": [
+     {
+      "name": "Block",
+      "base_value": 11,
+      "current_value": 11,
+      "enchanted_value": 11,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   },
+   {
+    "index": 27,
+    "card_id": "BATTLE_TRANCE",
+    "name": "Battle Trance",
+    "upgraded": false,
+    "card_type": "Skill",
+    "rarity": "Uncommon",
+    "costs_x": false,
+    "star_costs_x": false,
+    "energy_cost": 0,
+    "star_cost": 0,
+    "rules_text": "Draw {Cards:diff()} cards. You cannot draw additional cards this turn.",
+    "resolved_rules_text": "Draw 3 cards. You cannot draw additional cards this turn.",
+    "dynamic_values": [
+     {
+      "name": "Cards",
+      "base_value": 3,
+      "current_value": 3,
+      "enchanted_value": 3,
+      "is_modified": false,
+      "was_just_upgraded": false
+     }
+    ]
+   }
+  ],
+  "relics": [
+   {
+    "index": 0,
+    "relic_id": "BURNING_BLOOD",
+    "name": "Burning Blood",
+    "description": "At the end of combat, heal [green]{Heal}[/green] HP.",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 1,
+    "relic_id": "ARCANE_SCROLL",
+    "name": "Arcane Scroll",
+    "description": "Upon pickup, obtain a random [gold]Rare Card[/gold] to add to your [gold]Deck[/gold].",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 2,
+    "relic_id": "BAG_OF_MARBLES",
+    "name": "Bag of Marbles",
+    "description": "At the start of each combat, apply [blue]{VulnerablePower}[/blue] [gold]Vulnerable[/gold] to ALL enemies.",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 3,
+    "relic_id": "VENERABLE_TEA_SET",
+    "name": "Venerable Tea Set",
+    "description": "Whenever you enter a [gold]Rest Site[/gold], start the next combat with an additional {Energy:energyIcons()}.",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 4,
+    "relic_id": "PAELS_HORN",
+    "name": "Pael's Horn",
+    "description": "Upon pickup, add [blue]2[/blue] [gold]Relax[/gold] to your [gold]Deck[/gold].",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 5,
+    "relic_id": "DAUGHTER_OF_THE_WIND",
+    "name": "Daughter of the Wind",
+    "description": "Whenever you play an Attack, gain [blue]{Block}[/blue] [gold]Block[/gold].",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 6,
+    "relic_id": "BAG_OF_PREPARATION",
+    "name": "Bag of Preparation",
+    "description": "At the start of each combat, draw [blue]{Cards}[/blue] additional {Cards:plural:card|cards}.",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 7,
+    "relic_id": "TUNING_FORK",
+    "name": "Tuning Fork",
+    "description": "Every time you play [blue]{Cards}[/blue] Skills, gain [blue]{Block}[/blue] [gold]Block[/gold].",
+    "stack": 6,
+    "is_melted": false
+   },
+   {
+    "index": 8,
+    "relic_id": "AMETHYST_AUBERGINE",
+    "name": "Amethyst Aubergine",
+    "description": "Enemies drop [blue]{Gold}[/blue] additional [gold]Gold[/gold].",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 9,
+    "relic_id": "POTION_BELT",
+    "name": "Potion Belt",
+    "description": "Upon pickup, gain [blue]{PotionSlots}[/blue] potion {PotionSlots:plural:slot|slots}.",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 10,
+    "relic_id": "BLESSED_ANTLER",
+    "name": "Blessed Antler",
+    "description": "Gain {Energy:energyIcons()} at the start of each turn. At the start of each combat, shuffle [blue]{Cards}[/blue] [gold]Dazed[/gold] into your [gold]Draw Pile[/gold].",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 11,
+    "relic_id": "JOSS_PAPER",
+    "name": "Joss Paper",
+    "description": "Every [blue]{ExhaustAmount}[/blue] times you [gold]Exhaust[/gold] a card, draw [blue]{Cards}[/blue] {Cards:plural:card|cards}.",
+    "stack": 1,
+    "is_melted": false
+   },
+   {
+    "index": 12,
+    "relic_id": "RED_SKULL",
+    "name": "Red Skull",
+    "description": "While your HP is at or below [blue]{HpThreshold}%[/blue], you have [blue]{StrengthPower}[/blue] additional [gold]Strength[/gold].",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 13,
+    "relic_id": "BRONZE_SCALES",
+    "name": "Bronze Scales",
+    "description": "Start each combat with [blue]{ThornsPower}[/blue] [gold]Thorns[/gold].",
+    "stack": null,
+    "is_melted": false
+   },
+   {
+    "index": 14,
+    "relic_id": "CANDELABRA",
+    "name": "Candelabra",
+    "description": "At the start of your [blue]2nd[/blue] turn, gain {Energy:energyIcons()}.",
+    "stack": null,
+    "is_melted": false
+   }
+  ],
+  "players": [
+   {
+    "player_id": "1",
+    "slot_index": 0,
+    "is_local": true,
+    "is_connected": true,
+    "character_id": "IRONCLAD",
+    "character_name": "The Ironclad",
+    "current_hp": 0,
+    "max_hp": 102,
+    "gold": 84,
+    "is_alive": false,
+    "deck": [
+     {
+      "card_id": "STRIKE_IRONCLAD",
+      "name": "Strike",
+      "upgraded": false,
+      "card_type": "Attack"
+     },
+     {
+      "card_id": "STRIKE_IRONCLAD",
+      "name": "Strike",
+      "upgraded": false,
+      "card_type": "Attack"
+     },
+     {
+      "card_id": "DEFEND_IRONCLAD",
+      "name": "Defend",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "DEFEND_IRONCLAD",
+      "name": "Defend",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "DEFEND_IRONCLAD",
+      "name": "Defend",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "DEFEND_IRONCLAD",
+      "name": "Defend",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "BASH",
+      "name": "Bash",
+      "upgraded": false,
+      "card_type": "Attack"
+     },
+     {
+      "card_id": "DEMON_FORM",
+      "name": "Demon Form+",
+      "upgraded": true,
+      "card_type": "Power"
+     },
+     {
+      "card_id": "SHRUG_IT_OFF",
+      "name": "Shrug It Off",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "STOMP",
+      "name": "Stomp",
+      "upgraded": false,
+      "card_type": "Attack"
+     },
+     {
+      "card_id": "HEADBUTT",
+      "name": "Headbutt",
+      "upgraded": false,
+      "card_type": "Attack"
+     },
+     {
+      "card_id": "JUGGERNAUT",
+      "name": "Juggernaut+",
+      "upgraded": true,
+      "card_type": "Power"
+     },
+     {
+      "card_id": "FEED",
+      "name": "Feed+",
+      "upgraded": true,
+      "card_type": "Attack"
+     },
+     {
+      "card_id": "TORIC_TOUGHNESS",
+      "name": "Toric Toughness",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "OFFERING",
+      "name": "Offering+",
+      "upgraded": true,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "CRIMSON_MANTLE",
+      "name": "Crimson Mantle",
+      "upgraded": false,
+      "card_type": "Power"
+     },
+     {
+      "card_id": "RELAX",
+      "name": "Relax",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "RELAX",
+      "name": "Relax",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "TAUNT",
+      "name": "Taunt",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "CASCADE",
+      "name": "Cascade+",
+      "upgraded": true,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "POMMEL_STRIKE",
+      "name": "Pommel Strike",
+      "upgraded": false,
+      "card_type": "Attack"
+     },
+     {
+      "card_id": "POMMEL_STRIKE",
+      "name": "Pommel Strike",
+      "upgraded": false,
+      "card_type": "Attack"
+     },
+     {
+      "card_id": "IMPERVIOUS",
+      "name": "Impervious",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "FORGOTTEN_RITUAL",
+      "name": "Forgotten Ritual+",
+      "upgraded": true,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "DEMON_FORM",
+      "name": "Demon Form+",
+      "upgraded": true,
+      "card_type": "Power"
+     },
+     {
+      "card_id": "TWIN_STRIKE",
+      "name": "Twin Strike+",
+      "upgraded": true,
+      "card_type": "Attack"
+     },
+     {
+      "card_id": "ULTIMATE_DEFEND",
+      "name": "Ultimate Defend",
+      "upgraded": false,
+      "card_type": "Skill"
+     },
+     {
+      "card_id": "BATTLE_TRANCE",
+      "name": "Battle Trance",
+      "upgraded": false,
+      "card_type": "Skill"
+     }
+    ],
+    "relics": [
+     {
+      "relic_id": "BURNING_BLOOD",
+      "name": "Burning Blood",
+      "is_melted": false
+     },
+     {
+      "relic_id": "ARCANE_SCROLL",
+      "name": "Arcane Scroll",
+      "is_melted": false
+     },
+     {
+      "relic_id": "BAG_OF_MARBLES",
+      "name": "Bag of Marbles",
+      "is_melted": false
+     },
+     {
+      "relic_id": "VENERABLE_TEA_SET",
+      "name": "Venerable Tea Set",
+      "is_melted": false
+     },
+     {
+      "relic_id": "PAELS_HORN",
+      "name": "Pael's Horn",
+      "is_melted": false
+     },
+     {
+      "relic_id": "DAUGHTER_OF_THE_WIND",
+      "name": "Daughter of the Wind",
+      "is_melted": false
+     },
+     {
+      "relic_id": "BAG_OF_PREPARATION",
+      "name": "Bag of Preparation",
+      "is_melted": false
+     },
+     {
+      "relic_id": "TUNING_FORK",
+      "name": "Tuning Fork",
+      "is_melted": false
+     },
+     {
+      "relic_id": "AMETHYST_AUBERGINE",
+      "name": "Amethyst Aubergine",
+      "is_melted": false
+     },
+     {
+      "relic_id": "POTION_BELT",
+      "name": "Potion Belt",
+      "is_melted": false
+     },
+     {
+      "relic_id": "BLESSED_ANTLER",
+      "name": "Blessed Antler",
+      "is_melted": false
+     },
+     {
+      "relic_id": "JOSS_PAPER",
+      "name": "Joss Paper",
+      "is_melted": false
+     },
+     {
+      "relic_id": "RED_SKULL",
+      "name": "Red Skull",
+      "is_melted": false
+     },
+     {
+      "relic_id": "BRONZE_SCALES",
+      "name": "Bronze Scales",
+      "is_melted": false
+     },
+     {
+      "relic_id": "CANDELABRA",
+      "name": "Candelabra",
+      "is_melted": false
+     }
+    ],
+    "potions": [
+     {
+      "potion_id": null,
+      "name": null,
+      "occupied": false
+     },
+     {
+      "potion_id": null,
+      "name": null,
+      "occupied": false
+     },
+     {
+      "potion_id": "ASHWATER",
+      "name": "Ashwater",
+      "occupied": true
+     },
+     {
+      "potion_id": "ASHWATER",
+      "name": "Ashwater",
+      "occupied": true
+     },
+     {
+      "potion_id": "ATTACK_POTION",
+      "name": "Attack Potion",
+      "occupied": true
+     }
+    ]
+   }
+  ],
+  "potions": [
+   {
+    "index": 0,
+    "potion_id": null,
+    "name": null,
+    "description": null,
+    "rarity": null,
+    "occupied": false,
+    "usage": null,
+    "target_type": null,
+    "is_queued": false,
+    "requires_target": false,
+    "target_index_space": null,
+    "valid_target_indices": [],
+    "can_use": false,
+    "can_discard": false
+   },
+   {
+    "index": 1,
+    "potion_id": null,
+    "name": null,
+    "description": null,
+    "rarity": null,
+    "occupied": false,
+    "usage": null,
+    "target_type": null,
+    "is_queued": false,
+    "requires_target": false,
+    "target_index_space": null,
+    "valid_target_indices": [],
+    "can_use": false,
+    "can_discard": false
+   },
+   {
+    "index": 2,
+    "potion_id": "ASHWATER",
+    "name": "Ashwater",
+    "description": "[gold]Exhaust[/gold] any number of cards in your [gold]Hand[/gold].",
+    "rarity": "Uncommon",
+    "occupied": true,
+    "usage": "CombatOnly",
+    "target_type": "AnyPlayer",
+    "is_queued": false,
+    "requires_target": false,
+    "target_index_space": null,
+    "valid_target_indices": [],
+    "can_use": false,
+    "can_discard": false
+   },
+   {
+    "index": 3,
+    "potion_id": "ASHWATER",
+    "name": "Ashwater",
+    "description": "[gold]Exhaust[/gold] any number of cards in your [gold]Hand[/gold].",
+    "rarity": "Uncommon",
+    "occupied": true,
+    "usage": "CombatOnly",
+    "target_type": "AnyPlayer",
+    "is_queued": false,
+    "requires_target": false,
+    "target_index_space": null,
+    "valid_target_indices": [],
+    "can_use": false,
+    "can_discard": false
+   },
+   {
+    "index": 4,
+    "potion_id": "ATTACK_POTION",
+    "name": "Attack Potion",
+    "description": "Choose [blue]1[/blue] of [blue]3[/blue] random Attack cards to add into your [gold]Hand[/gold]. It's free to play this turn.",
+    "rarity": "Common",
+    "occupied": true,
+    "usage": "CombatOnly",
+    "target_type": "AnyPlayer",
+    "is_queued": false,
+    "requires_target": false,
+    "target_index_space": null,
+    "valid_target_indices": [],
+    "can_use": false,
+    "can_discard": false
+   }
+  ]
+ },
+ "multiplayer": null,
+ "multiplayer_lobby": null,
+ "map": null,
+ "selection": null,
+ "character_select": null,
+ "timeline": null,
+ "unlock": null,
+ "chest": null,
+ "event": null,
+ "crystal_sphere": null,
+ "shop": null,
+ "rest": null,
+ "reward": null,
+ "bundles": null,
+ "capstone": null,
+ "modal": null,
+ "game_over": {
+  "is_victory": true,
+  "floor": 48,
+  "character_id": "IRONCLAD",
+  "phase": "summary_ready",
+  "can_continue": false,
+  "can_return_to_main_menu": true,
+  "showing_summary": true,
+  "waiting_for_other_players": false,
+  "save_status": "verified",
+  "save_verified": true,
+  "save_error": null
+ },
+ "agent_view": {
+  "version": 11,
+  "screen": "GAME_OVER",
+  "native_profile_id": 2,
+  "run_id": "1ZWEN4BFQUZL",
+  "session": {
+   "mode": "singleplayer",
+   "phase": "run",
+   "control_scope": "local_player"
+  },
+  "turn": null,
+  "available_actions": [
+   "return_to_main_menu"
+  ],
+  "combat": null,
+  "run": {
+   "character": "The Ironclad",
+   "ascension": 0,
+   "ascension_effects": [],
+   "floor": 48,
+   "act_id": "2",
+   "boss_id": "TEST_SUBJECT_BOSS",
+   "hp": "0/102",
+   "gold": 84,
+   "max_energy": 3,
+   "base_orb_slots": 0,
+   "deck": [
+    {
+     "line": "Bash [2 Energy]: Deal 8 damage. Apply 2 Vulnerable.",
+     "card_ids": [
+      "BASH"
+     ],
+     "keywords": [
+      "Vulnerable"
+     ],
+     "mods": []
+    },
+    {
+     "line": "Battle Trance [0 Energy]: Draw 3 cards. You cannot draw additional cards this turn.",
+     "card_ids": [
+      "BATTLE_TRANCE"
+     ],
+     "keywords": [],
+     "mods": []
+    },
+    {
+     "line": "Cascade+ [X Energy]: Play the top X+1 cards of your Draw Pile.",
+     "card_ids": [
+      "CASCADE"
+     ],
+     "keywords": [],
+     "mods": []
+    },
+    {
+     "line": "Crimson Mantle [1 Energy]: At the start of your turn, lose 1 HP and gain 7 Block.",
+     "card_ids": [
+      "CRIMSON_MANTLE"
+     ],
+     "keywords": [
+      "Block"
+     ],
+     "mods": []
+    },
+    {
+     "line": "Defend*4 [1 Energy]: Gain 5 Block.",
+     "card_ids": [
+      "DEFEND_IRONCLAD"
+     ],
+     "keywords": [
+      "Block"
+     ],
+     "mods": []
+    },
+    {
+     "line": "Demon Form+*2 [3 Energy]: At the start of your turn, gain 4 Strength.",
+     "card_ids": [
+      "DEMON_FORM"
+     ],
+     "keywords": [
+      "Strength"
+     ],
+     "mods": []
+    },
+    {
+     "line": "Feed+ [1 Energy]: Deal 12 damage. If Fatal, raise your Max HP by 4. Exhaust.",
+     "card_ids": [
+      "FEED"
+     ],
+     "keywords": [
+      "Exhaust"
+     ],
+     "mods": [
+      "Exhaust"
+     ]
+    },
+    {
+     "line": "Forgotten Ritual+ [1 Energy]: Gain 4res://images/packed/sprite_fonts/ironclad_energy_icon.png. Exhaust.",
+     "card_ids": [
+      "FORGOTTEN_RITUAL"
+     ],
+     "keywords": [
+      "Exhaust"
+     ],
+     "mods": [
+      "Exhaust"
+     ]
+    },
+    {
+     "line": "Headbutt [1 Energy]: Deal 9 damage. Put a card from your Discard Pile on top of your Draw Pile.",
+     "card_ids": [
+      "HEADBUTT"
+     ],
+     "keywords": [],
+     "mods": []
+    },
+    {
+     "line": "Impervious [2 Energy]: Gain 30 Block. Exhaust.",
+     "card_ids": [
+      "IMPERVIOUS"
+     ],
+     "keywords": [
+      "Block",
+      "Exhaust"
+     ],
+     "mods": [
+      "Exhaust"
+     ]
+    },
+    {
+     "line": "Juggernaut+ [2 Energy]: Whenever you gain Block, deal 8 damage to a random enemy.",
+     "card_ids": [
+      "JUGGERNAUT"
+     ],
+     "keywords": [
+      "Block"
+     ],
+     "mods": []
+    },
+    {
+     "line": "Offering+ [0 Energy]: Lose 6 HP. Gain res://images/packed/sprite_fonts/ironclad_energy_icon.pngres://images/packed/sprite_fonts/ironclad_energy_icon.png. Draw 5 cards. Exhaust.",
+     "card_ids": [
+      "OFFERING"
+     ],
+     "keywords": [
+      "Exhaust"
+     ],
+     "mods": [
+      "Exhaust"
+     ]
+    },
+    {
+     "line": "Pommel Strike [1 Energy]: Deal 11 damage. Draw 1 card.",
+     "card_ids": [
+      "POMMEL_STRIKE"
+     ],
+     "keywords": [
+      "Enchantment"
+     ],
+     "mods": [
+      "Enchantment",
+      "Sharp"
+     ]
+    },
+    {
+     "line": "Pommel Strike [1 Energy]: Deal 9 damage. Draw 1 card.",
+     "card_ids": [
+      "POMMEL_STRIKE"
+     ],
+     "keywords": [],
+     "mods": []
+    },
+    {
+     "line": "Relax*2 [3 Energy]: Gain 16 Block. Next turn, draw 2 cards and gain res://images/packed/sprite_fonts/ironclad_energy_icon.pngres://images/packed/sprite_fonts/ironclad_energy_icon.png. Exhaust.",
+     "card_ids": [
+      "RELAX"
+     ],
+     "keywords": [
+      "Block",
+      "Exhaust"
+     ],
+     "mods": [
+      "Exhaust"
+     ]
+    },
+    {
+     "line": "Shrug It Off [1 Energy]: Gain 8 Block. Draw 1 card.",
+     "card_ids": [
+      "SHRUG_IT_OFF"
+     ],
+     "keywords": [
+      "Block"
+     ],
+     "mods": []
+    },
+    {
+     "line": "Stomp [3 Energy]: Deal 12 damage to ALL enemies. Costs 1 less res://images/packed/sprite_fonts/ironclad_energy_icon.png for each Attack played this turn.",
+     "card_ids": [
+      "STOMP"
+     ],
+     "keywords": [],
+     "mods": []
+    },
+    {
+     "line": "Strike*2 [1 Energy]: Deal 6 damage.",
+     "card_ids": [
+      "STRIKE_IRONCLAD"
+     ],
+     "keywords": [],
+     "mods": []
+    },
+    {
+     "line": "Taunt [1 Energy]: Gain 6 Block. Apply 1 Vulnerable.",
+     "card_ids": [
+      "TAUNT"
+     ],
+     "keywords": [
+      "Vulnerable",
+      "Block"
+     ],
+     "mods": []
+    },
+    {
+     "line": "Toric Toughness [2 Energy]: Gain 5 Block. Gain 5 Block at the start of the next 2 turns.",
+     "card_ids": [
+      "TORIC_TOUGHNESS"
+     ],
+     "keywords": [
+      "Block"
+     ],
+     "mods": []
+    },
+    {
+     "line": "Twin Strike+ [1 Energy]: Deal 7 damage twice.",
+     "card_ids": [
+      "TWIN_STRIKE"
+     ],
+     "keywords": [],
+     "mods": []
+    },
+    {
+     "line": "Ultimate Defend [1 Energy]: Gain 11 Block.",
+     "card_ids": [
+      "ULTIMATE_DEFEND"
+     ],
+     "keywords": [
+      "Block"
+     ],
+     "mods": []
+    }
+   ],
+   "relics": [
+    "Burning Blood",
+    "Arcane Scroll",
+    "Bag of Marbles",
+    "Venerable Tea Set",
+    "Pael's Horn",
+    "Daughter of the Wind",
+    "Bag of Preparation",
+    "Tuning Fork",
+    "Amethyst Aubergine",
+    "Potion Belt",
+    "Blessed Antler",
+    "Joss Paper",
+    "Red Skull",
+    "Bronze Scales",
+    "Candelabra"
+   ],
+   "relic_ids": [
+    "BURNING_BLOOD",
+    "ARCANE_SCROLL",
+    "BAG_OF_MARBLES",
+    "VENERABLE_TEA_SET",
+    "PAELS_HORN",
+    "DAUGHTER_OF_THE_WIND",
+    "BAG_OF_PREPARATION",
+    "TUNING_FORK",
+    "AMETHYST_AUBERGINE",
+    "POTION_BELT",
+    "BLESSED_ANTLER",
+    "JOSS_PAPER",
+    "RED_SKULL",
+    "BRONZE_SCALES",
+    "CANDELABRA"
+   ],
+   "relic_stacks": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    6,
+    null,
+    null,
+    null,
+    1,
+    null,
+    null,
+    null
+   ],
+   "relic_descriptions": [
+    "At the end of combat, heal [green]{Heal}[/green] HP.",
+    "Upon pickup, obtain a random [gold]Rare Card[/gold] to add to your [gold]Deck[/gold].",
+    "At the start of each combat, apply [blue]{VulnerablePower}[/blue] [gold]Vulnerable[/gold] to ALL enemies.",
+    "Whenever you enter a [gold]Rest Site[/gold], start the next combat with an additional {Energy:energyIcons()}.",
+    "Upon pickup, add [blue]2[/blue] [gold]Relax[/gold] to your [gold]Deck[/gold].",
+    "Whenever you play an Attack, gain [blue]{Block}[/blue] [gold]Block[/gold].",
+    "At the start of each combat, draw [blue]{Cards}[/blue] additional {Cards:plural:card|cards}.",
+    "Every time you play [blue]{Cards}[/blue] Skills, gain [blue]{Block}[/blue] [gold]Block[/gold].",
+    "Enemies drop [blue]{Gold}[/blue] additional [gold]Gold[/gold].",
+    "Upon pickup, gain [blue]{PotionSlots}[/blue] potion {PotionSlots:plural:slot|slots}.",
+    "Gain {Energy:energyIcons()} at the start of each turn. At the start of each combat, shuffle [blue]{Cards}[/blue] [gold]Dazed[/gold] into your [gold]Draw Pile[/gold].",
+    "Every [blue]{ExhaustAmount}[/blue] times you [gold]Exhaust[/gold] a card, draw [blue]{Cards}[/blue] {Cards:plural:card|cards}.",
+    "While your HP is at or below [blue]{HpThreshold}%[/blue], you have [blue]{StrengthPower}[/blue] additional [gold]Strength[/gold].",
+    "Start each combat with [blue]{ThornsPower}[/blue] [gold]Thorns[/gold].",
+    "At the start of your [blue]2nd[/blue] turn, gain {Energy:energyIcons()}."
+   ],
+   "players": [
+    {
+     "player_id": "1",
+     "slot_index": 0,
+     "is_local": true,
+     "is_connected": true,
+     "character_id": "IRONCLAD",
+     "character_name": "The Ironclad",
+     "current_hp": 0,
+     "max_hp": 102,
+     "gold": 84,
+     "is_alive": false,
+     "deck": [
+      {
+       "card_id": "STRIKE_IRONCLAD",
+       "name": "Strike",
+       "upgraded": false,
+       "card_type": "Attack"
+      },
+      {
+       "card_id": "STRIKE_IRONCLAD",
+       "name": "Strike",
+       "upgraded": false,
+       "card_type": "Attack"
+      },
+      {
+       "card_id": "DEFEND_IRONCLAD",
+       "name": "Defend",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "DEFEND_IRONCLAD",
+       "name": "Defend",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "DEFEND_IRONCLAD",
+       "name": "Defend",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "DEFEND_IRONCLAD",
+       "name": "Defend",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "BASH",
+       "name": "Bash",
+       "upgraded": false,
+       "card_type": "Attack"
+      },
+      {
+       "card_id": "DEMON_FORM",
+       "name": "Demon Form+",
+       "upgraded": true,
+       "card_type": "Power"
+      },
+      {
+       "card_id": "SHRUG_IT_OFF",
+       "name": "Shrug It Off",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "STOMP",
+       "name": "Stomp",
+       "upgraded": false,
+       "card_type": "Attack"
+      },
+      {
+       "card_id": "HEADBUTT",
+       "name": "Headbutt",
+       "upgraded": false,
+       "card_type": "Attack"
+      },
+      {
+       "card_id": "JUGGERNAUT",
+       "name": "Juggernaut+",
+       "upgraded": true,
+       "card_type": "Power"
+      },
+      {
+       "card_id": "FEED",
+       "name": "Feed+",
+       "upgraded": true,
+       "card_type": "Attack"
+      },
+      {
+       "card_id": "TORIC_TOUGHNESS",
+       "name": "Toric Toughness",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "OFFERING",
+       "name": "Offering+",
+       "upgraded": true,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "CRIMSON_MANTLE",
+       "name": "Crimson Mantle",
+       "upgraded": false,
+       "card_type": "Power"
+      },
+      {
+       "card_id": "RELAX",
+       "name": "Relax",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "RELAX",
+       "name": "Relax",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "TAUNT",
+       "name": "Taunt",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "CASCADE",
+       "name": "Cascade+",
+       "upgraded": true,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "POMMEL_STRIKE",
+       "name": "Pommel Strike",
+       "upgraded": false,
+       "card_type": "Attack"
+      },
+      {
+       "card_id": "POMMEL_STRIKE",
+       "name": "Pommel Strike",
+       "upgraded": false,
+       "card_type": "Attack"
+      },
+      {
+       "card_id": "IMPERVIOUS",
+       "name": "Impervious",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "FORGOTTEN_RITUAL",
+       "name": "Forgotten Ritual+",
+       "upgraded": true,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "DEMON_FORM",
+       "name": "Demon Form+",
+       "upgraded": true,
+       "card_type": "Power"
+      },
+      {
+       "card_id": "TWIN_STRIKE",
+       "name": "Twin Strike+",
+       "upgraded": true,
+       "card_type": "Attack"
+      },
+      {
+       "card_id": "ULTIMATE_DEFEND",
+       "name": "Ultimate Defend",
+       "upgraded": false,
+       "card_type": "Skill"
+      },
+      {
+       "card_id": "BATTLE_TRANCE",
+       "name": "Battle Trance",
+       "upgraded": false,
+       "card_type": "Skill"
+      }
+     ],
+     "relics": [
+      {
+       "relic_id": "BURNING_BLOOD",
+       "name": "Burning Blood",
+       "is_melted": false
+      },
+      {
+       "relic_id": "ARCANE_SCROLL",
+       "name": "Arcane Scroll",
+       "is_melted": false
+      },
+      {
+       "relic_id": "BAG_OF_MARBLES",
+       "name": "Bag of Marbles",
+       "is_melted": false
+      },
+      {
+       "relic_id": "VENERABLE_TEA_SET",
+       "name": "Venerable Tea Set",
+       "is_melted": false
+      },
+      {
+       "relic_id": "PAELS_HORN",
+       "name": "Pael's Horn",
+       "is_melted": false
+      },
+      {
+       "relic_id": "DAUGHTER_OF_THE_WIND",
+       "name": "Daughter of the Wind",
+       "is_melted": false
+      },
+      {
+       "relic_id": "BAG_OF_PREPARATION",
+       "name": "Bag of Preparation",
+       "is_melted": false
+      },
+      {
+       "relic_id": "TUNING_FORK",
+       "name": "Tuning Fork",
+       "is_melted": false
+      },
+      {
+       "relic_id": "AMETHYST_AUBERGINE",
+       "name": "Amethyst Aubergine",
+       "is_melted": false
+      },
+      {
+       "relic_id": "POTION_BELT",
+       "name": "Potion Belt",
+       "is_melted": false
+      },
+      {
+       "relic_id": "BLESSED_ANTLER",
+       "name": "Blessed Antler",
+       "is_melted": false
+      },
+      {
+       "relic_id": "JOSS_PAPER",
+       "name": "Joss Paper",
+       "is_melted": false
+      },
+      {
+       "relic_id": "RED_SKULL",
+       "name": "Red Skull",
+       "is_melted": false
+      },
+      {
+       "relic_id": "BRONZE_SCALES",
+       "name": "Bronze Scales",
+       "is_melted": false
+      },
+      {
+       "relic_id": "CANDELABRA",
+       "name": "Candelabra",
+       "is_melted": false
+      }
+     ],
+     "potions": [
+      {
+       "potion_id": null,
+       "name": null,
+       "occupied": false
+      },
+      {
+       "potion_id": null,
+       "name": null,
+       "occupied": false
+      },
+      {
+       "potion_id": "ASHWATER",
+       "name": "Ashwater",
+       "occupied": true
+      },
+      {
+       "potion_id": "ASHWATER",
+       "name": "Ashwater",
+       "occupied": true
+      },
+      {
+       "potion_id": "ATTACK_POTION",
+       "name": "Attack Potion",
+       "occupied": true
+      }
+     ]
+    }
+   ],
+   "potions": [
+    {
+     "i": 0,
+     "potion_id": null,
+     "line": "0: Empty",
+     "description": null,
+     "usable": false,
+     "discard": false,
+     "target": null,
+     "targets": []
+    },
+    {
+     "i": 1,
+     "potion_id": null,
+     "line": "1: Empty",
+     "description": null,
+     "usable": false,
+     "discard": false,
+     "target": null,
+     "targets": []
+    },
+    {
+     "i": 2,
+     "potion_id": "ASHWATER",
+     "line": "2: Ashwater: CombatOnly",
+     "description": "[gold]Exhaust[/gold] any number of cards in your [gold]Hand[/gold].",
+     "usable": false,
+     "discard": false,
+     "target": "player",
+     "targets": []
+    },
+    {
+     "i": 3,
+     "potion_id": "ASHWATER",
+     "line": "3: Ashwater: CombatOnly",
+     "description": "[gold]Exhaust[/gold] any number of cards in your [gold]Hand[/gold].",
+     "usable": false,
+     "discard": false,
+     "target": "player",
+     "targets": []
+    },
+    {
+     "i": 4,
+     "potion_id": "ATTACK_POTION",
+     "line": "4: Attack Potion: CombatOnly",
+     "description": "Choose [blue]1[/blue] of [blue]3[/blue] random Attack cards to add into your [gold]Hand[/gold]. It's free to play this turn.",
+     "usable": false,
+     "discard": false,
+     "target": "player",
+     "targets": []
+    }
+   ],
+   "piles": {
+    "draw": [],
+    "discard": [],
+    "exhaust": []
+   }
+  },
+  "multiplayer": null,
+  "multiplayer_lobby": null,
+  "map": null,
+  "selection": null,
+  "character_select": null,
+  "timeline": null,
+  "chest": null,
+  "event": null,
+  "crystal_sphere": null,
+  "shop": null,
+  "rest": null,
+  "reward": null,
+  "bundles": null,
+  "capstone": null,
+  "unlock": null,
+  "modal": null,
+  "game_over": {
+   "victory": true,
+   "floor": 48,
+   "character": "IRONCLAD",
+   "phase": "summary_ready",
+   "can_continue": false,
+   "can_return": true,
+   "waiting_for_other_players": false,
+   "save_status": "verified",
+   "save_verified": true,
+   "save_error": null
+  },
+  "glossary": {
+   "Strength": "Each point of Strength usually adds 1 damage per attack.",
+   "Vulnerable": "Vulnerable units take more attack damage.",
+   "Block": "Block absorbs incoming damage before HP.",
+   "Exhaust": "Exhausted cards are removed for the rest of the combat.",
+   "Enchantment": "An enchantment is an extra modifier layer attached to a card."
+  }
+ }
+}

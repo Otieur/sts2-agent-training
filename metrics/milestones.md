@@ -6,7 +6,7 @@ Definitions in `TRAINING_PLAN.md` section 4. Update when a milestone is reached 
 |---|---|---|---|---|---|
 | M1 | Clean full run (no mod failures or illegal actions) | — | | | |
 | M2 | Beats the Act 1 boss in 3 of 5 runs | — | | | |
-| M3 | First solo win at A0 | — | | | |
+| M3 | First solo win at A0 | Done | 2026-11-19 | runs/2026-11-19-1ZWEN4BFQUZL | First Agent run, won at 87/102 |
 | M4 | Median damage per Act 1–2 hallway fight at or below the Player's median in the same ascension band (band benchmarks; the pooled one is mostly A7–A10) | — | | | |
 | M5 | Solo win at A5 | — | | | |
 | M6 | First co-op win | — | | | |
@@ -15,7 +15,7 @@ Definitions in `TRAINING_PLAN.md` section 4. Update when a milestone is reached 
 | M9 | 3 A10 wins in 10 consecutive A10 runs (stretch) | — | | | |
 
 ## Ascension ladder (P4.E6.S1)
-- Current level: **A0** (not started).
+- Current level: **A1** (A0 won on 2026-11-19, run 1ZWEN4BFQUZL).
 - Rule: up one level after each win. After 3 losses in a row at one level, do a focused review before the next run.
 - Losses in a row at the current level: 0.
 
