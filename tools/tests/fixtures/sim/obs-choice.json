@@ -1,0 +1,249 @@
+{
+"screen": "COMBAT",
+"status": "in_progress",
+"turn": 2,
+"waiting_for_choice": true,
+"blocked": false,
+"choice": {
+"kind": "FromHand",
+"min": 0,
+"max": 3,
+"options": [
+"TOXIC",
+"TOXIC",
+"STRIKE_IRONCLAD",
+"ONE_TWO_PUNCH+",
+"CINDER+",
+"HOWL_FROM_BEYOND+"
+]
+},
+"applied_events": 0,
+"sanitized": true,
+"player_index": 0,
+"players": 1,
+"run": {
+"ascension": 5,
+"max_hp": 80,
+"current_hp": 42,
+"relics": [
+{
+"relic_id": "BURNING_BLOOD"
+},
+{
+"relic_id": "FISHING_ROD"
+},
+{
+"relic_id": "POTION_BELT"
+},
+{
+"relic_id": "WAR_PAINT"
+},
+{
+"relic_id": "MAW_BANK"
+},
+{
+"relic_id": "RADIANT_PEARL"
+},
+{
+"relic_id": "CENTENNIAL_PUZZLE"
+},
+{
+"relic_id": "BLOOD_VIAL"
+},
+{
+"relic_id": "RUINED_HELMET"
+}
+],
+"potions": [
+{
+"index": 0,
+"occupied": false,
+"potion_id": null
+},
+{
+"index": 1,
+"occupied": false,
+"potion_id": null
+}
+]
+},
+"combat": {
+"player": {
+"current_hp": 42,
+"max_hp": 80,
+"block": 11,
+"energy": 2,
+"powers": []
+},
+"hand": [
+{
+"index": 0,
+"card_id": "TOXIC",
+"upgraded": false,
+"target_type": "None",
+"energy_cost": 1,
+"playable": true,
+"dynamic_values": [
+{
+"name": "Damage",
+"current_value": 5,
+"base_value": 5
+}
+]
+},
+{
+"index": 1,
+"card_id": "TOXIC",
+"upgraded": false,
+"target_type": "None",
+"energy_cost": 1,
+"playable": true,
+"dynamic_values": [
+{
+"name": "Damage",
+"current_value": 5,
+"base_value": 5
+}
+]
+},
+{
+"index": 2,
+"card_id": "STRIKE_IRONCLAD",
+"upgraded": false,
+"target_type": "AnyEnemy",
+"energy_cost": 1,
+"playable": true,
+"dynamic_values": [
+{
+"name": "Damage",
+"current_value": 6,
+"base_value": 6
+}
+]
+},
+{
+"index": 3,
+"card_id": "ONE_TWO_PUNCH",
+"upgraded": true,
+"target_type": "Self",
+"energy_cost": 1,
+"playable": true,
+"dynamic_values": [
+{
+"name": "Attacks",
+"current_value": 2,
+"base_value": 2
+}
+]
+},
+{
+"index": 4,
+"card_id": "CINDER",
+"upgraded": true,
+"target_type": "AnyEnemy",
+"energy_cost": 2,
+"playable": true,
+"dynamic_values": [
+{
+"name": "Damage",
+"current_value": 24,
+"base_value": 24
+}
+]
+},
+{
+"index": 5,
+"card_id": "HOWL_FROM_BEYOND",
+"upgraded": true,
+"target_type": "AllEnemies",
+"energy_cost": 3,
+"playable": false,
+"dynamic_values": [
+{
+"name": "Damage",
+"current_value": 24,
+"base_value": 24
+}
+]
+}
+],
+"enemies": [
+{
+"index": 0,
+"enemy_id": "MYTE",
+"name": "MYTE",
+"current_hp": 42,
+"max_hp": 66,
+"block": 0,
+"is_alive": true,
+"is_hittable": true,
+"powers": [],
+"intents": [
+{
+"intent_type": "Attack",
+"damage": 13,
+"hits": 1,
+"total_damage": 13
+}
+]
+},
+{
+"index": 1,
+"enemy_id": "MYTE",
+"name": "MYTE",
+"current_hp": 25,
+"max_hp": 61,
+"block": 0,
+"is_alive": true,
+"is_hittable": true,
+"powers": [
+{
+"power_id": "VULNERABLE_POWER",
+"amount": 3
+},
+{
+"power_id": "STRENGTH_POWER",
+"amount": 2
+}
+],
+"intents": [
+{
+"intent_type": "StatusCard"
+}
+]
+}
+],
+"draw_pile_count": 12,
+"discard_pile_count": 9,
+"exhaust_pile_count": 2,
+"draw_pile": [
+"ASCENDERS_BANE",
+"BLOODLETTING",
+"BODY_SLAM",
+"DEBT",
+"DEFEND_IRONCLAD+",
+"DOMINATE+",
+"EVIL_EYE+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"THRASH"
+],
+"discard_pile": [
+"ARMAMENTS+",
+"BASH+",
+"BATTLE_TRANCE+",
+"BURNING_PACT+",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD+",
+"HOWL_FROM_BEYOND+",
+"PYRE",
+"SHRUG_IT_OFF+"
+],
+"exhaust_pile": [
+"LUMINESCE",
+"TREMBLE+"
+]
+}
+}

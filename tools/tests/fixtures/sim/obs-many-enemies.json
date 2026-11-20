@@ -1,0 +1,304 @@
+{
+"screen": "COMBAT",
+"status": "in_progress",
+"turn": 1,
+"waiting_for_choice": false,
+"blocked": false,
+"choice": null,
+"applied_events": 0,
+"sanitized": true,
+"player_index": 0,
+"players": 1,
+"run": {
+"ascension": 2,
+"max_hp": 80,
+"current_hp": 59,
+"relics": [
+{
+"relic_id": "BURNING_BLOOD"
+},
+{
+"relic_id": "SCROLL_BOXES"
+},
+{
+"relic_id": "GORGET"
+},
+{
+"relic_id": "WAR_PAINT"
+},
+{
+"relic_id": "BOOK_OF_FIVE_RINGS"
+},
+{
+"relic_id": "CENTENNIAL_PUZZLE"
+},
+{
+"relic_id": "PAELS_FLESH"
+},
+{
+"relic_id": "ODDLY_SMOOTH_STONE"
+},
+{
+"relic_id": "WHETSTONE"
+}
+],
+"potions": [
+{
+"index": 0,
+"occupied": true,
+"potion_id": "POWER_POTION"
+},
+{
+"index": 1,
+"occupied": true,
+"potion_id": "GIGANTIFICATION_POTION"
+},
+{
+"index": 2,
+"occupied": false,
+"potion_id": null
+}
+]
+},
+"combat": {
+"player": {
+"current_hp": 59,
+"max_hp": 80,
+"block": 0,
+"energy": 3,
+"powers": [
+{
+"power_id": "PLATING_POWER",
+"amount": 4
+},
+{
+"power_id": "DEXTERITY_POWER",
+"amount": 1
+}
+]
+},
+"hand": [
+{
+"index": 0,
+"card_id": "DEFEND_IRONCLAD",
+"upgraded": false,
+"target_type": "Self",
+"energy_cost": 1,
+"playable": true,
+"dynamic_values": [
+{
+"name": "Block",
+"current_value": 6,
+"base_value": 5
+}
+]
+},
+{
+"index": 1,
+"card_id": "FIEND_FIRE",
+"upgraded": true,
+"target_type": "AnyEnemy",
+"energy_cost": 2,
+"playable": true,
+"dynamic_values": [
+{
+"name": "Damage",
+"current_value": 10,
+"base_value": 10
+}
+]
+},
+{
+"index": 2,
+"card_id": "FIGHT_ME",
+"upgraded": true,
+"target_type": "AnyEnemy",
+"energy_cost": 2,
+"playable": true,
+"dynamic_values": [
+{
+"name": "Damage",
+"current_value": 6,
+"base_value": 6
+},
+{
+"name": "Repeat",
+"current_value": 2,
+"base_value": 2
+},
+{
+"name": "StrengthPower",
+"current_value": 4,
+"base_value": 4
+},
+{
+"name": "EnemyStrength",
+"current_value": 1,
+"base_value": 1
+}
+]
+},
+{
+"index": 3,
+"card_id": "MOLTEN_FIST",
+"upgraded": false,
+"target_type": "AnyEnemy",
+"energy_cost": 1,
+"playable": true,
+"dynamic_values": [
+{
+"name": "Damage",
+"current_value": 10,
+"base_value": 10
+}
+]
+},
+{
+"index": 4,
+"card_id": "BLOODLETTING",
+"upgraded": true,
+"target_type": "Self",
+"energy_cost": 0,
+"playable": true,
+"dynamic_values": [
+{
+"name": "HpLoss",
+"current_value": 3,
+"base_value": 3
+},
+{
+"name": "Energy",
+"current_value": 3,
+"base_value": 3
+}
+]
+}
+],
+"enemies": [
+{
+"index": 0,
+"enemy_id": "EXOSKELETON",
+"name": "EXOSKELETON",
+"current_hp": 25,
+"max_hp": 25,
+"block": 0,
+"is_alive": true,
+"is_hittable": true,
+"powers": [
+{
+"power_id": "HARD_TO_KILL_POWER",
+"amount": 9
+}
+],
+"intents": [
+{
+"intent_type": "Attack",
+"damage": 1,
+"hits": 3,
+"total_damage": 3
+}
+]
+},
+{
+"index": 1,
+"enemy_id": "EXOSKELETON",
+"name": "EXOSKELETON",
+"current_hp": 24,
+"max_hp": 24,
+"block": 0,
+"is_alive": true,
+"is_hittable": true,
+"powers": [
+{
+"power_id": "HARD_TO_KILL_POWER",
+"amount": 9
+}
+],
+"intents": [
+{
+"intent_type": "Attack",
+"damage": 8,
+"hits": 1,
+"total_damage": 8
+}
+]
+},
+{
+"index": 2,
+"enemy_id": "EXOSKELETON",
+"name": "EXOSKELETON",
+"current_hp": 26,
+"max_hp": 26,
+"block": 0,
+"is_alive": true,
+"is_hittable": true,
+"powers": [
+{
+"power_id": "HARD_TO_KILL_POWER",
+"amount": 9
+}
+],
+"intents": [
+{
+"intent_type": "Buff"
+}
+]
+},
+{
+"index": 3,
+"enemy_id": "EXOSKELETON",
+"name": "EXOSKELETON",
+"current_hp": 27,
+"max_hp": 27,
+"block": 0,
+"is_alive": true,
+"is_hittable": true,
+"powers": [
+{
+"power_id": "HARD_TO_KILL_POWER",
+"amount": 9
+}
+],
+"intents": [
+{
+"intent_type": "Attack",
+"damage": 8,
+"hits": 1,
+"total_damage": 8
+}
+]
+}
+],
+"draw_pile_count": 24,
+"discard_pile_count": 0,
+"exhaust_pile_count": 0,
+"draw_pile": [
+"ARMAMENTS+",
+"BARRICADE+",
+"BASH",
+"BLOODLETTING",
+"BREAKTHROUGH",
+"COLOSSUS",
+"CRIMSON_MANTLE",
+"CRIMSON_MANTLE+",
+"DEBT",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"INFERNAL_BLADE+",
+"MASTER_OF_STRATEGY+",
+"PILLAGE+",
+"POMMEL_STRIKE",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD+",
+"THRASH",
+"TRUE_GRIT",
+"VICIOUS+"
+],
+"discard_pile": [],
+"exhaust_pile": []
+}
+}
