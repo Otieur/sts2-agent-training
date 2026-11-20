@@ -34,6 +34,7 @@ public sealed partial class Session
     public bool Victory;
     public bool TestHp;                        // the run used the test-only max-HP switch: flow test, not play
     public string UnlockSource = "all";        // where the run's unlock state came from
+    public InProcessHostService Net;           // co-op runs: the in-process network service (null for single-player)
 
     static bool _hooked;
 
@@ -73,11 +74,35 @@ public sealed partial class Session
             unlocks = MegaCrit.Sts2.Core.Unlocks.UnlockState.FromSerializable(rec.serializableRun.Players[0].UnlockState);
             UnlockSource = Path.GetFileName((string)spec["unlocks_from"]);
         }
-        var players = new List<Player> { Player.CreateForNewRun(character, unlocks, 1UL) };
         var acts = ActModel.GetDefaultList().Select(a => a.ToMutable()).ToList();
         RunSeed = (string)spec["seed"] ?? "SIMRUN000001";
-        Run = RunState.CreateForNewRun(players, acts, Array.Empty<ModifierModel>(), GameMode.Standard, (int?)spec["ascension"] ?? 0, RunSeed);
-        Rm.SetUpNewSingleplayer(Run, false, null);
+        var seats = (int?)spec["players"] ?? 1;
+        Net = null;
+        if (seats <= 1)
+        {
+            var players = new List<Player> { Player.CreateForNewRun(character, unlocks, 1UL) };
+            Run = RunState.CreateForNewRun(players, acts, Array.Empty<ModifierModel>(), GameMode.Standard, (int?)spec["ascension"] ?? 0, RunSeed);
+            Rm.SetUpNewSingleplayer(Run, false, null);
+        }
+        else
+        {
+            // Co-op (Phase 6 groundwork): this process is the host; the other seats are clients that exist only as
+            // entries in the lobby, reached through the in-process network service (sim/CoopNet.cs).
+            Net = new InProcessHostService();
+            var lobby = new MegaCrit.Sts2.Core.Multiplayer.Game.Lobby.StartRunLobby(GameMode.Standard, Net, new SilentLobbyListener(), seats);
+            var host = lobby.AddLocalHostPlayer(unlocks, 10) ?? throw new InvalidOperationException("the lobby refused the host player");
+            lobby.SetLocalCharacter(character);
+            for (var k = 2; k <= seats; k++)
+                lobby.Players.Add(new MegaCrit.Sts2.Core.Entities.Multiplayer.StartRunLobbyPlayer
+                {
+                    id = (ulong)k, slotId = k - 1, character = character, unlockState = host.unlockState,
+                    maxMultiplayerAscensionUnlocked = 10, isReady = true,
+                });
+            var players = lobby.Players.Select(p => Player.CreateForNewRun(p.character ?? character,
+                MegaCrit.Sts2.Core.Unlocks.UnlockState.FromSerializable(p.unlockState), p.id)).ToList();
+            Run = RunState.CreateForNewRun(players, acts, Array.Empty<ModifierModel>(), GameMode.Standard, (int?)spec["ascension"] ?? 0, RunSeed);
+            Rm.SetUpNewMultiplayer(Run, lobby, false, null);
+        }
         Rm.CombatStateSynchronizer.IsDisabled = true;
         Rm.CombatReplayWriter.IsEnabled = false;   // in-memory fight recording: never written by the host, pure cost
         Rm.ChecksumTracker.IsEnabled = false;
@@ -420,6 +445,17 @@ public sealed partial class Session
         o["unlocks"] = UnlockSource;
         o["player_index"] = PlayerIndex;
         o["players"] = Run.Players.Count;
+        if (Net != null)
+            o["coop"] = new JsonObject
+            {
+                ["seats"] = new JsonArray(Run.Players.Select(p => (JsonNode)new JsonObject
+                {
+                    ["net_id"] = (long)p.NetId, ["hp"] = p.Creature.CurrentHp, ["max_hp"] = p.Creature.MaxHp, ["deck"] = p.Deck.Cards.Count,
+                    ["relics"] = new JsonArray(p.Relics.Select(r => (JsonNode)r.Id.Entry).ToArray()),
+                }).ToArray()),
+                ["handled_messages"] = new JsonArray(Net.HandledTypes.OrderBy(x => x).Select(x => (JsonNode)x).ToArray()),
+                ["sent"] = new JsonArray(Net.Outbox.TakeLast(12).Select(x => (JsonNode)(x.Type + (x.To != null ? "->" + x.To : ""))).ToArray()),
+            };
         if (Choices.Current is { } pc)
             o["choice"] = new JsonObject { ["kind"] = pc.Kind, ["min"] = pc.Min, ["max"] = pc.Max, ["options"] = new JsonArray(pc.Labels().Select(x => (JsonNode)x).ToArray()) };
         switch (screen)

@@ -48,7 +48,7 @@ Also found: the game records every fight in memory whenever TestMode is off; the
 ## 5. Co-op readiness
 - Fights: the acting player is an index; the sampler covers every player's draw pile; replays apply any player's events.
 - Card choices go through the game's local selector and `PlayerChoiceSynchronizer`, the co-op path.
-- Run level: every room action uses the multiplayer-capable synchronizers. Missing: a two-player run in one process. `RunManager.SetUpNewMultiplayer` takes an `INetHostGameService` (about 30 members, mostly trivial in process); ours would deliver the second seat's actions to the game's registered message handlers as messages from a client, the way `NetReplayGameService` feeds recorded actions. Not started.
+- Run level: every room action uses the multiplayer-capable synchronizers. **A two-player run now starts in one process** (added after the report, section 7): the in-process host service (`sim/CoopNet.cs`) carries a lobby with two seats into `RunManager.SetUpNewMultiplayer`; the host acts locally and seat 2 acts through messages delivered as if from a client. Next: screens and observations per seat, and seat-2 actions for every screen type.
 
 ## 6. Next steps and what needs you
 - **Phase 8 (search):** snapshot and restore exist (about 45 ms); the next step is a search policy on top of decision mode, measured against the rule planner in the simulator.
@@ -62,4 +62,4 @@ Also found: the game records every fight in memory whenever TestMode is off; the
 - **Planner fixes from the run, applied with tests** (564f686): Cinder is ordered after every other planned card; Plow is read as a stun threshold, so a plan that crosses it is valued with the cancelled attack. 191 tool tests pass. The dataset's derived tables were rebuilt after the profile fix (`analyze_*`, `check_playbook.py`: all figures match).
 - **First search experiment** (`tools/sim.py search`, `reports/phase8/search-first-experiment.md`, exploratory): on 36 hallway and elite fights from nothing, search won 24 of 36 (mean HP left 32.5) against the planner's 22 (28.9); search was better in 23 fights, worse in 4, equal in 9 (sign test one-sided p = 0.0002; mean paired value difference 11.67, bootstrap 95% interval 4.06 to 22.00). Exploratory (not under the comparison protocol); about 10–50 s per fight in Python.
 - **Comparison template** for future experiments: `templates/comparison.md` (P8.E1.S3).
-
+- **Two-player smoke test:** `new_run` with `"players": 2` starts a co-op run in the host (in-process network service and lobby, `sim/CoopNet.cs`); both seats exist and each picked its own Neow option (the host locally, seat 2 through a delivered `OptionIndexChosenMessage`). Per-seat screens and the other seat-2 actions are the next step.

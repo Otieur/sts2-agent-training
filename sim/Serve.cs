@@ -81,6 +81,16 @@ public static class Serve
                         reply["obs"] = s.RunObserve();
                         break;
                     case "run_observe": reply["obs"] = s.RunObserve(); break;
+                    case "coop_deliver_like":   // co-op runs: another seat acts the way the host just did (sim/CoopNet.cs)
+                    {
+                        if (s.Net == null) throw new InvalidOperationException("not a co-op run");
+                        var fields = new Dictionary<string, object>();
+                        foreach (var kv in (req["fields"] as JsonObject) ?? new JsonObject()) fields[kv.Key] = kv.Value!.GetValue<long>();
+                        reply["handlers"] = s.Net.DeliverLike((string)req["type"], fields, (ulong)(req["from"]?.GetValue<long>() ?? 2L));
+                        s.Ctx.Drain();
+                        reply["obs"] = s.RunObserve();
+                        break;
+                    }
                     case "map": reply["map"] = s.MapView(); break;
                     case "debug_rng": reply["counters"] = s.DebugRngCounters(); break;   // fidelity tests only (FP-2)
                     case "move_to":
