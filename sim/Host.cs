@@ -22,6 +22,20 @@ public static class Host
             foreach (var m in new[] { "GetFormattedText", "GetRawText" })
                 Stubs.Skip(typeof(MegaCrit.Sts2.Core.Localization.LocString), m, "display and log text only");
             Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Helpers.GodotTreeExtensions));
+            // Speech bubbles are display only.
+            Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Commands.TalkCmd));
+            // The game reads preferences and settings from files in the save folder. The host gives it default objects
+            // of its own, with the Instant speed so no logic waits on a display timer.
+            var prefs = new MegaCrit.Sts2.Core.Saves.PrefsSave { FastMode = MegaCrit.Sts2.Core.Settings.FastModeType.Instant };
+            Stubs.Return(sm, "get_PrefsSave", prefs, "preferences object owned by the host (no file)");
+            Stubs.Return(sm, "get_SettingsSave", Activator.CreateInstance(typeof(MegaCrit.Sts2.Core.Saves.SettingsSave), true), "settings object owned by the host (no file)");
+            // Display-only methods inside monster and power classes, found by the encounter sweep (reports/phase7/encounter-sweep.md).
+            var asm = sm.Assembly;
+            foreach (var (type, method, why) in new[] {
+                ("MegaCrit.Sts2.Core.Models.Powers.SandpitPower", "UpdateCreaturePositions", "moves creature sprites"),
+                ("MegaCrit.Sts2.Core.Models.Monsters.DecimillipedeSegment", "AnimSegmentsAttack", "attack animation"),
+                ("MegaCrit.Sts2.Core.Models.Monsters.FakeMerchantMonster", "ShowDialogueForMove", "dialogue bubble") })
+                Stubs.Skip(asm.GetType(type)!, method, "display only: " + why);
             Stubs.AnswerTrue(typeof(MegaCrit.Sts2.Core.Localization.LocString), "Exists", "display text only: every text is treated as present (cards throw when their prompt text is missing)");
             Stubs.Skip(typeof(MegaCrit.Sts2.Core.Models.CardModel), "PlayPowerCardFlyVfx", "display only: the Power card's fly effect");
         });

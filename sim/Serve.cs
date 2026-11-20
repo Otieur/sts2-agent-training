@@ -15,7 +15,7 @@ public static class Serve
     public static int Run(string[] args)
     {
         try { Stages.Boot(false); Host.InstallStubs(); Choices.Install(); } catch (Stages.StageFailed) { return 1; }
-        if (!args.Contains("log")) Stubs.Skip(typeof(MegaCrit.Sts2.Core.Logging.Logger), "LogMessage", "log output only");
+        if (!args.Contains("log")) Stubs.CaptureLog();
         var s = new Session();
         SynchronizationContext.SetSynchronizationContext(s.Ctx);
         var info = Path.Combine(Path.GetDirectoryName(Program.GameDir.TrimEnd('/'))!, "release_info.json");
@@ -54,6 +54,16 @@ public static class Serve
                         reply["obs"] = s.Observe();
                         reply["generators_reseeded"] = req["seed"] == null ? 0 : Sanitizer.LastCount;
                         break;
+                    case "new_fight":
+                        s.NewFight(req["spec"]!, (ulong)(req["sample_seed"] ?? 1));
+                        resets++;
+                        reply["obs"] = s.Observe();
+                        reply["generators_reseeded"] = Sanitizer.LastCount;
+                        break;
+                    case "encounters":
+                        reply["encounters"] = new JsonArray(MegaCrit.Sts2.Core.Models.ModelDb.AllEncounters
+                            .Select(e => (JsonNode)new JsonObject { ["id"] = e.Id.Entry, ["room_type"] = e.RoomType.ToString(), ["weak"] = e.IsWeak }).ToArray());
+                        break;
                     case "observe": reply["obs"] = s.Observe(); break;
                     case "legal": reply["actions"] = s.Legal(); break;
                     case "step":
@@ -80,6 +90,11 @@ public static class Serve
                         reply["obs"] = s.Observe();
                         break;
                     }
+                    case "diag":
+                        reply["problems"] = new JsonArray(Stubs.Problems.TakeLast((int)(req["last"] ?? 6)).Select(x => (JsonNode)x).ToArray());
+                        reply["last_action"] = s.LastAction();
+                        if (req["clear"] != null) Stubs.Problems.Clear();
+                        break;
                     case "stats":
                         reply["steps"] = steps; reply["resets"] = resets; reply["engine_calls"] = Stubs.TotalCalls;
                         reply["managed_mb"] = GC.GetTotalMemory(false) / 1048576; reply["sanitize_ms"] = Sanitizer.LastMs;

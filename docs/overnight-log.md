@@ -27,7 +27,7 @@
 | # | Stage | Done when | Status |
 |---|---|---|---|
 | 0 | Setup: access, private repository, branch, this log, keep-awake | all in place | Done 2026-11-20 |
-| 1 | A fight from nothing: any encounter, any deck, potions usable | `tools/sim.py` can start and finish a chosen fight without a recording | Todo |
+| 1 | A fight from nothing: any encounter, any deck, potions usable | `tools/sim.py` can start and finish a chosen fight without a recording | Done: 85 of 85 encounters start from nothing and finish (`reports/phase7/encounter-sweep.md`); custom deck, relics, potions, HP; potion actions |
 | 2 | A new run from a seed: Ancient, map, every room type, act changes, run end | a run plays from floor 1 to its end in the host | Todo |
 | 3 | Run-level fidelity: the Agent's recorded run (seed 1ZWEN4BFQUZL) replayed from its seed; encounters and rewards per floor compared with `runs/2026-11-19-1ZWEN4BFQUZL/run.run` | every floor matches or each mismatch is explained | Todo |
 | 4 | Background runs with a simple policy: many new runs, each from a new seed | N runs finish; runs per hour measured | Todo |
@@ -36,9 +36,12 @@
 | 7 | Morning report | `docs/overnight-report-2026-11-20.md` | Todo |
 
 ## Resume here
-Stage 1, first step: find how the game builds a run and enters a chosen encounter (`RunState.CreateForNewRun`, `RunManager.SetUpNewSinglePlayer` or `SetUpTest`, `RunManager.EnterRoomDebug`, the console's `fight` command), then add a `new_fight` request to `sim/Serve.cs`.
+Stage 2: a new run from a seed. The run is created the way `NGame.StartNewSingleplayerRun` and `NGame.StartRun` do it (`Player.CreateForNewRun`, `RunState.CreateForNewRun`, `RunManager.SetUpNewSingleplayer`, `FinalizeStartingRelics`, `Launch`, `EnterAct(0)`). The Ancient is an `AncientEventModel` (an event). Next: how the game applies event options, map moves (`MoveToMapCoordAction` already runs on the test path), rewards, rest sites, shops and treasure; the STS2-Agent mod's `GameActionService.*` shows which game calls it uses in the real game.
 
 ## Progress
 | Time | What | Result |
 |---|---|---|
 | start | Screen-control access granted (Steam, the game); private repository created and `master` pushed; branch `overnight/2026-11-20-full-run-sim`; keep-awake on | ok |
+| +1 h | Stage 1: `new_fight` in the host (new run for a seed, deck, relics, potions, HP, then `RunManager.EnterRoomDebug`); potion actions; game errors captured (`diag`); first sweep 67 of 85 | 18 failed |
+| +1.5 h | Fixes from the sweep: speech bubbles (`TalkCmd`) inert; the game's preferences and settings answered with host-owned defaults (Instant speed); three display-only monster and power methods stubbed. Second sweep: **85 of 85 encounters start from nothing and finish** | stage 1 done |
+

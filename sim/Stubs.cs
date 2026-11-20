@@ -237,6 +237,48 @@ public static class Stubs
     static void TestOn(out bool __state) { TestPathCalls++; __state = MegaCrit.Sts2.Core.TestSupport.TestMode.IsOn; MegaCrit.Sts2.Core.TestSupport.TestMode.IsOn = true; }
     static void TestOff(bool __state) { MegaCrit.Sts2.Core.TestSupport.TestMode.IsOn = __state; }
 
+    // ---- Game log capture. Printing a log line goes to an engine stub and costs time, so the host drops log output.
+    // Errors and warnings are kept (deduplicated, newest last) because they name the display code or prompt that an
+    // unfinished action is stuck on.
+    public static readonly List<string> Problems = new();
+    static readonly HashSet<string> ProblemSet = new();
+
+    public static void CaptureLog()
+    {
+        var flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        var prefix = new HarmonyLib.HarmonyMethod(typeof(Stubs).GetMethod(nameof(LogPrefix), BindingFlags.Static | BindingFlags.NonPublic));
+        foreach (var m in typeof(MegaCrit.Sts2.Core.Logging.Logger).GetMethods(flags).Where(m => m.Name == "LogMessage")) H.Patch(m, prefix: prefix);
+    }
+
+    static bool LogPrefix(object[] __args)
+    {
+        var level = __args.FirstOrDefault(a => a is Enum)?.ToString() ?? "";
+        if (level is "Error" or "Warn")
+        {
+            var text = __args.OfType<string>().FirstOrDefault() ?? "";
+            var key = level + ": " + string.Join(" | ", text.Split('\n').Take(4).Select(l => l.Trim())).Replace("MegaCrit.Sts2.Core.", "");
+            if (key.Length > 420) key = key[..420];
+            if (ProblemSet.Add(key)) { Problems.Add(key); if (Problems.Count > 200) { ProblemSet.Remove(Problems[0]); Problems.RemoveAt(0); } }
+        }
+        return false;
+    }
+
+    // A getter answered with a fixed object the host owns (preferences and settings that the game reads from files).
+    static readonly Dictionary<MethodBase, object> Fixed = new();
+
+    public static void Return(Type type, string method, object value, string reason)
+    {
+        var flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        foreach (var m in type.GetMethods(flags).Where(m => m.Name == method))
+        {
+            Fixed[m] = value;
+            H.Patch(m, prefix: new HarmonyLib.HarmonyMethod(typeof(Stubs).GetMethod(nameof(FixedPrefix), BindingFlags.Static | BindingFlags.NonPublic)));
+        }
+        SkipList.Add(($"{type.Name}.{method}", reason));
+    }
+
+    static bool FixedPrefix(MethodBase __originalMethod, ref object __result) { __result = Fixed[__originalMethod]; return false; }
+
     public static void ReportSkips()
     {
         Console.WriteLine($"-- game methods stubbed: {SkipList.Count}");

@@ -26,7 +26,9 @@ public sealed class Session
     bool _hasRun;
 
     static RunManager Rm => RunManager.Instance;
-    Player Me => Run.Players[0];
+    // Co-op readiness: the acting player is an index into the run's players, never a fixed "the player".
+    public int PlayerIndex;
+    Player Me => Run.Players[PlayerIndex];
     CombatState Combat => CombatManager.Instance.DebugOnlyGetState();
 
     public void Load(string path) { Replay = global::Replay.Load(path); _hasRun = _hasRun && false; }
@@ -57,6 +59,68 @@ public sealed class Session
         while (Applied < Replay.events.Count && (Applied < events || !IsDecision(Replay.events[Applied])))
             ApplyRecorded(Replay.events[Applied]);
         if (sampleSeed.HasValue) { Sanitizer.Apply(this, sampleSeed.Value); Sanitized = true; Choices.Intercept = true; }
+    }
+
+    static T ById<T>(IEnumerable<T> all, string id, string what) where T : AbstractModel
+        => all.FirstOrDefault(m => m.Id.Entry == id) ?? throw new ArgumentException($"unknown {what} '{id}'");
+
+    // A fight from nothing (P7.E4.S1): a new run for the given seed, character and ascension, the starting deck and
+    // relics unless the request replaces them, then straight into the chosen encounter. No recording is involved.
+    // The state is sanitized with the sample seed before it is returned, so the request's run seed fixes the set-up
+    // (which monsters, their HP rolls) and the sample seed fixes everything random after it.
+    public void NewFight(JsonNode spec, ulong sampleSeed)
+    {
+        SynchronizationContext.SetSynchronizationContext(Ctx);
+        if (Run != null) { Rm.CleanUp(true); Ctx.Drain(); }
+        Replay = null;
+        Choices.Intercept = false;
+        Choices.Current = null;
+        _last = null;
+        Applied = 0;
+        Sanitized = false;
+        PlayerIndex = 0;
+        var character = ById(ModelDb.AllCharacters, (string)spec["character"] ?? "IRONCLAD", "character");
+        var players = new List<Player> { Player.CreateForNewRun(character, MegaCrit.Sts2.Core.Unlocks.UnlockState.all, 1UL) };
+        var acts = ActModel.GetDefaultList().Select(a => a.ToMutable()).ToList();
+        Run = RunState.CreateForNewRun(players, acts, Array.Empty<ModifierModel>(), GameMode.Standard,
+                                       (int?)spec["ascension"] ?? 0, (string)spec["seed"] ?? "SIMSEED00001");
+        Rm.SetUpNewSingleplayer(Run, false, null);
+        Rm.CombatStateSynchronizer.IsDisabled = true;
+        Rm.ChecksumTracker.IsEnabled = false;
+        Ctx.RunUntil(Rm.FinalizeStartingRelics(), "FinalizeStartingRelics");
+        Rm.Launch();
+        Rm.GenerateRooms();
+        Ctx.RunUntil(Rm.GenerateMap(), "GenerateMap");
+        var me = Me;
+        if (spec["deck"] is JsonArray deck)
+        {
+            Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CardPileCmd.RemoveFromDeck(me.Deck.Cards.ToList(), false), "clear deck");
+            foreach (var entry in deck.Select(x => (string)x))
+            {
+                var card = Run.CreateCard(ById(ModelDb.AllCards, entry.TrimEnd('+'), "card"), me);
+                if (entry.EndsWith("+")) MegaCrit.Sts2.Core.Commands.CardCmd.Upgrade(card, default);
+                Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CardPileCmd.Add(card, PileType.Deck, CardPilePosition.Bottom, null, true), "add card");
+            }
+        }
+        if (spec["relics"] is JsonArray relics)
+            foreach (var id in relics.Select(x => (string)x))
+                Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain(ById(ModelDb.AllRelics, id, "relic").ToMutable(), me, me.Relics.Count), "add relic");
+        if (spec["potions"] is JsonArray potions)
+            foreach (var id in potions.Select(x => (string)x))
+                Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.PotionCmd.TryToProcure(ById(ModelDb.AllPotions, id, "potion").ToMutable(), me, -1), "add potion");
+        if (spec["hp"] != null) Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.SetCurrentHp(me.Creature, (int)spec["hp"]), "set HP");
+        var encounter = ById(ModelDb.AllEncounters, (string)spec["encounter"], "encounter").ToMutable();
+        var point = encounter.RoomType switch
+        {
+            MegaCrit.Sts2.Core.Rooms.RoomType.Elite => MegaCrit.Sts2.Core.Map.MapPointType.Elite,
+            MegaCrit.Sts2.Core.Rooms.RoomType.Boss => MegaCrit.Sts2.Core.Map.MapPointType.Boss,
+            _ => MegaCrit.Sts2.Core.Map.MapPointType.Monster,
+        };
+        Ctx.RunUntil(Rm.EnterRoomDebug(encounter.RoomType, point, encounter, false), "enter the encounter");
+        Ctx.Drain();
+        Sanitizer.Apply(this, sampleSeed);
+        Sanitized = true;
+        Choices.Intercept = true;
     }
 
     // A recorded event the player decided: a card, a potion or ending the turn. Choice answers, resumes and the
@@ -185,6 +249,19 @@ public sealed class Session
             }
             else acts.Add(new JsonObject { ["type"] = "play", ["card"] = i, ["card_id"] = c.Id.Entry });
         }
+        var slots = Me.PotionSlots;
+        for (var k = 0; k < slots.Count; k++)
+        {
+            var p = slots[k];
+            if (p == null || p.Usage.ToString() == "Automatic" || !p.PassesCustomUsabilityCheck) continue;
+            if (p.TargetType == TargetType.AnyEnemy)
+            {
+                for (var j = 0; j < enemies.Count; j++)
+                    if (enemies[j].IsAlive && enemies[j].IsHittable && p.IsValidTarget(enemies[j]))
+                        acts.Add(new JsonObject { ["type"] = "potion", ["slot"] = k, ["target"] = j, ["potion_id"] = p.Id.Entry });
+            }
+            else acts.Add(new JsonObject { ["type"] = "potion", ["slot"] = k, ["potion_id"] = p.Id.Entry });
+        }
         acts.Add(new JsonObject { ["type"] = "end_turn" });
         return acts;
     }
@@ -227,6 +304,14 @@ public sealed class Session
             var card = hand[(int)action["card"]];
             Creature target = action["target"] != null ? Enemies[(int)action["target"]] : null;
             Enqueue(new PlayCardAction(card, target));
+        }
+        else if (type == "potion")
+        {
+            var potion = Me.PotionSlots[(int)action["slot"]] ?? throw new ArgumentException("that potion slot is empty");
+            // an enemy for targeted potions; the drinker for potions aimed at a player; nothing for the rest
+            Creature target = potion.TargetType == TargetType.AnyEnemy ? Enemies[(int)action["target"]]
+                : potion.TargetType is TargetType.Self or TargetType.AnyPlayer or TargetType.AnyAlly ? Me.Creature : null;
+            Enqueue(new UsePotionAction(potion, target, true));
         }
         else if (type == "end_turn")
         {
@@ -299,7 +384,7 @@ public sealed class Session
             ["screen"] = "COMBAT", ["status"] = Status(), ["turn"] = pcs.TurnNumber, ["waiting_for_choice"] = Waiting, ["blocked"] = Blocked,
             ["choice"] = Choices.Current is { } pc ? new JsonObject { ["kind"] = pc.Kind, ["min"] = pc.Min, ["max"] = pc.Max,
                 ["options"] = new JsonArray(pc.Options.Select(c => (JsonNode)(c.Id.Entry + (c.IsUpgraded ? "+" : ""))).ToArray()) } : null,
-            ["applied_events"] = Applied, ["sanitized"] = Sanitized,
+            ["applied_events"] = Applied, ["sanitized"] = Sanitized, ["player_index"] = PlayerIndex, ["players"] = Run.Players.Count,
             ["run"] = new JsonObject { ["ascension"] = Run.AscensionLevel, ["max_hp"] = me.MaxHp, ["current_hp"] = me.CurrentHp, ["relics"] = relics, ["potions"] = potions },
             ["combat"] = new JsonObject
             {
@@ -321,4 +406,6 @@ public sealed class Session
     }
 
     public object[] Roots() => new object[] { Run, Combat };
+
+    public string LastAction() => _last == null ? "none" : $"{_last.GetType().Name} in state {_last.State}";
 }
