@@ -135,16 +135,24 @@ def _same_state(a, b):
 
 
 def play_fight(host, spec, seed, k, top, mode, stuck_log=None, max_restarts=3):
-    """One fight played by the search teacher. After a stuck rollout the host is restarted and the fight replayed to the
-    current decision (decision mode is deterministic given the seeds and the actions); the replayed state is checked."""
+    """One fight played by the flat Monte Carlo teacher (see `play`)."""
+    return play(host, spec, seed, lambda sim, obs, d, done: scored_search(sim, obs, mode, k, top, d, done), stuck_log, max_restarts)
+
+
+def play(host, spec, seed, search, stuck_log=None, max_restarts=3):
+    """One fight; `search(sim, obs, decision, done)` returns (candidates, values, best index). After a stuck rollout
+    the host is restarted and the fight replayed to the current decision (decision mode is deterministic given the seeds
+    and the actions); the replayed state is checked, and `done` keeps the rollouts already scored."""
     obs = start_fight(host.sim, spec, seed)
     if obs["status"] != "in_progress":
         raise S.SimError(f"the fight did not start (status {obs['status']})")
     decisions, applied, d, restarts, stuck = [], [], 0, 0, 0
     done = {}
+    t_search = 0.0
     while obs["status"] == "in_progress" and not obs.get("blocked") and d < 300:
+        t0 = time.time()
         try:
-            cands, values, best = scored_search(host.sim, obs, mode, k, top, d, done)
+            cands, values, best = search(host.sim, obs, d, done)
         except Tainted as e:
             stuck += 1
             restarts += 1
@@ -160,6 +168,7 @@ def play_fight(host, spec, seed, k, top, mode, stuck_log=None, max_restarts=3):
                 raise S.SimError("replay after a host restart did not reproduce the decision state")
             obs = o2
             continue
+        t_search += time.time() - t0
         chosen = best if values[0] is not None else 0
         decisions.append({"obs": obs, "candidates": cands, "values": values, "chosen": chosen})
         try:
@@ -172,7 +181,7 @@ def play_fight(host, spec, seed, k, top, mode, stuck_log=None, max_restarts=3):
         done = {}
     outcome = {"status": obs["status"], "hp": obs["combat"]["player"]["current_hp"], "enemy_hp_left": S._enemy_hp_left(obs),
                "turns": obs.get("turn"), "decisions": d, "blocked": bool(obs.get("blocked")), "host_restarts": restarts,
-               "stuck_rollouts": stuck}
+               "stuck_rollouts": stuck, "search_seconds": round(t_search, 2)}
     return {"spec": spec, "seed": seed, "outcome": outcome, "decisions": decisions}
 
 
