@@ -28,7 +28,7 @@
 |---|---|---|---|
 | 0 | Setup: access, private repository, branch, this log, keep-awake | all in place | Done 2026-11-20 |
 | 1 | A fight from nothing: any encounter, any deck, potions usable | `tools/sim.py` can start and finish a chosen fight without a recording | Done: 85 of 85 encounters start from nothing and finish (`reports/phase7/encounter-sweep.md`); custom deck, relics, potions, HP; potion actions |
-| 2 | A new run from a seed: Ancient, map, every room type, act changes, run end | a run plays from floor 1 to its end in the host | Todo |
+| 2 | A new run from a seed: Ancient, map, every room type, act changes, run end | a run plays from floor 1 to its end in the host | Done (flow): whole runs from a seed through every room type, act changes and the final boss; 3 of 4 flow-test runs won (test-only max HP), 1 died in act 2 (to investigate) |
 | 3 | Run-level fidelity: the Agent's recorded run (seed 1ZWEN4BFQUZL) replayed from its seed; encounters and rewards per floor compared with `runs/2026-11-19-1ZWEN4BFQUZL/run.run` | every floor matches or each mismatch is explained | Todo |
 | 4 | Background runs with a simple policy: many new runs, each from a new seed | N runs finish; runs per hour measured | Todo |
 | 5 | A real A1 run on profile 2 for recorded fights (replays kept by `tools/play_turn.py`), then the fidelity suite on them | run finished and post-mortem written, or the reason it could not start | Todo |
@@ -44,4 +44,6 @@ Stage 2: a new run from a seed. The run is created the way `NGame.StartNewSingle
 | start | Screen-control access granted (Steam, the game); private repository created and `master` pushed; branch `overnight/2026-11-20-full-run-sim`; keep-awake on | ok |
 | +1 h | Stage 1: `new_fight` in the host (new run for a seed, deck, relics, potions, HP, then `RunManager.EnterRoomDebug`); potion actions; game errors captured (`diag`); first sweep 67 of 85 | 18 failed |
 | +1.5 h | Fixes from the sweep: speech bubbles (`TalkCmd`) inert; the game's preferences and settings answered with host-owned defaults (Instant speed); three display-only monster and power methods stubbed. Second sweep: **85 of 85 encounters start from nothing and finish** | stage 1 done |
+| +3 h | Stage 2: run mode (`sim/Session.Run.cs`): new run as the game creates it, then the event, rest-site, rewards, treasure and act-change synchronizers; card rewards, deck selections, relic and bundle choices in the choice interceptor; end-of-run telemetry, achievements, Steam stats, daily score, run history, progress and save deletion stubbed; asset preloader inert; engine-resource and hover-tip getters answer null or empty | first run: Neow to floor 7 |
+| +4 h | Full potion slots handled (discard action; failed rewards no longer offered); display flags forced off on game commands (previews, visuals, animation, sound); effect and sound commands inert; every game-written scene node inert; engine objects get inert stand-ins | **3 of 4 flow-test runs reach and beat the act 3 boss** (floor 46); all room types visited |
 

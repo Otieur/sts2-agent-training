@@ -24,6 +24,9 @@ public static class Host
             Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Helpers.GodotTreeExtensions));
             Console.WriteLine($"     {Stubs.NullEngineResources(sm.Assembly)} game methods returning engine resources (textures, scenes) answer null");
             Console.WriteLine($"     {Stubs.EmptyHoverTips(sm.Assembly)} hover-tip getters answer empty");
+            Console.WriteLine($"     {Stubs.ForceDisplayFlags(sm.Assembly)} game commands run with previews, visuals, animation and sound off");
+            Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Commands.VfxCmd));   // visual effects only
+            Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Commands.SfxCmd));   // sound effects only
             // Speech bubbles are display only.
             Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Commands.TalkCmd));
             // The game reads preferences and settings from files in the save folder. The host gives it default objects
@@ -40,10 +43,12 @@ public static class Host
             foreach (var m in new[] { "UpdateProgressWithRunData", "BeginSaveBatch", "DeleteCurrentRun", "DeleteCurrentMultiplayerRun" })
                 Stubs.Skip(sm, m, "SA-1: no progress update and no save-file deletion");
             Stubs.Skip(typeof(RunManager), "UpdateRichPresence", "SA-2: no Steam rich presence");
+            Stubs.Skip(typeof(MegaCrit.Sts2.Core.Saves.Managers.ProgressSaveManager), "SaveProgress", "SA-1: no progress file");
             // Display-only methods inside monster and power classes, found by the encounter sweep (reports/phase7/encounter-sweep.md).
             var asm = sm.Assembly;
             foreach (var (type, method, why) in new[] {
                 ("MegaCrit.Sts2.Core.Models.Powers.SandpitPower", "UpdateCreaturePositions", "moves creature sprites"),
+                ("MegaCrit.Sts2.Core.Models.Powers.SandpitPower", "AfterRemoved", "moves creature sprites back (tweens only)"),
                 ("MegaCrit.Sts2.Core.Models.Monsters.DecimillipedeSegment", "AnimSegmentsAttack", "attack animation"),
                 ("MegaCrit.Sts2.Core.Models.Monsters.FakeMerchantMonster", "ShowDialogueForMove", "dialogue bubble") })
                 Stubs.Skip(asm.GetType(type)!, method, "display only: " + why);

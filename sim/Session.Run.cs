@@ -26,8 +26,10 @@ public sealed partial class Session
     object _doneRoom;                          // the rest site, shop or treasure room that has been finished
     bool _chestOpened;
     Task _pending;                             // a game task still running from the last run-level action
+    readonly HashSet<Reward> _failedRewards = new();   // rewards a take attempt did not claim (no room, refused)
     public int Floor => Run?.TotalFloor ?? 0;
     public bool Victory;
+    public bool TestHp;                        // the run used the test-only max-HP switch: flow test, not play
 
     static bool _hooked;
 
@@ -52,6 +54,7 @@ public sealed partial class Session
         Replay = null;
         Choices.Current = null;
         _last = null; _pending = null; _rewards = null; _rewardsRoom = null; _doneRoom = null; _chestOpened = false;
+        _failedRewards.Clear();
         Applied = 0; PlayerIndex = 0; Victory = false;
         var character = ById(ModelDb.AllCharacters, (string)spec["character"] ?? "IRONCLAD", "character");
         var players = new List<Player> { Player.CreateForNewRun(character, MegaCrit.Sts2.Core.Unlocks.UnlockState.all, 1UL) };
@@ -63,6 +66,14 @@ public sealed partial class Session
         Rm.ChecksumTracker.IsEnabled = false;
         Ctx.RunUntil(Rm.FinalizeStartingRelics(), "FinalizeStartingRelics");
         Rm.Launch();
+        // Test-only switch for exercising the whole flow (rest sites, treasure, bosses, act changes) with a weak driver:
+        // a very large max HP. Never used for learning, evaluation or any reported play result.
+        if (spec["test_max_hp"] != null)
+        {
+            Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.SetMaxHp(Me.Creature, (int)spec["test_max_hp"]), "test max HP");
+            Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.SetCurrentHp(Me.Creature, (int)spec["test_max_hp"]), "test HP");
+            TestHp = true;
+        }
         RunMode = true;
         // Decision mode from the first floor: the run's own seed shapes the map, encounters and rewards exactly as in
         // the real game (FP-9 forbids reading them; nothing in the observation shows them before they happen). A
@@ -134,7 +145,13 @@ public sealed partial class Session
             {
                 var list = _rewards.Rewards;
                 for (var i = 0; i < list.Count; i++)
-                    if (!list[i].SuccessfullySelected) acts.Add(new JsonObject { ["type"] = "take_reward", ["index"] = i, ["reward"] = list[i].GetType().Name });
+                {
+                    if (list[i].SuccessfullySelected || _failedRewards.Contains(list[i])) continue;
+                    if (list[i] is PotionReward && !Me.HasOpenPotionSlots) continue;   // no room: discard a potion first
+                    acts.Add(new JsonObject { ["type"] = "take_reward", ["index"] = i, ["reward"] = list[i].GetType().Name });
+                }
+                if (list.Any(r => r is PotionReward && !r.SuccessfullySelected) && !Me.HasOpenPotionSlots)
+                    AddDiscards(acts);
                 if (!_rewards.DisallowSkipping) acts.Add(new JsonObject { ["type"] = "skip_rewards" });
                 break;
             }
@@ -184,6 +201,13 @@ public sealed partial class Session
         return acts;
     }
 
+    void AddDiscards(JsonArray acts)
+    {
+        var slots = Me.PotionSlots;
+        for (var k = 0; k < slots.Count; k++)
+            if (slots[k] != null) acts.Add(new JsonObject { ["type"] = "discard_potion", ["slot"] = k, ["potion_id"] = slots[k].Id.Entry });
+    }
+
     static string ShopLabel(MerchantEntry e) => e switch
     {
         MerchantCardEntry c => "card:" + c.CreationResult.Card.Id.Entry,
@@ -207,7 +231,15 @@ public sealed partial class Session
         switch (type)
         {
             case "take_reward":
-                Track(Rm.RewardsSetSynchronizer.SelectLocalReward(_rewards.Rewards[(int)action["index"]]));
+            {
+                var reward = _rewards.Rewards[(int)action["index"]];
+                Track(Rm.RewardsSetSynchronizer.SelectLocalReward(reward));
+                if (!reward.SuccessfullySelected && Choices.Current == null) _failedRewards.Add(reward);
+                break;
+            }
+            case "discard_potion":
+                Enqueue(new MegaCrit.Sts2.Core.GameActions.DiscardPotionGameAction(Me, (uint)(int)action["slot"], CombatManager.Instance.IsInProgress));
+                Settle();
                 break;
             case "skip_rewards":
                 Rm.RewardsSetSynchronizer.SkipLocalRewardsSet();
@@ -288,6 +320,7 @@ public sealed partial class Session
             ["relics"] = new JsonArray(me.Relics.Select(r => (JsonNode)r.Id.Entry).ToArray()),
             ["potions"] = new JsonArray(me.PotionSlots.Select(p => (JsonNode)(p?.Id.Entry)).ToArray()),
         };
+        o["test_hp"] = TestHp;
         o["player_index"] = PlayerIndex;
         o["players"] = Run.Players.Count;
         if (Choices.Current is { } pc)

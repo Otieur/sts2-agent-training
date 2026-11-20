@@ -131,6 +131,9 @@ public static class Stubs
     static readonly FieldInfo NativePtrField = typeof(Godot.GodotObject).GetField("NativePtr", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!;
 
     // One UI namespace is spelled with a lower-case "sts2" in the game (MegaCrit.sts2.Core.Nodes.TopBar).
+    // A scene-node class written by the game (audio managers, effects ...) outside the UI namespaces: as inert as UI.
+    static bool IsGameNode(Type t) => typeof(Godot.GodotObject).IsAssignableFrom(t) && (t.Namespace ?? "").StartsWith("MegaCrit", StringComparison.OrdinalIgnoreCase);
+
     // A method another part of the host patches itself (so making its class inert must leave it alone).
     public static void Reserve(MethodBase m) => Patched.Add(m);
 
@@ -153,7 +156,7 @@ public static class Stubs
         var flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         var skipDefault = new HarmonyLib.HarmonyMethod(typeof(Stubs).GetMethod(nameof(InertDefault), BindingFlags.Static | BindingFlags.NonPublic));
         var skipRef = new HarmonyLib.HarmonyMethod(typeof(Stubs).GetMethod(nameof(InertRef), BindingFlags.Static | BindingFlags.NonPublic));
-        for (var x = t; x != null && IsUi(x); x = x.BaseType)
+        for (var x = t; x != null && (IsUi(x) || IsGameNode(x)); x = x.BaseType)
         {
             if (!InertTypes.Add(x)) break;
             foreach (var m in x.GetMethods(flags))
@@ -201,7 +204,9 @@ public static class Stubs
             return FromResult.MakeGenericMethod(a).Invoke(null, new[] { a.IsValueType ? Activator.CreateInstance(a) : InertValue(a) });
         }
         if (rt == typeof(string)) return "";
-        return IsUi(rt) ? InertInstance(rt) : null;
+        // UI classes and other engine objects (a Control, a Node2D ...) get an inert instance, not null: callers pass
+        // them on (a container for an effect) and would fail on null. Engine methods on them reach the recording stubs.
+        return IsUi(rt) || typeof(Godot.GodotObject).IsAssignableFrom(rt) ? InertInstance(rt) : null;
     }
 
     // Makes inert every UI class in the list (tools: data/asm/ui-types-from-logic.json, built from the call graph).
@@ -335,6 +340,35 @@ public static class Stubs
     }
 
     static bool EmptyPrefix(MethodBase __originalMethod, ref object __result) { __result = EmptyValue[__originalMethod]; return false; }
+
+    // Display flags on the game's commands: previews off, visuals skipped, no animation or sound. The flags only choose
+    // whether something is shown; "silent" on power commands is left alone (it may change which hooks run).
+    static void ShowPreviewOff(ref bool showPreview) { showPreview = false; }
+    static void SkipVisualsOn(ref bool skipVisuals) { skipVisuals = true; }
+    static void SkipPileVisualsOn(ref bool skipCardPileVisuals) { skipCardPileVisuals = true; }
+    static void PlayAnimOff(ref bool playAnim) { playAnim = false; }
+    static void PlaySfxOff(ref bool playSfx) { playSfx = false; }
+
+    public static int ForceDisplayFlags(Assembly asm)
+    {
+        var flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        var byName = new Dictionary<string, string> { ["showPreview"] = nameof(ShowPreviewOff), ["skipVisuals"] = nameof(SkipVisualsOn),
+            ["skipCardPileVisuals"] = nameof(SkipPileVisualsOn), ["playAnim"] = nameof(PlayAnimOff), ["playSfx"] = nameof(PlaySfxOff) };
+        var n = 0;
+        foreach (var type in asm.GetTypes())
+        {
+            if (IsUi(type) || type.Namespace == null || !type.Namespace.StartsWith("MegaCrit.Sts2.Core")) continue;
+            foreach (var m in type.GetMethods(flags))
+            {
+                if (m.IsAbstract || m.ContainsGenericParameters || m.GetMethodBody() == null || Patched.Contains(m)) continue;
+                var p = m.GetParameters().FirstOrDefault(x => x.ParameterType == typeof(bool) && byName.ContainsKey(x.Name ?? ""));
+                if (p == null) continue;
+                try { H.Patch(m, prefix: new HarmonyLib.HarmonyMethod(typeof(Stubs).GetMethod(byName[p.Name!], BindingFlags.Static | BindingFlags.NonPublic))); n++; }
+                catch { InertFailed++; }
+            }
+        }
+        return n;
+    }
 
     public static void ReportSkips()
     {
