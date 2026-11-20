@@ -311,6 +311,35 @@ def markdown_potions(folder):
     return "\n".join(L)
 
 
+def markdown_budget(folder, alpha=0.025):
+    """Section 5 of reports/phase8/search-budget.md."""
+    recs = load(folder)
+    man = json.loads((Path(folder) / "manifest.json").read_text())
+    arms = man["arms"]
+    summ = summarize(recs, arms)
+    L = [f"Run `{man['name']}`: {man['jobs']} jobs, {man['workers']} workers, {man['wall_seconds']} s wall, code `{man['code_commit']}`, "
+         f"game {man['game_version']} ({man['game_commit']}).", "",
+         "| Arm | Games | Errors | Won | Mean value | HP left after wins | Search s per decision |", "|---|---|---|---|---|---|---|"]
+    for n in arms:
+        x = summ[n]
+        L.append(f"| {n} | {x['games']} | {x['errors']} | {x['won']} | {x['mean_value']:.2f} | {x['mean_hp_if_won']:.2f} | {x['search_seconds_per_decision']:.3f} |")
+    L += ["", "| Pair (B − A) | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |", "|---|---|---|---|---|---|---|---|"]
+    tests = {}
+    for a_, b_ in [("mc6", "mc12"), ("mc12", "mc24"), ("mc6", "mc24")]:
+        if a_ in arms and b_ in arms:
+            t = tests[(a_, b_)] = paired(recs, a_, b_)
+            L.append(f"| {b_} − {a_} | {t['pairs']} | {t['mean_diff']:.2f} | {t['boot95'][0]:.2f} to {t['boot95'][1]:.2f} | {t['better']} | {t['worse']} | {t['equal']} | {t['sign_p_one_sided']:.4f} |")
+    L.append("")
+    for h, key in (("H1", ("mc6", "mc12")), ("H2", ("mc12", "mc24"))):
+        if key in tests:
+            t = tests[key]
+            L.append(f"- **{h}** (`{key[1]}` better than `{key[0]}`, sign test p < {alpha}): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
+                     + ("**holds**." if t["sign_p_one_sided"] < alpha and t["mean_diff"] > 0 else "**does not hold**."))
+    errs = [(r["fight"], r["sample"], n) for r in recs for n, v in r["arms"].items() if "error" in v]
+    L.append(f"\nErrors: {len(errs)}.")
+    return "\n".join(L)
+
+
 def markdown(folder, alpha=0.025, h4=False):
     """Section 5 of reports/phase9/value-search-comparison.md: summary table, H1-H3 verdicts, paired tests."""
     recs = load(folder)
@@ -381,7 +410,12 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.report and a.markdown:
         man = json.loads((Path(a.report) / "manifest.json").read_text())
-        print(markdown_potions(a.report) if any(n.endswith("p") for n in man["arms"]) else markdown(a.report, a.alpha, a.h4))
+        if any(n.endswith("p") for n in man["arms"]):
+            print(markdown_potions(a.report))
+        elif all(re.fullmatch(r"mc\d+", n) for n in man["arms"]):
+            print(markdown_budget(a.report, a.alpha))
+        else:
+            print(markdown(a.report, a.alpha, a.h4))
         return 0
     if a.report:
         recs = load(a.report)
