@@ -226,7 +226,7 @@
 
 ### P7.E5: Fidelity suite
 
-> **P7.E5.S1: Replay the corpus** · Size M · Status: In progress (2026-11-20: `tools/sim.py fidelity`, `reports/phase7/fidelity.md`: 10 of 10 recorded fights exact (218 states; nine recorded live on 2026-11-20: hallways, three elites and the act 1 boss, a lost fight included); more runs and characters will widen it)
+> **P7.E5.S1: Replay the corpus** · Size M · Status: In progress (2026-11-20: `tools/sim.py fidelity`, `reports/phase7/fidelity.md`: 11 of 11 recorded fights exact (244 states; one from the Player's own play, kept read-only by `tools/keep_replays.py`, agreed 2026-11-20; nine recorded live on 2026-11-20: hallways, three elites and the act 1 boss, a lost fight included); more runs and characters will widen it)
 > *As the Agent, I want every recorded fight replayed in fidelity mode with checksums compared, so that exactness is measured.*
 >
 > **Acceptance criteria**

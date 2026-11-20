@@ -1002,8 +1002,21 @@ def cmd_runcheck(a):
 
 
 def cmd_fidelity(a):
-    """P7.E5.S1: replay every recorded fight in fidelity mode and compare the host's states with the game's."""
-    files = sorted(REPLAYS.glob("*/*.mcr"))
+    """P7.E5.S1: replay every recorded fight in fidelity mode and compare the host's states with the game's. Recordings
+    from another game build (their header names the build) are skipped and counted, not failed."""
+    sys.path.insert(0, str(PROJECT / "tools"))
+    import keep_replays
+    info = Path(os.environ.get("STS2_DATA_DIR", str(Path.home() / "Library/Application Support/Steam/steamapps/common/Slay the Spire 2/SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64"))).parent / "release_info.json"
+    installed = json.loads(info.read_text()).get("commit") if info.exists() else None
+    files, skipped = [], []
+    for f in sorted(REPLAYS.glob("*/*.mcr")):
+        h = keep_replays.read_header(f.read_bytes()[:128])
+        if installed and h and h[1] != installed:
+            skipped.append((f.relative_to(REPLAYS), h[0]))
+        else:
+            files.append(f)
+    for f, v in skipped:
+        print(f"skip {f}: recorded on {v}, not the installed build")
     rows = []
     for f in files:
         r = subprocess.run([str(PROJECT / "sim" / "run.sh"), "replay", str(f), "once"], cwd=PROJECT, capture_output=True, text=True, timeout=600)
@@ -1041,6 +1054,9 @@ def cmd_fidelity(a):
          "compared, as text with the anonymised player id masked, with the state the game stored in the recording.", "",
          f"**{passed} of {len(rows)} recorded fights reproduce exactly.** Phase 7 exit gate: at least 99% of at least 100 fights (M11).", "",
          "Not compared: the checkpoints the game takes after every single action (the host does not produce them).", "",
+         f"Sources: the Agent's runs (kept by `tools/play_turn.py`) and the Player's own play (kept read-only by `tools/keep_replays.py`, folders "
+         f"`player-*`). Skipped: {len(skipped)} recording(s) from another game build"
+         + (" (" + ", ".join(f"{f} on {v}" for f, v in skipped) + ")." if skipped else "."), "",
          "A second replay uses the host's own card-play and end-turn actions, the path decision mode steps with, and must end in the same result.", "",
          "| Fight | Game | Model ids | Events applied | Fight over | Final HP | States equal | Different | Own-action replay | Result |", "|---|---|---|---|---|---|---|---|---|---|"]
     for name, ver, hashes, ev, m, ok, why, o in rows:

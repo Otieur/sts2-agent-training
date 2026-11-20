@@ -60,6 +60,7 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 ## Simulator (Phase 7; host in `sim/`, C# on .NET 9)
 | Tool | What it does | Typical call |
 |---|---|---|
+| `keep_replays.py` | Keeps the game's fight recordings from the Player's own play, read-only, for the simulator's fidelity suite (`docs/runbooks/keep-player-replays.md`); skips the Agent's profile and other game builds are flagged | `keep_replays.py watch --while-game-runs` · `keep_replays.py status` |
 | `sim.py` | Bridge to the simulator host: the game's own combat logic outside the game. `smoke` positions a recorded fight and rolls it out; `fidelity` replays every recorded fight against the game's recorded states; `fairplay` runs the sanitizer, determinism, invariance and leak-canary checks; `planner` runs `plan_turn.py` as the policy on sampled futures; `sweep` starts every encounter from nothing; `runs` plays whole runs from new seeds; `runcheck` replays a recorded run from its seed; `clone` checks snapshot and restore; `sandbox` checks saves, sandbox home and network; `search` compares the planner with flat Monte Carlo over its candidate actions | `sim.py fidelity` · `sim.py planner --seeds 10` · `sim.py runs --count 30` · `sim.py search --fights 12 --k 6` |
 
 ## Checks against the game's own code (run after every game update: `docs/runbooks/game-patch.md`)
