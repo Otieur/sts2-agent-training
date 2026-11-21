@@ -49,6 +49,8 @@ def is_curse(card_id):
 
 
 _EVENT_COUNTS = None
+_EVALUATOR = None
+ROLLOUTS_K = 6
 
 
 def event_pick(obs, acts):
@@ -96,6 +98,7 @@ class Policy:
         self.parts = set(name.split("+")) - {"base"}
         self.pending = None           # what a choice screen opened by our own action is for
         self.bought = set()
+        self.stats = {}
 
     def act(self, obs, acts, rng, sim=None):
         scr = obs["screen"]
@@ -108,7 +111,11 @@ class Policy:
             a = self.route_pick(sim, obs, acts)
             if a:
                 return a
-        if scr == "choice" and ch.get("kind") == "CardReward" and "draft" in self.parts:
+        if scr == "choice" and ch.get("kind") == "CardReward" and "rdraft" in self.parts and sim is not None:
+            a = self.rollout_pick(sim, obs, acts)
+            if a is not None:
+                return a
+        if scr == "choice" and ch.get("kind") == "CardReward" and ("draft" in self.parts or "rdraft" in self.parts):
             a = draft_pick(obs, acts)
             if a is not None:
                 return a
@@ -136,6 +143,29 @@ class Policy:
                 if str(x.get("option", "")).upper() == want:
                     return x
         return S.run_policy(pt, obs, acts, rng)
+
+    def rollout_pick(self, sim, obs, acts):
+        """Card rewards by sampled rollouts (tools/run_eval.py): each card and skip is played forward over the same
+        re-sampled futures to the end of the act with the rule planner fighting; the best mean rollout value is taken,
+        exact ties going to the draft scorer's choice."""
+        global _EVALUATOR
+        import run_eval
+        if _EVALUATOR is None:
+            _EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K)
+        opts = run_eval.card_reward_options(acts)
+        if len(opts) < 2:
+            return None
+        vals = _EVALUATOR.evaluate(sim, obs, opts)
+        if any(v is None for v in vals):
+            self.stats["rdraft_failed"] = self.stats.get("rdraft_failed", 0) + 1
+            return None
+        scorer = draft_pick(obs, acts)
+        scorer = scorer if scorer in opts else opts[-1]
+        best = max(range(len(opts)), key=lambda i: (vals[i], opts[i] is scorer))
+        self.stats["rdraft_decisions"] = self.stats.get("rdraft_decisions", 0) + 1
+        self.stats["rdraft_disagree"] = self.stats.get("rdraft_disagree", 0) + (opts[best] is not scorer)
+        self.stats["rdraft_skips"] = self.stats.get("rdraft_skips", 0) + (not opts[best].get("cards"))
+        return opts[best]
 
     def route_pick(self, sim, obs, acts):
         """Route by the path planner (`tools/path.py`: expected loot against fatal risk, room models from the history);
@@ -313,7 +343,8 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
     if fights and "hp_end" not in fights[-1]:
         fights[-1]["hp_end"] = obs["player"]["hp"]
     return {"floor": obs.get("floor"), "act": obs.get("act"), "bosses": bosses + (1 if won else 0), "won": won, "steps": steps,
-            "deck": len(obs["player"]["deck"]), "gold": obs["player"].get("gold"), "final_deck": list(obs["player"]["deck"]), "fights": fights}
+            "deck": len(obs["player"]["deck"]), "gold": obs["player"].get("gold"), "final_deck": list(obs["player"]["deck"]), "fights": fights,
+            "policy_stats": dict(policy.stats)}
 
 
 def deadline_ts(text):
@@ -354,6 +385,8 @@ def worker(a):
             print(f"w{a.worker} {seed}: " + ", ".join(f"{n} floor {v.get('floor')}{' WON' if v.get('won') else ''}" for n, v in rec["policies"].items()), flush=True)
     if combat:
         combat.close()
+    if _EVALUATOR is not None:
+        _EVALUATOR.close()
     return 0
 
 
@@ -399,8 +432,10 @@ def details(rs):
     """Where runs die, HP lost per fight by room type, and search statistics, for one policy's finished runs."""
     import collections
     died, lost, n = collections.Counter(), collections.defaultdict(list), collections.Counter()
-    stats = collections.Counter()
+    stats, pstats = collections.Counter(), collections.Counter()
     for x in rs:
+        for k, v in (x.get("policy_stats") or {}).items():
+            pstats[k] += v
         fs = x.get("fights", [])
         for f in fs:
             t = room_type(f)
@@ -412,7 +447,7 @@ def details(rs):
         for k, v in (x.get("combat_stats") or {}).items():
             stats[k] += v
     return {"died_in": dict(died), "fights": dict(n), "mean_hp_lost_in_won_fights": {t: round(sum(v) / len(v), 1) for t, v in lost.items() if v},
-            "search": {k: round(v, 1) for k, v in stats.items()}, "mean_seconds": round(sum(x.get("seconds", 0) for x in rs) / max(len(rs), 1), 1)}
+            "search": {k: round(v, 1) for k, v in stats.items()}, "policy": dict(pstats), "mean_seconds": round(sum(x.get("seconds", 0) for x in rs) / max(len(rs), 1), 1)}
 
 
 def report(folder, baseline):
