@@ -105,9 +105,9 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P7.E3 | Engine host and sandbox | In progress | `sim/`: fake engine, inert UI (made inert first and eagerly: FI-7b), stubs, single-thread scheduler, sandbox HOME, version check on load; automated sandbox test 3 of 3 (save folder unchanged, sandbox home empty, no network socket) |
 | P7.E4 | Combat interface | In progress | Decision mode: reset to a decision point or a fight from nothing (85 of 85 encounters), observe, legal actions, step, card choices through the game's local selector, potions; snapshot and restore by recipe (exact, about 45 ms); live-object cloning not started |
 | P7.E5 | Fidelity suite | In progress | `tools/sim.py fidelity`: 11 of 11 recorded fights exact (244 states; nine from the 2026-11-20 run, a lost boss fight included, one from the Player's own play via `tools/keep_replays.py`; other game builds skipped); recorded run reproduced from its seed 71 of 71. Needs 100 fights for M11 |
-| P7.E6 | Fair-play layer | In progress | Sanitizer (every generator re-seeded; known draw positions kept, FP-5), hidden pre-rolled state inventoried (FP-16), `tools/sim.py fairplay` 8 of 8; run-level re-sampling of pre-rolled content open |
+| P7.E6 | Fair-play layer | In progress | Sanitizer (every generator re-seeded; known draw positions kept, FP-5), hidden pre-rolled state inventoried (FP-16), `tools/sim.py fairplay` 8 of 8; run-level re-sampling of pre-rolled content done 2026-11-21 (`sim/RunSampler.cs`, `tools/sim.py runclone`: exact rebuilds, determinism, difference across seeds, leak canary) |
 | P7.E7 | Performance and operations | In progress | S4: patch runbook extended with `tools/game_facts.py`, `game_cards.py`, `game_monsters.py` |
-| P7.E8 | Run-level simulation | In progress (done early) | Whole runs from a seed through every room type and act change (2026-11-20); batches of 40 flow-test and 30 normal runs all finish (`reports/phase7/whole-runs-*.md`); the closing Architect scene after the last boss is not entered (FI-7c) |
+| P7.E8 | Run-level simulation | In progress (done early) | Whole runs from a seed through every room type and act change (2026-11-20); batches of 40 flow-test and 30 normal runs all finish (`reports/phase7/whole-runs-*.md`); the closing Architect scene after the last boss is not entered (FI-7c); S4 (2026-11-21): run-level clones from the room-entry save kept in memory (`run_export`, `run_from_save`) and the run sampler |
 
 ---
 
@@ -131,7 +131,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P9.E1 | Data and encoding | In progress | S1 done 2026-11-20 (`tools/learn/encode.py`, vocabulary from the game assembly, 8 tests); S2: `combat-v1` (586 history fights, flat Monte Carlo teacher) |
 | P9.E2 | Combat value network | In progress | S1 trainer and model card (`tools/learn/train_value.py`); S2 comparison pre-registered (`reports/phase9/value-search-comparison.md`) |
 | P9.E3 | Combat policy and expert iteration | In progress | S1 action-value network (`tools/learn/train_q.py`); self-play takes a value-network teacher |
-| P9.E4 | Strategic decisions | In progress | Main line since 2026-11-20 (decision 0004): run benchmark `tools/run_bench.py`; first comparison (planner combat) shows deck building cannot be judged without search in fights; search combat inside runs via `export_fight` |
+| P9.E4 | Strategic decisions | In progress | Main line since 2026-11-20 (decision 0004): run benchmark `tools/run_bench.py`; first comparison (planner combat) shows deck building cannot be judged without search in fights; search combat inside runs via `export_fight`; 2026-11-21: search in every fight inside runs works (`fight_from_save`, 0.3% fallbacks), run benchmark 2 (deck-building components with search combat) and run benchmark 3 (card rewards by sampled rollouts, `tools/run_eval.py`) pre-registered and run overnight |
 | P9.E5 | Training infrastructure | In progress | S1 done: PyTorch 2.15.0 approved 2026-11-20 and installed in `.venv-learn/` |
 | P9.E6 | Evaluation and the ascension ladder | Todo | |
 | P9.E7 | Patch resilience | Todo | |
