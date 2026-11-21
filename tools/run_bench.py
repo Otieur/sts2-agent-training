@@ -238,14 +238,18 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None):
         spec["record_fights"] = True
     obs = sim.call(cmd="new_run", spec=spec, timeout=120)["obs"]
     bosses, steps, last_act, d = 0, 0, 1, 0
-    fight_actions, prev_fight, fight_no = [], False, 0
+    fight_actions, prev_fight, fight_no, fights = [], False, 0, []
     for steps in range(max_steps):
         if obs["screen"] == "game_over":
             break
         # a choice opened by a card during a fight (e.g. Armaments) is part of the fight: the observation keeps its combat block
         in_fight = obs["screen"] == "combat" or (obs["screen"] == "choice" and bool(obs.get("combat")))
+        if prev_fight and not in_fight and fights:
+            fights[-1]["hp_end"] = obs["player"]["hp"]
         if in_fight and not prev_fight:
             fight_actions, fight_no = [], fight_no + 1
+            fights.append({"floor": obs.get("floor"), "room": obs.get("room"), "hp_start": obs["player"]["hp"], "max_hp": obs["player"]["max_hp"],
+                           "enemies": [e["enemy_id"] for e in (obs.get("combat") or {}).get("enemies", [])]})
         acts = sim.call(cmd="run_legal")["actions"]
         if not acts:
             break
@@ -267,8 +271,10 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None):
             bosses += obs["act"] - last_act
             last_act = obs["act"]
     won = obs["screen"] == "game_over" and obs["player"]["hp"] > 0
+    if fights and "hp_end" not in fights[-1]:
+        fights[-1]["hp_end"] = obs["player"]["hp"]
     return {"floor": obs.get("floor"), "act": obs.get("act"), "bosses": bosses + (1 if won else 0), "won": won, "steps": steps,
-            "deck": len(obs["player"]["deck"]), "gold": obs["player"].get("gold")}
+            "deck": len(obs["player"]["deck"]), "gold": obs["player"].get("gold"), "final_deck": list(obs["player"]["deck"]), "fights": fights}
 
 
 def worker(a):
