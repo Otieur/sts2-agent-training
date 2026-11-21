@@ -26,6 +26,29 @@ Why: in run benchmark 3 rollouts beat the hand-made draft scorer by 6.6 floors (
 - What follows: if H1 holds, card rewards move to rollouts in the run policy for later benchmarks and simulated-run fight specs, and rollouts are extended to shops, rest sites and Ancients. If it does not, the run benchmark 3 gain is read as mostly undoing the scorer's mistakes, and the next step is to examine the rollout policy and value (planner fighting in rollouts, act-end horizon) before moving more decisions to rollouts.
 
 ## 5. Results
-Pending.
+Run 2026-11-21, 06:27–08:07 (`data/learn/runs/run-bench-5/manifest.json`; 6006 s wall, 6 workers, all exited cleanly; all 60 seeds finished before the deadline). Host: `sim/bin/Release2`, as registered. Code: the run started from `b10dc5c`; the manifest records `bcd4372`, the commit when it ended (the start-commit fix came later). The changes in between are in `tools/run_bench.py` only: manifest fields, and a refactor of the rollout policy (`Policy.rule_policy`) that gives this arm the same rollout policy (`path`) as before. Report: `python3 -I tools/run_bench.py --report data/learn/runs/run-bench-5 --baseline path`.
+
+| Policy | Runs | Mean floor | Median floor | Reached the act 1 boss | Beat it | Reached the act 2 boss | Beat it | Reached the act 3 boss | Won | Elites fought per run | Final deck (mean cards) | Seconds per run |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| path | 60 | 16.53 | 17 | 40 | 10 | 1 | 1 | 0 | 0 | 1.60 | 19.6 | 140 |
+| rcard+path | 60 | 22.03 | 17 | 52 | 23 | 12 | 5 | 2 | 0 | 2.00 | 20.6 | 279 |
+
+| Pair (B − A), floors | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |
+|---|---|---|---|---|---|---|---|
+| rcard+path − path (H1) | 60 | +5.50 | 3.12 to 8.13 | 32 | 8 | 20 | 9.1e-5 |
+
+- **H1** (card rewards by sampled rollouts reach more floors than taking the first card): p = 9.1e-5, mean +5.50 floors: **holds**.
+
+Act 1 bosses (fights won / fought): `path` Ceremonial Beast 1/11, The Kin 4/14, Vantom 5/15; `rcard+path` Ceremonial Beast 8/18, The Kin 4/15, Vantom 11/19. Act 2 bosses: `path` The Insatiable 1/1; `rcard+path` The Insatiable 3/6, Kaiser Crab 1/4, Knowledge Demon 1/2. Two `rcard+path` runs reached the act 3 boss on floor 48 (Aeonglass, Queen) and lost.
+
+Where runs die (room type of the fatal fight): `path` bosses 30, elites 23, hallways 7; `rcard+path` bosses 38, elites 14, hallways 8. Last floor reached: floors 7–16 in 20 runs against 8, the act 1 boss floor in 30 against 29, beyond it in 10 against 23. Elites fought per run: 1.60 against 2.00 (same route planner in both arms; the rollout arm lives longer). HP lost per won fight: hallways 3.4 / 3.5, elites 32.6 / 24.3, bosses 44.8 / 44.4.
+
+Rollout decisions: 596 card rewards; the rollouts chose differently from the first card in 354 (59%) and skipped in 89 (15%); 1 decision fell back to the first card because a rollout failed. Final decks are slightly larger (20.6 cards against 19.6) and differ in make-up: the rollout arm's most common added cards are Anger (30 copies in 60 decks), Setup Strike 23, Twin Strike 20, Iron Wave 20, Thunderclap 19, Shrug It Off 17; the first-card arm's are Havoc 26, Thunderclap 18, Tremble 17, Setup Strike 16, Headbutt 16. Rollouts cost 2.0 times the seconds per run (279 against 140).
+
+Search in the fights: 19,750 searched moves, **0 fallbacks, 0 mismatches, 0 rebuild errors**; 50 fights (19 and 31) were rebuilt through the run clone because their own save could not rebuild them. This is the first run benchmark in which search played every move of every fight.
+
+**Verdict: H1 holds, by a wide margin.** Against the strongest card rule known (the first card), choosing card rewards by playing each option forward over six re-sampled futures reaches 5.5 more floors (32 seeds better, 8 worse). It more than doubles the act 1 boss wins (23 against 10), takes 12 runs to the act 2 boss against 1, and gets 2 runs to the act 3 boss. The rollout decks also lose about a quarter less HP per won elite. So run benchmark 3's gain was not mainly a matter of undoing the scorer's mistakes. Cautions: The Kin is not helped (4 wins in 15 fights against 4 in 14), and bosses are now where most rollout runs die (38 of 60). The route results of run benchmark 4 point the same way: the planner that fights inside the rollouts sees boss fights poorly.
+
+By the rule in section 4, card rewards move to rollouts in the run policy, and rollouts are next extended to shops, rest sites and Ancients. Before that, the rollout value or fighter for boss fights is the most promising target (see run benchmark 4's verdict).
 
 ## 6. Deviations and notes
