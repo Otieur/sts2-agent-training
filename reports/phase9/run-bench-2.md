@@ -20,7 +20,7 @@ Why: the first run benchmark (`run-bench-1.md`, rule planner fighting) found sco
 - `base`: first card of each card reward, leave shops, rest below 60% HP else smith the first card, first map move, first option elsewhere.
 - `draft+shop+rest`: card rewards by `tools/draft.py score_offer` (skip below its bar); shops (removal first: curses, Strikes, Defends; then the scorer's card if gold allows); rest sites (heal below 50% HP, or 70% before the boss; upgrades by tier, Bash first).
 - `draft+shop+rest+path`: as above, plus every map choice before the boss by the route planner (`tools/path.py rank`: expected loot against fatal risk, room models from the history, risk weight per act).
-- In every arm, Neow and Ancient options, events, boss relics and potion rewards use the run simulator's simple policy (first option). Decisions use only what a player can see (FP-1).
+- In every arm: non-Ancient events take the option the Player chose most often at that point in the history (`data/runs.db`, matched by page and option key) when it was chosen at least twice, else the first option; Neow and Ancient options, boss relics and potion rewards use the run simulator's simple policy (first option). Decisions use only what a player can see (FP-1).
 
 ## 4. Metrics and test
 - Primary: floor reached. Secondary: act 1 and act 2 bosses beaten, wins, HP lost per fight by room type, where runs die, search fallbacks.
@@ -31,4 +31,4 @@ Why: the first run benchmark (`run-bench-1.md`, rule planner fighting) found sco
 Pending.
 
 ## 6. Deviations and notes
-None yet.
+- 2026-11-21 01:50, before the run: the timing pilot showed that the first-option rule wrecks runs in some events. In the Tablet of Truth it chooses Decipher again and again, and max HP falls from 80 to 1 by floor 3, after which every arm dies by floor 7 or 8 whatever it drafts. The shared event rule in section 3 was changed from first option to the Player's most frequent choice (`event_pick` in `tools/run_bench.py`); a sweep of 30 other seeds with planner combat then showed no run with max HP below 60. The hypotheses, arms, seeds and test are unchanged; the pilot's outcomes are not used.

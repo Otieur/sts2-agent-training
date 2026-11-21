@@ -47,6 +47,34 @@ def is_curse(card_id):
     return bool(c) and c.get("type") == "Curse"
 
 
+_EVENT_COUNTS = None
+
+
+def event_pick(obs, acts):
+    """Shared default for non-Ancient events in every arm (run benchmark 2, section 6): the option the Player chose most
+    often at that point in the history (`data/runs.db` event_choices, matched by page and option key), if it was chosen
+    at least twice; otherwise None (the run simulator's first option). Ancients, Neow included, keep the first option."""
+    global _EVENT_COUNTS
+    ev = obs.get("event") or {}
+    if obs["screen"] != "event" or ev.get("ancient"):
+        return None
+    if _EVENT_COUNTS is None:
+        import sqlite3
+        db = PROJECT / "data" / "runs.db"
+        _EVENT_COUNTS = {}
+        if db.exists():
+            con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+            for key, n in con.execute("SELECT choice_key, COUNT(*) FROM event_choices GROUP BY choice_key"):
+                _EVENT_COUNTS[key.removesuffix(".title")] = n
+            con.close()
+    opts = [x for x in acts if x.get("type") == "event_option" and x.get("key")]
+    scored = [(_EVENT_COUNTS.get(x["key"], 0), -i, x) for i, x in enumerate(opts)]
+    if not scored:
+        return None
+    n, _, best = max(scored, key=lambda t: (t[0], t[1]))
+    return best if n >= 2 else None
+
+
 def draft_pick(obs, acts):
     import draft
     picks = [x for x in acts if x.get("type") == "choose" and x.get("cards")]
@@ -71,6 +99,10 @@ class Policy:
     def act(self, obs, acts, rng, sim=None):
         scr = obs["screen"]
         ch = obs.get("choice") or {}
+        if scr == "event":
+            a = event_pick(obs, acts)
+            if a:
+                return a
         if scr == "map" and "path" in self.parts and sim is not None and not obs.get("at_boss"):
             a = self.route_pick(sim, obs, acts)
             if a:
