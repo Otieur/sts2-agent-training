@@ -463,12 +463,16 @@ def deadline_ts(text):
 def worker(a):
     out = Path(a.out)
     combat = SearchCombat(a.combat, a.fight_rebuild) if a.combat != "planner" else None
+    # --resume: seeds already recorded in this folder (by any worker, before an interruption) are not played again
+    done = {json.loads(l)["seed"] for f in out.glob("shard-*.jsonl") for l in f.open()} if a.resume else set()
     with S.Sim() as sim:
         # static: worker w plays seeds w, w+W, ...; dynamic: a free worker claims the next unclaimed seed in index order
         for k in (range(a.seeds) if a.dynamic else range(a.worker, a.seeds, a.workers)):
             if a.deadline and time.time() > deadline_ts(a.deadline):
                 print(f"w{a.worker}: deadline {a.deadline} reached before seed {k}", flush=True)
                 break
+            if f"RB{a.seed_base:03d}{k:05d}" in done:
+                continue
             if a.dynamic:
                 try:
                     os.close(os.open(out / "claims" / str(k), os.O_CREAT | os.O_EXCL))
@@ -611,6 +615,7 @@ def main(argv=None):
                     help="how search hosts rebuild a fight: its own save, or also the run clone when that fails (fights started by events)")
     ap.add_argument("--deadline", help='"YYYY-MM-DD HH:MM" local time: no new seed starts after it, and a seed cut off by it is left out')
     ap.add_argument("--dynamic", action="store_true", help="a free worker claims the next seed in index order (no idle workers at the end)")
+    ap.add_argument("--resume", action="store_true", help="continue an interrupted run in --out: recorded seeds are kept, the others played")
     a = ap.parse_args(argv)
     if a.report:
         print(json.dumps(report(a.report, a.baseline), indent=1))
@@ -632,12 +637,13 @@ def main(argv=None):
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--seeds", str(a.seeds),
                                "--seed-base", str(a.seed_base), "--ascension", str(a.ascension), "--out", str(out), "--combat", a.combat,
                                *(["--deadline", a.deadline] if a.deadline else []), *(["--dynamic"] if a.dynamic else []),
+                               *(["--resume"] if a.resume else []),
                                "--fight-rebuild", a.fight_rebuild, "--policies", *a.policies])
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
     man = {"name": out.name, "started": started, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": head,
            "code_uncommitted_changes": dirty, "host": os.environ.get("SIM_CONFIG", "Release"), "fight_rebuild": a.fight_rebuild,
-           "workers": a.workers, "seed_order": "dynamic" if a.dynamic else "static",
+           "workers": a.workers, "seed_order": "dynamic" if a.dynamic else "static", "resumed": bool(a.resume),
            "policies": a.policies, "seeds": a.seeds,
            "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "deadline": a.deadline, "worker_exit_codes": codes,
            "wall_seconds": round(time.time() - t0), "report": report(out, a.baseline)}
