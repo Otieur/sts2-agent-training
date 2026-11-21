@@ -169,7 +169,7 @@ def expected_value(out):
     return p * hp + (1 - p) * (-100 - left)
 
 
-MAX_CANDS = 6
+MAX_CANDS = 10   # wide candidate sets have up to 8 card moves plus ending the turn
 
 
 def collate_actions(cands_list):

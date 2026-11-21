@@ -39,7 +39,7 @@ def load(folders, enc):
                 run = src.get("run", f"synthetic-{r['seed']}")
                 for d in r["decisions"]:
                     cands, vals = d["candidates"][:M.MAX_CANDS], d["values"][:M.MAX_CANDS]
-                    if len(cands) < 2 or vals[0] is None or any(c["type"] == "choose" for c in cands):
+                    if len(cands) < 2 or vals[0] is None or any(c["type"] == "choose" for c in cands) or d["chosen"] >= len(cands):
                         continue
                     ex.append({"enc": enc.encode(d["obs"]), "cands": cands, "vals": [max(-4.0, min(1.2, v / 100.0)) for v in vals],
                                "chosen": d["chosen"], "run": run, "bench": (run, src.get("floor")) in bench, "fight": f"{Path(folder).name}/{r['seed']}"})

@@ -31,4 +31,4 @@ Tracked, not tested: `vleaf2` with `value-v5` against `mc6` (the value-network l
 Pending.
 
 ## 6. Deviations and notes
-None yet.
+- 2026-11-21 00:45, before any result: the first training of `q-v5` failed (the wide-teacher datasets have up to 9 candidates per decision, more than the network's limit of 6), so the first run `vsearch-5` started without `q-v5` and every worker stopped at once (0 jobs played). The limit was raised to 10 (decisions whose chosen candidate lies beyond it are skipped), `q-v5` retrained with the registered settings, and the run repeated as `vsearch-5b`. `value-v5` was not affected.
