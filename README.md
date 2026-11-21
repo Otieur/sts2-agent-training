@@ -45,7 +45,7 @@
 <td align="center" width="25%"><h3>57</h3>human runs analysed<br><sub>deaths, damage per encounter, card picks</sub></td>
 <td align="center" width="25%"><h3>11 / 11</h3>recorded fights replayed exactly<br><sub>by the simulator, every state equal</sub></td>
 <td align="center" width="25%"><h3>+51</h3>value per fight from search<br><sub>best search (mcw6) over the rule planner, 120 games</sub></td>
-<td align="center" width="25%"><h3>43,128</h3>self-play decisions<br><sub>from 2,344 simulated fights</sub></td>
+<td align="center" width="25%"><h3>64,534</h3>self-play decisions<br><sub>from 3,516 simulated fights</sub></td>
 </tr>
 </table>
 <!-- auto:numbers:end -->
@@ -106,6 +106,7 @@
 | **Fast learned policy** | The action-value network (`q-v4`) wins 81 of 120 against 75 for the planner (+9 value per fight, not yet significant) at 10 ms per move, with no simulation at all. | [comparison](reports/phase9/value-search-comparison-4.md) |
 | **Learned evaluation** | Not there yet, but closing in. Four pre-registered tests of the value network inside search failed, each by less: search with network leaves went from −54 to −32 value per fight against rollout search. The first networks memorised their training runs; augmented situations and set dropout fixed most of that (held-out error 64 → 40, level with a linear model). | [test 1](reports/phase9/value-search-comparison.md) · [test 4](reports/phase9/value-search-comparison-4.md) |
 | **Search budget** | Which moves are searched matters far more than how many futures are sampled: widening the candidates added 27 value per fight at twice the time, while four times the futures added about 9. | [budget](reports/phase8/search-budget.md) |
+| **Boss fights** | On the ten boss fights of the benchmark (six seeds each), wide search wins 4.2 on average with 24 futures per move and 3.5 with 6; the project owner won 4 of the 10 in the real runs. Search wins two the human lost and loses two the human won with three potions in hand. | [boss study](reports/phase8/boss-budget.md) |
 | **Potions in search** | Not established: +7 value per fight with the planner's candidates and +3 with wide search, neither significant. Potions help in elite fights (95% won at A8+ against 86%) but not in boss fights. | [first test](reports/phase8/potions-in-search.md) · [wide search](reports/phase8/potions-wide.md) |
 
 *Value is the search's own score: HP left after a win, or −100 minus the enemies' HP left after a loss. Negative results are kept on purpose: they explain what changed next.*

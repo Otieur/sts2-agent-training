@@ -1,0 +1,52 @@
+{
+ "name": "boss-budget-1",
+ "created": "2026-11-20 22:17",
+ "benchmark": "data/sim/benchmark-v1.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "11aff51",
+ "arms": [
+  "mcw6",
+  "mcw24"
+ ],
+ "model": null,
+ "q_model": null,
+ "seeds": 6,
+ "rooms": [
+  "Boss"
+ ],
+ "seed_base": 7000000,
+ "workers": 6,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 2785,
+ "jobs": 60,
+ "summary": {
+  "mcw6": {
+   "games": 60,
+   "errors": 0,
+   "won": 21,
+   "mean_value": -165.73333333333332,
+   "mean_hp_if_won": 30.904761904761905,
+   "seconds": 3159.6,
+   "search_seconds_per_decision": 1.883,
+   "restarts": 0
+  },
+  "mcw24": {
+   "games": 60,
+   "errors": 0,
+   "won": 25,
+   "mean_value": -146.76666666666668,
+   "mean_hp_if_won": 33.88,
+   "seconds": 12189.5,
+   "search_seconds_per_decision": 7.191,
+   "restarts": 0
+  }
+ }
+}
