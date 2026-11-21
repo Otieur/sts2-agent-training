@@ -1,0 +1,108 @@
+{
+ "name": "q-v5",
+ "created": "2026-11-21 00:47",
+ "code_commit": "c64520a",
+ "encoder": "enc-v1.1",
+ "torch": "2.15.0",
+ "parameters": 158028,
+ "settings": {
+  "epochs": 80,
+  "lr": 0.001,
+  "wd": 0.001,
+  "bs": 256,
+  "patience": 8,
+  "hidden": 128,
+  "card_dim": 16,
+  "drop": 0.2,
+  "set_drop": 0.3,
+  "split_seed": 7
+ },
+ "epochs_run": 13,
+ "best_val_loss": 0.3709754943847656,
+ "train_seconds": 177,
+ "data": [
+  "data/learn/combat-v1",
+  "data/learn/combat-v1s2",
+  "data/learn/combat-a1s4",
+  "data/learn/combat-r1w",
+  "data/learn/combat-a2w"
+ ],
+ "split": {
+  "test_runs": [
+   "1790729234-5F54F0Z4JD",
+   "1790739811-GZCFQLZ3ZM",
+   "1790871555-ZU94KEL19C",
+   "1790887497-RYN479KJ98",
+   "1791147048-4F8KMAD56G",
+   "1791244489-JW8LUJHKBY",
+   "1793992106-5X0ETMK27U"
+  ],
+  "val_runs": [
+   "1790705796-1HTWD1ULUB",
+   "1790888112-HNK20GL1NK",
+   "1791083232-J61T7WBH9G",
+   "1791085449-2HEB9EZ1EP",
+   "1791213234-AJBPD2DHSF",
+   "1791247295-GK21D6LA3U",
+   "1791249694-B7RL6AZXGJ"
+  ],
+  "runs": 48,
+  "sizes": {
+   "train": 48274,
+   "val": 5035,
+   "test": 7346,
+   "bench": 5715
+  }
+ },
+ "results": {
+  "val": {
+   "decisions": 5035,
+   "fights": 360,
+   "network": {
+    "agreement": 0.6508,
+    "regret": 3.054
+   },
+   "first": {
+    "agreement": 0.8075,
+    "regret": 2.926
+   },
+   "random": {
+    "agreement": 0.3565,
+    "regret": 11.872
+   }
+  },
+  "test": {
+   "decisions": 7346,
+   "fights": 528,
+   "network": {
+    "agreement": 0.6186,
+    "regret": 4.539
+   },
+   "first": {
+    "agreement": 0.7324,
+    "regret": 5.409
+   },
+   "random": {
+    "agreement": 0.335,
+    "regret": 14.271
+   }
+  },
+  "bench": {
+   "decisions": 5715,
+   "fights": 359,
+   "network": {
+    "agreement": 0.6175,
+    "regret": 4.907
+   },
+   "first": {
+    "agreement": 0.6973,
+    "regret": 6.98
+   },
+   "random": {
+    "agreement": 0.3382,
+    "regret": 18.478
+   }
+  }
+ },
+ "single_decision_ms": 1.219
+}
