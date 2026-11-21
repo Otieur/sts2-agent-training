@@ -1,0 +1,4828 @@
+{
+"about": {
+"source": "boss fights reached in run benchmarks (tools/boss_specs.py)",
+"created": "2026-11-21 11:52",
+"folders": [
+"run-bench-9"
+],
+"act": null,
+"fights": 98,
+"won_in_run": 14,
+"by_encounter": {
+"CEREMONIAL_BEAST_BOSS": 36,
+"KNOWLEDGE_DEMON_BOSS": 2,
+"THE_INSATIABLE_BOSS": 2,
+"THE_KIN_BOSS": 36,
+"VANTOM_BOSS": 22
+}
+},
+"fights": [
+{
+"source": {
+"run": "rb-RB00900001",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ANGER",
+"ARMAMENTS",
+"ANGER",
+"BURNING_PACT",
+"SWORD_BOOMERANG"
+],
+"relics": [
+"BURNING_BLOOD",
+"GOLDEN_PEARL",
+"PENDULUM"
+],
+"potions": [
+"STRENGTH_POTION",
+"POWER_POTION"
+],
+"hp": 50,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900016",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"THUNDERCLAP",
+"POMMEL_STRIKE",
+"TREMBLE",
+"FORGOTTEN_RITUAL",
+"MANGLE+",
+"THUNDERCLAP",
+"POMMEL_STRIKE",
+"SPOILS_MAP"
+],
+"relics": [
+"BURNING_BLOOD",
+"FISHING_ROD",
+"HAPPY_FLOWER"
+],
+"potions": [
+"RADIANT_TINCTURE",
+"REGEN_POTION"
+],
+"hp": 60,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900016",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"PERFECTED_STRIKE",
+"POMMEL_STRIKE",
+"TRUE_GRIT",
+"CRIMSON_MANTLE",
+"PYRE",
+"DARK_EMBRACE",
+"MANGLE+",
+"SPITE",
+"STONE_ARMOR",
+"SPOILS_MAP"
+],
+"relics": [
+"BURNING_BLOOD",
+"FISHING_ROD",
+"HAPPY_FLOWER",
+"PAPER_PHROG"
+],
+"potions": [
+"SPEED_POTION",
+"REGEN_POTION"
+],
+"hp": 67,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900028",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"PERFECTED_STRIKE",
+"SPOILS_MAP",
+"SETUP_STRIKE",
+"CINDER",
+"TREMBLE",
+"TREMBLE",
+"ANGER",
+"DRUM_OF_BATTLE",
+"UPPERCUT"
+],
+"relics": [
+"BURNING_BLOOD",
+"BOOMING_CONCH",
+"SWORD_OF_STONE",
+"CENTENNIAL_PUZZLE",
+"STRAWBERRY"
+],
+"potions": [
+"BLOCK_POTION",
+"FRUIT_JUICE"
+],
+"hp": 58,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900031",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"CRUSH_UNDER",
+"SWEEPING_BEAM",
+"TREMBLE",
+"CINDER",
+"IRON_WAVE+",
+"GUILTY",
+"UNRELENTING",
+"CLUMSY",
+"HEADBUTT"
+],
+"relics": [
+"BURNING_BLOOD",
+"KALEIDOSCOPE",
+"BRONZE_SCALES",
+"WHETSTONE"
+],
+"potions": [
+"DEXTERITY_POTION",
+"GIGANTIFICATION_POTION"
+],
+"hp": 64,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900031",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SWEEPING_BEAM",
+"IRON_WAVE",
+"CINDER",
+"ARMAMENTS",
+"UNRELENTING",
+"BODY_SLAM",
+"BLOOD_WALL",
+"GUILTY",
+"CLUMSY"
+],
+"relics": [
+"BURNING_BLOOD",
+"KALEIDOSCOPE",
+"ICE_CREAM"
+],
+"potions": [
+"SWIFT_POTION",
+"GAMBLERS_BREW"
+],
+"hp": 64,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900034",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ANGER",
+"POMMEL_STRIKE",
+"HEADBUTT",
+"BREAKTHROUGH",
+"BREAKTHROUGH",
+"INFERNO"
+],
+"relics": [
+"BURNING_BLOOD",
+"BOOMING_CONCH",
+"PAPER_PHROG",
+"BAG_OF_PREPARATION"
+],
+"potions": [
+"BLOCK_POTION",
+"HEART_OF_IRON"
+],
+"hp": 50,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900034",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BODY_SLAM",
+"PERFECTED_STRIKE",
+"COLOSSUS",
+"PERFECTED_STRIKE",
+"POMMEL_STRIKE",
+"HEADBUTT",
+"ANGER",
+"HEADBUTT"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES",
+"PAPER_PHROG"
+],
+"potions": [
+"SWIFT_POTION",
+"DEXTERITY_POTION"
+],
+"hp": 54,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900045",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"OFFERING",
+"PECK",
+"INFLAME",
+"UNRELENTING",
+"INFERNO",
+"BLOOD_WALL",
+"GUILTY"
+],
+"relics": [
+"BURNING_BLOOD",
+"ARCANE_SCROLL",
+"BAG_OF_MARBLES",
+"MINIATURE_CANNON"
+],
+"potions": [
+"FIRE_POTION",
+"FLEX_POTION"
+],
+"hp": 47,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900045",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"FORGOTTEN_RITUAL",
+"SWORD_BOOMERANG",
+"HEADBUTT+",
+"UPPERCUT",
+"STOMP",
+"GUILTY"
+],
+"relics": [
+"BURNING_BLOOD",
+"FISHING_ROD",
+"BAG_OF_MARBLES",
+"JUZU_BRACELET"
+],
+"potions": [
+"POWER_POTION",
+"ENERGY_POTION"
+],
+"hp": 48,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900050",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"PERFECTED_STRIKE",
+"CRUELTY",
+"POMMEL_STRIKE",
+"BREAKTHROUGH",
+"ANGER",
+"TAUNT",
+"TAUNT",
+"BLOODLETTING",
+"PECK"
+],
+"relics": [
+"BURNING_BLOOD",
+"FISHING_ROD",
+"SWORD_OF_STONE"
+],
+"potions": [
+"TOUCH_OF_INSANITY",
+"SPEED_POTION"
+],
+"hp": 55,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900050",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"HEADBUTT",
+"POMMEL_STRIKE",
+"BREAKTHROUGH",
+"SETUP_STRIKE",
+"TAUNT",
+"TAUNT",
+"STONE_ARMOR",
+"PECK"
+],
+"relics": [
+"BURNING_BLOOD",
+"SILKEN_TRESS",
+"SWORD_OF_STONE"
+],
+"potions": [
+"TOUCH_OF_INSANITY",
+"SPEED_POTION"
+],
+"hp": 61,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900056",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ANGER",
+"JUGGLING",
+"FIGHT_ME",
+"ANGER",
+"IRON_WAVE",
+"UPPERCUT",
+"ANGER",
+"HEADBUTT",
+"BREAKTHROUGH"
+],
+"relics": [
+"BURNING_BLOOD",
+"PRECISE_SCISSORS"
+],
+"potions": [
+"SKILL_POTION",
+"VULNERABLE_POTION"
+],
+"hp": 64,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900056",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ANGER",
+"SHRUG_IT_OFF",
+"INFERNO",
+"MOLTEN_FIST",
+"RAMPAGE",
+"TRUE_GRIT",
+"DRUM_OF_BATTLE"
+],
+"relics": [
+"BURNING_BLOOD",
+"SILKEN_TRESS",
+"CHANDELIER"
+],
+"potions": [
+"FLEX_POTION",
+"BOTTLED_POTENTIAL"
+],
+"hp": 57,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900003",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"GREED",
+"THUNDERCLAP+",
+"TAUNT",
+"SWORD_BOOMERANG",
+"THUNDERCLAP",
+"SPITE",
+"FIGHT_ME"
+],
+"relics": [
+"BURNING_BLOOD",
+"CURSED_PEARL",
+"TINY_MAILBOX",
+"EMBER_TEA",
+"PENDULUM",
+"BAG_OF_PREPARATION"
+],
+"potions": [
+"SKILL_POTION",
+"SHIP_IN_A_BOTTLE"
+],
+"hp": 76,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900003",
+"floor": 33,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 2,
+"room": "Boss",
+"encounter": "THE_INSATIABLE_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"GREED",
+"THUNDERCLAP+",
+"TAUNT",
+"SWORD_BOOMERANG",
+"THUNDERCLAP",
+"SPITE",
+"FIGHT_ME",
+"FIEND_FIRE",
+"PERFECTED_STRIKE",
+"HOWL_FROM_BEYOND+",
+"CINDER",
+"HOWL_FROM_BEYOND",
+"CLUMSY"
+],
+"relics": [
+"BURNING_BLOOD",
+"CURSED_PEARL",
+"TINY_MAILBOX",
+"EMBER_TEA",
+"PENDULUM",
+"BAG_OF_PREPARATION",
+"RADIANT_PEARL",
+"BLOOD_VIAL",
+"RED_MASK",
+"RIPPLE_BASIN"
+],
+"potions": [
+"RADIANT_TINCTURE",
+"SHIP_IN_A_BOTTLE"
+],
+"hp": 66,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900014",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"VOLLEY",
+"TREMBLE",
+"UNRELENTING",
+"FIGHT_ME",
+"SPOILS_MAP",
+"THUNDERCLAP",
+"SWORD_BOOMERANG",
+"IRON_WAVE",
+"SPORE_MIND"
+],
+"relics": [
+"BURNING_BLOOD",
+"LEAD_PAPERWEIGHT",
+"TOXIC_EGG",
+"HORN_CLEAT"
+],
+"potions": [
+"SKILL_POTION",
+"DEXTERITY_POTION"
+],
+"hp": 62,
+"max_hp": 72,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900020",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"TWIN_STRIKE",
+"BLOOD_WALL",
+"BLOODLETTING",
+"HEADBUTT",
+"STAMPEDE",
+"TWIN_STRIKE",
+"MOLTEN_FIST",
+"IRON_WAVE",
+"BODY_SLAM",
+"BLOOD_WALL",
+"SHRUG_IT_OFF"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES"
+],
+"potions": [
+"POWER_POTION",
+"FLEX_POTION"
+],
+"hp": 59,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900020",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"TWIN_STRIKE",
+"BLOOD_WALL",
+"BLOODLETTING",
+"COLOSSUS",
+"IRON_WAVE",
+"TWIN_STRIKE",
+"TRUE_GRIT",
+"TWIN_STRIKE",
+"TAUNT",
+"SETUP_STRIKE",
+"INFLAME",
+"TAUNT",
+"ANGER"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES"
+],
+"potions": [
+"FLEX_POTION",
+"EXPLOSIVE_AMPOULE"
+],
+"hp": 71,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900030",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"DARK_SHACKLES",
+"INFERNO",
+"FIGHT_ME",
+"TWIN_STRIKE",
+"SETUP_STRIKE",
+"FORGOTTEN_RITUAL",
+"ARMAMENTS",
+"IRON_WAVE"
+],
+"relics": [
+"BURNING_BLOOD",
+"LEAD_PAPERWEIGHT"
+],
+"potions": [
+"FYSH_OIL",
+"SPEED_POTION"
+],
+"hp": 58,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900030",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SHRUG_IT_OFF",
+"INFERNO",
+"SETUP_STRIKE",
+"BURNING_PACT",
+"HEADBUTT",
+"EVIL_EYE",
+"IRON_WAVE",
+"HOWL_FROM_BEYOND"
+],
+"relics": [
+"BURNING_BLOOD",
+"FISHING_ROD"
+],
+"potions": [
+"POWDERED_DEMISE",
+"SPEED_POTION"
+],
+"hp": 64,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900038",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SETUP_STRIKE",
+"PECK",
+"THUNDERCLAP",
+"IRON_WAVE",
+"IRON_WAVE",
+"HEADBUTT",
+"IRON_WAVE",
+"UNRELENTING",
+"ASHEN_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"WINGED_BOOTS",
+"STRIKE_DUMMY"
+],
+"potions": [
+"POWDERED_DEMISE",
+"ATTACK_POTION"
+],
+"hp": 60,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900047",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"UNMOVABLE",
+"POMMEL_STRIKE",
+"POMMEL_STRIKE",
+"BULLY",
+"MOLTEN_FIST",
+"FORGOTTEN_RITUAL",
+"BURNING_PACT"
+],
+"relics": [
+"BURNING_BLOOD",
+"ARCANE_SCROLL",
+"SWORD_OF_STONE",
+"MEAL_TICKET"
+],
+"potions": [
+"POTION_OF_BINDING",
+"ASHWATER"
+],
+"hp": 57,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900047",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH+",
+"ASCENDERS_BANE",
+"CINDER",
+"ANGER+",
+"POMMEL_STRIKE",
+"PERFECTED_STRIKE",
+"FISTICUFFS",
+"BATTLE_TRANCE",
+"JUGGLING"
+],
+"relics": [
+"BURNING_BLOOD",
+"SILKEN_TRESS",
+"SWORD_OF_STONE",
+"MEAL_TICKET"
+],
+"potions": [
+"ATTACK_POTION",
+"POTION_OF_BINDING"
+],
+"hp": 61,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900055",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"UNRELENTING",
+"FORGOTTEN_RITUAL",
+"BODY_SLAM",
+"TAUNT",
+"SPOILS_MAP",
+"POMMEL_STRIKE",
+"PERFECTED_STRIKE",
+"STAMPEDE+"
+],
+"relics": [
+"BURNING_BLOOD",
+"BOOMING_CONCH",
+"CHANDELIER"
+],
+"potions": [
+"SWIFT_POTION"
+],
+"hp": 52,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900055",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"DOWSING",
+"TAUNT",
+"UPPERCUT",
+"MOLTEN_FIST",
+"UPPERCUT",
+"SHRUG_IT_OFF",
+"WHIRLWIND",
+"FEEL_NO_PAIN+"
+],
+"relics": [
+"BURNING_BLOOD",
+"DOWSING_ROD"
+],
+"potions": [
+"SKILL_POTION"
+],
+"hp": 42,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900005",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"MOLTEN_FIST",
+"SETUP_STRIKE",
+"BULLY",
+"THUNDERCLAP",
+"THUNDERCLAP",
+"ARMAMENTS"
+],
+"relics": [
+"BURNING_BLOOD",
+"STONE_HUMIDIFIER"
+],
+"potions": [
+"FLEX_POTION",
+"WEAK_POTION"
+],
+"hp": 54,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900005",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"MOLTEN_FIST",
+"FORGOTTEN_RITUAL",
+"DISMANTLE",
+"ARMAMENTS",
+"MOLTEN_FIST",
+"TAUNT",
+"PERFECTED_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"STONE_HUMIDIFIER"
+],
+"potions": [
+"VULNERABLE_POTION",
+"DUPLICATOR"
+],
+"hp": 75,
+"max_hp": 92,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900013",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SWORD_BOOMERANG",
+"CINDER+",
+"THUNDERCLAP",
+"PERFECTED_STRIKE",
+"TRUE_GRIT",
+"SPOILS_MAP",
+"SHRUG_IT_OFF",
+"EVIL_EYE",
+"TAUNT"
+],
+"relics": [
+"BURNING_BLOOD",
+"SILKEN_TRESS"
+],
+"potions": [
+"SPEED_POTION",
+"BEETLE_JUICE"
+],
+"hp": 60,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900019",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"THUNDERCLAP",
+"SWORD_BOOMERANG+",
+"TRUE_GRIT",
+"STAMPEDE+"
+],
+"relics": [
+"BURNING_BLOOD",
+"LARGE_CAPSULE",
+"PAPER_PHROG",
+"RED_SKULL",
+"FROZEN_EGG",
+"AMETHYST_AUBERGINE",
+"EMBER_TEA"
+],
+"potions": [
+"VULNERABLE_POTION",
+"SPEED_POTION"
+],
+"hp": 44,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900024",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BLOOD_WALL",
+"HEADBUTT",
+"INFERNO",
+"SETUP_STRIKE",
+"GUILTY",
+"JUGGLING",
+"SWORD_BOOMERANG",
+"CINDER",
+"RAMPAGE",
+"SPOILS_MAP",
+"CLUMSY"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES",
+"LANTERN",
+"STRAWBERRY"
+],
+"potions": [
+"GIGANTIFICATION_POTION",
+"BLOOD_POTION"
+],
+"hp": 55,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900024",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BRAND",
+"TREMBLE",
+"SETUP_STRIKE",
+"HAVOC",
+"CINDER+",
+"TRUE_GRIT",
+"HEADBUTT"
+],
+"relics": [
+"BURNING_BLOOD",
+"ARCANE_SCROLL"
+],
+"potions": [
+"EXPLOSIVE_AMPOULE",
+"FYSH_OIL"
+],
+"hp": 71,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900027",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"TWIN_STRIKE",
+"THUNDERCLAP",
+"SETUP_STRIKE",
+"BLUDGEON",
+"TREMBLE",
+"BLOOD_WALL",
+"BLOOD_WALL",
+"BODY_SLAM"
+],
+"relics": [
+"BURNING_BLOOD",
+"GOLDEN_PEARL"
+],
+"potions": [
+"HEART_OF_IRON",
+"POWER_POTION"
+],
+"hp": 48,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900027",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"NEOWS_FURY",
+"PILLAGE",
+"FORGOTTEN_RITUAL",
+"SETUP_STRIKE",
+"BLUDGEON",
+"SHRUG_IT_OFF",
+"BLOOD_WALL",
+"BLOOD_WALL"
+],
+"relics": [
+"BURNING_BLOOD",
+"NEOWS_TORMENT"
+],
+"potions": [
+"HEART_OF_IRON",
+"POWER_POTION"
+],
+"hp": 48,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900041",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"TEAR_ASUNDER",
+"ANGER",
+"BATTLE_TRANCE",
+"POMMEL_STRIKE",
+"PERFECTED_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"ARCANE_SCROLL"
+],
+"potions": [
+"FYSH_OIL",
+"BLESSING_OF_THE_FORGE"
+],
+"hp": 53,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900041",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"ASCENDERS_BANE",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"HEADBUTT",
+"TRUE_GRIT",
+"ANGER",
+"POMMEL_STRIKE",
+"SETUP_STRIKE",
+"CRUELTY",
+"BLUDGEON"
+],
+"relics": [
+"BURNING_BLOOD",
+"LARGE_CAPSULE",
+"DEMON_TONGUE",
+"FESTIVE_POPPER",
+"TINY_MAILBOX"
+],
+"potions": [
+"FLEX_POTION",
+"ENERGY_POTION"
+],
+"hp": 60,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900044",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ANGER",
+"SHRUG_IT_OFF",
+"FLAME_BARRIER",
+"PECK",
+"TREMBLE",
+"PERFECTED_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"NUTRITIOUS_OYSTER"
+],
+"potions": [
+"COLORLESS_POTION",
+"ENERGY_POTION"
+],
+"hp": 60,
+"max_hp": 98,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900044",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SCULPTING_STRIKE",
+"NULL",
+"SHRUG_IT_OFF",
+"ANGER",
+"TORIC_TOUGHNESS",
+"BATTLE_TRANCE",
+"SHRUG_IT_OFF",
+"FIGHT_ME",
+"BLOOD_WALL",
+"COLOSSUS"
+],
+"relics": [
+"BURNING_BLOOD",
+"KALEIDOSCOPE",
+"PANTOGRAPH"
+],
+"potions": [
+"FIRE_POTION",
+"DEXTERITY_POTION"
+],
+"hp": 81,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900044",
+"floor": 33,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 2,
+"room": "Boss",
+"encounter": "KNOWLEDGE_DEMON_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SCULPTING_STRIKE",
+"NULL",
+"SHRUG_IT_OFF",
+"ANGER",
+"TORIC_TOUGHNESS",
+"BATTLE_TRANCE",
+"SHRUG_IT_OFF",
+"FIGHT_ME",
+"BLOOD_WALL",
+"COLOSSUS",
+"FEED",
+"ASHEN_STRIKE",
+"ANGER",
+"PERFECTED_STRIKE+",
+"TWIN_STRIKE",
+"POMMEL_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"KALEIDOSCOPE",
+"PANTOGRAPH",
+"NUTRITIOUS_SOUP"
+],
+"potions": [
+"COLORLESS_POTION",
+"DEXTERITY_POTION"
+],
+"hp": 76,
+"max_hp": 93,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900006",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"ASCENDERS_BANE",
+"ARMAMENTS",
+"PERFECTED_STRIKE+",
+"TWIN_STRIKE",
+"FORGOTTEN_RITUAL",
+"DRUM_OF_BATTLE",
+"ARMAMENTS",
+"PERFECTED_STRIKE",
+"SHRUG_IT_OFF"
+],
+"relics": [
+"BURNING_BLOOD",
+"FISHING_ROD",
+"BEATING_REMNANT"
+],
+"potions": [
+"DISTILLED_CHAOS",
+"SKILL_POTION"
+],
+"hp": 60,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900012",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"CRUELTY",
+"RAGE",
+"CLUMSY",
+"SHRUG_IT_OFF",
+"TWIN_STRIKE",
+"POMMEL_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"GOLDEN_PEARL",
+"STONE_CRACKER",
+"SWORD_OF_STONE"
+],
+"potions": [
+"ATTACK_POTION",
+"VULNERABLE_POTION"
+],
+"hp": 62,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900012",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ANGER",
+"MOLTEN_FIST",
+"CLUMSY",
+"CINDER",
+"BLUDGEON",
+"FORGOTTEN_RITUAL"
+],
+"relics": [
+"BURNING_BLOOD",
+"NEOWS_SACRIFICE",
+"FESTIVE_POPPER",
+"STONE_CRACKER",
+"SWORD_OF_STONE"
+],
+"potions": [
+"ASHWATER",
+"SPEED_POTION"
+],
+"hp": 57,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900018",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"RUPTURE",
+"SWORD_BOOMERANG",
+"SETUP_STRIKE",
+"PERFECTED_STRIKE",
+"INFLAME",
+"BATTLE_TRANCE",
+"BREAKTHROUGH",
+"BLOODLETTING"
+],
+"relics": [
+"BURNING_BLOOD",
+"POMANDER",
+"VENERABLE_TEA_SET"
+],
+"potions": [
+"POWER_POTION",
+"LIQUID_BRONZE"
+],
+"hp": 48,
+"max_hp": 92,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900018",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"TAUNT+",
+"HEADBUTT",
+"PERFECTED_STRIKE+",
+"COLOSSUS",
+"SETUP_STRIKE",
+"PERFECTED_STRIKE",
+"BULLY",
+"BODY_SLAM",
+"SETUP_STRIKE",
+"ANGER"
+],
+"relics": [
+"BURNING_BLOOD",
+"POMANDER",
+"VENERABLE_TEA_SET",
+"UNCEASING_TOP"
+],
+"potions": [
+"VULNERABLE_POTION",
+"FAIRY_IN_A_BOTTLE"
+],
+"hp": 64,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900040",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BREAKTHROUGH",
+"THUNDERCLAP",
+"SETUP_STRIKE",
+"TREMBLE",
+"SWORD_BOOMERANG",
+"SHRUG_IT_OFF",
+"BULLY",
+"SHRUG_IT_OFF",
+"TAUNT"
+],
+"relics": [
+"BURNING_BLOOD",
+"PHIAL_HOLSTER",
+"SWORD_OF_STONE"
+],
+"potions": [
+"COLORLESS_POTION",
+"EXPLOSIVE_AMPOULE",
+"COLORLESS_POTION"
+],
+"hp": 60,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900040",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"FLAME_BARRIER",
+"THUNDERCLAP",
+"TWIN_STRIKE",
+"BREAKTHROUGH",
+"HAVOC",
+"BREAKTHROUGH",
+"HEADBUTT",
+"UNRELENTING",
+"CLUMSY"
+],
+"relics": [
+"BURNING_BLOOD",
+"PHIAL_HOLSTER",
+"SWORD_OF_STONE",
+"AKABEKO"
+],
+"potions": [
+"WEAK_POTION",
+"EXPLOSIVE_AMPOULE",
+"OROBIC_ACID"
+],
+"hp": 39,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900042",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"DARK_SHACKLES",
+"CINDER",
+"SPOILS_MAP",
+"IRON_WAVE",
+"RAMPAGE",
+"TAUNT",
+"TREMBLE+",
+"MOLTEN_FIST"
+],
+"relics": [
+"BURNING_BLOOD",
+"LEAD_PAPERWEIGHT"
+],
+"potions": [
+"COLORLESS_POTION",
+"FORTIFIER"
+],
+"hp": 64,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900042",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"DISMANTLE",
+"SPOILS_MAP",
+"RAMPAGE",
+"THUNDERCLAP",
+"TREMBLE+",
+"MOLTEN_FIST"
+],
+"relics": [
+"BURNING_BLOOD",
+"SILKEN_TRESS",
+"HORN_CLEAT"
+],
+"potions": [
+"FLEX_POTION"
+],
+"hp": 51,
+"max_hp": 72,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900049",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"CELESTIAL_MIGHT",
+"CINDER+",
+"CINDER+",
+"HEMOKINESIS",
+"ANGER",
+"BLUDGEON",
+"INFERNO",
+"BATTLE_TRANCE",
+"TRUE_GRIT"
+],
+"relics": [
+"BURNING_BLOOD",
+"KALEIDOSCOPE",
+"WHETSTONE"
+],
+"potions": [
+"STABLE_SERUM",
+"POTION_OF_BINDING"
+],
+"hp": 71,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900049",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH+",
+"ASCENDERS_BANE",
+"SPITE+",
+"UNRELENTING+",
+"HEADBUTT",
+"POOR_SLEEP",
+"POMMEL_STRIKE",
+"BLUDGEON",
+"HEADBUTT",
+"DEMON_FORM"
+],
+"relics": [
+"BURNING_BLOOD",
+"PRECARIOUS_SHEARS",
+"WHETSTONE",
+"PENDULUM"
+],
+"potions": [
+"ASHWATER",
+"ATTACK_POTION"
+],
+"hp": 39,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900054",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BULLY",
+"UPPERCUT",
+"POMMEL_STRIKE",
+"SPORE_MIND",
+"ARMAMENTS",
+"PECK",
+"FEED",
+"BATTLE_TRANCE"
+],
+"relics": [
+"BURNING_BLOOD",
+"FISHING_ROD",
+"PLANISPHERE"
+],
+"potions": [
+"GIGANTIFICATION_POTION",
+"WEAK_POTION"
+],
+"hp": 61,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900009",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"FINESSE",
+"FORGOTTEN_RITUAL",
+"ANGER",
+"DEMON_FORM",
+"FLAME_BARRIER"
+],
+"relics": [
+"BURNING_BLOOD",
+"LEAD_PAPERWEIGHT",
+"STRIKE_DUMMY"
+],
+"potions": [
+"WEAK_POTION",
+"BEETLE_JUICE"
+],
+"hp": 46,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900009",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"PYRE",
+"PERFECTED_STRIKE",
+"BLUDGEON",
+"SETUP_STRIKE",
+"PERFECTED_STRIKE",
+"UPPERCUT"
+],
+"relics": [
+"BURNING_BLOOD",
+"ARCANE_SCROLL",
+"SWORD_OF_STONE"
+],
+"potions": [
+"SWIFT_POTION",
+"WEAK_POTION"
+],
+"hp": 85,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900021",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"TWIN_STRIKE",
+"BODY_SLAM",
+"HEADBUTT",
+"HAVOC",
+"POMMEL_STRIKE",
+"PERFECTED_STRIKE",
+"SECOND_WIND"
+],
+"relics": [
+"BURNING_BLOOD",
+"LAVA_ROCK",
+"KUSARIGAMA"
+],
+"potions": [
+"FYSH_OIL",
+"SPEED_POTION"
+],
+"hp": 37,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900021",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH+",
+"ASCENDERS_BANE",
+"FEEL_NO_PAIN",
+"PACTS_END",
+"CINDER+",
+"BREAKTHROUGH",
+"HEMOKINESIS",
+"TREMBLE",
+"BLOOD_WALL",
+"PERFECTED_STRIKE",
+"SECOND_WIND"
+],
+"relics": [
+"BURNING_BLOOD",
+"LEAFY_POULTICE",
+"KUSARIGAMA"
+],
+"potions": [
+"FYSH_OIL",
+"SPEED_POTION"
+],
+"hp": 55,
+"max_hp": 68,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900026",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BREAKTHROUGH+",
+"MOLTEN_FIST",
+"UNRELENTING",
+"TAUNT+",
+"SALVO",
+"TWIN_STRIKE+",
+"SETUP_STRIKE",
+"BLOOD_WALL",
+"ANGER"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES",
+"GORGET"
+],
+"potions": [
+"FYSH_OIL",
+"BLOCK_POTION"
+],
+"hp": 80,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900026",
+"floor": 33,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 2,
+"room": "Boss",
+"encounter": "THE_INSATIABLE_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BREAKTHROUGH+",
+"MOLTEN_FIST",
+"UNRELENTING",
+"TAUNT+",
+"SALVO",
+"TWIN_STRIKE+",
+"SETUP_STRIKE",
+"BLOOD_WALL",
+"ANGER",
+"DOMINATE",
+"BLOOD_WALL",
+"MOLTEN_FIST",
+"TREMBLE",
+"SHRUG_IT_OFF",
+"MOLTEN_FIST+",
+"FIGHT_ME",
+"VICIOUS",
+"SQUASH"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES",
+"GORGET",
+"SOZU"
+],
+"potions": [
+"BLOCK_POTION"
+],
+"hp": 68,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900036",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ANGER",
+"PECK",
+"RAMPAGE",
+"TWIN_STRIKE",
+"POMMEL_STRIKE",
+"RAMPAGE"
+],
+"relics": [
+"BURNING_BLOOD",
+"WINGED_BOOTS",
+"SWORD_OF_STONE"
+],
+"potions": [
+"FAIRY_IN_A_BOTTLE",
+"ENERGY_POTION"
+],
+"hp": 62,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900036",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BREAKTHROUGH",
+"HAVOC",
+"HOWL_FROM_BEYOND",
+"ANGER",
+"PECK",
+"PERFECTED_STRIKE",
+"FLAME_BARRIER",
+"IRON_WAVE",
+"INFERNO",
+"MOLTEN_FIST"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES",
+"SWORD_OF_STONE"
+],
+"potions": [
+"FAIRY_IN_A_BOTTLE",
+"VULNERABLE_POTION"
+],
+"hp": 58,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900043",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ONE_TWO_PUNCH",
+"ANGER",
+"POMMEL_STRIKE",
+"THUNDERCLAP",
+"MOLTEN_FIST",
+"TAUNT",
+"INFLAME",
+"BODY_SLAM"
+],
+"relics": [
+"BURNING_BLOOD",
+"ARCANE_SCROLL",
+"LASTING_CANDY"
+],
+"potions": [
+"BLOOD_POTION",
+"LUCKY_TONIC"
+],
+"hp": 70,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900043",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ONE_TWO_PUNCH",
+"ANGER",
+"SHRUG_IT_OFF",
+"POMMEL_STRIKE",
+"SHRUG_IT_OFF",
+"SHRUG_IT_OFF",
+"SHRUG_IT_OFF",
+"VICIOUS",
+"BLOODLETTING"
+],
+"relics": [
+"BURNING_BLOOD",
+"ARCANE_SCROLL",
+"STRIKE_DUMMY",
+"LASTING_CANDY"
+],
+"potions": [
+"DEXTERITY_POTION",
+"ENERGY_POTION"
+],
+"hp": 72,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900052",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"ANGER",
+"INFERNO",
+"UNRELENTING",
+"SETUP_STRIKE",
+"BULLY",
+"BLOOD_WALL",
+"CLUMSY"
+],
+"relics": [
+"BURNING_BLOOD",
+"NUTRITIOUS_OYSTER",
+"RUINED_HELMET",
+"ANCHOR",
+"GAME_PIECE"
+],
+"potions": [
+"POWER_POTION",
+"RADIANT_TINCTURE"
+],
+"hp": 51,
+"max_hp": 98,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900057",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"MOLTEN_FIST",
+"HEADBUTT",
+"SETUP_STRIKE",
+"THUNDERCLAP",
+"PECK",
+"SPOILS_MAP",
+"CINDER",
+"INFERNAL_BLADE"
+],
+"relics": [
+"BURNING_BLOOD",
+"SMALL_CAPSULE",
+"JUZU_BRACELET",
+"VENERABLE_TEA_SET"
+],
+"potions": [
+"SKILL_POTION",
+"POWER_POTION"
+],
+"hp": 67,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900057",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"ASCENDERS_BANE",
+"PILLAGE+",
+"PECK",
+"HEADBUTT",
+"HAVOC",
+"STONE_ARMOR",
+"CLUMSY",
+"CINDER",
+"ARMAMENTS"
+],
+"relics": [
+"BURNING_BLOOD",
+"WINGED_BOOTS",
+"KUSARIGAMA"
+],
+"potions": [
+"FORTIFIER",
+"EXPLOSIVE_AMPOULE"
+],
+"hp": 67,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900004",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"PILLAGE",
+"THUNDERCLAP",
+"CONFLAGRATION+",
+"SETUP_STRIKE",
+"RAMPAGE",
+"TREMBLE",
+"FIGHT_ME",
+"RAMPAGE",
+"SWORD_BOOMERANG",
+"CINDER"
+],
+"relics": [
+"BURNING_BLOOD",
+"PHIAL_HOLSTER",
+"SWORD_OF_STONE"
+],
+"potions": [
+"FLEX_POTION",
+"SPEED_POTION",
+"BLOCK_POTION"
+],
+"hp": 59,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900011",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SPITE",
+"SPITE",
+"HAVOC",
+"BLUDGEON",
+"THUNDERCLAP",
+"THUNDERCLAP"
+],
+"relics": [
+"BURNING_BLOOD",
+"STONE_HUMIDIFIER",
+"STRAWBERRY"
+],
+"potions": [
+"REGEN_POTION",
+"ENERGY_POTION"
+],
+"hp": 55,
+"max_hp": 104,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900011",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SPITE",
+"SPITE",
+"WHIRLWIND+",
+"SPITE",
+"SECOND_WIND",
+"BLUDGEON+",
+"PERFECTED_STRIKE",
+"BODY_SLAM",
+"TAUNT"
+],
+"relics": [
+"BURNING_BLOOD",
+"STONE_HUMIDIFIER",
+"UNCEASING_TOP",
+"GREMLIN_HORN"
+],
+"potions": [
+"FIRE_POTION",
+"RADIANT_TINCTURE"
+],
+"hp": 59,
+"max_hp": 97,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900017",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"IRON_WAVE",
+"THUNDERCLAP",
+"TWIN_STRIKE",
+"RUPTURE",
+"BLOOD_WALL",
+"SHRUG_IT_OFF",
+"POMMEL_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"SILKEN_TRESS",
+"RED_SKULL"
+],
+"potions": [
+"ASHWATER",
+"SPEED_POTION"
+],
+"hp": 61,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900023",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"THE_BOMB",
+"TAUNT",
+"BREAKTHROUGH",
+"TAUNT",
+"MOLTEN_FIST",
+"HEADBUTT",
+"UPPERCUT",
+"ANGER",
+"FLAME_BARRIER",
+"BREAKTHROUGH"
+],
+"relics": [
+"BURNING_BLOOD",
+"LEAD_PAPERWEIGHT",
+"SWORD_OF_STONE"
+],
+"potions": [
+"SKILL_POTION",
+"CLARITY"
+],
+"hp": 49,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900023",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"BASH",
+"ASCENDERS_BANE",
+"SHRUG_IT_OFF",
+"POMMEL_STRIKE",
+"PERFECTED_STRIKE",
+"SWORD_BOOMERANG",
+"SWORD_BOOMERANG",
+"SETUP_STRIKE",
+"HELLRAISER",
+"SPOILS_MAP",
+"THUNDERCLAP"
+],
+"relics": [
+"BURNING_BLOOD",
+"NEOWS_TALISMAN",
+"SWORD_OF_STONE"
+],
+"potions": [
+"BLOOD_POTION",
+"COLORLESS_POTION"
+],
+"hp": 51,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900029",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"CAPTURE_SPIRIT",
+"SCAVENGE",
+"HEADBUTT",
+"TWIN_STRIKE",
+"ANGER",
+"HOWL_FROM_BEYOND",
+"ARMAMENTS",
+"MOLTEN_FIST",
+"CINDER",
+"POMMEL_STRIKE",
+"PERFECTED_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"KALEIDOSCOPE",
+"VEXING_PUZZLEBOX"
+],
+"potions": [
+"SPEED_POTION",
+"WEAK_POTION"
+],
+"hp": 65,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900029",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"CAPTURE_SPIRIT",
+"FEAR",
+"HEADBUTT",
+"BLUDGEON",
+"HEADBUTT",
+"FLAME_BARRIER",
+"MOLTEN_FIST+",
+"INFERNO",
+"BLUDGEON",
+"SPITE"
+],
+"relics": [
+"BURNING_BLOOD",
+"KALEIDOSCOPE",
+"VEXING_PUZZLEBOX"
+],
+"potions": [
+"POWER_POTION",
+"POWDERED_DEMISE"
+],
+"hp": 67,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900035",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BLOOD_WALL",
+"TAUNT",
+"INFERNO",
+"RAMPAGE",
+"PERFECTED_STRIKE",
+"TAUNT",
+"PERFECTED_STRIKE",
+"PERFECTED_STRIKE",
+"SWORD_BOOMERANG"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES",
+"BAG_OF_MARBLES",
+"BOOK_OF_FIVE_RINGS"
+],
+"potions": [
+"BLOCK_POTION",
+"WEAK_POTION"
+],
+"hp": 57,
+"max_hp": 79,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900033",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BLOOD_WALL",
+"TAUNT",
+"PILLAGE",
+"TAUNT",
+"ANGER",
+"INFLAME",
+"SETUP_STRIKE",
+"TWIN_STRIKE",
+"INFLAME",
+"BREAKTHROUGH",
+"SPORE_MIND"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES"
+],
+"potions": [
+"STRENGTH_POTION",
+"WEAK_POTION"
+],
+"hp": 53,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900033",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BLOOD_WALL",
+"TAUNT",
+"PILLAGE",
+"TAUNT",
+"PERFECTED_STRIKE",
+"EXPECT_A_FIGHT",
+"POMMEL_STRIKE",
+"ANGER",
+"COLOSSUS",
+"SPORE_MIND",
+"SHRUG_IT_OFF",
+"TAUNT"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES"
+],
+"potions": [
+"TOUCH_OF_INSANITY",
+"ENERGY_POTION"
+],
+"hp": 47,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900053",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"POMMEL_STRIKE",
+"IRON_WAVE+",
+"CINDER",
+"ASHEN_STRIKE",
+"ANGER",
+"TWIN_STRIKE",
+"GUILTY"
+],
+"relics": [
+"BURNING_BLOOD",
+"FISHING_ROD"
+],
+"potions": [
+"FLEX_POTION",
+"GIGANTIFICATION_POTION"
+],
+"hp": 68,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900053",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"UPPERCUT",
+"BLOOD_WALL",
+"UNRELENTING",
+"SWORD_BOOMERANG",
+"EVIL_EYE",
+"GUILTY"
+],
+"relics": [
+"BURNING_BLOOD",
+"LOST_COFFER"
+],
+"potions": [
+"COLORLESS_POTION",
+"TOUCH_OF_INSANITY"
+],
+"hp": 56,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900058",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"WHIRLWIND",
+"TRUE_GRIT",
+"POMMEL_STRIKE",
+"PERFECTED_STRIKE",
+"THUNDERCLAP",
+"TREMBLE",
+"MOLTEN_FIST",
+"MOLTEN_FIST",
+"CLUMSY"
+],
+"relics": [
+"BURNING_BLOOD",
+"NEW_LEAF",
+"GORGET",
+"EMBER_TEA"
+],
+"potions": [
+"SKILL_POTION"
+],
+"hp": 62,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900058",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SETUP_STRIKE",
+"IRON_WAVE",
+"PERFECTED_STRIKE",
+"TAUNT",
+"CINDER",
+"SPITE",
+"BLUDGEON",
+"CLUMSY"
+],
+"relics": [
+"BURNING_BLOOD",
+"LEAD_PAPERWEIGHT",
+"GORGET",
+"EMBER_TEA"
+],
+"potions": [
+"FYSH_OIL",
+"FIRE_POTION"
+],
+"hp": 80,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900002",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"BASH",
+"ASCENDERS_BANE",
+"SETUP_STRIKE",
+"FORGOTTEN_RITUAL",
+"SWORD_BOOMERANG",
+"CINDER",
+"TWIN_STRIKE",
+"MOLTEN_FIST",
+"PECK"
+],
+"relics": [
+"BURNING_BLOOD",
+"LAVA_ROCK",
+"WAR_PAINT"
+],
+"potions": [
+"BLOCK_POTION",
+"POWDERED_DEMISE"
+],
+"hp": 36,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900002",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"UNRELENTING",
+"FORGOTTEN_RITUAL",
+"BREAKTHROUGH",
+"CINDER",
+"TWIN_STRIKE",
+"PERFECTED_STRIKE",
+"TRUE_GRIT",
+"PECK",
+"BARRICADE"
+],
+"relics": [
+"BURNING_BLOOD",
+"LAVA_ROCK",
+"HORN_CLEAT"
+],
+"potions": [
+"FLEX_POTION",
+"POWDERED_DEMISE"
+],
+"hp": 40,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900008",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"FIGHT_ME",
+"TREMBLE",
+"THRASH",
+"FLAME_BARRIER",
+"UNRELENTING",
+"ANGER"
+],
+"relics": [
+"BURNING_BLOOD",
+"BOOMING_CONCH",
+"KUSARIGAMA"
+],
+"potions": [
+"FLEX_POTION",
+"FORTIFIER"
+],
+"hp": 40,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900008",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"ANGER+",
+"FISTICUFFS",
+"DRUM_OF_BATTLE",
+"PERFECTED_STRIKE",
+"FLAME_BARRIER",
+"STOKE",
+"SPOILS_MAP",
+"IRON_WAVE"
+],
+"relics": [
+"BURNING_BLOOD",
+"LARGE_CAPSULE",
+"KUSARIGAMA",
+"THE_COURIER",
+"ANCHOR"
+],
+"potions": [
+"DISTILLED_CHAOS",
+"ATTACK_POTION"
+],
+"hp": 32,
+"max_hp": 85,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900015",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SETUP_STRIKE",
+"TWIN_STRIKE",
+"ANGER",
+"TWIN_STRIKE",
+"SHRUG_IT_OFF",
+"TAUNT"
+],
+"relics": [
+"BURNING_BLOOD",
+"PRECISE_SCISSORS",
+"RIPPLE_BASIN"
+],
+"potions": [
+"WEAK_POTION",
+"POWER_POTION"
+],
+"hp": 59,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900015",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"SETUP_STRIKE+",
+"TWIN_STRIKE",
+"TWIN_STRIKE",
+"TAUNT"
+],
+"relics": [
+"BURNING_BLOOD",
+"PRECISE_SCISSORS",
+"RIPPLE_BASIN"
+],
+"potions": [
+"WEAK_POTION",
+"POWER_POTION"
+],
+"hp": 54,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900025",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"IRON_WAVE",
+"PERFECTED_STRIKE",
+"ANGER",
+"MOLTEN_FIST",
+"RAGE",
+"MOLTEN_FIST"
+],
+"relics": [
+"BURNING_BLOOD",
+"BOOMING_CONCH"
+],
+"potions": [
+"COLORLESS_POTION",
+"DUPLICATOR"
+],
+"hp": 69,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900025",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"IRON_WAVE",
+"UNRELENTING",
+"PERFECTED_STRIKE",
+"ANGER",
+"ANGER",
+"SPITE",
+"CRUELTY",
+"BLOOD_WALL",
+"SPITE"
+],
+"relics": [
+"BURNING_BLOOD",
+"BOOMING_CONCH"
+],
+"potions": [
+"TOUCH_OF_INSANITY",
+"DUPLICATOR"
+],
+"hp": 67,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900032",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD+",
+"BASH",
+"ASCENDERS_BANE",
+"MIND_BLAST",
+"THUNDERCLAP",
+"ANGER",
+"BREAKTHROUGH",
+"CLUMSY",
+"PECK",
+"CINDER",
+"TRUE_GRIT",
+"TRUE_GRIT"
+],
+"relics": [
+"BURNING_BLOOD",
+"LEAD_PAPERWEIGHT",
+"WAR_PAINT"
+],
+"potions": [
+"STABLE_SERUM",
+"CURE_ALL"
+],
+"hp": 59,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900032",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD+",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH+",
+"ASCENDERS_BANE",
+"MIND_BLAST",
+"DISMANTLE",
+"ANGER",
+"PECK",
+"ASHEN_STRIKE",
+"TRUE_GRIT"
+],
+"relics": [
+"BURNING_BLOOD",
+"LEAD_PAPERWEIGHT"
+],
+"potions": [
+"ATTACK_POTION",
+"STABLE_SERUM"
+],
+"hp": 66,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900039",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"UPPERCUT",
+"ANGER",
+"TAUNT",
+"MOLTEN_FIST",
+"PERFECTED_STRIKE",
+"TAUNT",
+"STOMP",
+"ANGER",
+"POMMEL_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"PHIAL_HOLSTER",
+"PENDULUM"
+],
+"potions": [
+"BLOCK_POTION",
+"SKILL_POTION",
+"BLOCK_POTION"
+],
+"hp": 58,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900039",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"UPPERCUT",
+"ANGER",
+"CINDER",
+"MOLTEN_FIST",
+"STAMPEDE",
+"SHRUG_IT_OFF",
+"THRASH"
+],
+"relics": [
+"BURNING_BLOOD",
+"PHIAL_HOLSTER",
+"CHOSEN_CHEESE",
+"PARRYING_SHIELD"
+],
+"potions": [
+"FRUIT_JUICE",
+"SKILL_POTION",
+"BLOCK_POTION"
+],
+"hp": 33,
+"max_hp": 81,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900046",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"IRON_WAVE",
+"ASHEN_STRIKE",
+"HEADBUTT",
+"BODY_SLAM",
+"CLUMSY",
+"EVIL_EYE",
+"TAUNT"
+],
+"relics": [
+"BURNING_BLOOD",
+"NUTRITIOUS_OYSTER",
+"RAZOR_TOOTH",
+"STRAWBERRY"
+],
+"potions": [
+"EXPLOSIVE_AMPOULE",
+"STRENGTH_POTION"
+],
+"hp": 46,
+"max_hp": 98,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900046",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "VANTOM_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"BREAKTHROUGH",
+"THUNDERCLAP+",
+"SETUP_STRIKE",
+"IRON_WAVE",
+"FLAME_BARRIER"
+],
+"relics": [
+"BURNING_BLOOD",
+"NUTRITIOUS_OYSTER",
+"STRAWBERRY"
+],
+"potions": [
+"FLEX_POTION",
+"STRENGTH_POTION"
+],
+"hp": 66,
+"max_hp": 98,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900051",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"TWIN_STRIKE",
+"TAUNT",
+"BLOOD_WALL",
+"RAMPAGE",
+"TREMBLE",
+"EVIL_EYE",
+"TWIN_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"NEW_LEAF"
+],
+"potions": [
+"WEAK_POTION"
+],
+"hp": 67,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900051",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": true
+},
+"act": 1,
+"room": "Boss",
+"encounter": "CEREMONIAL_BEAST_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH+",
+"ASCENDERS_BANE",
+"TAUNT+",
+"BREAKTHROUGH",
+"RAMPAGE",
+"TWIN_STRIKE",
+"SPITE+",
+"INFLAME",
+"TAUNT",
+"BREAKTHROUGH",
+"ANGER"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES"
+],
+"potions": [
+"FIRE_POTION",
+"VULNERABLE_POTION"
+],
+"hp": 80,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900051",
+"floor": 33,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 2,
+"room": "Boss",
+"encounter": "KNOWLEDGE_DEMON_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH+",
+"ASCENDERS_BANE",
+"TAUNT+",
+"BREAKTHROUGH",
+"RAMPAGE",
+"TWIN_STRIKE",
+"SPITE+",
+"INFLAME",
+"TAUNT",
+"BREAKTHROUGH",
+"ANGER",
+"BRAND",
+"ARMAMENTS+",
+"ENLIGHTENMENT+",
+"ENLIGHTENMENT+",
+"COLOSSUS+",
+"TRUE_GRIT+",
+"PERFECTED_STRIKE",
+"FEEL_NO_PAIN",
+"FEEL_NO_PAIN",
+"BULLY",
+"BULLY"
+],
+"relics": [
+"BURNING_BLOOD",
+"SCROLL_BOXES",
+"TOY_BOX",
+"JUZU_BRACELET",
+"BLOOD_VIAL",
+"TOXIC_EGG",
+"GIRYA",
+"LASTING_CANDY",
+"EMBER_TEA",
+"CANDELABRA",
+"BING_BONG"
+],
+"potions": [
+"ENTROPIC_BREW",
+"VULNERABLE_POTION"
+],
+"hp": 61,
+"max_hp": 80,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900059",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD+",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"NEOWS_FURY",
+"DRUM_OF_BATTLE",
+"SETUP_STRIKE",
+"SETUP_STRIKE",
+"PERFECTED_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"NEOWS_TORMENT",
+"SWORD_OF_STONE"
+],
+"potions": [
+"VULNERABLE_POTION",
+"COLORLESS_POTION"
+],
+"hp": 71,
+"max_hp": 87,
+"valid": true
+},
+{
+"source": {
+"run": "rb-RB00900059",
+"floor": 17,
+"build": "simulated",
+"run_won": null,
+"benchmark": "run-bench-9",
+"policy": "rcard+rpath+ropt",
+"won_in_run": false
+},
+"act": 1,
+"room": "Boss",
+"encounter": "THE_KIN_BOSS",
+"ascension": 10,
+"character": "IRONCLAD",
+"deck": [
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"STRIKE_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"DEFEND_IRONCLAD",
+"BASH",
+"ASCENDERS_BANE",
+"GREED",
+"TREMBLE",
+"TREMBLE",
+"HEADBUTT",
+"SETUP_STRIKE",
+"SETUP_STRIKE",
+"PERFECTED_STRIKE"
+],
+"relics": [
+"BURNING_BLOOD",
+"CURSED_PEARL",
+"SWORD_OF_STONE"
+],
+"potions": [
+"VULNERABLE_POTION",
+"COLORLESS_POTION"
+],
+"hp": 70,
+"max_hp": 87,
+"valid": true
+}
+]
+}

@@ -1,0 +1,62 @@
+{
+ "name": "boss-replay-1",
+ "created": "2026-11-21 12:12",
+ "benchmark": "data/sim/boss-fights-rb9.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "9f09c11",
+ "arms": [
+  "planner",
+  "mcw6",
+  "mcw12"
+ ],
+ "model": null,
+ "q_model": null,
+ "seeds": 1,
+ "rooms": null,
+ "seed_base": 7000000,
+ "workers": 7,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 1206,
+ "jobs": 98,
+ "summary": {
+  "planner": {
+   "games": 98,
+   "errors": 0,
+   "won": 9,
+   "mean_value": -209.29591836734693,
+   "mean_hp_if_won": 16.0,
+   "seconds": 20.0,
+   "search_seconds_per_decision": 0.001,
+   "restarts": 0
+  },
+  "mcw6": {
+   "games": 98,
+   "errors": 0,
+   "won": 15,
+   "mean_value": -181.40816326530611,
+   "mean_hp_if_won": 20.733333333333334,
+   "seconds": 2734.3,
+   "search_seconds_per_decision": 1.02,
+   "restarts": 0
+  },
+  "mcw12": {
+   "games": 98,
+   "errors": 0,
+   "won": 11,
+   "mean_value": -185.25510204081633,
+   "mean_hp_if_won": 25.90909090909091,
+   "seconds": 5335.8,
+   "search_seconds_per_decision": 1.971,
+   "restarts": 0
+  }
+ }
+}
