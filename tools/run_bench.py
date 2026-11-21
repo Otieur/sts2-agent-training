@@ -11,6 +11,8 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
 - `draft`: card rewards by the draft scorer (`tools/draft.py score_offer`, skipping below its bar).
 - `shop`: in shops, buy the card removal first (curses, then Strikes, then Defends), then the best card the draft
   scorer would take if gold allows.
+- `path`: map moves by the path planner (`tools/path.py`: expected loot against fatal risk over every route to the
+  boss, room models from the history; the whole act map is visible to the player).
 - `rest`: heal below 50% HP (below 70% before a boss), otherwise smith; the upgrade goes to the first card in an
   upgrade priority list (Bash, then the deck's highest-tier cards by the draft scorer's tiers, Strikes and Defends last).
 
@@ -65,9 +67,13 @@ class Policy:
         self.pending = None           # what a choice screen opened by our own action is for
         self.bought = set()
 
-    def act(self, obs, acts, rng):
+    def act(self, obs, acts, rng, sim=None):
         scr = obs["screen"]
         ch = obs.get("choice") or {}
+        if scr == "map" and "path" in self.parts and sim is not None and not obs.get("at_boss"):
+            a = self.route_pick(sim, obs, acts)
+            if a:
+                return a
         if scr == "choice" and ch.get("kind") == "CardReward" and "draft" in self.parts:
             a = draft_pick(obs, acts)
             if a is not None:
@@ -96,6 +102,36 @@ class Policy:
                 if str(x.get("option", "")).upper() == want:
                     return x
         return S.run_policy(pt, obs, acts, rng)
+
+    def route_pick(self, sim, obs, acts):
+        """Route by the path planner (`tools/path.py`: expected loot against fatal risk, room models from the history);
+        the whole act map is visible to the player."""
+        import path as P
+        moves = [x for x in acts if x.get("type") == "move"]
+        if len(moves) <= 1:
+            return None
+        m = sim.call(cmd="map")["map"]
+        rc = lambda v: {"row": v[1], "col": v[0]} if v else None
+        mp = {"nodes": [{"row": p["row"], "col": p["col"], "node_type": p["type"], "children": [{"row": c[1], "col": c[0]} for c in p["children"]]}
+                        for p in m["points"]],
+              "current_node": rc(m.get("here")), "starting_node": rc(m.get("start")), "boss_node": rc(m.get("boss"))}
+        nodes, start, boss = P.load_map(mp)
+        paths = P.enumerate_paths(nodes, start, boss)
+        if not paths:
+            return None
+        act = obs.get("act") or 1
+        if not hasattr(self, "_path_model"):
+            self._path_model = P.get_model("IRONCLAD", obs.get("ascension", 0))
+        hp, mx = obs["player"]["hp"], obs["player"]["max_hp"]
+        res = P.rank(paths, nodes, self._path_model, act, hp, mx, None, P.DEFAULT_RISK_WEIGHT.get(act, 16.0),
+                     P.deck_metrics_from([c.rstrip("+") for c in obs["player"]["deck"]]))
+        for o in res:
+            first = o.get("first")
+            if first:
+                a = next((x for x in moves if (x.get("row"), x.get("col")) == tuple(first)), None)
+                if a:
+                    return a
+        return None
 
     def shop_pick(self, obs, acts):
         gold = obs["player"]["gold"]
@@ -198,7 +234,7 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None):
             if a is None:
                 combat.stats["fallback"] += 1
         try:
-            obs = sim.call(cmd="run_step", action=a or policy.act(obs, acts, rng), timeout=120)["obs"]
+            obs = sim.call(cmd="run_step", action=a or policy.act(obs, acts, rng, sim), timeout=120)["obs"]
         except S.SimError:
             break
         if obs.get("act", 1) > last_act:

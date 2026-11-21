@@ -80,10 +80,22 @@ public static class Choices
     static void KindFinalizer() { _kindDepth = Math.Max(0, _kindDepth - 1); }
 
     // Must run before the UI classes are made inert (the card reward screen is a UI class).
+    // In a fight rebuilt from a recording (replay set-up), the game never lets the local player answer a card choice
+    // (CardSelectCmd.ShouldSelectLocalCard is false while the net service is the replay service) and waits for the
+    // recorded answer. Beyond the recorded events, in decision mode (search over a fight exported from a simulated run,
+    // or a live fight), there is no recorded answer and the action would wait forever (found 2026-11-20 with Armaments).
+    // In decision mode only, the local player answers through the intercepting selector; fidelity replays are unchanged.
+    static void LocalSelectPostfix(MegaCrit.Sts2.Core.Entities.Players.Player player, ref bool __result)
+    {
+        if (!__result && _intercept && MegaCrit.Sts2.Core.Context.LocalContext.IsMe(player)) __result = true;
+    }
+
     public static void Install()
     {
         if (_installed) return;
         _installed = true;
+        Stubs.H.Patch(typeof(CardSelectCmd).GetMethod("ShouldSelectLocalCard", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)!,
+                      postfix: new HarmonyLib.HarmonyMethod(typeof(Choices).GetMethod(nameof(LocalSelectPostfix), BindingFlags.Static | BindingFlags.NonPublic)));
         var kindPrefix = new HarmonyLib.HarmonyMethod(typeof(Choices).GetMethod(nameof(KindPrefix), BindingFlags.Static | BindingFlags.NonPublic));
         var kindFinalizer = new HarmonyLib.HarmonyMethod(typeof(Choices).GetMethod(nameof(KindFinalizer), BindingFlags.Static | BindingFlags.NonPublic));
         foreach (var m in typeof(CardSelectCmd).GetMethods(BindingFlags.Static | BindingFlags.Public).Where(m => m.Name.StartsWith("From") && m.Name != "FromChooseABundleScreen"))
