@@ -26,3 +26,4 @@ Why: at A10 the rollout policies reach the act 1 boss as often as the Player (80
 Pending.
 
 ## 6. Deviations and notes
+- 2026-11-21 10:14, before the run (stopping rule, not outcomes): 7 workers instead of 6 (fights are claimed one at a time, as registered). Reason: the Player asked for full use of the CPU and stopped the other project's processes, which frees memory; with fixed seeds the workers that finish early sit idle at the end of each benchmark (32% of the CPU idle in run benchmark 7's tail). Each seed is played the same whichever worker plays it (the same random generator per seed, search by fixed counts of sampled worlds), so the change affects only the wall time and, if the deadline stops the run, which seeds are cut, and neither depends on outcomes.

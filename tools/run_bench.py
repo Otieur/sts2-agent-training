@@ -464,10 +464,16 @@ def worker(a):
     out = Path(a.out)
     combat = SearchCombat(a.combat, a.fight_rebuild) if a.combat != "planner" else None
     with S.Sim() as sim:
-        for k in range(a.worker, a.seeds, a.workers):
+        # static: worker w plays seeds w, w+W, ...; dynamic: a free worker claims the next unclaimed seed in index order
+        for k in (range(a.seeds) if a.dynamic else range(a.worker, a.seeds, a.workers)):
             if a.deadline and time.time() > deadline_ts(a.deadline):
                 print(f"w{a.worker}: deadline {a.deadline} reached before seed {k}", flush=True)
                 break
+            if a.dynamic:
+                try:
+                    os.close(os.open(out / "claims" / str(k), os.O_CREAT | os.O_EXCL))
+                except FileExistsError:
+                    continue
             seed = f"RB{a.seed_base:03d}{k:05d}"
             rec = {"seed": seed, "ascension": a.ascension, "combat": a.combat, "policies": {}}
             for name in a.policies:
@@ -604,6 +610,7 @@ def main(argv=None):
     ap.add_argument("--fight-rebuild", default="save", choices=["save", "save+run"],
                     help="how search hosts rebuild a fight: its own save, or also the run clone when that fails (fights started by events)")
     ap.add_argument("--deadline", help='"YYYY-MM-DD HH:MM" local time: no new seed starts after it, and a seed cut off by it is left out')
+    ap.add_argument("--dynamic", action="store_true", help="a free worker claims the next seed in index order (no idle workers at the end)")
     a = ap.parse_args(argv)
     if a.report:
         print(json.dumps(report(a.report, a.baseline), indent=1))
@@ -612,6 +619,10 @@ def main(argv=None):
         return worker(a)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
+    if a.dynamic:
+        (out / "claims").mkdir(exist_ok=True)
+        for f in (out / "claims").iterdir():
+            f.unlink()
     t0 = time.time()
     # the code the workers start from (later commits during the run do not change the running processes)
     head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT, capture_output=True, text=True).stdout.strip()
@@ -620,11 +631,13 @@ def main(argv=None):
     started = time.strftime("%Y-%m-%d %H:%M")
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--seeds", str(a.seeds),
                                "--seed-base", str(a.seed_base), "--ascension", str(a.ascension), "--out", str(out), "--combat", a.combat,
-                               *(["--deadline", a.deadline] if a.deadline else []), "--fight-rebuild", a.fight_rebuild, "--policies", *a.policies])
+                               *(["--deadline", a.deadline] if a.deadline else []), *(["--dynamic"] if a.dynamic else []),
+                               "--fight-rebuild", a.fight_rebuild, "--policies", *a.policies])
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
     man = {"name": out.name, "started": started, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": head,
            "code_uncommitted_changes": dirty, "host": os.environ.get("SIM_CONFIG", "Release"), "fight_rebuild": a.fight_rebuild,
+           "workers": a.workers, "seed_order": "dynamic" if a.dynamic else "static",
            "policies": a.policies, "seeds": a.seeds,
            "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "deadline": a.deadline, "worker_exit_codes": codes,
            "wall_seconds": round(time.time() - t0), "report": report(out, a.baseline)}
