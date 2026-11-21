@@ -45,7 +45,7 @@ Where runs die: `rcard+rpath` act 1 boss 42, act 1 elites 8, act 1 hallways 4, a
 
 State at the start of the act 1 boss fight (47 fights each): upgrades 1.9 (1.8 of them on Strikes and Defends) against 1.3 (0.6); relics 3.0 against 3.3; potions held 2.0 against 2.0; HP 69% against 73%. The rollout arm upgrades Strikes less (24 Strike upgrades in final decks against 89) and Bash more (8 against 0), but upgrades less in total: it heals more often than the rule.
 
-Rollout decisions in `rcard+rpath+ropt`: 519 `ropt` decisions (207 different from the rules, 40%), 461 card rewards, 355 map choices. Search: 15,720 searched moves, 0 fallbacks; 91 fights rebuilt through the run clone. `ropt` costs 1.25 times the seconds per run.
+Rollout decisions in `rcard+rpath+ropt`: 519 `ropt` decisions (207 different from the rules, 40%), 461 card rewards, 355 map choices. Search: 15,720 searched moves, 0 fallbacks; 91 search decisions were rebuilt through the run clone. `ropt` costs 1.25 times the seconds per run.
 
 **Verdict: H1 does not hold by the registered test; `ropt` is not adopted on this evidence.** The direction is positive (+1.9 floors, act 1 boss wins 9 against 5, the only 4 runs to reach the act 2 boss) but 34 seeds tie and the sign test misses 0.05. By the registered rule the base policy of the next comparisons stays `rcard+rpath`. Two observations for later tests: with the rule planner fighting in the rollouts, `ropt` chooses healing over smithing more than the rule does (see the review of 2026-11-21, F3), and floors at A10 are too coarse a measure to settle an effect of this size. `ropt` is to be tested again at A0 (decision 0005), where runs spread over three acts.
 
