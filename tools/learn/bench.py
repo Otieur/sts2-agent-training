@@ -283,7 +283,7 @@ def summarize(recs, arms):
     return out
 
 
-def markdown_potions(folder):
+def markdown_potions(folder, alpha=0.025):
     """Section 5 of reports/phase8/potions-in-search.md."""
     recs = load(folder)
     man = json.loads((Path(folder) / "manifest.json").read_text())
@@ -299,15 +299,22 @@ def markdown_potions(folder):
                  f"{used['Monster']} / {used['Elite']} / {used['Boss']} | {summ[n]['search_seconds_per_decision']:.3f} |")
     L += ["", "| Pair (B − A), priced value | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |", "|---|---|---|---|---|---|---|---|"]
     verdict = {}
-    for a_, b_ in [("mc6", "mc6p"), ("planner", "plannerp")]:
+    pairs = [(a[:-1], a) for a in arms if a.endswith("p") and a != "planner" and a[:-1] in arms]
+    for a_, b_ in pairs:
         t = paired(recs, a_, b_, metric="value_priced")
         verdict[b_] = t
         L.append(f"| {b_} − {a_} | {t['pairs']} | {t['mean_diff']:.2f} | {t['boot95'][0]:.2f} to {t['boot95'][1]:.2f} | {t['better']} | {t['worse']} | {t['equal']} | {t['sign_p_one_sided']:.4f} |")
     L.append("")
-    for h, b_ in (("H1", "mc6p"), ("H2", "plannerp")):
+    for h, b_ in [(f"H{i + 1}", b) for i, (_, b) in enumerate(pairs)]:
         t = verdict[b_]
-        L.append(f"- **{h}** (`{b_}` better on priced value, sign test p < 0.025): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
-                 + ("**holds**." if t["sign_p_one_sided"] < 0.025 and t["mean_diff"] > 0 else "**does not hold**."))
+        L.append(f"- **{h}** (`{b_}` better on priced value, sign test p < {alpha}): p = {t['sign_p_one_sided']:.4f}, mean difference {t['mean_diff']:.2f}: "
+                 + ("**holds**." if t["sign_p_one_sided"] < alpha and t["mean_diff"] > 0 else "**does not hold**."))
+    boss = [r for r in recs if r["room"] == "Boss"]
+    for a_, b_ in pairs:
+        t = paired(boss, a_, b_, metric="value_priced")
+        wa = sum(1 for r in boss if r["arms"].get(a_, {}).get("status") == "won")
+        wb = sum(1 for r in boss if r["arms"].get(b_, {}).get("status") == "won")
+        L.append(f"- Boss fights only ({t['pairs']} pairs): `{b_}` − `{a_}` {t['mean_diff']:.2f} priced value (interval {t['boot95'][0]:.2f} to {t['boot95'][1]:.2f}), wins {wb} against {wa}.")
     errs = [(r["fight"], r["sample"], n) for r in recs for n, v in r["arms"].items() if "error" in v]
     L.append(f"\nErrors: {len(errs)}.")
     return "\n".join(L)
@@ -413,7 +420,7 @@ def main(argv=None):
     if a.report and a.markdown:
         man = json.loads((Path(a.report) / "manifest.json").read_text())
         if any(n.endswith("p") for n in man["arms"]):
-            print(markdown_potions(a.report))
+            print(markdown_potions(a.report, a.alpha))
         elif all(re.fullmatch(r"mc\d+", n) for n in man["arms"]):
             print(markdown_budget(a.report, a.alpha))
         else:
