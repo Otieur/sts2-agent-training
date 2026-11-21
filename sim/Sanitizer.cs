@@ -82,7 +82,7 @@ public static class Sanitizer
     }
 
     // SplitMix64: spreads the sample seed and an index into an independent 64-bit seed.
-    static ulong Mix(ulong seed, ulong index)
+    internal static ulong Mix(ulong seed, ulong index)
     {
         var z = seed + index * 0x9E3779B97F4A7C15UL;
         z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9UL;

@@ -63,6 +63,7 @@ public sealed partial class Session
         Choices.Minigame = null; Choices.Current = null;
         ForgetOrigin();
         Applied = 0; PlayerIndex = 0; Victory = false;
+        RunActions.Clear(); LastRunSave = null; LastRunSaveAt = 0; RunSaves = 0;
         var character = ById(ModelDb.AllCharacters, (string)spec["character"] ?? "IRONCLAD", "character");
         // Unlocks decide which cards, relics and potions can appear (FI-5). Default: everything. With "unlocks_from":
         // the unlock state stored in a recorded fight of the profile (the replay's run carries the player's unlocks).
@@ -299,6 +300,8 @@ public sealed partial class Session
 
     public void RunStep(JsonNode action)
     {
+        // logged before it runs: a room-entry save made during this step already includes it (Session.RunClone.cs)
+        if (RunMode && !_rebuildingRun) RunActions.Add(action.DeepClone());
         var errors = Stubs.ExceptionCount;
         try { RunStepInner(action); }
         finally
@@ -434,6 +437,9 @@ public sealed partial class Session
         o["act"] = Run.CurrentActIndex + 1;
         o["floor"] = Run.TotalFloor;
         o["act_floor"] = Run.ActFloor;
+        // the act's boss, shown on the map from the act's start (knowledge/gaps.md gap 5); the second boss at A10 likewise
+        o["act_boss"] = Run.Act?.BossEncounter?.Id.Entry;
+        if (Run.Act?.HasSecondBoss == true) o["act_second_boss"] = Run.Act.SecondBossEncounter?.Id.Entry;
         o["room"] = Run.CurrentRoom?.GetType().Name;
         var me = Me;
         o["player"] = new JsonObject

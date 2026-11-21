@@ -174,6 +174,15 @@ public static class Serve
                         reply["last_action"] = s.LastAction();
                         if (req["clear"] != null) Stubs.Problems.Clear();
                         break;
+                    case "run_export": reply["export"] = s.RunExport(); break;
+                    case "run_from_save":
+                        s.RunFromSave(Convert.FromBase64String((string)req["data"]!), req["actions"]?.AsArray() ?? new JsonArray(),
+                                      (ulong)(req["sample_seed"]?.GetValue<long>() ?? 1L), req["sample_seed"] != null, (bool?)req["record_fights"] ?? false,
+                                      (bool?)req["test_hp"] ?? false);
+                        resets++;
+                        reply["obs"] = s.RunObserve();
+                        reply["sampler"] = req["sample_seed"] != null ? RunSampler.LastReport.DeepClone() : null;
+                        break;
                     case "export_fight":
                         reply["replay_b64"] = Convert.ToBase64String(s.ExportFight());
                         reply["events"] = s.LastExportEvents;

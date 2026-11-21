@@ -348,6 +348,15 @@
 > **Acceptance criteria**
 > - [ ] A run from Neow to the Act 3 boss with any policy; outputs the run record in the same format as `data/runs.db` rows; runs per hour measured.
 
+
+> **P7.E8.S4: Run-level clones and the run sampler** · Size L · Status: Done (2026-11-21, overnight; prototype on the Debug host, checks below)
+> *As the run-level search (decision 0004 step 3), I want to copy a run at any decision point and play each option forward with the hidden future re-sampled, so that strategic choices can be judged by outcomes without seeing the seed.*
+>
+> **Acceptance criteria**
+> - [x] A run state is rebuilt in another host from the save the game makes at room entry (kept in memory; SA-1 still holds: `sim.py sandbox` 3/3) plus the run actions since (`run_export`, `run_from_save`): 17 of 17 rebuilds along three A5 runs equal, each with the same next five observations (`sim.py runclone`).
+> - [x] With a sample seed the hidden future is re-sampled (FP-16, `sim/RunSampler.cs`): every generator, the seed of later acts' maps, the unvisited room lists, later Ancients and bosses (the current act's boss is visible and kept), the relic queues. Visible state unchanged; the same seed gives the same future; other seeds and the true future differ; later acts get other maps; the true next encounter appears in 2 of 20 sampled futures.
+> - [ ] An event already under way keeps its rolled values (`EventModel.CalculateVars`), and the Crystal Sphere's items are not re-placed; rollouts should start outside events until this is done.
+> - [ ] Re-sampled room lists may repeat an encounter or event already met in the act (the game's own generation avoids some repeats); measure how often.
 ---
 
 ## 4. Exit gate

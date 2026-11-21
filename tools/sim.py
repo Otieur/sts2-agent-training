@@ -365,6 +365,127 @@ def cmd_clone(a):
     return 0 if ok == n and n > 0 else 1
 
 
+_VOLATILE = {"applied_events", "sanitized", "handled_messages", "sent", "status", "waiting_for_choice", "blocked", "draw_order", "generators"}
+
+
+def _visible_run(o):
+    """A run observation without host bookkeeping fields (for clone comparisons)."""
+    if isinstance(o, dict):
+        return {k: _visible_run(v) for k, v in o.items() if k not in _VOLATILE}
+    if isinstance(o, list):
+        return [_visible_run(x) for x in o]
+    return o
+
+
+def _run_future(host, obs, rng, n):
+    """What a player would see over the next n steps of the simple run policy: encounters, card offers, events, and the
+    maps of acts entered later (for sampler checks)."""
+    sys.path.insert(0, str(PROJECT / "tools"))
+    import plan_turn as pt
+    sig, act = [], obs.get("act")
+    for _ in range(n):
+        if obs["screen"] == "game_over":
+            sig.append(("over", obs.get("floor")))
+            break
+        obs = host.call(cmd="run_step", action=run_policy(pt, obs, host.call(cmd="run_legal")["actions"], rng), timeout=120)["obs"]
+        if obs.get("act") != act:
+            act = obs.get("act")
+            sig.append(("map", act, tuple(sorted((p["col"], p["row"], p["type"]) for p in host.call(cmd="map")["map"]["points"]))))
+        if obs.get("encounter") and (not sig or sig[-1] != ("enc", obs["encounter"])):
+            sig.append(("enc", obs["encounter"]))
+        ch = obs.get("choice") or {}
+        if ch.get("kind") == "CardReward":
+            sig.append(("cards", tuple(ch.get("options", []))))
+        if obs.get("event_id") and (not sig or sig[-1] != ("event", obs["event_id"])):
+            sig.append(("event", obs["event_id"]))
+    return sig
+
+
+def cmd_runclone(a):
+    """Run-level clones and the run sampler (P7.E8.S4, FP-16). (1) Exact rebuilds: along whole runs, the run is exported
+    (the room-entry save the game makes, kept in memory, plus the run actions since) and rebuilt in a second host; the
+    visible state must be equal and the same actions must then give the same observations. (2) Sampler: at decision
+    points on the map (test-HP runs, so later acts are reached), rebuilds with sample seeds keep the visible state, the
+    same seed gives the same future, other seeds and the true future differ, and acts not yet entered get other maps.
+    (3) Leak canary: over many sample seeds the true next encounter is not reproduced more often than chance."""
+    import random
+    sys.path.insert(0, str(PROJECT / "tools"))
+    import plan_turn as pt
+    fails = 0
+    with Sim() as run, Sim() as cl:
+        exact, cont = 0, 0
+        for k in range(a.runs):
+            rng = random.Random(k)
+            obs = run.call(cmd="new_run", spec={"seed": f"RUNCLONE{k:04d}", "character": "IRONCLAD", "ascension": 5}, timeout=120)["obs"]
+            for step in range(1500):
+                if obs["screen"] == "game_over":
+                    break
+                if step % 19 == 7:
+                    ex = run.call(cmd="run_export")["export"]
+                    o = cl.call(cmd="run_from_save", data=ex["save_b64"], actions=ex["actions"], test_hp=ex["test_hp"], timeout=120)["obs"]
+                    same = _visible_run(o) == _visible_run(obs)
+                    line_ok = same
+                    if same:          # the same five actions from both hosts give the same observations
+                        r2 = random.Random(step)
+                        o1, o2 = obs, o
+                        for _ in range(5):
+                            if o1["screen"] == "game_over":
+                                break
+                            act = run_policy(pt, o1, run.call(cmd="run_legal")["actions"], r2)
+                            o1 = run.call(cmd="run_step", action=act, timeout=120)["obs"]
+                            o2 = cl.call(cmd="run_step", action=act, timeout=120)["obs"]
+                            line_ok = line_ok and _visible_run(o1) == _visible_run(o2)
+                        obs = o1
+                    exact += same
+                    cont += line_ok
+                    fails += not line_ok
+                    if not line_ok:
+                        print(f"FAIL run {k} step {step} floor {obs.get('floor')} {obs['screen']}: rebuilt equal {same}, same line {line_ok}")
+                    continue
+                obs = run.call(cmd="run_step", action=run_policy(pt, obs, run.call(cmd="run_legal")["actions"], rng), timeout=120)["obs"]
+        n_exact = exact if exact else 0
+        print(f"exact rebuilds: {exact} equal, {cont} with the same continuation")
+        for k, floor in enumerate((6, 12)):
+            rng = random.Random(100 + k)
+            obs = run.call(cmd="new_run", spec={"seed": f"RUNSAMPLE{k:04d}", "character": "IRONCLAD", "ascension": 0, "test_max_hp": 999}, timeout=120)["obs"]
+            while obs.get("floor", 0) < floor or obs["screen"] != "map":
+                obs = run.call(cmd="run_step", action=run_policy(pt, obs, run.call(cmd="run_legal")["actions"], rng), timeout=120)["obs"]
+            ex = run.call(cmd="run_export")["export"]
+            truth = _run_future(run, obs, random.Random(7), 500)
+            futs, vis = {}, True
+            for sd in (11, 22, 11):
+                o = cl.call(cmd="run_from_save", data=ex["save_b64"], actions=ex["actions"], test_hp=ex["test_hp"], sample_seed=sd, timeout=120)["obs"]
+                vis = vis and _visible_run(o) == _visible_run(obs)
+                futs.setdefault(sd, []).append(_run_future(cl, o, random.Random(7), 500))
+            maps = lambda f: [x for x in f if x[0] == "map"]
+            checks = {"visible state kept": vis, "same seed, same future": futs[11][0] == futs[11][1],
+                      "other seed, other future": futs[11][0] != futs[22][0], "true future not reproduced": futs[11][0] != truth,
+                      "later maps re-sampled": maps(futs[11][0]) != maps(truth) and maps(futs[22][0]) != maps(truth)}
+            if not maps(truth):
+                checks.pop("later maps re-sampled")
+                print(f"     sampler at floor {obs['floor']}: no later act reached in the future played, maps not compared")
+            for name, ok in checks.items():
+                print(f"{'ok  ' if ok else 'FAIL'} sampler at floor {obs['floor']}: {name}")
+                fails += not ok
+        # leak canary: the next normal encounter after a decision point, true against sampled
+        rng = random.Random(9)
+        obs = run.call(cmd="new_run", spec={"seed": "RUNCANARY01", "character": "IRONCLAD", "ascension": 0, "test_max_hp": 999}, timeout=120)["obs"]
+        while obs.get("floor", 0) < 4 or obs["screen"] != "map":
+            obs = run.call(cmd="run_step", action=run_policy(pt, obs, run.call(cmd="run_legal")["actions"], rng), timeout=120)["obs"]
+        ex = run.call(cmd="run_export")["export"]
+        first = lambda f: next((x[1] for x in f if x[0] == "enc" and x[1].endswith("_NORMAL")), None)
+        true_next = first(_run_future(run, obs, random.Random(3), 120))
+        hits = 0
+        for sd in range(a.canary):
+            o = cl.call(cmd="run_from_save", data=ex["save_b64"], actions=ex["actions"], test_hp=ex["test_hp"], sample_seed=1000 + sd, timeout=120)["obs"]
+            hits += first(_run_future(cl, o, random.Random(3), 120)) == true_next
+        ok = hits < 0.6 * a.canary
+        print(f"{'ok  ' if ok else 'FAIL'} leak canary: the true next normal encounter ({true_next}) in {hits} of {a.canary} sampled futures")
+        fails += not ok
+    print(f"{'all run-clone checks passed' if not fails else f'{fails} run-clone checks failed'}")
+    return 0 if not fails else 1
+
+
 def cmd_sandbox(a):
     """SA-1, SA-2 (P7.E3.S3), automated: over fights from nothing and whole runs, the host leaves the game's save folder
     unchanged (compared by size, time and hash, read only), writes nothing into its sandbox home, and opens no network
@@ -1214,6 +1335,10 @@ def main(argv=None):
     sb.set_defaults(fn=cmd_sandbox)
     sb.add_argument("--fights", type=int, default=20)
     sb.add_argument("--runs", type=int, default=5)
+    rc = sub.add_parser("runclone")
+    rc.set_defaults(fn=cmd_runclone)
+    rc.add_argument("--runs", type=int, default=3)
+    rc.add_argument("--canary", type=int, default=20)
     cl = sub.add_parser("clone")
     cl.set_defaults(fn=cmd_clone)
     cl.add_argument("--fights", type=int, default=12)

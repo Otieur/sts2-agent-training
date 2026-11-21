@@ -22,8 +22,10 @@ public static class Host
         Stages.Step("game-method stubs", () =>
         {
             var sm = typeof(MegaCrit.Sts2.Core.Saves.SaveManager);
-            foreach (var m in new[] { "SaveRun", "SaveRunHistory", "SaveProgressFile", "SavePrefsFile", "SaveSettings", "SaveProfile" })
+            foreach (var m in new[] { "SaveRunHistory", "SaveProgressFile", "SavePrefsFile", "SaveSettings", "SaveProfile" })
                 Stubs.Skip(sm, m, "SA-1: the simulator never writes saves");
+            // SaveRun writes nothing either; a run saved at room entry is kept in memory for run-level clones (Session.RunClone.cs)
+            Session.HookRunSaves();
             Stubs.Skip(sm, "IncrementNumReloads", "SA-1: save bookkeeping when a saved run is set up (fight_from_save); the simulator never writes saves");
             Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Assets.PreloadManager));  // assets only: preloads scenes and textures
             Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Assets.AssetCache));       // assets only: loaded scenes and textures
