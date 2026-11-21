@@ -104,7 +104,9 @@ public sealed partial class Session
             Rm.SetUpNewMultiplayer(Run, lobby, false, null);
         }
         Rm.CombatStateSynchronizer.IsDisabled = true;
-        Rm.CombatReplayWriter.IsEnabled = false;   // in-memory fight recording: never written by the host, pure cost
+        // In-memory fight recording (never written by the host): off unless the run asks for it ("record_fights"), so
+        // that every fight's start state and actions can be exported to a search host (export_fight).
+        Rm.CombatReplayWriter.IsEnabled = (bool?)spec["record_fights"] ?? false;
         Rm.ChecksumTracker.IsEnabled = false;
         Ctx.RunUntil(Rm.FinalizeStartingRelics(), "FinalizeStartingRelics");
         Rm.Launch();

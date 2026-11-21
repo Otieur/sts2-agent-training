@@ -33,6 +33,32 @@ public sealed partial class Session
 
     public void Load(string path) { Replay = global::Replay.Load(path); _hasRun = _hasRun && false; }
 
+    // A fight recorded in this session (a whole run with "record_fights"): the game's own in-memory replay of the current
+    // fight, its start state and every action so far, serialized in the replay file format. A search host loads it
+    // (LoadBytes) and rebuilds the fight with the hidden future re-sampled, which is how search plays fights inside
+    // simulated runs, and the same path a live fight takes once it is rebuilt from a save (docs/proposals/live-search.md).
+    public byte[] ExportFight()
+    {
+        var field = HarmonyLib.AccessTools.Field(typeof(MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplayWriter), "_replay");
+        var replay = field.GetValue(Rm.CombatReplayWriter) as MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay
+                     ?? throw new InvalidOperationException("no fight is being recorded (start the run with record_fights)");
+        var w = new MegaCrit.Sts2.Core.Multiplayer.Serialization.PacketWriter();
+        w.Write(replay);
+        w.ZeroByteRemainder();
+        LastExportEvents = replay.events.Count;
+        return w.Buffer.Take(w.BytePosition).ToArray();
+    }
+
+    public int LastExportEvents;
+
+    public void LoadBytes(byte[] bytes)
+    {
+        var reader = new MegaCrit.Sts2.Core.Multiplayer.Serialization.PacketReader();
+        reader.Reset(bytes);
+        Replay = reader.Read<MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay>();
+        _hasRun = false;
+    }
+
     // A choice left unanswered (search scoring the position right after an action that opens one, such as the Knowledge
     // Demon's curse offer during the enemy turn) keeps its game action waiting; clean-up does not cancel it, and the next
     // fight would queue behind it and never start (found 2026-11-20). Answer it with the smallest allowed pick first.

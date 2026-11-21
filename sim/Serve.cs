@@ -174,6 +174,16 @@ public static class Serve
                         reply["last_action"] = s.LastAction();
                         if (req["clear"] != null) Stubs.Problems.Clear();
                         break;
+                    case "export_fight":
+                        reply["replay_b64"] = Convert.ToBase64String(s.ExportFight());
+                        reply["events"] = s.LastExportEvents;
+                        break;
+                    case "load_b64":
+                        s.LoadBytes(Convert.FromBase64String((string)req["data"]!));
+                        if (s.Replay.modelIdHash != MegaCrit.Sts2.Core.Multiplayer.Serialization.ModelIdSerializationCache.Hash)
+                            throw new InvalidOperationException("model-id hash differs from the host's");
+                        reply["events"] = s.Replay.events.Count;
+                        break;
                     case "stats":
                         reply["steps"] = steps; reply["resets"] = resets; reply["engine_calls"] = Stubs.TotalCalls;
                         reply["managed_mb"] = GC.GetTotalMemory(false) / 1048576; reply["sanitize_ms"] = Sanitizer.LastMs;

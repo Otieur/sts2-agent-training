@@ -1,0 +1,71 @@
+{
+ "name": "run-bench-1",
+ "created": "2026-11-20 22:38",
+ "code_commit": "622c981",
+ "policies": [
+  "base",
+  "draft",
+  "draft+shop+rest"
+ ],
+ "seeds": 60,
+ "seed_base": 1,
+ "ascension": 0,
+ "combat": "rule planner",
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 156,
+ "report": {
+  "runs": 60,
+  "policies": {
+   "base": {
+    "runs": 60,
+    "mean_floor": 13.5,
+    "act1_boss": 2,
+    "act2_boss": 0,
+    "won": 0
+   },
+   "draft": {
+    "runs": 60,
+    "mean_floor": 11.63,
+    "act1_boss": 1,
+    "act2_boss": 0,
+    "won": 0,
+    "vs_base": {
+     "pairs": 60,
+     "mean_floor_diff": -1.87,
+     "better": 10,
+     "worse": 28,
+     "equal": 22,
+     "sign_p_one_sided": 0.9991709737369092,
+     "boot95": [
+      -3.1333333333333333,
+      -0.5666666666666667
+     ]
+    }
+   },
+   "draft+shop+rest": {
+    "runs": 60,
+    "mean_floor": 11.35,
+    "act1_boss": 2,
+    "act2_boss": 0,
+    "won": 0,
+    "vs_base": {
+     "pairs": 60,
+     "mean_floor_diff": -2.15,
+     "better": 12,
+     "worse": 30,
+     "equal": 18,
+     "sign_p_one_sided": 0.9985563760128571,
+     "boot95": [
+      -3.5166666666666666,
+      -0.6833333333333333
+     ]
+    }
+   }
+  }
+ }
+}
