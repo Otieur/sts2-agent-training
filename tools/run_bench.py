@@ -17,8 +17,9 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
   upgrade priority list (Bash, then the deck's highest-tier cards by the draft scorer's tiers, Strikes and Defends last).
 
 Combat is played by the rule planner by default (fast), or with `--combat mcwK` by wide search in a second host: the
-run host exports each fight (`export_fight`, the game's own recording), the search host rebuilds it with the hidden
-future re-sampled, checks the visible state and searches; mismatches and failures fall back to the planner (counted). Every decision
+run host exports each fight's start state (the run saved at room entry, from the game's own recording), the search
+host rebuilds the fight from it plus the fight's actions so far (`fight_from_save`, normal single-player mode), re-samples
+the hidden future, checks the visible state and searches; mismatches and failures fall back to the planner (counted). Every decision
 uses only the observation; the seed's future (map, offers, encounters) is never read (FP-1).
 
 Metrics per run: floor reached, act reached, act bosses beaten, won. Primary: floor reached, paired by seed.
@@ -182,32 +183,40 @@ def visible(o):
 
 
 class SearchCombat:
-    """Fights inside a whole run played by search in a second host: the run host exports the current fight (the
-    game's own recording), the search host rebuilds it with the hidden future re-sampled, checks that the visible state
-    matches, and searches. Any mismatch or failure falls back to the planner for that decision (counted)."""
+    """Fights inside a whole run played by search in a second host. At a fight's first decision the run host exports
+    the fight recording, whose start state (the run saved at room entry, with its true random state) is kept; at every
+    decision the search host rebuilds the fight from that state plus the fight's actions so far in normal single-player
+    mode (`fight_from_save`), re-samples the hidden future, checks that the visible state matches the run host's, and
+    searches. Any mismatch or failure falls back to the planner for that decision (counted)."""
     def __init__(self, spec):
         import selfplay as SP
         self.SP = SP
         m = __import__("re").fullmatch(r"mc(w?)(\d+)", spec)
         self.wide, self.k = bool(m.group(1)), int(m.group(2))
         self.host = SP.Host()
-        self.stats = {"searched": 0, "fallback": 0, "mismatch": 0}
+        self.stats = {"searched": 0, "fallback": 0, "mismatch": 0, "errors": 0, "search_seconds": 0.0}
+        self.start_state, self.fight_key = None, None
 
-    def act(self, run_sim, obs, acts, d):
+    def act(self, run_sim, obs, acts, d, fight_actions, fight_key):
         try:
-            ex = run_sim.call(cmd="export_fight")
-            self.host.sim.call(cmd="load_b64", data=ex["replay_b64"])
-            o = self.host.sim.call(cmd="reset", events=ex["events"], seed=1_000_003 * (d + 1) + 17)["obs"]
+            if fight_key != self.fight_key or self.start_state is None:
+                self.start_state = run_sim.call(cmd="export_fight")["replay_b64"]
+                self.fight_key = fight_key
+            t0 = time.time()
+            o = self.host.sim.call(cmd="fight_from_save", data=self.start_state, actions=fight_actions,
+                                   sample_seed=1_000_003 * (d + 1) + 17, timeout=120)["obs"]
             if visible(o) != visible(obs):
                 self.stats["mismatch"] += 1
                 return None
             cands, values, best = self.SP.scored_search(self.host.sim, o, "balanced", self.k, 2, d, {}, wide=self.wide)
+            self.stats["search_seconds"] += time.time() - t0
             a = cands[best if values[0] is not None else 0]
             if not any(all(x.get(k) == a.get(k) for k in ("type", "card", "target", "cards", "slot")) for x in acts):
                 return None
             self.stats["searched"] += 1
             return a
         except (S.SimError, self.SP.Tainted):
+            self.stats["errors"] += 1
             self.host.restart()
             return None
 
@@ -221,20 +230,27 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None):
         spec["record_fights"] = True
     obs = sim.call(cmd="new_run", spec=spec, timeout=120)["obs"]
     bosses, steps, last_act, d = 0, 0, 1, 0
+    fight_actions, prev_screen, fight_no = [], None, 0
     for steps in range(max_steps):
         if obs["screen"] == "game_over":
             break
+        if obs["screen"] == "combat" and prev_screen != "combat":
+            fight_actions, fight_no = [], fight_no + 1
         acts = sim.call(cmd="run_legal")["actions"]
         if not acts:
             break
         a = None
         if combat is not None and obs["screen"] == "combat":
-            a = combat.act(sim, obs, acts, d)
+            a = combat.act(sim, obs, acts, d, fight_actions, (seed, fight_no))
             d += 1
             if a is None:
                 combat.stats["fallback"] += 1
+        action = a or policy.act(obs, acts, rng, sim)
+        if obs["screen"] == "combat":
+            fight_actions.append(action)
+        prev_screen = obs["screen"]
         try:
-            obs = sim.call(cmd="run_step", action=a or policy.act(obs, acts, rng, sim), timeout=120)["obs"]
+            obs = sim.call(cmd="run_step", action=action, timeout=120)["obs"]
         except S.SimError:
             break
         if obs.get("act", 1) > last_act:
@@ -255,7 +271,7 @@ def worker(a):
             for name in a.policies:
                 t0 = time.time()
                 if combat:
-                    combat.stats = {"searched": 0, "fallback": 0, "mismatch": 0}
+                    combat.stats = {"searched": 0, "fallback": 0, "mismatch": 0, "errors": 0, "search_seconds": 0.0}
                 try:
                     r = play_run(sim, seed, a.ascension, Policy(name), random.Random(k), combat=combat)
                 except S.SimError as e:
