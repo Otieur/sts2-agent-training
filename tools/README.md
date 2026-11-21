@@ -79,7 +79,11 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 ## Fight situations from simulated runs
 | Tool | What it does | Typical call |
 |---|---|---|
-| `run_specs.py` | Plays whole runs in the simulator (draft scorer for card rewards, simple policy elsewhere, large test max HP so runs reach acts 2 and 3) and records every fight's starting situation as a fight spec; HP is re-drawn to 45-100% of the real max. Sources are `sim-<seed>`, which training always puts in the training split | `run_specs.py --runs 60 --workers 2` |
+| `run_specs.py` | Plays whole runs in the simulator (by default the run benchmark's `path` policy; `--policy` takes any run-benchmark policy, rollout ones with `--no-test-hp`) and records every fight's starting situation as a fight spec; with the test max HP (default) runs reach acts 2 and 3 and HP is re-drawn to 45-100% of the real max. Sources are `sim-<seed>`, which training always puts in the training split | `run_specs.py --runs 60 --workers 2` |
+| `run_bench.py` | Run benchmark: whole runs from new seeds, policies built from components (`path`, `rcard`, `rpath`, `ropt`, `rshop`, `bc`, …), search in every fight (`--combat mcw6 --fight-rebuild save+run`), paired report by seed; records each boss fight's start as a fight spec | `run_bench.py --out data/learn/runs/<name> --policies path rcard+rpath --seeds 60 --ascension 10 --combat mcw6`; `--report <dir> --baseline path` |
+| `run_eval.py` | Decision-time evaluation by sampled rollouts: each option played forward over the same re-sampled futures to the end of the act (optional credit for progress against a boss) | used by `run_bench.py` |
+| `run_opts.py` | Rollout decisions for events, rest sites, card choices outside fights (`ropt`) and shop purchases (`rshop`) | used by `run_bench.py` |
+| `boss_specs.py` | Collects the boss fights reached in run benchmarks as a fight set for `learn/bench.py --benchmark` | `boss_specs.py data/learn/runs/run-bench-9 --out data/sim/boss-fights.json` |
 
 ## Repository front page
 | Tool | What it does | Typical call |

@@ -19,12 +19,16 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
   failures to the draft scorer (run benchmark 3).
 - `rcard`: card rewards by sampled rollouts, ties and failures to the first card.
 - `rpath`: map moves by sampled rollouts, ties and failures to the route planner (run benchmark 4).
+- `ropt`: events (Neow and Ancients included), rest sites and card choices outside fights (upgrade, remove,
+  transform, enchant) by sampled rollouts (`tools/run_opts.py`), ties and failures to this policy's rule (run benchmark 9).
+- `rshop`: shop purchases (cards, relics, potions, card removal, leaving) by sampled rollouts, one purchase at a time,
+  ties and failures to this policy's rule (run benchmark 10).
 - `bc`: the rollouts of `rdraft`, `rcard` and `rpath` credit progress against a boss (`tools/run_eval.py`
   `boss_credit`, weight `BOSS_CREDIT`): a rollout that dies in a boss fight gets that weight times the fraction of the
   boss fight's enemy HP it removed, and a won run counts as beating the act's boss (run benchmark 7).
 `rcard` and `rpath` rollouts are played by this policy with every rollout component replaced by its rule counterpart
-(`rpath` by `path`, `rdraft` by `draft`, `rcard` by the first card, `bc` dropped; `Policy.rule_policy`), so rollouts
-never nest.
+(`rpath` by `path`, `rdraft` by `draft`, `rcard`, `ropt` and `rshop` by the rules, `bc` dropped; `Policy.rule_policy`),
+so rollouts never nest. Each boss fight's starting situation is recorded as a fight spec (`spec` in the fight record).
 
 Combat is played by the rule planner by default (fast), or with `--combat mcwK` by wide search in a second host: the
 run host exports each fight's start state (the run saved at room entry, from the game's own recording), the search
@@ -113,10 +117,16 @@ class Policy:
         self.pending = None           # what a choice screen opened by our own action is for
         self.bought = set()
         self.stats = {}
+        self.rule_mode = False        # True while run_opts asks what the rules alone would do
 
     def act(self, obs, acts, rng, sim=None):
         scr = obs["screen"]
         ch = obs.get("choice") or {}
+        if sim is not None and not self.rule_mode and self.parts & {"ropt", "rshop"}:
+            import run_opts
+            a = run_opts.pick(self, obs, acts, rng, sim)
+            if a is not None:
+                return a
         if scr == "event":
             a = event_pick(obs, acts)
             if a:
@@ -215,7 +225,7 @@ class Policy:
     def rule_policy(self):
         """This policy with every rollout component replaced by its rule counterpart (`rpath` by `path`, `rdraft` by
         `draft`, `rcard` by the first card, `bc` dropped), so that rollouts never start rollouts of their own."""
-        swap = {"rpath": "path", "rdraft": "draft", "rcard": None, "bc": None}
+        swap = {"rpath": "path", "rdraft": "draft", "rcard": None, "bc": None, "ropt": None, "rshop": None}
         return "+".join(sorted({swap.get(x, x) for x in self.parts} - {None})) or "base"
 
     def boss_credit(self):
@@ -411,6 +421,12 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
             fight_actions, fight_no = [], fight_no + 1
             fights.append({"floor": obs.get("floor"), "room": obs.get("room"), "encounter": obs.get("encounter"), "hp_start": obs["player"]["hp"],
                            "max_hp": obs["player"]["max_hp"], "enemies": [e["enemy_id"] for e in (obs.get("combat") or {}).get("enemies", [])]})
+            if str(obs.get("encounter") or "").endswith("_BOSS"):
+                p = obs["player"]          # the boss fight's starting situation as a fight spec (tools/fight_specs.py format)
+                fights[-1]["spec"] = {"source": {"run": f"rb-{seed}", "floor": obs.get("floor"), "build": "simulated", "run_won": None},
+                                      "act": obs.get("act"), "room": "Boss", "encounter": obs["encounter"], "ascension": ascension,
+                                      "character": "IRONCLAD", "deck": list(p.get("deck", [])), "relics": list(p.get("relics", [])),
+                                      "potions": [x for x in p.get("potions", []) if x], "hp": p["hp"], "max_hp": p["max_hp"], "valid": True}
         acts = sim.call(cmd="run_legal")["actions"]
         if not acts:
             break
@@ -484,6 +500,8 @@ def worker(a):
         _ROUTE_EVALUATOR.close()
     if _CARD_EVALUATOR is not None:
         _CARD_EVALUATOR.close()
+    if "run_opts" in sys.modules:
+        sys.modules["run_opts"].close()
     return 0
 
 

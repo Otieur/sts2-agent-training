@@ -239,7 +239,7 @@ def value_of(o):
 def worker(a):
     out = Path(a.out)
     shard = out / f"shard-{a.worker:02d}.jsonl"
-    fights = json.loads(BENCH.read_text())["fights"]
+    fights = json.loads(Path(a.benchmark).read_text())["fights"]
     jobs = [(i, s) for s in range(a.seeds) for i in range(len(fights)) if not a.rooms or fights[i]["room"] in a.rooms][:a.limit or None]
     done_jobs = set()
     for f in out.glob("shard-*.jsonl"):
@@ -447,6 +447,7 @@ def main(argv=None):
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     ap.add_argument("--limit", type=int, help="only the first N jobs (testing)")
     ap.add_argument("--rooms", nargs="+", help="only benchmark fights of these room types (Monster, Elite, Boss)")
+    ap.add_argument("--benchmark", default=str(BENCH), help="fight set ({'fights': [fight specs]}); default data/sim/benchmark-v1.json")
     ap.add_argument("--report", help="print the summary and paired tests of a finished folder")
     ap.add_argument("--baseline", default="mc", help="arm the others are compared with in --report")
     ap.add_argument("--alpha", type=float, default=0.025, help="one-sided significance per directional hypothesis in --markdown")
@@ -477,14 +478,17 @@ def main(argv=None):
     (out / "claims").mkdir()
     head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT, capture_output=True, text=True).stdout.strip()
     t0 = time.time()
-    procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--out", str(out), "--seeds", str(a.seeds), "--arms", *a.arms]
+    procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--out", str(out), "--seeds", str(a.seeds), "--arms", *a.arms,
+                               "--benchmark", a.benchmark, "--workers", str(a.workers)]
                               + (["--limit", str(a.limit)] if a.limit else []) + (["--rooms", *a.rooms] if a.rooms else [])
                               + (["--model", a.model] if a.model else []) + (["--q-model", a.q_model] if a.q_model else [])) for w in range(a.workers)]
     codes = [p.wait() for p in procs]
     info = Path.home() / "Library/Application Support/Steam/steamapps/common/Slay the Spire 2/SlayTheSpire2.app/Contents/Resources/release_info.json"
     build = json.loads(info.read_text()) if info.exists() else {}
     recs = load(out)
-    manifest = {"name": out.name, "created": time.strftime("%Y-%m-%d %H:%M"), "benchmark": str(BENCH.relative_to(PROJECT)),
+    bench = Path(a.benchmark).resolve()
+    manifest = {"name": out.name, "created": time.strftime("%Y-%m-%d %H:%M"),
+                "benchmark": str(bench.relative_to(PROJECT)) if bench.is_relative_to(PROJECT) else bench.name,
                 "game_version": build.get("version"), "game_commit": build.get("commit"), "code_commit": head, "arms": a.arms,
                 "model": a.model, "q_model": a.q_model, "seeds": a.seeds, "rooms": a.rooms, "seed_base": SEED_BASE, "workers": a.workers, "worker_exit_codes": codes,
                 "wall_seconds": round(time.time() - t0), "jobs": len(recs), "summary": summarize(recs, a.arms)}
