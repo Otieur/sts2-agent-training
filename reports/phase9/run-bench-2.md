@@ -1,6 +1,6 @@
 # Comparison: deck-building components in whole runs with search in every fight (run benchmark 2)
 
-Written before the run (P9, decision 0004, ML-10), 2026-11-21 at 02:10. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
+Written before the run (P9, decision 0004, ML-10), 2026-11-21 at 01:41. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
 
 ## 1. Hypotheses
 - **H1:** rule deck building (`draft+shop+rest`) reaches more floors than `base` when search plays every fight.
