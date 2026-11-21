@@ -121,7 +121,7 @@ def phase_states(text):
 
 def latest_arms(runs):
     """Arm -> (summary, run) for the latest run with each arm, among runs of the newest job set that has a planner."""
-    key = lambda r: (r.get("benchmark"), r.get("seed_base"), r.get("seeds"))
+    key = lambda r: (r.get("benchmark"), r.get("seed_base"), r.get("seeds"), tuple(r.get("rooms") or ()))
     with_planner = [r for r in runs if "planner" in r.get("arms", [])]
     if not with_planner:
         return {}, None
