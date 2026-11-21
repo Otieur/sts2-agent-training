@@ -200,6 +200,8 @@ class SearchCombat:
     def act(self, run_sim, obs, acts, d, fight_actions, fight_key):
         try:
             if fight_key != self.fight_key or self.start_state is None:
+                if self.fight_key is not None:
+                    print(f"  fight {self.fight_key}: {self.stats}", flush=True)
                 self.start_state = run_sim.call(cmd="export_fight")["replay_b64"]
                 self.fight_key = fight_key
             t0 = time.time()

@@ -24,7 +24,8 @@ public static class Host
             var sm = typeof(MegaCrit.Sts2.Core.Saves.SaveManager);
             foreach (var m in new[] { "SaveRun", "SaveRunHistory", "SaveProgressFile", "SavePrefsFile", "SaveSettings", "SaveProfile" })
                 Stubs.Skip(sm, m, "SA-1: the simulator never writes saves");
-            Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Assets.PreloadManager));   // assets only: preloads scenes and textures
+            Stubs.Skip(sm, "IncrementNumReloads", "SA-1: save bookkeeping when a saved run is set up (fight_from_save); the simulator never writes saves");
+            Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Assets.PreloadManager));  // assets only: preloads scenes and textures
             Stubs.MakeInertHelper(typeof(MegaCrit.Sts2.Core.Assets.AssetCache));       // assets only: loaded scenes and textures
             Stubs.Skip(typeof(RunManager), "WriteReplay", "SA-1: the game writes replays/latest.mcr into the save profile at the end of a fight and on clean-up");
             // Localised text is display and log text. The tables live in the game's resource pack, which only the

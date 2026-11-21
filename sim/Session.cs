@@ -75,6 +75,9 @@ public sealed partial class Session
         Rm.CombatStateSynchronizer.IsDisabled = true;
         Rm.ChecksumTracker.IsEnabled = false;
         Rm.CombatReplayWriter.IsEnabled = false;
+        // as the game's own load (NGame.LoadRun): launch the run and generate the act map before entering the room
+        Rm.Launch();
+        Ctx.RunUntil(Rm.GenerateMap(), "GenerateMap");
         var pre = save.PreFinishedRoom == null ? null : MegaCrit.Sts2.Core.Rooms.AbstractRoom.FromSerializable(save.PreFinishedRoom, Run);
         Ctx.RunUntil(Rm.LoadIntoLatestMapCoord(pre), "LoadIntoLatestMapCoord");
         Ctx.Drain();
