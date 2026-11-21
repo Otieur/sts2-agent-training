@@ -305,7 +305,7 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
         spec["record_fights"] = True
     obs = sim.call(cmd="new_run", spec=spec, timeout=120)["obs"]
     bosses, steps, last_act, d = 0, 0, 1, 0
-    fight_actions, prev_fight, fight_no, fights = [], False, 0, []
+    fight_actions, prev_fight, fight_no, fights, host_error = [], False, 0, [], None
     for steps in range(max_steps):
         if obs["screen"] == "game_over":
             break
@@ -334,7 +334,8 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
         prev_fight = in_fight
         try:
             obs = sim.call(cmd="run_step", action=action, timeout=120)["obs"]
-        except S.SimError:
+        except S.SimError as e:
+            host_error = str(e)[:300]          # the run stops here; reported, not counted as a death in the details
             break
         if obs.get("act", 1) > last_act:
             bosses += obs["act"] - last_act
@@ -344,7 +345,7 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
         fights[-1]["hp_end"] = obs["player"]["hp"]
     return {"floor": obs.get("floor"), "act": obs.get("act"), "bosses": bosses + (1 if won else 0), "won": won, "steps": steps,
             "deck": len(obs["player"]["deck"]), "gold": obs["player"].get("gold"), "final_deck": list(obs["player"]["deck"]), "fights": fights,
-            "policy_stats": dict(policy.stats)}
+            "policy_stats": dict(policy.stats), "host_error": host_error}
 
 
 def deadline_ts(text):
@@ -442,7 +443,9 @@ def details(rs):
             n[t] += 1
             if f.get("hp_end", 0) > 0:
                 lost[t].append(f["hp_start"] - f["hp_end"])
-        if not x["won"]:
+        if x.get("host_error"):
+            died["stopped by a host error"] += 1
+        elif not x["won"]:
             died[room_type(fs[-1]) if fs and fs[-1].get("hp_end", 1) == 0 else "outside a fight"] += 1
         for k, v in (x.get("combat_stats") or {}).items():
             stats[k] += v
