@@ -46,7 +46,7 @@
 <tr>
 <td align="center" width="25%"><h3>57</h3>human runs analysed<br><sub>deaths, damage per encounter, card picks</sub></td>
 <td align="center" width="25%"><h3>11 / 11</h3>recorded fights replayed exactly<br><sub>by the simulator, every state equal</sub></td>
-<td align="center" width="25%"><h3>+28</h3>value per fight from search<br><sub>best search (mcw6) over the rule planner, 98 games</sub></td>
+<td align="center" width="25%"><h3>+51</h3>value per fight from search<br><sub>best search (mcw6) over the rule planner, 120 games</sub></td>
 <td align="center" width="25%"><h3>84,205</h3>self-play decisions<br><sub>from 4,435 simulated fights</sub></td>
 </tr>
 </table>
@@ -80,9 +80,16 @@
 <!-- auto:latest:start -->
 | Policy | Fights won | Mean value | Time per move | Model | Run |
 |---|---|---|---|---|---|
-| Monte Carlo search, wide (`mcw6`) | 15 of 98 | -181.4 | 1.0 s | – | [`boss-replay-1`](data/learn/bench/boss-replay-1/manifest.json) 2026-11-21 |
-| Monte Carlo search, wide (`mcw12`) | 11 of 98 | -185.3 | 2.0 s | – | [`boss-replay-1`](data/learn/bench/boss-replay-1/manifest.json) 2026-11-21 |
-| Rule planner (`planner`) | 9 of 98 | -209.3 | 1 ms | – | [`boss-replay-1`](data/learn/bench/boss-replay-1/manifest.json) 2026-11-21 |
+| Monte Carlo search, wide (`mcw6`) | 99 of 120 | -7.7 | 2.6 s | – | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
+| Search, wide with network filter (`mcwq6`) | 94 of 120 | -17.9 | 1.8 s | – | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
+| Monte Carlo search (`mc24`) | 89 of 120 | -26.1 | 3.5 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
+| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 1.3 s | – | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
+| Monte Carlo search (`mc12`) | 85 of 120 | -32.6 | 1.8 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
+| Rule planner (`planner`) | 75 of 120 | -59.1 | 4 ms | – | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
+| Action-value network (`qpolicy`) | 74 of 120 | -56.9 | 11 ms | `q-v5` | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
+| Search with value network (`vleaf2`) | 70 of 120 | -64.5 | 234 ms | `value-v5` | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
+| Search with value network (`vleaf6`) | 68 of 120 | -67.0 | 469 ms | `value-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
+| Value network, one step (`vgreedy`) | 66 of 120 | -77.2 | 68 ms | `value-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
 <!-- auto:latest:end -->
 
 <!-- auto:realruns:start -->

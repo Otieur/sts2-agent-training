@@ -119,9 +119,14 @@ def phase_states(text):
     return out
 
 
+STANDARD_BENCHMARK = "data/sim/benchmark-v1.json"
+
+
 def latest_arms(runs):
     """Arm -> (summary, run) for the latest run with each arm, among runs of the newest job set that has a planner."""
     key = lambda r: (r.get("benchmark"), r.get("seed_base"), r.get("seeds"), tuple(r.get("rooms") or ()))
+    # the front-page table is for the standard fight set; replays of other fight sets have their own reports
+    runs = [r for r in runs if r.get("benchmark") == STANDARD_BENCHMARK]
     with_planner = [r for r in runs if "planner" in r.get("arms", [])]
     if not with_planner:
         return {}, None
