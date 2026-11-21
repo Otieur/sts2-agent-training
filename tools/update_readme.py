@@ -131,7 +131,7 @@ def latest_arms(runs):
         if key(r) != jobs:
             continue
         for a in r.get("arms", []):
-            if a.endswith("p") and a != "planner":
+            if re.search(r"pa?$", a) and a != "planner":
                 continue                                   # potion arms belong to their own comparison
             if a in r.get("summary", {}):
                 arms[a] = (r["summary"][a], r)

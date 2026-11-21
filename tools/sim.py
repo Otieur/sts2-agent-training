@@ -453,10 +453,12 @@ def search_candidates(sim, pt, obs, top, potions=None):
     return [c for c in cands if any(_same_action(c, l) for l in legal)] or [{"type": "end_turn"}]
 
 
-def search_candidates_wide(sim, pt, obs, top, cap=8, potions=None):
+def search_candidates_wide(sim, pt, obs, top, cap=8, potions=None, all_potions=False):
     """The planner's candidates first, then every other legal card play, one per distinct card (id and upgrade) and
     target, up to `cap` candidates in all; ending the turn is always included. Lets search find moves the planner's
-    own plans never propose."""
+    own plans never propose. With `all_potions` (and `potions` set to the room type), every usable potion (one per
+    distinct potion and target) is added on top of the cap, so search judges potions by simulation rather than by the
+    planner's potion model (which knows 17 potions)."""
     base = search_candidates(sim, pt, obs, top, potions)
     if obs.get("choice") or any(c["type"] == "choose" for c in base):
         return base
@@ -468,7 +470,8 @@ def search_candidates_wide(sim, pt, obs, top, cap=8, potions=None):
         return ("play", h.get("card_id"), h.get("upgraded"), a.get("target"))
     seen = {key(a) for a in base}
     out = [a for a in base if a["type"] != "end_turn"]
-    for l in sim.legal():
+    legal = sim.legal()
+    for l in legal:
         if len(out) >= cap - 1:
             break
         if l.get("type") != "play":
@@ -477,6 +480,14 @@ def search_candidates_wide(sim, pt, obs, top, cap=8, potions=None):
         if key(a) not in seen:
             seen.add(key(a))
             out.append(a)
+    if potions and all_potions:
+        pots = {}
+        for l in legal:
+            if l.get("type") == "potion":
+                k2 = (l.get("potion_id"), l.get("target"))
+                if k2 not in pots and not any(c.get("type") == "potion" and c.get("slot") == l["slot"] and c.get("target") == l.get("target") for c in out):
+                    pots[k2] = {k: l[k] for k in ("type", "slot", "target") if k in l}
+        out += list(pots.values())
     return out + [{"type": "end_turn"}]
 
 

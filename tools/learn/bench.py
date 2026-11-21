@@ -18,6 +18,8 @@ Policies (arms):
 - `mcwK` (for example `mcw6`): flat Monte Carlo over a wider candidate set: the planner's candidates plus every other
   legal card play (one per distinct card and target), at most 8 candidates (`tools/sim.py search_candidates_wide`).
 - `vleafK` (for example `vleaf2`): `vleaf` with K worlds per candidate.
+- `mcwKpa` (for example `mcw6pa`): wide search with potions, where every usable potion is a candidate (judged by
+  simulation, priced by room) instead of only the potions the planner's model proposes.
 - `mcwqK` / `mcwqKkN` (for example `mcwq6`, `mcwq6k5`): wide candidates filtered by the action-value network to at
   most N (default 4; the planner's own candidates and ending the turn always kept), then flat Monte Carlo with K worlds.
 - `qpolicy`: the action-value network (`tools/learn/train_q.py`) scores the planner's candidates; no restore at all.
@@ -58,8 +60,8 @@ def planner_search(sim, obs, d, done, potions=None):
     return [S.planner_action(pt, obs, "balanced", potions)], [None], 0
 
 
-def mc_search(k, top=2, mode="balanced", potions=None, wide=False):
-    return lambda sim, obs, d, done: SP.scored_search(sim, obs, mode, k, top, d, done, potions, wide)
+def mc_search(k, top=2, mode="balanced", potions=None, wide=False, all_potions=False):
+    return lambda sim, obs, d, done: SP.scored_search(sim, obs, mode, k, top, d, done, potions, wide, all_potions=all_potions)
 
 
 def _to_next_turn(sim, obs, limit=80):
@@ -213,9 +215,9 @@ def make_arm(name, model_path, q_path=None, room=None):
     if name in ("planner", "plannerp"):
         pots = room if name.endswith("p") else None
         return lambda sim, obs, d, done: planner_search(sim, obs, d, done, pots)
-    m = re.fullmatch(r"mc(w?)(\d*)(p?)", name)
+    m = re.fullmatch(r"mc(w?)(\d*)(p?)(a?)", name)
     if m:
-        return mc_search(int(m.group(2) or 6), potions=room if m.group(3) else None, wide=bool(m.group(1)))
+        return mc_search(int(m.group(2) or 6), potions=room if m.group(3) else None, wide=bool(m.group(1)), all_potions=bool(m.group(4)))
     m = re.fullmatch(r"vleaf(\d*)", name)
     if m:
         return ValueLeaf(model_path, int(m.group(1) or 6))
@@ -244,7 +246,8 @@ def worker(a):
         for line in f.open():
             r = json.loads(line)
             done_jobs.add((r["fight"], r["sample"]))
-    arms = {name: make_arm(name, a.model, a.q_model) for name in a.arms if not name.endswith("p")}
+    needs_room = lambda n: n != "planner" and bool(re.search(r"pa?$", n)) and n.startswith(("mc", "planner"))
+    arms = {name: make_arm(name, a.model, a.q_model) for name in a.arms if not needs_room(name)}
     host = SP.Host()
     try:
         for i, s in jobs:
@@ -331,7 +334,7 @@ def markdown_potions(folder, alpha=0.025):
                  f"{used['Monster']} / {used['Elite']} / {used['Boss']} | {summ[n]['search_seconds_per_decision']:.3f} |")
     L += ["", "| Pair (B − A), priced value | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |", "|---|---|---|---|---|---|---|---|"]
     verdict = {}
-    pairs = [(a[:-1], a) for a in arms if a.endswith("p") and a != "planner" and a[:-1] in arms]
+    pairs = [(re.sub(r"pa?$", "", a), a) for a in arms if re.search(r"pa?$", a) and a != "planner" and re.sub(r"pa?$", "", a) in arms]
     for a_, b_ in pairs:
         t = paired(recs, a_, b_, metric="value_priced")
         verdict[b_] = t
@@ -452,7 +455,7 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.report and a.markdown:
         man = json.loads((Path(a.report) / "manifest.json").read_text())
-        if any(n.endswith("p") for n in man["arms"]):
+        if any(re.search(r"pa?$", n) and n != "planner" for n in man["arms"]):
             print(markdown_potions(a.report, a.alpha))
         elif all(re.fullmatch(r"mc\d+", n) for n in man["arms"]):
             print(markdown_budget(a.report, a.alpha))
