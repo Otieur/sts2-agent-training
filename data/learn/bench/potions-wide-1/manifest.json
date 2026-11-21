@@ -1,0 +1,49 @@
+{
+ "name": "potions-wide-1",
+ "created": "2026-11-20 21:29",
+ "benchmark": "data/sim/benchmark-v1.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "785305f",
+ "arms": [
+  "mcw6",
+  "mcw6p"
+ ],
+ "model": null,
+ "q_model": null,
+ "seeds": 2,
+ "seed_base": 7000000,
+ "workers": 6,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 2370,
+ "jobs": 120,
+ "summary": {
+  "mcw6": {
+   "games": 120,
+   "errors": 0,
+   "won": 99,
+   "mean_value": -7.666666666666667,
+   "mean_hp_if_won": 44.45454545454545,
+   "seconds": 4434.4,
+   "search_seconds_per_decision": 1.883,
+   "restarts": 0
+  },
+  "mcw6p": {
+   "games": 120,
+   "errors": 0,
+   "won": 101,
+   "mean_value": -2.225,
+   "mean_hp_if_won": 45.15841584158416,
+   "seconds": 7481.2,
+   "search_seconds_per_decision": 3.034,
+   "restarts": 0
+  }
+ }
+}

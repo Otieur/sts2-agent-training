@@ -23,7 +23,28 @@ Why now: on the 60 benchmark fights the Player's own recorded results at Ascensi
 - What follows: if H1 holds, potions join the default search (teacher and live play) at these prices, and the price itself becomes the next question (P8.E4); if not, potions stay out and the boss-fight gap is studied on its own.
 
 ## 5. Results
-Pending.
+Run 2026-11-20, 20:50–21:30 (`tools/learn/bench.py --report data/learn/bench/potions-wide-1 --markdown --alpha 0.05`; manifest `data/learn/bench/potions-wide-1/manifest.json`).
+
+Run `potions-wide-1`: 120 jobs, 6 workers, 2370 s wall, code `785305f`, game v0.111.1 (cc1f9462).
+
+| Arm | Won | Mean priced value | Mean value | Potions used (Monster / Elite / Boss) | Search s per decision |
+|---|---|---|---|---|---|
+| mcw6 | 99 | -7.70 | -7.67 | 0 / 0 / 2 | 1.883 |
+| mcw6p | 101 | -4.38 | -2.23 | 3 / 25 / 17 | 3.034 |
+
+| Pair (B − A), priced value | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |
+|---|---|---|---|---|---|---|---|
+| mcw6p − mcw6 | 120 | 3.32 | -1.45 to 9.14 | 22 | 28 | 70 | 0.8389 |
+
+- **H1** (`mcw6p` better on priced value, sign test p < 0.05): p = 0.8389, mean difference 3.32: **does not hold**.
+- Boss fights only (20 pairs): `mcw6p` − `mcw6` 8.30 priced value (interval -8.90 to 27.45), wins 7 against 7.
+
+Errors: 0.
+
+At Ascension 8 and above: `mcw6p` wins 82% of fights (hallways 98%, elites 95%, bosses 35%) against 80% for `mcw6` (98%, 86%, 35%); the Player's own results on the same fights are 86% (100%, 100%, 40%).
+
+**Verdict: H1 does not hold.** Potions add +3.3 priced value per fight (interval −1.5 to 9.1; 22 better, 28 worse, 70 equal) and two wins, mostly in elite fights, but nothing in boss fights (7 wins each). By the rule in section 4, potions stay out of the default search and the boss-fight gap is studied on its own.
+
 
 ## 6. Deviations and notes
 None yet.
