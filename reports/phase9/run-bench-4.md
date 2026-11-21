@@ -28,4 +28,4 @@ Why: in run benchmark 2 the route planner (`tools/path.py`, room models from the
 Pending.
 
 ## 6. Deviations and notes
-- 2026-11-21 04:10, during the run, a note on the rollouts (no change to the run): the run sampler of the Release build used here can put an encounter already met in the act back into a sampled future (9% of future encounters in a check of eight runs; the real game repeats none). Rollout worlds are therefore slightly off, the same for every option and arm. Fixed afterwards in `sim/RunSampler.cs` (0% after the fix), not used by this run.
+- 2026-11-21 04:05, during the run, a note on the rollouts (no change to the run): the run sampler of the Release build used here can put an encounter already met in the act back into a sampled future (9% of future encounters in a check of eight runs; the real game repeats none). Rollout worlds are therefore slightly off, the same for every option and arm. Fixed afterwards in `sim/RunSampler.cs` (0% after the fix), not used by this run.
