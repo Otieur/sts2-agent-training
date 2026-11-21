@@ -1,0 +1,127 @@
+{
+ "name": "run-bench-9",
+ "started": "2026-11-21 11:28",
+ "created": "2026-11-21 11:52",
+ "code_commit": "40ccf0e",
+ "code_uncommitted_changes": false,
+ "host": "Release2",
+ "fight_rebuild": "save+run",
+ "workers": 7,
+ "seed_order": "dynamic",
+ "resumed": true,
+ "policies": [
+  "rcard+rpath",
+  "rcard+rpath+ropt"
+ ],
+ "seeds": 60,
+ "seed_base": 9,
+ "ascension": 10,
+ "combat": "mcw6",
+ "deadline": "2026-11-21 14:55",
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 1439,
+ "report": {
+  "runs": 60,
+  "policies": {
+   "rcard+rpath": {
+    "runs": 60,
+    "mean_floor": 16.12,
+    "act1_boss": 5,
+    "act2_boss": 0,
+    "won": 0,
+    "died_in": {
+     "Boss": 42,
+     "outside a fight": 1,
+     "Elite": 10,
+     "Monster": 7
+    },
+    "fights": {
+     "Monster": 364,
+     "Elite": 39,
+     "Boss": 47
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 6.1,
+     "Elite": 31.0,
+     "Boss": 44.4
+    },
+    "search": {
+     "searched": 7525,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 5204.4,
+     "via_run": 14
+    },
+    "policy": {
+     "rpath_decisions": 331,
+     "rpath_disagree": 126,
+     "rcard_decisions": 411,
+     "rcard_disagree": 256,
+     "rcard_skips": 54
+    },
+    "mean_seconds": 153.6
+   },
+   "rcard+rpath+ropt": {
+    "runs": 60,
+    "mean_floor": 18.0,
+    "act1_boss": 9,
+    "act2_boss": 0,
+    "won": 0,
+    "died_in": {
+     "Elite": 13,
+     "Monster": 5,
+     "Boss": 42
+    },
+    "fights": {
+     "Monster": 396,
+     "Elite": 55,
+     "Boss": 51
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 6.1,
+     "Elite": 31.4,
+     "Boss": 53.8
+    },
+    "search": {
+     "searched": 8195,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 5832.0,
+     "via_run": 77
+    },
+    "policy": {
+     "ropt_decisions": 519,
+     "ropt_disagree": 207,
+     "rpath_decisions": 355,
+     "rpath_disagree": 106,
+     "rcard_decisions": 461,
+     "rcard_disagree": 258,
+     "rcard_skips": 64
+    },
+    "mean_seconds": 193.0,
+    "vs_rcard+rpath": {
+     "pairs": 60,
+     "mean_floor_diff": 1.88,
+     "better": 17,
+     "worse": 9,
+     "equal": 34,
+     "sign_p_one_sided": 0.08431877195835114,
+     "boot95": [
+      0.05,
+      3.816666666666667
+     ]
+    }
+   }
+  }
+ }
+}

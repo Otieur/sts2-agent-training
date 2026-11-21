@@ -26,7 +26,28 @@ Why: card rewards and map moves by rollouts gained 5.5 and 1.1 floors at A5 (run
 - What follows: if H1 holds, `ropt` joins the run policy (run benchmark 10 builds on it). If not, these decisions stay with the rules, and the rollout value or fighter is examined before more decisions move to rollouts.
 
 ## 5. Results
-Pending.
+Run 2026-11-21, 10:55–11:26 (35 seeds) and, after the interruption described in section 6, 11:28–11:52 (25 seeds) (`data/learn/runs/run-bench-9/manifest.json`; 7 workers with dynamic seed claiming, all exited cleanly; all 60 seeds finished before the deadline). `X` is `rcard+rpath` (run benchmark 7's H1 did not hold). Host: `sim/bin/Release2`. Report: `python3 -I tools/run_bench.py --report data/learn/runs/run-bench-9 --baseline rcard+rpath`; details `python3 -I tools/run_details.py data/learn/runs/run-bench-9 --wins-vs rcard+rpath`.
+
+| Policy | Runs | Mean floor | Median floor | Reached the act 1 boss | Beat it | Reached the act 2 boss | Beat it | Won | Elites fought per run | Seconds per run |
+|---|---|---|---|---|---|---|---|---|---|---|
+| rcard+rpath | 60 | 16.12 | 17 | 47 | 5 | 0 | 0 | 0 | 0.65 | 154 |
+| rcard+rpath+ropt | 60 | 18.00 | 17 | 47 | 9 | 4 | 0 | 0 | 0.92 | 193 |
+
+| Pair (B − A), floors | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |
+|---|---|---|---|---|---|---|---|
+| rcard+rpath+ropt − rcard+rpath (H1) | 60 | +1.88 | 0.05 to 3.82 | 17 | 9 | 34 | 0.084 |
+
+- **H1** (events, rest sites and card choices by rollouts reach more floors at A10): p = 0.084 by the registered sign test: **does not hold**. The mean difference is +1.88 floors and its bootstrap interval just excludes zero; 34 of 60 seeds end on the same floor.
+
+Act 1 bosses (fights won / fought): `rcard+rpath` Ceremonial Beast 2/18, The Kin 1/18, Vantom 2/11; `rcard+rpath+ropt` Ceremonial Beast 6/18, The Kin 3/18, Vantom 0/11. Act 2 bosses (`rcard+rpath+ropt` only): 0/4.
+
+Where runs die: `rcard+rpath` act 1 boss 42, act 1 elites 8, act 1 hallways 4, act 2 5, and one run ended outside a fight; `rcard+rpath+ropt` act 1 boss 38, act 1 elites 10, act 1 hallways 3, act 2 9 (boss 4).
+
+State at the start of the act 1 boss fight (47 fights each): upgrades 1.9 (1.8 of them on Strikes and Defends) against 1.3 (0.6); relics 3.0 against 3.3; potions held 2.0 against 2.0; HP 69% against 73%. The rollout arm upgrades Strikes less (24 Strike upgrades in final decks against 89) and Bash more (8 against 0), but upgrades less in total: it heals more often than the rule.
+
+Rollout decisions in `rcard+rpath+ropt`: 519 `ropt` decisions (207 different from the rules, 40%), 461 card rewards, 355 map choices. Search: 15,720 searched moves, 0 fallbacks; 91 fights rebuilt through the run clone. `ropt` costs 1.25 times the seconds per run.
+
+**Verdict: H1 does not hold by the registered test; `ropt` is not adopted on this evidence.** The direction is positive (+1.9 floors, act 1 boss wins 9 against 5, the only 4 runs to reach the act 2 boss) but 34 seeds tie and the sign test misses 0.05. By the registered rule the base policy of the next comparisons stays `rcard+rpath`. Two observations for later tests: with the rule planner fighting in the rollouts, `ropt` chooses healing over smithing more than the rule does (see the review of 2026-11-21, F3), and floors at A10 are too coarse a measure to settle an effect of this size. `ropt` is to be tested again at A0 (decision 0005), where runs spread over three acts.
 
 ## 6. Deviations and notes
 - 2026-11-21 10:14, before the run (stopping rule, not outcomes): 7 workers instead of 6, and the seeds are claimed in index order by whichever worker is free (`--dynamic`) instead of fixed seeds per worker. Reason: the Player asked for full use of the CPU and stopped the other project's processes, which frees memory; with fixed seeds the workers that finish early sit idle at the end of each benchmark (32% of the CPU idle in run benchmark 7's tail). Each seed is played the same whichever worker plays it (the same random generator per seed, search by fixed counts of sampled worlds), so the change affects only the wall time and, if the deadline stops the run, which seeds are cut, and neither depends on outcomes.
