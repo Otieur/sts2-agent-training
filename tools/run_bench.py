@@ -264,7 +264,11 @@ class SearchCombat:
         self.host.close()
 
 
-def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None):
+class Deadline(Exception):
+    pass
+
+
+def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, deadline=None):
     spec = {"seed": seed, "character": "IRONCLAD", "ascension": ascension}
     if combat is not None:
         spec["record_fights"] = True
@@ -274,6 +278,8 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None):
     for steps in range(max_steps):
         if obs["screen"] == "game_over":
             break
+        if deadline and time.time() > deadline:
+            raise Deadline(seed)
         # a choice opened by a card during a fight (e.g. Armaments) is part of the fight: the observation keeps its combat block
         in_fight = obs["screen"] == "combat" or (obs["screen"] == "choice" and bool(obs.get("combat")))
         if prev_fight and not in_fight and fights:
@@ -309,11 +315,18 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None):
             "deck": len(obs["player"]["deck"]), "gold": obs["player"].get("gold"), "final_deck": list(obs["player"]["deck"]), "fights": fights}
 
 
+def deadline_ts(text):
+    return time.mktime(time.strptime(text, "%Y-%m-%d %H:%M"))
+
+
 def worker(a):
     out = Path(a.out)
     combat = SearchCombat(a.combat) if a.combat != "planner" else None
     with S.Sim() as sim:
         for k in range(a.worker, a.seeds, a.workers):
+            if a.deadline and time.time() > deadline_ts(a.deadline):
+                print(f"w{a.worker}: deadline {a.deadline} reached before seed {k}", flush=True)
+                break
             seed = f"RB{a.seed_base:03d}{k:05d}"
             rec = {"seed": seed, "ascension": a.ascension, "combat": a.combat, "policies": {}}
             for name in a.policies:
@@ -321,13 +334,20 @@ def worker(a):
                 if combat:
                     combat.stats = {"searched": 0, "fallback": 0, "mismatch": 0, "errors": 0, "search_seconds": 0.0}
                 try:
-                    r = play_run(sim, seed, a.ascension, Policy(name), random.Random(k), combat=combat)
+                    r = play_run(sim, seed, a.ascension, Policy(name), random.Random(k), combat=combat,
+                                 deadline=deadline_ts(a.deadline) if a.deadline else None)
                 except S.SimError as e:
                     r = {"error": str(e)[:200]}
+                except Deadline:
+                    rec = None
+                    print(f"w{a.worker} {seed}: deadline {a.deadline} reached during {name}; seed left out", flush=True)
+                    break
                 r["seconds"] = round(time.time() - t0, 1)
                 if combat:
                     r["combat_stats"] = dict(combat.stats)
                 rec["policies"][name] = r
+            if rec is None:
+                break
             with (out / f"shard-{a.worker:02d}.jsonl").open("a") as fh:
                 fh.write(json.dumps(rec) + "\n")
             print(f"w{a.worker} {seed}: " + ", ".join(f"{n} floor {v.get('floor')}{' WON' if v.get('won') else ''}" for n, v in rec["policies"].items()), flush=True)
@@ -375,6 +395,7 @@ def main(argv=None):
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     ap.add_argument("--report")
     ap.add_argument("--baseline", default="base")
+    ap.add_argument("--deadline", help='"YYYY-MM-DD HH:MM" local time: no new seed starts after it, and a seed cut off by it is left out')
     a = ap.parse_args(argv)
     if a.report:
         print(json.dumps(report(a.report, a.baseline), indent=1))
@@ -385,12 +406,13 @@ def main(argv=None):
     out.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--seeds", str(a.seeds),
-                               "--seed-base", str(a.seed_base), "--ascension", str(a.ascension), "--out", str(out), "--combat", a.combat, "--policies", *a.policies])
+                               "--seed-base", str(a.seed_base), "--ascension", str(a.ascension), "--out", str(out), "--combat", a.combat,
+                               *(["--deadline", a.deadline] if a.deadline else []), "--policies", *a.policies])
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
     head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT, capture_output=True, text=True).stdout.strip()
     man = {"name": out.name, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": head, "policies": a.policies, "seeds": a.seeds,
-           "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "worker_exit_codes": codes,
+           "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "deadline": a.deadline, "worker_exit_codes": codes,
            "wall_seconds": round(time.time() - t0), "report": report(out, a.baseline)}
     (out / "manifest.json").write_text(json.dumps(man, indent=1))
     print(json.dumps(man["report"], indent=1))
