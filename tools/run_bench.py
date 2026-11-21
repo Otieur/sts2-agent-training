@@ -280,9 +280,10 @@ class SearchCombat:
     decision the search host rebuilds the fight from that state plus the fight's actions so far in normal single-player
     mode (`fight_from_save`), re-samples the hidden future, checks that the visible state matches the run host's, and
     searches. Any mismatch or failure falls back to the planner for that decision (counted)."""
-    def __init__(self, spec):
+    def __init__(self, spec, rebuild="save"):
         import selfplay as SP
         self.SP = SP
+        self.rebuild = rebuild          # "save": the fight's own save; "save+run": the run clone when that fails (event fights)
         m = __import__("re").fullmatch(r"mc(w?)(\d+)", spec)
         self.wide, self.k = bool(m.group(1)), int(m.group(2))
         self.host = SP.Host()
@@ -297,8 +298,17 @@ class SearchCombat:
                 self.start_state = run_sim.call(cmd="export_fight")["replay_b64"]
                 self.fight_key = fight_key
             t0 = time.time()
-            o = self.host.sim.call(cmd="fight_from_save", data=self.start_state, actions=fight_actions,
-                                   sample_seed=1_000_003 * (d + 1) + 17, timeout=120)["obs"]
+            seed = 1_000_003 * (d + 1) + 17
+            try:
+                o = self.host.sim.call(cmd="fight_from_save", data=self.start_state, actions=fight_actions, sample_seed=seed, timeout=120)["obs"]
+                if self.rebuild == "save+run" and visible(o) != visible(obs):
+                    raise S.SimError("fight_from_save: visible state differs")
+            except S.SimError:
+                if self.rebuild != "save+run":
+                    raise
+                ex = run_sim.call(cmd="run_export")["export"]
+                o = self.host.sim.call(cmd="fight_from_run", data=ex["save_b64"], actions=ex["actions"], sample_seed=seed, timeout=120)["obs"]
+                self.stats["via_run"] = self.stats.get("via_run", 0) + 1
             if visible(o) != visible(obs):
                 self.stats["mismatch"] += 1
                 if self.stats["mismatch"] <= 3:
@@ -383,7 +393,7 @@ def deadline_ts(text):
 
 def worker(a):
     out = Path(a.out)
-    combat = SearchCombat(a.combat) if a.combat != "planner" else None
+    combat = SearchCombat(a.combat, a.fight_rebuild) if a.combat != "planner" else None
     with S.Sim() as sim:
         for k in range(a.worker, a.seeds, a.workers):
             if a.deadline and time.time() > deadline_ts(a.deadline):
@@ -518,6 +528,8 @@ def main(argv=None):
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     ap.add_argument("--report")
     ap.add_argument("--baseline", default="base")
+    ap.add_argument("--fight-rebuild", default="save", choices=["save", "save+run"],
+                    help="how search hosts rebuild a fight: its own save, or also the run clone when that fails (fights started by events)")
     ap.add_argument("--deadline", help='"YYYY-MM-DD HH:MM" local time: no new seed starts after it, and a seed cut off by it is left out')
     a = ap.parse_args(argv)
     if a.report:
@@ -530,7 +542,7 @@ def main(argv=None):
     t0 = time.time()
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--seeds", str(a.seeds),
                                "--seed-base", str(a.seed_base), "--ascension", str(a.ascension), "--out", str(out), "--combat", a.combat,
-                               *(["--deadline", a.deadline] if a.deadline else []), "--policies", *a.policies])
+                               *(["--deadline", a.deadline] if a.deadline else []), "--fight-rebuild", a.fight_rebuild, "--policies", *a.policies])
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
     head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT, capture_output=True, text=True).stdout.strip()

@@ -30,6 +30,12 @@ public sealed partial class Session
         _ops.Clear();
     }
 
+    void NoteOriginRun(byte[] bytes, JsonArray actions, ulong seed)
+    {
+        _origin = new Origin("runsave", new JsonObject { ["actions"] = actions.DeepClone() }, 0, seed, null, bytes);
+        _ops.Clear();
+    }
+
     public void NoteStep(JsonNode action) { if (_origin != null) _ops.Add(new JsonObject { ["step"] = action.DeepClone() }); }
     public void NoteResample(ulong seed) { if (_origin != null) _ops.Add(new JsonObject { ["resample"] = (long)seed }); }
 
@@ -48,6 +54,7 @@ public sealed partial class Session
         var (o, ops) = _snapshots[id];
         if (o.Kind == "fight") NewFight(o.Spec, o.Seed);
         else if (o.Kind == "save") FightFromSave(o.Bytes, o.Spec["actions"]!.AsArray(), o.Seed);
+        else if (o.Kind == "runsave") FightFromRun(o.Bytes, o.Spec["actions"]!.AsArray(), o.Seed);
         else { Replay = o.Recording; Reset(o.Events, o.Seed); }
         var replay = System.Diagnostics.Stopwatch.StartNew();
         foreach (var op in ops)

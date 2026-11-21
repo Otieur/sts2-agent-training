@@ -183,6 +183,11 @@ public static class Serve
                         reply["obs"] = s.RunObserve();
                         reply["sampler"] = req["sample_seed"] != null ? RunSampler.LastReport.DeepClone() : null;
                         break;
+                    case "fight_from_run":
+                        s.FightFromRun(Convert.FromBase64String((string)req["data"]!), req["actions"]?.AsArray() ?? new JsonArray(), (ulong)(req["sample_seed"]?.GetValue<long>() ?? 1L));
+                        resets++;
+                        reply["obs"] = s.Observe();
+                        break;
                     case "export_fight":
                         reply["replay_b64"] = Convert.ToBase64String(s.ExportFight());
                         reply["events"] = s.LastExportEvents;

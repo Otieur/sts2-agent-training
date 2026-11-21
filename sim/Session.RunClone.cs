@@ -5,6 +5,7 @@
 // is only for checks, never for decisions (FP-9).
 using System.Reflection;
 using System.Text.Json.Nodes;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
@@ -57,6 +58,21 @@ public sealed partial class Session
             ["saves"] = RunSaves,
             ["test_hp"] = TestHp,
         };
+    }
+
+    // A fight inside a run, rebuilt through the run clone (the room-entry save plus the run actions since, which may
+    // include the event option that started the fight), then switched to fight decision mode and sanitized with the
+    // sample seed. Unlike fight_from_save it also rebuilds fights started by events (the fight's own save re-enters the
+    // event). Snapshots of it restore by the same recipe (origin "runsave").
+    public void FightFromRun(byte[] bytes, JsonArray actions, ulong sampleSeed)
+    {
+        RunFromSave(bytes, actions, 0, false, false);
+        if (!CombatManager.Instance.IsInProgress) throw new InvalidOperationException("the rebuilt run is not in a fight");
+        RunMode = false;
+        Choices.Intercept = true;
+        Sanitizer.Apply(this, sampleSeed);
+        Sanitized = true;
+        NoteOriginRun(bytes, actions, sampleSeed);
     }
 
     // The run rebuilt from a room-entry save and the run actions since. With resample, the hidden future is re-sampled

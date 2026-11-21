@@ -284,7 +284,7 @@ def cmd_fairplay(a):
     return 0 if all(results) else 1
 
 
-def _fight_from_run(run, sim, k, rng):
+def _fight_from_run(run, sim, k, rng, via_run=False):
     """For `clone --from-save`: play a whole run in `run` (simple run policy) to a decision some way into its first,
     second or third fight, export that fight and rebuild it in `sim` from the saved run state (`fight_from_save`).
     Returns the encounter label, or None when the run ended first."""
@@ -302,8 +302,12 @@ def _fight_from_run(run, sim, k, rng):
             nf, actions = nf + 1, []
         acts = run.call(cmd="run_legal")["actions"]
         if in_fight and nf == want_fight and len(actions) >= want_decision:
-            data = run.call(cmd="export_fight")["replay_b64"]
-            got = sim.call(cmd="fight_from_save", data=data, actions=actions, sample_seed=k + 1, timeout=120)["obs"]
+            if via_run:       # through the run clone: the room-entry save plus the run actions since
+                ex = run.call(cmd="run_export")["export"]
+                got = sim.call(cmd="fight_from_run", data=ex["save_b64"], actions=ex["actions"], sample_seed=k + 1, timeout=120)["obs"]
+            else:
+                data = run.call(cmd="export_fight")["replay_b64"]
+                got = sim.call(cmd="fight_from_save", data=data, actions=actions, sample_seed=k + 1, timeout=120)["obs"]
             return "/".join(e["enemy_id"] for e in (got.get("combat") or {}).get("enemies", []))[:36] or "?"
         action = run_policy(pt, obs, acts, rng)
         if in_fight:
@@ -320,12 +324,12 @@ def cmd_clone(a):
     import contextlib
     import random
     ok, times = 0, []
-    with Sim() as sim, (Sim() if a.from_save else contextlib.nullcontext()) as run:
+    with Sim() as sim, (Sim() if a.from_save or a.from_run else contextlib.nullcontext()) as run:
         encs = [e["id"] for e in sim.encounters() if e["room_type"] in ("Monster", "Elite", "Boss")]
         rng = random.Random(7)
         for k in range(a.fights):
-            if a.from_save:
-                enc = _fight_from_run(run, sim, k, rng)
+            if a.from_save or a.from_run:
+                enc = _fight_from_run(run, sim, k, rng, via_run=a.from_run)
                 if enc is None:
                     continue
             else:
@@ -1343,6 +1347,7 @@ def main(argv=None):
     cl.set_defaults(fn=cmd_clone)
     cl.add_argument("--fights", type=int, default=12)
     cl.add_argument("--from-save", action="store_true", help="rebuild the fights from fights inside simulated runs (fight_from_save)")
+    cl.add_argument("--from-run", action="store_true", help="rebuild the fights inside simulated runs through the run clone (fight_from_run)")
     for name, fn in (("smoke", cmd_smoke), ("fairplay", cmd_fairplay), ("planner", cmd_planner), ("fidelity", cmd_fidelity)):
         p = sub.add_parser(name)
         p.set_defaults(fn=fn)

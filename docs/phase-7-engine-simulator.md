@@ -357,6 +357,7 @@
 > - [x] With a sample seed the hidden future is re-sampled (FP-16, `sim/RunSampler.cs`): every generator, the seed of later acts' maps, the unvisited room lists, later Ancients and bosses (the current act's boss is visible and kept), the relic queues. Visible state unchanged; the same seed gives the same future; other seeds and the true future differ; later acts get other maps; the true next encounter appears in 2 of 20 sampled futures.
 > - [ ] An event already under way keeps its rolled values (`EventModel.CalculateVars`), and the Crystal Sphere's items are not re-placed; rollouts should start outside events until this is done.
 > - [ ] Re-sampled room lists may repeat an encounter or event already met in the act (the game's own generation avoids some repeats); measure how often.
+> - [x] Fights inside runs can also be rebuilt through the run clone (`fight_from_run`, snapshot origin `runsave`): 29 of 29 equal to the run host, 11 of 11 restores exact (`sim.py clone --from-run`). It covers fights started by events, which the fight's own save cannot rebuild (the load re-enters the event); `tools/run_bench.py --fight-rebuild save+run` uses it as the fallback (off by default until the Release host is rebuilt).
 ---
 
 ## 4. Exit gate
