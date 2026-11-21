@@ -6,7 +6,7 @@ Agent session working alone from 00:50 to about 10:00 while the Player slept. Br
 - **Search now plays every fight inside whole simulated runs.** Each fight is rebuilt in a second simulator from the run's own save at the fight's start, with the unseen future re-sampled; 26,747 searched moves in run benchmark 2, no state mismatch, 0.6% left to the planner (fights started by events, now also fixable, see below). Milestone M15 is done.
 - **The hand-made deck-building rules lose at A5, even with search fighting.** Taking the first card of every reward reaches 2.4 floors more than the draft scorer with the shop and rest rules (36 runs better, 9 worse). The route planner is the one rule that helps: +2.7 floors (p = 0.002). No policy gets past the act 2 boss; the act 1 boss is the wall at A5, and The Kin is the worst of the three (2 wins in 21 fights).
 - **A run can now be copied at any decision point with its future unknown.** The host keeps the game's own room-entry save in memory and re-samples everything a player cannot see (future encounters, events, rewards, later maps and bosses, relic order). Checked: exact copies, repeatability per sample seed, different futures across seeds, and a leak canary.
-- **Card rewards chosen by playing ahead beat the hand-made rules by 6.6 floors** (run benchmark 3: each option played forward over six re-sampled futures; 44 seeds better, 7 worse, p = 6e-8). Act 1 boss wins rise from 7 to 23 of 60, the first act 2 boss wins (4) appear, and one run reaches the act 3 boss. Map routes by the same method: run benchmark 4, results below.
+- **Card rewards chosen by playing ahead beat the hand-made rules by 6.6 floors** (run benchmark 3: each option played forward over six re-sampled futures; 44 seeds better, 7 worse, p = 6e-8). Act 1 boss wins rise from 7 to 23 of 60, the first act 2 boss wins (4) appear, and one run reaches the act 3 boss. Map routes by the same method (run benchmark 4) gain about one floor (p = 0.04), only by avoiding elites, with no more boss wins.
 - **Comparison 5 is negative:** the learned candidate filter saves 30% of search time but loses 10 value per fight (mostly in elites); the fast learned policy is no better than the planner. Full wide search stays.
 
 ## Results
@@ -28,7 +28,12 @@ H1 (deck rules beat first card): does not hold, reversed (−2.38 floors, interv
 H1 (rollouts beat the scorer) holds: +6.63 floors (interval 4.25 to 9.27; 44 better, 7 worse; p = 6e-8). The rollouts disagree with the scorer in 65% of 610 rewards and skip in 18%; their decks are larger and attack-heavy (Anger, Perfected Strike, Twin Strike, Molten Fist). The Kin: 5 wins in 13 fights (1 in 6 for the scorer). One run reached the act 3 boss (floor 48). Search fallbacks 0.6%, almost all in two seeds (a card choice the rebuilt fight does not have; one failed observation). Report: `reports/phase9/run-bench-3.md`. Consequence: rollout evaluation becomes the method for strategic decisions.
 
 ### Run benchmark 4: map routes by sampled rollouts (A5, 60 seeds)
-Pending (starts after run benchmark 3).
+| Policy | Mean floor | Reached the act 1 boss | Beat it | Act 2 boss reached / beaten | Elites per run | Seconds per run |
+|---|---|---|---|---|---|---|
+| `path` (route planner) | 18.08 | 46 | 14 | 5 / 0 | 1.83 | 146 |
+| `rpath` (rollouts) | 19.17 | 55 | 13 | 5 / 0 | 0.97 | 178 |
+
+H1 (route rollouts beat the route planner) holds narrowly by the registered sign test: +1.08 floors (22 better, 11 worse, p = 0.040), but the bootstrap interval (−0.50 to 2.65) includes zero. The gain is all in reaching the act 1 boss: rollouts fight half as many elites and die in elites 5 times instead of 18, but beat the boss no more often (13 against 14). Likely cause: the rule planner fights inside the rollouts and rarely beats elites or bosses, so rollout values reward surviving to the boss floor and miss what elites give for the boss fight. Report: `reports/phase9/run-bench-4.md`.
 
 ### Comparison 5: learned candidate filter and fast policy (fight benchmark)
 `mcwq6` − `mcw6` −10.3 value per fight (interval −18.5 to −3.4) at 0.70 of the time; `qpolicy` − planner +2.2 (p 0.46). Neither hypothesis holds. Report: `reports/phase9/value-search-comparison-5.md`.

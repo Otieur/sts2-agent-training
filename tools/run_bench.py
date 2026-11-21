@@ -33,6 +33,7 @@ Metrics per run: floor reached, act reached, act bosses beaten, won. Primary: fl
 import argparse
 import json
 import math
+import os
 import random
 import re
 import subprocess
@@ -578,13 +579,19 @@ def main(argv=None):
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
+    # the code the workers start from (later commits during the run do not change the running processes)
+    head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT, capture_output=True, text=True).stdout.strip()
+    dirty = bool(subprocess.run(["git", "status", "--porcelain", "--untracked-files=no", "--", "tools", "sim"], cwd=PROJECT,
+                                capture_output=True, text=True).stdout.strip())
+    started = time.strftime("%Y-%m-%d %H:%M")
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--seeds", str(a.seeds),
                                "--seed-base", str(a.seed_base), "--ascension", str(a.ascension), "--out", str(out), "--combat", a.combat,
                                *(["--deadline", a.deadline] if a.deadline else []), "--fight-rebuild", a.fight_rebuild, "--policies", *a.policies])
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
-    head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT, capture_output=True, text=True).stdout.strip()
-    man = {"name": out.name, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": head, "policies": a.policies, "seeds": a.seeds,
+    man = {"name": out.name, "started": started, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": head,
+           "code_uncommitted_changes": dirty, "host": os.environ.get("SIM_CONFIG", "Release"), "fight_rebuild": a.fight_rebuild,
+           "policies": a.policies, "seeds": a.seeds,
            "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "deadline": a.deadline, "worker_exit_codes": codes,
            "wall_seconds": round(time.time() - t0), "report": report(out, a.baseline)}
     (out / "manifest.json").write_text(json.dumps(man, indent=1))

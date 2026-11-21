@@ -1,0 +1,105 @@
+{
+ "name": "run-bench-4",
+ "created": "2026-11-21 06:27",
+ "code_commit": "b10dc5c",
+ "policies": [
+  "path",
+  "rpath"
+ ],
+ "seeds": 60,
+ "seed_base": 4,
+ "ascension": 5,
+ "combat": "mcw6",
+ "deadline": "2026-11-21 09:45",
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 3993,
+ "report": {
+  "runs": 60,
+  "policies": {
+   "path": {
+    "runs": 60,
+    "mean_floor": 18.08,
+    "act1_boss": 14,
+    "act2_boss": 0,
+    "won": 0,
+    "died_in": {
+     "Elite": 18,
+     "Boss": 37,
+     "Monster": 5
+    },
+    "fights": {
+     "Monster": 359,
+     "Elite": 110,
+     "Boss": 51
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 3.4,
+     "Elite": 26.8,
+     "Boss": 40.0
+    },
+    "search": {
+     "searched": 9086,
+     "fallback": 9,
+     "mismatch": 0,
+     "errors": 9,
+     "search_seconds": 8525.3
+    },
+    "policy": {},
+    "mean_seconds": 145.6
+   },
+   "rpath": {
+    "runs": 60,
+    "mean_floor": 19.17,
+    "act1_boss": 13,
+    "act2_boss": 0,
+    "won": 0,
+    "died_in": {
+     "Boss": 47,
+     "Elite": 5,
+     "Monster": 8
+    },
+    "fights": {
+     "Monster": 441,
+     "Boss": 60,
+     "Elite": 58
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 4.0,
+     "Elite": 23.9,
+     "Boss": 42.7
+    },
+    "search": {
+     "searched": 9406,
+     "fallback": 56,
+     "mismatch": 1,
+     "errors": 55,
+     "search_seconds": 7912.4
+    },
+    "policy": {
+     "rpath_decisions": 393,
+     "rpath_disagree": 158
+    },
+    "mean_seconds": 178.1,
+    "vs_path": {
+     "pairs": 60,
+     "mean_floor_diff": 1.08,
+     "better": 22,
+     "worse": 11,
+     "equal": 27,
+     "sign_p_one_sided": 0.04007165622897446,
+     "boot95": [
+      -0.5,
+      2.65
+     ]
+    }
+   }
+  }
+ }
+}

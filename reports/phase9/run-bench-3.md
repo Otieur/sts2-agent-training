@@ -26,7 +26,7 @@ Why: every deck-building rule so far is a hand-made score (`tools/draft.py`), ne
 - What follows: if H1 holds, rollout evaluation becomes the method for strategic decisions (next: map routes, then shops, rest sites and Ancients, then a run-state value network trained on the rollouts, decision 0004 step 5); if it does not, the rollout policy (planner combat in rollouts) and the value are examined before more decision types are moved to rollouts.
 
 ## 5. Results
-Run 2026-11-21, 03:39–05:20 (`data/learn/runs/run-bench-3/manifest.json`; 6078 s wall, 6 workers, all exited cleanly, code `1cd8c0d`; all 60 seeds finished before the deadline). Report: `python3 -I tools/run_bench.py --report data/learn/runs/run-bench-3 --baseline draft+shop+rest`.
+Run 2026-11-21, 03:39–05:20 (`data/learn/runs/run-bench-3/manifest.json`; 6078 s wall, 6 workers, all exited cleanly; all 60 seeds finished before the deadline). Code: the run started from the code of `17137a1`; the manifest records `1cd8c0d`, the commit when it ended, and the changes committed during the run do not touch these arms' code paths or the Release host. Report: `python3 -I tools/run_bench.py --report data/learn/runs/run-bench-3 --baseline draft+shop+rest`.
 
 | Policy | Runs | Mean floor | Median floor | Reached the act 1 boss | Beat it | Reached the act 2 boss | Beat it | Reached the act 3 boss | Won | Final deck (mean cards) | Seconds per run |
 |---|---|---|---|---|---|---|---|---|---|---|---|
