@@ -1,0 +1,635 @@
+{
+"about": "Encounter ids and room types from the simulator host (game v0.111.1); used by tools/run_bench.py to classify fights",
+"encounters": [
+{
+"id": "BYGONE_EFFIGY_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "BYRDONIS_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "CEREMONIAL_BEAST_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "CUBEX_CONSTRUCT_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "FLYCONID_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "FOGMOG_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "FUZZY_WURM_CRAWLER_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+1
+]
+},
+{
+"id": "INKLETS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "MAWLER_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "NIBBITS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "NIBBITS_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+1
+]
+},
+{
+"id": "OVERGROWTH_CRAWLERS",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "PHROG_PARASITE_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "RUBY_RAIDERS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "SHRINKER_BEETLE_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+1
+]
+},
+{
+"id": "SLIMES_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "SLIMES_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+1
+]
+},
+{
+"id": "SLITHERING_STRANGLER_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "SNAPPING_JAXFRUIT_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "THE_KIN_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "VANTOM_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "VINE_SHAMBLER_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+1
+]
+},
+{
+"id": "CORPSE_SLUGS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "CORPSE_SLUGS_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": []
+},
+{
+"id": "CULTISTS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "FOSSIL_STALKER_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "GREMLIN_MERC_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "HAUNTED_SHIP_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "LAGAVULIN_MATRIARCH_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": []
+},
+{
+"id": "LIVING_FOG_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "PHANTASMAL_GARDENERS_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": []
+},
+{
+"id": "PUNCH_CONSTRUCT_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "SEAPUNK_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "SEAPUNK_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": []
+},
+{
+"id": "SEWER_CLAM_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "SKULKING_COLONY_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": []
+},
+{
+"id": "SLUDGE_SPINNER_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": []
+},
+{
+"id": "SOUL_FYSH_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": []
+},
+{
+"id": "TERROR_EEL_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": []
+},
+{
+"id": "TOADPOLES_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": []
+},
+{
+"id": "TWO_TAILED_RATS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "WATERFALL_GIANT_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": []
+},
+{
+"id": "BOWLBUGS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "BOWLBUGS_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+2
+]
+},
+{
+"id": "CHOMPERS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "DECIMILLIPEDE_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "ENTOMANCER_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "EXOSKELETONS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "EXOSKELETONS_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+2
+]
+},
+{
+"id": "HUNTER_KILLER_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "KAISER_CRAB_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "INFESTED_PRISMS_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "KNOWLEDGE_DEMON_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "LOUSE_PROGENITOR_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "MYTES_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "OVICOPTER_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "SLUMBERING_BEETLE_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "SPINY_TOAD_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "THE_INSATIABLE_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "THE_OBSCURA_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+2
+]
+},
+{
+"id": "THIEVING_HOPPER_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+2
+]
+},
+{
+"id": "TUNNELER_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+2
+]
+},
+{
+"id": "AXEBOTS_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "CONSTRUCT_MENAGERIE_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "DEVOTED_SCULPTOR_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+3
+]
+},
+{
+"id": "AEONGLASS_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "FABRICATOR_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "FROG_KNIGHT_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "GLOBE_HEAD_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "KNIGHTS_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "MECHA_KNIGHT_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "OWL_MAGISTRATE_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "QUEEN_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "SCROLLS_OF_BITING_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "SCROLLS_OF_BITING_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+3
+]
+},
+{
+"id": "SLIMED_BERSERKER_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "SOUL_NEXUS_ELITE",
+"room_type": "Elite",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "TEST_SUBJECT_BOSS",
+"room_type": "Boss",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "THE_LOST_AND_FORGOTTEN_NORMAL",
+"room_type": "Monster",
+"weak": false,
+"acts": [
+3
+]
+},
+{
+"id": "TURRET_OPERATOR_WEAK",
+"room_type": "Monster",
+"weak": true,
+"acts": [
+3
+]
+},
+{
+"id": "FAKE_MERCHANT_EVENT_ENCOUNTER",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "MYSTERIOUS_KNIGHT_EVENT_ENCOUNTER",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "BATTLEWORN_DUMMY_EVENT_V1_ENCOUNTER",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "BATTLEWORN_DUMMY_EVENT_V2_ENCOUNTER",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+},
+{
+"id": "BATTLEWORN_DUMMY_EVENT_V3_ENCOUNTER",
+"room_type": "Monster",
+"weak": false,
+"acts": []
+}
+]
+}

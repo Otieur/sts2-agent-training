@@ -28,6 +28,7 @@ import argparse
 import json
 import math
 import random
+import re
 import subprocess
 import sys
 import time
@@ -286,8 +287,8 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
             fights[-1]["hp_end"] = obs["player"]["hp"]
         if in_fight and not prev_fight:
             fight_actions, fight_no = [], fight_no + 1
-            fights.append({"floor": obs.get("floor"), "room": obs.get("room"), "hp_start": obs["player"]["hp"], "max_hp": obs["player"]["max_hp"],
-                           "enemies": [e["enemy_id"] for e in (obs.get("combat") or {}).get("enemies", [])]})
+            fights.append({"floor": obs.get("floor"), "room": obs.get("room"), "encounter": obs.get("encounter"), "hp_start": obs["player"]["hp"],
+                           "max_hp": obs["player"]["max_hp"], "enemies": [e["enemy_id"] for e in (obs.get("combat") or {}).get("enemies", [])]})
         acts = sim.call(cmd="run_legal")["actions"]
         if not acts:
             break
@@ -361,6 +362,59 @@ def sign_p(better, worse):
     return sum(math.comb(n, i) for i in range(better, n + 1)) / 2 ** n if n else 1.0
 
 
+_ROOM_OF = None
+
+
+def room_type(fight):
+    """Monster, Elite or Boss for a recorded fight: from its encounter id when recorded, else from its starting enemies
+    matched against the encounters of the Player's history (`data/runs.db` floors); '?' when unknown."""
+    global _ROOM_OF
+    enc = fight.get("encounter") or ""
+    for suffix, t in (("_BOSS", "Boss"), ("_ELITE", "Elite"), ("_NORMAL", "Monster"), ("_WEAK", "Monster")):
+        if enc.endswith(suffix):
+            return t
+    if _ROOM_OF is None:
+        import sqlite3
+        _ROOM_OF = {}
+        db = PROJECT / "data" / "runs.db"
+        if db.exists():
+            con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+            for rt, ids in con.execute("SELECT room_type, monster_ids FROM floors WHERE room_type IN ('monster', 'elite', 'boss') AND monster_ids != ''"):
+                _ROOM_OF.setdefault(tuple(sorted(x.removeprefix("MONSTER.") for x in json.loads(ids))), rt.capitalize())
+            con.close()
+    known = _ROOM_OF.get(tuple(sorted(fight.get("enemies", []))))
+    if known:
+        return known
+    # encounters new since the history's game version: an encounter whose name stem appears in an enemy's id
+    for f in sorted((PROJECT / "data" / "sim").glob("encounters-*.json")):
+        for e in json.loads(f.read_text())["encounters"]:
+            stem = re.sub(r"_(NORMAL|WEAK|ELITE|BOSS)$", "", e["id"])
+            stem = stem[:-1] if stem.endswith("S") else stem
+            if any(stem in x for x in fight.get("enemies", [])):
+                return e["room_type"]
+    return "?"
+
+
+def details(rs):
+    """Where runs die, HP lost per fight by room type, and search statistics, for one policy's finished runs."""
+    import collections
+    died, lost, n = collections.Counter(), collections.defaultdict(list), collections.Counter()
+    stats = collections.Counter()
+    for x in rs:
+        fs = x.get("fights", [])
+        for f in fs:
+            t = room_type(f)
+            n[t] += 1
+            if f.get("hp_end", 0) > 0:
+                lost[t].append(f["hp_start"] - f["hp_end"])
+        if not x["won"]:
+            died[room_type(fs[-1]) if fs and fs[-1].get("hp_end", 1) == 0 else "outside a fight"] += 1
+        for k, v in (x.get("combat_stats") or {}).items():
+            stats[k] += v
+    return {"died_in": dict(died), "fights": dict(n), "mean_hp_lost_in_won_fights": {t: round(sum(v) / len(v), 1) for t, v in lost.items() if v},
+            "search": {k: round(v, 1) for k, v in stats.items()}, "mean_seconds": round(sum(x.get("seconds", 0) for x in rs) / max(len(rs), 1), 1)}
+
+
 def report(folder, baseline):
     recs = [json.loads(l) for f in sorted(Path(folder).glob("shard-*.jsonl")) for l in f.open()]
     names = list(recs[0]["policies"]) if recs else []
@@ -369,7 +423,7 @@ def report(folder, baseline):
         rs = [r["policies"][n] for r in recs if "floor" in r["policies"][n]]
         out["policies"][n] = {"runs": len(rs), "mean_floor": round(sum(x["floor"] for x in rs) / max(len(rs), 1), 2),
                               "act1_boss": sum(1 for x in rs if x["bosses"] >= 1), "act2_boss": sum(1 for x in rs if x["bosses"] >= 2),
-                              "won": sum(1 for x in rs if x["won"])}
+                              "won": sum(1 for x in rs if x["won"])} | details(rs)
     for n in names:
         if n == baseline:
             continue
