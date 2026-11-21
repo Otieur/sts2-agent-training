@@ -39,6 +39,8 @@
 <tr><td><b>The rules</b></td><td>Judged by outcomes, never by imitation. The agent only ever uses what a player can see on screen. Every comparison that decides anything is written down before it runs, and failed experiments stay in the record.</td></tr>
 </table>
 
+> **Current focus (since 2026-11-20): whole runs.** Fight play is now strong (wide search wins 99 of 120 benchmark fights), but runs are won or lost mostly by deck building, route and choices. Those decisions (Neow and Ancients, card rewards, removal, upgrades, shops, map route, events, boss relics, potions) are now the main training target, judged by whole simulated runs with search playing every fight. Plan: [decision 0004](docs/decisions/0004-whole-run-first.md).
+
 <!-- auto:numbers:start -->
 <table>
 <tr>
