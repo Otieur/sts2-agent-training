@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Fight situations from simulated whole runs (P9.E3.S2: self-play from realistic run states, not only the history).
 
-Whole runs are played in the simulator from new seeds. Card rewards are taken with the draft scorer
-(`tools/draft.py score_offer`, skipping below its bar), everything else with the simple run policy of `tools/sim.py`.
+Whole runs are played in the simulator from new seeds with the run benchmark's `path` policy (`tools/run_bench.py`):
+the first card of each reward, the route planner on the map, the Player's most frequent choice in events, the simple
+run policy elsewhere. Run benchmark 2 (2026-11-21) made this the default: the scorer's drafting lost 2.4 floors to the
+first card, the route planner added 2.7 (`reports/phase9/run-bench-2.md`).
 At the start of every fight the situation is recorded as a fight spec in the format of `tools/fight_specs.py`:
 encounter, act, floor, room type, ascension, deck, relics, potions, HP and max HP.
 
@@ -32,8 +34,20 @@ TEST_HP = 2000
 BASE_MAX_HP = 80
 
 
+_POLICY = None
+
+
+def spec_policy(obs, acts, rng, sim):
+    """The run benchmark's `path` policy (see the module text)."""
+    global _POLICY
+    import run_bench
+    if _POLICY is None:
+        _POLICY = run_bench.Policy("path")
+    return _POLICY.act(obs, acts, rng, sim)
+
+
 def draft_policy(obs, acts, rng):
-    """Card rewards by the draft scorer; everything else by the simple run policy."""
+    """Card rewards by the draft scorer; everything else by the simple run policy (used before 2026-11-21)."""
     if obs.get("screen") == "choice" and (obs.get("choice") or {}).get("kind") == "CardReward":
         import draft
         ch = obs["choice"]
@@ -51,6 +65,8 @@ def draft_policy(obs, acts, rng):
 
 
 def play_run(sim, seed, ascension, rng, room_types, test_hp, max_steps=4000):
+    global _POLICY
+    _POLICY = None                      # a fresh policy per run (it keeps per-run state)
     spec = {"seed": seed, "character": "IRONCLAD", "ascension": ascension}
     if test_hp:
         spec["test_max_hp"] = TEST_HP
@@ -73,7 +89,7 @@ def play_run(sim, seed, ascension, rng, room_types, test_hp, max_steps=4000):
         if not acts:
             break
         try:
-            obs = sim.call(cmd="run_step", action=draft_policy(obs, acts, rng), timeout=120)["obs"]
+            obs = sim.call(cmd="run_step", action=spec_policy(obs, acts, rng, sim), timeout=120)["obs"]
         except S.SimError:
             break
     return specs, obs
@@ -121,7 +137,7 @@ def main(argv=None):
             specs.extend(json.loads(part.read_text()))
             part.unlink()
     about = {"source": "simulated whole runs (tools/run_specs.py)", "created": time.strftime("%Y-%m-%d %H:%M"), "runs": a.runs,
-             "seed": a.seed, "test_hp": a.test_hp, "drafting": "tools/draft.py score_offer (skip below its bar); other screens tools/sim.py run_policy",
+             "seed": a.seed, "test_hp": a.test_hp, "policy": "tools/run_bench.py Policy('path'): first card, route planner, events by the Player's most frequent choice, tools/sim.py run_policy elsewhere",
              "hp": "45-100% of 80 plus relic gains" if a.test_hp else "as played", "fights": len(specs),
              "by_act": {act: sum(1 for s in specs if s["act"] == act) for act in (1, 2, 3)},
              "by_room": {r: sum(1 for s in specs if s["room"] == r) for r in ("Monster", "Elite", "Boss")}, "worker_exit_codes": codes}
