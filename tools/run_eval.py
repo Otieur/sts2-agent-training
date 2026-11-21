@@ -26,6 +26,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sim as S  # noqa: E402
 
 
+# a decision whose first rollouts all fail is given up after this many failures (see RolloutEvaluator.evaluate)
+GIVE_UP_AFTER = 3
+
 # enemies above this HP cannot be killed (for example a boss that turns the fight into surviving); not counted
 UNKILLABLE_HP = 10_000
 
@@ -79,7 +82,10 @@ class RolloutEvaluator:
         start_act = obs.get("act") or 1
         self._n += 1
         values = [[] for _ in options]
+        done, failed, give_up = 0, 0, False
         for j in range(self.k):
+            if give_up:
+                break
             seed = self.seed_base + 1000 * self._n + j          # the same sampled futures for every option
             for i, opt in enumerate(options):
                 try:
@@ -105,13 +111,24 @@ class RolloutEvaluator:
                         self.stats["boss_deaths"] = self.stats.get("boss_deaths", 0) + 1
                         self.stats["boss_hp_removed"] = self.stats.get("boss_hp_removed", 0.0) + max(0.0, min(1.0, 1 - boss[1] / max(1, boss[0])))
                     self.stats["rollouts"] += 1
-                except S.SimError:
+                    done += 1
+                except S.SimError as e:
                     self.stats["errors"] += 1
+                    failed += 1
+                    if self.stats["errors"] <= 5 or self.stats["errors"] % 50 == 0:      # failures are counted and sampled (EN-5)
+                        print(f"  rollout error {self.stats['errors']} (decision {self._n}, option {i}, sample {j}, floor {obs.get('floor')}, "
+                              f"{obs.get('screen')}): {str(e)[:300]}", flush=True)
                     self.close()
                     h = self._host()
+                    if done == 0 and failed >= GIVE_UP_AFTER:
+                        # nothing can be rolled out from this state (each failure costs a host restart): the decision
+                        # goes to the rule now, not after every option and sample has failed
+                        self.stats["given_up"] = self.stats.get("given_up", 0) + 1
+                        give_up = True
+                        break
         self.stats["decisions"] += 1
         self.stats["seconds"] += time.time() - t0
-        return [sum(v) / len(v) if v else None for v in values]
+        return [sum(v) / len(v) if v and not give_up else None for v in values]
 
 
 def card_reward_options(acts):

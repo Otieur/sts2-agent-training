@@ -56,7 +56,7 @@ Run benchmark 2 tested `draft+shop+rest` as a bundle against `base`. The bundle 
 ### F3. Rollouts are judged by a different and weaker fighter than the one that plays
 Inside rollouts the rule planner fights to the end of the act; in the real run search fights. On the benchmark the planner wins 3 of 20 boss games and 15 of 40 elite games, search 7 and 33. So a rollout's value mostly says how far the planner survives. Signs of this in the results:
 - Route rollouts halve the elites fought and add no boss wins (run benchmark 4).
-- Credit for boss damage in the rollout value changes nothing (run benchmark 7: 45 of 60 seeds end on the same floor).
+- Credit for boss damage in the rollout value changes nothing (run benchmark 7: 45 of 60 seeds end on the same floor). *Correction, 2026-11-21 17:50: the credit was never applied in that run (a defect in the benchmark tool; its report, section 6), so this point is withdrawn: the idea is untested.*
 - In run benchmark 9's first 35 seeds the rollout arm brings fewer upgrades to the act 1 boss (1.5 against 2.2) and more HP (75% against 66%): it prefers healing to smithing, the opposite of the Player, who smiths four times and heals almost never before the act 1 boss at A0–4.
 - The horizon is the end of the act, so upgrades, relics and removal that pay off later are undervalued.
 

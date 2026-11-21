@@ -27,6 +27,11 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
 - `rshop2`: `rshop` without that limit: every affordable item of a shop is judged, however many. When every option
   has the same rollout value, it buys the cheapest relic, else the card removal, instead of leaving. The card to
   remove follows the removal order (curses, Strikes, Defends) unless `ropt` judges it (run benchmark 15).
+- `bshop`: the shop rule buys: the cheapest affordable relic until none is affordable, then the card removal (curses,
+  then Strikes, then Defends) once, then it leaves. No card and no potion is bought: a rule cannot judge them. It is
+  a rule component, so it also plays inside every rollout: a rollout that passes a shop spends its gold, and routes,
+  cards and events are judged with what gold buys. With `rshop` or `rshop2` the run's own shops are still judged by
+  rollouts, and this rule acts where they do not decide (ties, failures, more options than the limit) (run benchmark 16).
 - `pot`: potions may be used in fights (they never are without it): search judges every usable potion by simulation
   in elite and boss fights and the planner's potion plans in hallways, a spent potion priced as lost HP by room
   (`tools/sim.py POTION_PRICE`); the planner (search fallbacks, fights inside rollouts) uses its potion plans too.
@@ -67,6 +72,7 @@ import plan_turn as pt  # noqa: E402
 import sim as S  # noqa: E402
 
 REMOVE_ORDER = ["CURSE", "STRIKE_IRONCLAD", "DEFEND_IRONCLAD"]
+PLAIN_SHOP_BUYS = 6         # the `bshop` rule buys at most this many items in one shop (3 relics and a removal are for sale)
 
 
 def is_curse(card_id):
@@ -79,6 +85,27 @@ _EVENT_COUNTS = None
 _EVALUATOR = None
 _ROUTE_EVALUATOR = None
 _CARD_EVALUATOR = None
+
+
+def set_evaluator(ev, rollout_policy, boss_credit):
+    """Give a worker's rollout evaluator the settings of the policy that is about to use it. An evaluator owns an
+    evaluation host and is kept for the worker's whole life, across the policies it plays; the rollout policy and the
+    boss credit belong to the policy, not to the host. Until 2026-11-21 an evaluator kept the settings of the first
+    policy that used it, so in a benchmark whose arms differ in either, every arm's rollouts were played with the first
+    arm's settings (run benchmarks 7, 11 and 12; see their section 6)."""
+    ev.rollout_policy, ev.boss_credit = rollout_policy, boss_credit
+    return ev
+
+
+def evaluate(policy, ev, rollout_policy, sim, obs, opts):
+    """Evaluate options with an evaluator set to this policy's settings; rollouts that failed (a host error inside the
+    rollout; the rollout is left out) are counted in the policy's stats, so that a run's record shows them."""
+    set_evaluator(ev, rollout_policy, policy.boss_credit())
+    before = ev.stats.get("errors", 0)
+    vals = ev.evaluate(sim, obs, opts)
+    if ev.stats.get("errors", 0) > before:
+        policy.stats["rollout_errors"] = policy.stats.get("rollout_errors", 0) + ev.stats["errors"] - before
+    return vals
 ROLLOUTS_K = 6
 BOSS_CREDIT = 5.0           # the `bc` weight: dying with the boss at 0 HP is worth as much as beating it with 0 HP left
 
@@ -176,7 +203,7 @@ class Policy:
             a = draft_pick(obs, acts)
             if a is not None:
                 return a
-        if scr == "choice" and ch.get("kind") == "FromDeckForRemoval" and self.parts & {"shop", "rshop2"}:
+        if scr == "choice" and ch.get("kind") == "FromDeckForRemoval" and self.parts & {"shop", "rshop2", "bshop"}:
             opts = ch.get("options") or []
             for want in REMOVE_ORDER:
                 for i, cid in enumerate(opts):
@@ -190,6 +217,10 @@ class Policy:
                 return a
         if scr == "shop" and "shop" in self.parts:
             a = self.shop_pick(obs, acts)
+            if a:
+                return a
+        if scr == "shop" and "bshop" in self.parts:
+            a = self.plain_shop_pick(obs, acts)
             if a:
                 return a
         if scr == "rest" and "rest" in self.parts:
@@ -212,7 +243,7 @@ class Policy:
         opts = run_eval.card_reward_options(acts)
         if len(opts) < 2:
             return None
-        vals = _EVALUATOR.evaluate(sim, obs, opts)
+        vals = evaluate(self, _EVALUATOR, _EVALUATOR.rollout_policy, sim, obs, opts)
         if any(v is None for v in vals):
             self.stats["rdraft_failed"] = self.stats.get("rdraft_failed", 0) + 1
             return None
@@ -237,12 +268,12 @@ class Policy:
         if _CARD_EVALUATOR is None:
             _CARD_EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K, rollout_policy=self.card_rollout_policy(), seed_base=9_900_000,
                                                         boss_credit=self.boss_credit())
-        vals = _CARD_EVALUATOR.evaluate(sim, obs, opts)
+        vals = evaluate(self, _CARD_EVALUATOR, self.card_rollout_policy(), sim, obs, opts)
         if any(v is None for v in vals):
             self.stats["rcard_failed"] = self.stats.get("rcard_failed", 0) + 1
             return None
         best = max(range(len(opts)), key=lambda i: (vals[i], i == 0))
-        self.note("card", obs, opts, vals, best, 0)
+        self.note("card", obs, opts, vals, best, 0, _CARD_EVALUATOR)
         self.stats["rcard_decisions"] = self.stats.get("rcard_decisions", 0) + 1
         self.stats["rcard_disagree"] = self.stats.get("rcard_disagree", 0) + (best != 0)
         self.stats["rcard_skips"] = self.stats.get("rcard_skips", 0) + (not opts[best].get("cards"))
@@ -257,14 +288,17 @@ class Policy:
     def boss_credit(self):
         return BOSS_CREDIT if "bc" in self.parts else 0.0
 
-    def note(self, kind, obs, opts, vals, best, rule):
-        """Keep a rollout decision: the visible situation, each option with its mean rollout value, the choice, the rule's choice."""
+    def note(self, kind, obs, opts, vals, best, rule, ev=None):
+        """Keep a rollout decision: the visible situation, each option with its mean rollout value, the choice, the rule's
+        choice, and the settings the evaluator used (read from the evaluator after it ran: the check that an arm's rollouts
+        were played with that arm's settings)."""
         p = obs["player"]
         self.log.append({"kind": kind, "act": obs.get("act"), "floor": obs.get("floor"), "screen": obs["screen"],
                          "choice_kind": (obs.get("choice") or {}).get("kind"), "event": obs.get("event_id"),
                          "hp": p["hp"], "max_hp": p["max_hp"], "gold": p.get("gold"), "deck": list(p.get("deck", [])),
                          "relics": list(p.get("relics", [])), "potions": [x for x in p.get("potions", []) if x], "act_boss": obs.get("act_boss"),
-                         "options": opts, "values": [round(v, 3) for v in vals], "chosen": best, "rule": rule})
+                         "options": opts, "values": [round(v, 3) for v in vals], "chosen": best, "rule": rule,
+                         "rollouts_by": getattr(ev, "rollout_policy", None), "boss_credit": getattr(ev, "boss_credit", None)})
 
     def card_rollout_policy(self):
         return self.rule_policy()
@@ -281,13 +315,13 @@ class Policy:
         if _ROUTE_EVALUATOR is None:
             _ROUTE_EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K, rollout_policy=self.route_rollout_policy(), seed_base=8_800_000,
                                                          boss_credit=self.boss_credit())
-        vals = _ROUTE_EVALUATOR.evaluate(sim, obs, moves)
+        vals = evaluate(self, _ROUTE_EVALUATOR, self.route_rollout_policy(), sim, obs, moves)
         if any(v is None for v in vals):
             self.stats["rpath_failed"] = self.stats.get("rpath_failed", 0) + 1
             return None
         planner = self.route_pick(sim, obs, acts)
         best = max(range(len(moves)), key=lambda i: (vals[i], moves[i] is planner))
-        self.note("route", obs, moves, vals, best, next((i for i, m in enumerate(moves) if m is planner), None))
+        self.note("route", obs, moves, vals, best, next((i for i, m in enumerate(moves) if m is planner), None), _ROUTE_EVALUATOR)
         self.stats["rpath_decisions"] = self.stats.get("rpath_decisions", 0) + 1
         self.stats["rpath_disagree"] = self.stats.get("rpath_disagree", 0) + (moves[best] is not planner)
         return moves[best]
@@ -342,6 +376,29 @@ class Policy:
             if res["pick"]:
                 return next(x for x in cards if x["item"].split(":", 1)[1] == res["pick"]["id"])
         return None
+
+    def plain_shop_pick(self, obs, acts):
+        """The `bshop` rule: the cheapest affordable relic while there is one, then the card removal once, then None
+        (leave). At most `PLAIN_SHOP_BUYS` purchases in a shop, as a guard against an item that stays for sale."""
+        gold = obs["player"].get("gold", 0)
+        key = (obs.get("act"), obs.get("floor"))
+        n = sum(1 for k in self.bought if k[0] == key and k[1] == "plain")
+        if n >= PLAIN_SHOP_BUYS:
+            return None
+        buys = [x for x in acts if x.get("type") == "buy" and x.get("cost", 1e9) <= gold]
+        relics = [x for x in buys if str(x.get("item", "")).startswith("relic:")]
+        removal = [x for x in buys if "remov" in str(x.get("item", "")).lower()]
+        if relics:
+            a = min(relics, key=lambda x: x.get("cost", 0))
+        elif removal and (key, "plain-remove") not in self.bought:
+            a = removal[0]
+            self.bought.add((key, "plain-remove"))
+        else:
+            return None
+        self.bought.add((key, "plain", n))
+        if not self.rule_mode:
+            self.stats["bshop_buys"] = self.stats.get("bshop_buys", 0) + 1
+        return a
 
     def upgrade_pick(self, obs, ch, acts):
         import draft

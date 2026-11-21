@@ -622,11 +622,20 @@ def potions_held(obs):
     return sum(1 for p in ((obs.get("run") or {}).get("potions") or []) if p.get("occupied"))
 
 
+# What the host cannot simulate (docs/simulator-integrity.md, FI-7d): summoning Osty fails in the host, so playing one of
+# these ends a simulated run or a rollout with a host error. The planner leaves them in the hand as dead cards. The list
+# is every card and potion whose play calls `OstyCmd.Summon`, directly or through a power it applies (the game's call
+# graph, `tools/asm/`); an Ironclad meets them only through effects that give cards of other characters.
+UNSIMULATED = frozenset({"AFTERLIFE", "BODYGUARD", "CLEANSE", "DIRGE", "INVOKE", "LEGION_OF_BONE", "NECRO_MASTERY", "PULL_AGGRO",
+                         "REANIMATE", "SPUR", "DEVOUR_LIFE", "SIC_EM", "BONE_BREW"})
+
+
 def _hand_for(pt, obs, potions):
     """Planner inputs; potion slots are kept only when potions may be used (`potions` = room type for the price)."""
     hand, player, enemies = pt.from_state(obs)
     if not potions:
         hand = [c for c in hand if not c.potion]
+    hand = [c for c in hand if str(c.card_id).rstrip("+") not in UNSIMULATED]
     return hand, player, enemies
 
 
@@ -678,13 +687,15 @@ def search_candidates_wide(sim, pt, obs, top, cap=8, potions=None, all_potions=F
         if l.get("type") != "play":
             continue
         a = {k: l[k] for k in ("type", "card", "target") if k in l}
+        if key(a)[1] in UNSIMULATED:
+            continue
         if key(a) not in seen:
             seen.add(key(a))
             out.append(a)
     if potions and all_potions:
         pots = {}
         for l in legal:
-            if l.get("type") == "potion":
+            if l.get("type") == "potion" and str(l.get("potion_id") or "").split(".")[-1].upper() not in UNSIMULATED:
                 k2 = (l.get("potion_id"), l.get("target"))
                 if k2 not in pots and not any(c.get("type") == "potion" and c.get("slot") == l["slot"] and c.get("target") == l.get("target") for c in out):
                     pots[k2] = {k: l[k] for k in ("type", "slot", "target") if k in l}
@@ -699,7 +710,15 @@ def _finish_with_planner(sim, pt, obs, mode, limit=300, potions=None):
         try:
             obs = sim.step(planner_action(pt, obs, mode, potions))
         except SimError:
-            obs = sim.step({"type": "end_turn"})
+            if obs.get("choice"):
+                # the planner's answer to a card choice was refused (seen once in run benchmark 12, the choice not
+                # identified): take the first answer the host lists; ending the turn is refused while a choice is pending
+                legal = [x for x in sim.legal() if x.get("type") == "choose"]
+                if not legal:
+                    raise
+                obs = sim.step({"type": "choose", "cards": legal[0].get("cards", [])})
+            else:
+                obs = sim.step({"type": "end_turn"})
     return obs
 
 

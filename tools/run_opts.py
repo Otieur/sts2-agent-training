@@ -109,25 +109,18 @@ def rule_action(policy, obs, acts, rng, sim):
 
 
 def pick(policy, obs, acts, rng, sim):
-    global _EVALUATOR
     opts = options(policy.parts, obs, acts)
     if not opts:
         return None
     import run_eval
     rb = sys.modules[type(policy).__module__]
     rule = rule_action(policy, obs, acts, rng, sim)
-    # share the route rollouts' evaluation host when its rollouts are the same (same rule policy and value): one host
-    # fewer per worker; otherwise keep an own one
+    # one evaluation host per worker serves route rollouts and these: the settings are set for this policy at each use
     ev = rb._ROUTE_EVALUATOR
     if ev is None:
         ev = rb._ROUTE_EVALUATOR = run_eval.RolloutEvaluator(k=rb.ROLLOUTS_K, rollout_policy=policy.route_rollout_policy(),
                                                              seed_base=8_800_000, boss_credit=policy.boss_credit())
-    if (ev.rollout_policy, ev.boss_credit, ev.k) != (policy.rule_policy(), policy.boss_credit(), rb.ROLLOUTS_K):
-        if _EVALUATOR is None:
-            _EVALUATOR = run_eval.RolloutEvaluator(k=rb.ROLLOUTS_K, rollout_policy=policy.rule_policy(), seed_base=7_300_000,
-                                                   boss_credit=policy.boss_credit())
-        ev = _EVALUATOR
-    vals = ev.evaluate(sim, obs, opts)
+    vals = rb.evaluate(policy, ev, policy.rule_policy(), sim, obs, opts)
     name = "rshop" if obs["screen"] == "shop" else "ropt"
     st = policy.stats
     if any(v is None for v in vals):
@@ -140,7 +133,7 @@ def pick(policy, obs, acts, rng, sim):
         if blind is not None:
             best = blind
             st["rshop_blind_buys"] = st.get("rshop_blind_buys", 0) + 1
-    policy.note("shop" if name == "rshop" else "opt", obs, opts, vals, best, next((i for i, o in enumerate(opts) if _key(o) == rk), None))
+    policy.note("shop" if name == "rshop" else "opt", obs, opts, vals, best, next((i for i, o in enumerate(opts) if _key(o) == rk), None), ev)
     st[name + "_decisions"] = st.get(name + "_decisions", 0) + 1
     st[name + "_disagree"] = st.get(name + "_disagree", 0) + (_key(opts[best]) != rk)
     if name == "rshop":

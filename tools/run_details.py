@@ -5,6 +5,7 @@
     python3 -I tools/run_details.py data/learn/runs/run-bench-11 --wins-vs rcard+rpath
     python3 -I tools/run_details.py --pair data/learn/runs/run-bench-11:A data/learn/runs/run-bench-12:B   # A - B by seed
     python3 -I tools/run_details.py data/learn/runs/run-bench-15 --factor --on C D --off A B                # a factor of a 2x2 run
+    python3 -I tools/run_details.py data/learn/runs/run-bench-15 --decisions                                # rollout decisions per policy
 
 Per policy: floors, wins with a Wilson interval, act bosses reached and beaten (by boss), where runs die, the state at
 each act's boss fight (deck, upgrades, relics, potions, HP), potions used by room type, shop purchases, gold left,
@@ -153,17 +154,65 @@ def by_seed(folder, policy):
     return {r["seed"]: r["policies"][policy] for r in load(folder) if policy in r["policies"] and "floor" in r["policies"][policy]}
 
 
+def gold_band(g):
+    return "under 100" if g < 100 else "100-199" if g < 200 else "200-399" if g < 400 else "400 and more"
+
+
+def decisions(folder):
+    """Rollout decisions per policy: by kind, how often the choice differs from the rule's and how often every option
+    has the same value; at map forks, how often each node type was chosen of the forks that offered it; shop decisions
+    by gold held with what was chosen; event and card choices by screen."""
+    recs = load(folder)
+    out = {}
+    for name in (list(recs[0]["policies"]) if recs else []):
+        ps = [(r["seed"], r["policies"][name]) for r in recs if "floor" in r["policies"].get(name, {})]
+        kinds, gold, screens, shops, points, offered = {}, {}, {}, set(), {}, {}
+        for seed, p in ps:
+            for d in p.get("decisions", []):
+                k = kinds.setdefault(d["kind"], {"n": 0, "differ": 0, "all_equal": 0})
+                k["n"] += 1
+                k["differ"] += d["chosen"] != d["rule"]
+                k["all_equal"] += max(d["values"]) - min(d["values"]) < 1e-9
+                o = d["options"][d["chosen"]]
+                if d["kind"] == "shop":
+                    shops.add((seed, d.get("act"), d.get("floor")))
+                    b = gold.setdefault(gold_band(d.get("gold") or 0), {"n": 0, "leave": 0, "relic": 0, "card": 0, "potion": 0, "removal": 0})
+                    item = str(o.get("item", ""))
+                    what = "leave" if o.get("type") != "buy" else "removal" if "remov" in item.lower() else item.split(":")[0]
+                    b["n"] += 1
+                    b[what] = b.get(what, 0) + 1
+                elif d["kind"] == "route":
+                    points[str(o.get("point"))] = points.get(str(o.get("point")), 0) + 1
+                    for t in {str(x.get("point")) for x in d["options"]}:
+                        offered[t] = offered.get(t, 0) + 1
+                elif d["kind"] == "opt":
+                    sc = screens.setdefault(str(d.get("event") or d.get("choice_kind") or d.get("screen")), {"n": 0, "differ": 0})
+                    sc["n"] += 1
+                    sc["differ"] += d["chosen"] != d["rule"]
+        used = collections.Counter((d.get("rollouts_by"), d.get("boss_credit")) for _, p in ps for d in p.get("decisions", []))
+        out[name] = {"runs": len(ps), "by_kind": kinds, "rollout_settings_used": [[rp, bc, n] for (rp, bc), n in used.most_common()],
+                     "shops_with_a_decision_per_run": round(len(shops) / max(1, len(ps)), 2),
+                     "route_chosen_of_offered": {t: f"{points.get(t, 0)}/{n}" for t, n in sorted(offered.items())},
+                     "shop_by_gold": {b: gold[b] for b in ("under 100", "100-199", "200-399", "400 and more") if b in gold},
+                     "opt_by_screen": dict(sorted(screens.items(), key=lambda kv: -kv[1]["n"])[:25])}
+    return out
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("folder", nargs="?")
     ap.add_argument("--wins-vs", help="baseline policy in the folder: paired floors and wins of every other policy against it")
     ap.add_argument("--pair", nargs=2, metavar="FOLDER:POLICY", help="paired comparison A - B across folders, by seed")
     ap.add_argument("--factor", action="store_true", help="one factor of a factorial run in the folder: --on policies against --off policies, by seed")
+    ap.add_argument("--decisions", action="store_true", help="rollout decisions per policy: by kind, shops by gold held, events by screen")
     ap.add_argument("--on", nargs="+", default=[])
     ap.add_argument("--off", nargs="+", default=[])
     a = ap.parse_args(argv)
     if a.factor:
         print(json.dumps(factor(a.folder, a.on, a.off), indent=1))
+        return 0
+    if a.decisions:
+        print(json.dumps(decisions(a.folder)))
         return 0
     if a.pair:
         (fa, pa), (fb, pb) = (x.rsplit(":", 1) for x in a.pair)
