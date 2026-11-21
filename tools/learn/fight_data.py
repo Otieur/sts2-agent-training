@@ -54,7 +54,7 @@ def from_selfplay(folder):
             if out.get("blocked") or out.get("status") not in ("won", "lost"):
                 continue
             src = spec.get("source") or {}
-            yield row(spec, out["status"] == "won", out.get("hp"), out.get("enemy_hp_left"), teacher, False,
+            yield row(spec, out["status"] == "won", out.get("hp"), out.get("enemy_hp_left"), teacher, bool(t.get("potions")),
                       f"selfplay/{folder.name}", f"{src.get('run')}")
 
 

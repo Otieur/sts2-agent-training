@@ -292,7 +292,9 @@ def worker(a):
             for attempt in range(2):
                 try:
                     if teacher is None and a.wide:
-                        rec = play(host, spec, seed, lambda sim, obs, d, done: scored_search(sim, obs, a.mode, a.k, a.top, d, done, wide=True), stuck_log)
+                        room = (spec.get("room") if spec.get("room") in S.POTION_PRICE else "Monster") if a.potions else None
+                        rec = play(host, spec, seed, lambda sim, obs, d, done: scored_search(sim, obs, a.mode, a.k, a.top, d, done, potions=room, wide=True,
+                                                                                             all_potions=room in ("Elite", "Boss")), stuck_log)
                     elif teacher is None:
                         rec = play_fight(host, spec, seed, a.k, a.top, a.mode, stuck_log)
                     else:
@@ -353,6 +355,8 @@ def main(argv=None):
     ap.add_argument("--model", help="value network checkpoint for a value-network teacher")
     ap.add_argument("--wide", action="store_true", help="flat Monte Carlo teacher over the wide candidate set (tools/sim.py search_candidates_wide)")
     ap.add_argument("--augment", action="store_true", help="play an augmented variant of each history spec (augment)")
+    ap.add_argument("--potions", action="store_true", help="with --wide: the teacher may drink potions as search does inside runs with the `pot` "
+                    "component (every usable potion a candidate in elite and boss fights, the planner's potion plans in hallways, priced by room)")
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     ap.add_argument("--summary", help="print the summary of a dataset folder")
     a = ap.parse_args(argv)
@@ -371,7 +375,7 @@ def main(argv=None):
     t0 = time.time()
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--fights", str(a.fights),
                                "--k", str(a.k), "--top", str(a.top), "--mode", a.mode, "--seed", str(a.seed), "--out", str(out),
-                               "--teacher", a.teacher] + (["--model", a.model] if a.model else []) + (["--augment"] if a.augment else []) + (["--wide"] if a.wide else [])
+                               "--teacher", a.teacher] + (["--model", a.model] if a.model else []) + (["--augment"] if a.augment else []) + (["--wide"] if a.wide else []) + (["--potions"] if a.potions else [])
                               + (["--specs", a.specs] if a.specs else []))
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
@@ -383,9 +387,9 @@ def main(argv=None):
         "host_commit": git_commit(), "fidelity": fid, "encoder": "none (raw observations, docs/observation-spec.md)",
         "teacher": ({"policy": ("flat Monte Carlo over the wide candidate set (tools/sim.py search_candidates_wide)" if a.wide else
                                 "flat Monte Carlo over the rule planner's candidates (tools/sim.py search_action)"), "k": a.k, "top": a.top,
-                     "rollout_policy": f"plan_turn.py {a.mode}", "privileged": False} if a.teacher == "mc" else
+                     "rollout_policy": f"plan_turn.py {a.mode}", "potions": bool(a.potions), "privileged": False} if a.teacher == "mc" else
                     {"policy": f"{a.teacher} (tools/learn/bench.py)", "model": a.model, "privileged": False}),
-        "spec_source": ({"file": str(Path(a.specs).resolve().relative_to(PROJECT)), "about": json.loads(Path(a.specs).read_text())["about"],
+        "spec_source": ({"file": (str(Path(a.specs).resolve().relative_to(PROJECT)) if Path(a.specs).resolve().is_relative_to(PROJECT) else Path(a.specs).name), "about": json.loads(Path(a.specs).read_text())["about"],
                          "augmentation": AUGMENT_VERSION if a.augment else None}
                         if a.specs else "synthetic generator (spec_generator)"),
         "spec_generator": {"version": SPEC_VERSION, "starter": STARTER, "rarity_weight": RARITY_WEIGHT, "added_cards": ADDED,
