@@ -50,6 +50,7 @@ def is_curse(card_id):
 
 _EVENT_COUNTS = None
 _EVALUATOR = None
+_ROUTE_EVALUATOR = None
 ROLLOUTS_K = 6
 
 
@@ -107,7 +108,11 @@ class Policy:
             a = event_pick(obs, acts)
             if a:
                 return a
-        if scr == "map" and "path" in self.parts and sim is not None and not obs.get("at_boss"):
+        if scr == "map" and "rpath" in self.parts and sim is not None and not obs.get("at_boss"):
+            a = self.route_rollout_pick(sim, obs, acts)
+            if a:
+                return a
+        if scr == "map" and ("path" in self.parts or "rpath" in self.parts) and sim is not None and not obs.get("at_boss"):
             a = self.route_pick(sim, obs, acts)
             if a:
                 return a
@@ -166,6 +171,30 @@ class Policy:
         self.stats["rdraft_disagree"] = self.stats.get("rdraft_disagree", 0) + (opts[best] is not scorer)
         self.stats["rdraft_skips"] = self.stats.get("rdraft_skips", 0) + (not opts[best].get("cards"))
         return opts[best]
+
+    def route_rollout_pick(self, sim, obs, acts):
+        """Map moves by sampled rollouts (tools/run_eval.py): each next point is played forward over the same
+        re-sampled futures to the end of the act by this policy with the route planner in place of rollouts and the rule planner fighting; the best mean
+        rollout value is taken, exact ties going to the route planner's choice."""
+        global _ROUTE_EVALUATOR
+        import run_eval
+        moves = [x for x in acts if x.get("type") == "move"]
+        if len(moves) < 2:
+            return None
+        if _ROUTE_EVALUATOR is None:
+            _ROUTE_EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K, rollout_policy=self.route_rollout_policy(), seed_base=8_800_000)
+        vals = _ROUTE_EVALUATOR.evaluate(sim, obs, moves)
+        if any(v is None for v in vals):
+            self.stats["rpath_failed"] = self.stats.get("rpath_failed", 0) + 1
+            return None
+        planner = self.route_pick(sim, obs, acts)
+        best = max(range(len(moves)), key=lambda i: (vals[i], moves[i] is planner))
+        self.stats["rpath_decisions"] = self.stats.get("rpath_decisions", 0) + 1
+        self.stats["rpath_disagree"] = self.stats.get("rpath_disagree", 0) + (moves[best] is not planner)
+        return moves[best]
+
+    def route_rollout_policy(self):
+        return "+".join(sorted("path" if x == "rpath" else x for x in self.parts)) or "base"
 
     def route_pick(self, sim, obs, acts):
         """Route by the path planner (`tools/path.py`: expected loot against fatal risk, room models from the history);
@@ -388,6 +417,8 @@ def worker(a):
         combat.close()
     if _EVALUATOR is not None:
         _EVALUATOR.close()
+    if _ROUTE_EVALUATOR is not None:
+        _ROUTE_EVALUATOR.close()
     return 0
 
 
