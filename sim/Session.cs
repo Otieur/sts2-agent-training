@@ -50,6 +50,46 @@ public sealed partial class Session
     }
 
     public int LastExportEvents;
+    bool _rebuilding;
+
+    // A fight rebuilt from the run state saved at its start (the serializable run of an exported fight recording, or
+    // a save file) in normal single-player mode, then the fight's actions so far applied with the true random state,
+    // then sanitized with the sample seed. Unlike a replay set-up, choices are answered locally, so search works as on
+    // a fight from nothing. Used to search fights inside simulated runs, and the route for live fights
+    // (docs/proposals/live-search.md).
+    public void FightFromSave(MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay recording, JsonArray actions, ulong sampleSeed)
+    {
+        SynchronizationContext.SetSynchronizationContext(Ctx);
+        if (Run != null) { Unwind(); Rm.CleanUp(true); Ctx.Drain(); }
+        Replay = null;
+        RunMode = false;
+        Choices.Intercept = false;
+        Choices.Current = null;
+        _last = null;
+        Applied = 0;
+        Sanitized = false;
+        PlayerIndex = 0;
+        var save = recording.serializableRun;
+        Run = RunState.FromSerializable(save);
+        Ctx.RunUntil(Rm.SetUpSavedSingleplayer(Run, save), "SetUpSavedSingleplayer");
+        Rm.CombatStateSynchronizer.IsDisabled = true;
+        Rm.ChecksumTracker.IsEnabled = false;
+        Rm.CombatReplayWriter.IsEnabled = false;
+        var pre = save.PreFinishedRoom == null ? null : MegaCrit.Sts2.Core.Rooms.AbstractRoom.FromSerializable(save.PreFinishedRoom, Run);
+        Ctx.RunUntil(Rm.LoadIntoLatestMapCoord(pre), "LoadIntoLatestMapCoord");
+        Ctx.Drain();
+        Choices.Intercept = true;
+        _rebuilding = true;
+        try
+        {
+            foreach (var a in actions)
+                Step(a!);
+        }
+        finally { _rebuilding = false; }
+        Sanitizer.Apply(this, sampleSeed);
+        Sanitized = true;
+        NoteOriginSave(recording, actions, sampleSeed);
+    }
 
     public void LoadBytes(byte[] bytes)
     {
@@ -363,7 +403,7 @@ public sealed partial class Session
 
     public void Step(JsonNode action)
     {
-        if (!Sanitized) throw new InvalidOperationException("decision mode needs a sanitized state: reset with a sample seed (FP-3, FP-15)");
+        if (!Sanitized && !_rebuilding) throw new InvalidOperationException("decision mode needs a sanitized state: reset with a sample seed (FP-3, FP-15)");
         if (Status() != "in_progress") throw new InvalidOperationException("the fight is over");
         Ctx.Drain();
         var type = (string)action["type"];

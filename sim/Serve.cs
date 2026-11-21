@@ -178,6 +178,16 @@ public static class Serve
                         reply["replay_b64"] = Convert.ToBase64String(s.ExportFight());
                         reply["events"] = s.LastExportEvents;
                         break;
+                    case "fight_from_save":
+                    {
+                        var reader = new MegaCrit.Sts2.Core.Multiplayer.Serialization.PacketReader();
+                        reader.Reset(Convert.FromBase64String((string)req["data"]!));
+                        var rec = reader.Read<MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay>();
+                        s.FightFromSave(rec, req["actions"]?.AsArray() ?? new JsonArray(), (ulong)(req["sample_seed"]?.GetValue<long>() ?? 1L));
+                        resets++;
+                        reply["obs"] = s.Observe();
+                        break;
+                    }
                     case "load_b64":
                         s.LoadBytes(Convert.FromBase64String((string)req["data"]!));
                         if (s.Replay.modelIdHash != MegaCrit.Sts2.Core.Multiplayer.Serialization.ModelIdSerializationCache.Hash)

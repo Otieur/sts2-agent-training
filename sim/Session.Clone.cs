@@ -24,6 +24,12 @@ public sealed partial class Session
 
     void ForgetOrigin() { _origin = null; _ops.Clear(); }
 
+    void NoteOriginSave(MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay recording, JsonArray actions, ulong seed)
+    {
+        _origin = new Origin("save", new JsonObject { ["actions"] = actions.DeepClone() }, 0, seed, recording);
+        _ops.Clear();
+    }
+
     public void NoteStep(JsonNode action) { if (_origin != null) _ops.Add(new JsonObject { ["step"] = action.DeepClone() }); }
     public void NoteResample(ulong seed) { if (_origin != null) _ops.Add(new JsonObject { ["resample"] = (long)seed }); }
 
@@ -41,6 +47,7 @@ public sealed partial class Session
         var sw = System.Diagnostics.Stopwatch.StartNew();
         var (o, ops) = _snapshots[id];
         if (o.Kind == "fight") NewFight(o.Spec, o.Seed);
+        else if (o.Kind == "save") FightFromSave(o.Recording, o.Spec["actions"]!.AsArray(), o.Seed);
         else { Replay = o.Recording; Reset(o.Events, o.Seed); }
         var replay = System.Diagnostics.Stopwatch.StartNew();
         foreach (var op in ops)
