@@ -4,6 +4,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 
 **Active phase:** Phase 4 (solo practice) is live: the Agent's first run on profile 2 won at A0 on 2026-11-19 (M3); the ladder is at A1. Phase 0 has only small items left (precise latency, permissions allowlist). Phases 1 and 2 are done; Phase 3 shadowing ran in the first live session. The overnight session of 2026-11-19 is summarised in `docs/overnight-report.md`.
 **Engine track (2026-11-20):** Phase 7 simulator works for fights and whole runs: the game's own code runs in our process, recorded fights replay exactly (10 of 10), fights start from nothing for all 85 encounters, whole runs play from a seed through every room type, decision mode is fair-play checked (8 of 8). Next: Phase 8 search on top of it (snapshot and restore exist), the two-player host for co-op. Direction: `docs/decisions/0003-engine-simulator-and-learning.md`.
+**Current priority (2026-11-20, evening):** whole runs first (decision `docs/decisions/0004-whole-run-first.md`). Wide search wins 99 of 120 benchmark fights and is used to play every fight inside simulated runs; the strategic decisions (Neow and Ancients, card rewards, removal, upgrades and rest, shop, route, events, boss relics, potions) are now the main training target, judged by whole-run results at A5 and A10.
 **Last updated:** 2026-11-20
 
 ---
@@ -130,7 +131,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | P9.E1 | Data and encoding | In progress | S1 done 2026-11-20 (`tools/learn/encode.py`, vocabulary from the game assembly, 8 tests); S2: `combat-v1` (586 history fights, flat Monte Carlo teacher) |
 | P9.E2 | Combat value network | In progress | S1 trainer and model card (`tools/learn/train_value.py`); S2 comparison pre-registered (`reports/phase9/value-search-comparison.md`) |
 | P9.E3 | Combat policy and expert iteration | In progress | S1 action-value network (`tools/learn/train_q.py`); self-play takes a value-network teacher |
-| P9.E4 | Strategic decisions | Todo | S2 needs P7.E8 |
+| P9.E4 | Strategic decisions | In progress | Main line since 2026-11-20 (decision 0004): run benchmark `tools/run_bench.py`; first comparison (planner combat) shows deck building cannot be judged without search in fights; search combat inside runs via `export_fight` |
 | P9.E5 | Training infrastructure | In progress | S1 done: PyTorch 2.15.0 approved 2026-11-20 and installed in `.venv-learn/` |
 | P9.E6 | Evaluation and the ascension ladder | Todo | |
 | P9.E7 | Patch resilience | Todo | |
@@ -155,3 +156,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | M12 | Combat autopilot: every fight of 3 real runs, no language-model calls, median decision 1 s or less | — | | |
 | M13 | Search beats the rule planner (pre-registered) | — | | |
 | M14 | Learned combat models beat search with heuristic evaluation (pre-registered) | — | | |
+| M15 | Run benchmark with search playing every fight (decision 0004) | — | | |
+| M16 | Every strategic decision type has a policy validated on the run benchmark | — | | |
+| M17 | Simulated A5 win rate above 25% on the run benchmark | — | | |
+| M18 | Simulated A10 win rate above 8% on the run benchmark | — | | |

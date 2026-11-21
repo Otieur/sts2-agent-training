@@ -8,6 +8,8 @@ Goal: the Agent plays Slay the Spire 2 competently, first solo and then as a co-
 
 Written 2026-11-18. Update this file when a phase finishes or the plan changes.
 
+**Revision (2026-11-20, evening): whole runs first.** Deck building, map routes and option choices matter more than fight play, and none of our strategic rules has been validated by run outcomes. The primary metric is now whole-run results in the simulator with search playing every fight; every non-combat decision type (Neow and Ancients, card rewards, removal, upgrades and rest, shop, route, events, boss relics, potions) becomes a training target with its own baseline and evaluation; combat work narrows to speed and potions. Decision record `docs/decisions/0004-whole-run-first.md`.
+
 **Engine track (2026-11-19):** the Player asked for a fast final product and an AI that clears A10 with a high win rate. Phases 7–9 add a simulator built on the game's own engine, search over it, and learned models trained by self-play (decision record `docs/decisions/0003-engine-simulator-and-learning.md`; rules `docs/simulator-integrity.md`). The first Agent run won at A0 on 2026-11-19 (M3).
 
 **Where things stood (2026-11-19, after the overnight session):** Phases 1 and 2 are done offline; the Phase 4 toolchain (turn planner, path planner, draft scorer, deck check, fight simulator, one `advise.py` entry point, both mods) is written and tested offline only; Phase 0 waits on the player (security verdict, branch switch to v0.111.1, mod choice), then a 30-minute first session (`docs/runbooks/first-session.md`). Summary: `docs/overnight-report.md`.

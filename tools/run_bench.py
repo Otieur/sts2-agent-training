@@ -14,7 +14,9 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
 - `rest`: heal below 50% HP (below 70% before a boss), otherwise smith; the upgrade goes to the first card in an
   upgrade priority list (Bash, then the deck's highest-tier cards by the draft scorer's tiers, Strikes and Defends last).
 
-Combat is played by the rule planner (fast; run-level states cannot be cloned for search yet, FP-16). Every decision
+Combat is played by the rule planner by default (fast), or with `--combat mcwK` by wide search in a second host: the
+run host exports each fight (`export_fight`, the game's own recording), the search host rebuilds it with the hidden
+future re-sampled, checks the visible state and searches; mismatches and failures fall back to the planner (counted). Every decision
 uses only the observation; the seed's future (map, offers, encounters) is never read (FP-1).
 
 Metrics per run: floor reached, act reached, act bosses beaten, won. Primary: floor reached, paired by seed.
@@ -134,17 +136,69 @@ class Policy:
         return None
 
 
-def play_run(sim, seed, ascension, policy, rng, max_steps=6000):
-    obs = sim.call(cmd="new_run", spec={"seed": seed, "character": "IRONCLAD", "ascension": ascension}, timeout=120)["obs"]
-    bosses, steps, last_act = 0, 0, 1
+def visible(o):
+    c = o.get("combat") or {}
+    p = c.get("player") or {}
+    return (o.get("turn"), p.get("current_hp"), p.get("energy"), p.get("block"), [(h["card_id"], h["upgraded"]) for h in c.get("hand", [])],
+            c.get("draw_pile"), c.get("discard_pile"), c.get("exhaust_pile"),
+            [(e["enemy_id"], e["current_hp"], e["block"], [(x["power_id"], x["amount"]) for x in e["powers"]], [i["intent_type"] for i in e["intents"]]) for e in c.get("enemies", [])],
+            [(x["power_id"], x["amount"]) for x in p.get("powers", [])], o.get("choice"))
+
+
+class SearchCombat:
+    """Fights inside a whole run played by search in a second host: the run host exports the current fight (the
+    game's own recording), the search host rebuilds it with the hidden future re-sampled, checks that the visible state
+    matches, and searches. Any mismatch or failure falls back to the planner for that decision (counted)."""
+    def __init__(self, spec):
+        import selfplay as SP
+        self.SP = SP
+        m = __import__("re").fullmatch(r"mc(w?)(\d+)", spec)
+        self.wide, self.k = bool(m.group(1)), int(m.group(2))
+        self.host = SP.Host()
+        self.stats = {"searched": 0, "fallback": 0, "mismatch": 0}
+
+    def act(self, run_sim, obs, acts, d):
+        try:
+            ex = run_sim.call(cmd="export_fight")
+            self.host.sim.call(cmd="load_b64", data=ex["replay_b64"])
+            o = self.host.sim.call(cmd="reset", events=ex["events"], seed=1_000_003 * (d + 1) + 17)["obs"]
+            if visible(o) != visible(obs):
+                self.stats["mismatch"] += 1
+                return None
+            cands, values, best = self.SP.scored_search(self.host.sim, o, "balanced", self.k, 2, d, {}, wide=self.wide)
+            a = cands[best if values[0] is not None else 0]
+            if not any(all(x.get(k) == a.get(k) for k in ("type", "card", "target", "cards", "slot")) for x in acts):
+                return None
+            self.stats["searched"] += 1
+            return a
+        except (S.SimError, self.SP.Tainted):
+            self.host.restart()
+            return None
+
+    def close(self):
+        self.host.close()
+
+
+def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None):
+    spec = {"seed": seed, "character": "IRONCLAD", "ascension": ascension}
+    if combat is not None:
+        spec["record_fights"] = True
+    obs = sim.call(cmd="new_run", spec=spec, timeout=120)["obs"]
+    bosses, steps, last_act, d = 0, 0, 1, 0
     for steps in range(max_steps):
         if obs["screen"] == "game_over":
             break
         acts = sim.call(cmd="run_legal")["actions"]
         if not acts:
             break
+        a = None
+        if combat is not None and obs["screen"] == "combat":
+            a = combat.act(sim, obs, acts, d)
+            d += 1
+            if a is None:
+                combat.stats["fallback"] += 1
         try:
-            obs = sim.call(cmd="run_step", action=policy.act(obs, acts, rng), timeout=120)["obs"]
+            obs = sim.call(cmd="run_step", action=a or policy.act(obs, acts, rng), timeout=120)["obs"]
         except S.SimError:
             break
         if obs.get("act", 1) > last_act:
@@ -157,21 +211,28 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000):
 
 def worker(a):
     out = Path(a.out)
+    combat = SearchCombat(a.combat) if a.combat != "planner" else None
     with S.Sim() as sim:
         for k in range(a.worker, a.seeds, a.workers):
             seed = f"RB{a.seed_base:03d}{k:05d}"
-            rec = {"seed": seed, "ascension": a.ascension, "policies": {}}
+            rec = {"seed": seed, "ascension": a.ascension, "combat": a.combat, "policies": {}}
             for name in a.policies:
                 t0 = time.time()
+                if combat:
+                    combat.stats = {"searched": 0, "fallback": 0, "mismatch": 0}
                 try:
-                    r = play_run(sim, seed, a.ascension, Policy(name), random.Random(k))
+                    r = play_run(sim, seed, a.ascension, Policy(name), random.Random(k), combat=combat)
                 except S.SimError as e:
                     r = {"error": str(e)[:200]}
                 r["seconds"] = round(time.time() - t0, 1)
+                if combat:
+                    r["combat_stats"] = dict(combat.stats)
                 rec["policies"][name] = r
             with (out / f"shard-{a.worker:02d}.jsonl").open("a") as fh:
                 fh.write(json.dumps(rec) + "\n")
             print(f"w{a.worker} {seed}: " + ", ".join(f"{n} floor {v.get('floor')}{' WON' if v.get('won') else ''}" for n, v in rec["policies"].items()), flush=True)
+    if combat:
+        combat.close()
     return 0
 
 
@@ -209,6 +270,7 @@ def main(argv=None):
     ap.add_argument("--seeds", type=int, default=60)
     ap.add_argument("--seed-base", type=int, default=1)
     ap.add_argument("--ascension", type=int, default=0)
+    ap.add_argument("--combat", default="planner", help="planner, or a search spec such as mcw2 or mcw6 played in a second host (needs a host with export_fight)")
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     ap.add_argument("--report")
@@ -223,12 +285,12 @@ def main(argv=None):
     out.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--seeds", str(a.seeds),
-                               "--seed-base", str(a.seed_base), "--ascension", str(a.ascension), "--out", str(out), "--policies", *a.policies])
+                               "--seed-base", str(a.seed_base), "--ascension", str(a.ascension), "--out", str(out), "--combat", a.combat, "--policies", *a.policies])
              for w in range(a.workers)]
     codes = [p.wait() for p in procs]
     head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT, capture_output=True, text=True).stdout.strip()
     man = {"name": out.name, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": head, "policies": a.policies, "seeds": a.seeds,
-           "seed_base": a.seed_base, "ascension": a.ascension, "combat": "rule planner", "worker_exit_codes": codes,
+           "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "worker_exit_codes": codes,
            "wall_seconds": round(time.time() - t0), "report": report(out, a.baseline)}
     (out / "manifest.json").write_text(json.dumps(man, indent=1))
     print(json.dumps(man["report"], indent=1))
