@@ -4,7 +4,8 @@
 Used by `tools/run_bench.py` components:
 - `ropt`: events (Neow and the Ancients included; every page with two or more options), rest sites (heal, smith and
   any other site option; not leaving empty-handed) and card choices outside fights (upgrade, remove, transform,
-  enchant, choose a card, and the like).
+  enchant, choose a card, and the like). With the `smith` rule in the policy, rest sites and upgrade choices are left
+  to that rule.
 - `rshop`: shop screens, one purchase at a time: leave, or buy one affordable item (card, relic, potion, card removal);
   after a purchase the shop is judged again, until leaving wins.
 
@@ -58,12 +59,13 @@ def options(parts, obs, acts):
     ch = obs.get("choice") or {}
     opts = []
     if "ropt" in parts:
+        smith = "smith" in parts        # with the `smith` rule, rest sites and upgrade choices follow the rule
         if scr == "event":
             opts = [x for x in acts if x.get("type") == "event_option"]
-        elif scr == "rest":
+        elif scr == "rest" and not smith:
             opts = [x for x in acts if x.get("type") == "rest_option"]
         elif scr == "choice" and not obs.get("combat") and str(ch.get("kind", "")).startswith(DECK_KINDS) \
-                and ch.get("kind") not in ("CardReward",):
+                and ch.get("kind") not in ("CardReward",) and not (smith and str(ch.get("kind", "")).startswith("FromDeckForUpgrade")):
             opts = [x for x in acts if x.get("type") == "choose"]
     if "rshop" in parts and scr == "shop":
         gold = obs["player"].get("gold", 0)
@@ -114,6 +116,7 @@ def pick(policy, obs, acts, rng, sim):
         return None
     rk = _key(rule) if rule else None
     best = max(range(len(opts)), key=lambda i: (vals[i], _key(opts[i]) == rk))
+    policy.note("shop" if name == "rshop" else "opt", obs, opts, vals, best, next((i for i, o in enumerate(opts) if _key(o) == rk), None))
     st[name + "_decisions"] = st.get(name + "_decisions", 0) + 1
     st[name + "_disagree"] = st.get(name + "_disagree", 0) + (_key(opts[best]) != rk)
     if name == "rshop":

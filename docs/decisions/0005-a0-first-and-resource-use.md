@@ -1,6 +1,6 @@
 # 0005: Ascension 0 first; use every resource; rollouts that reflect the real fighter
 
-Date: 2026-11-21 · Status: **proposed** (awaiting the Player; written after the review `docs/reviews/2026-11-21-training-review.md`, which the Player asked for when run benchmark 8 found no win in 30 whole new runs at A0). Amends decision 0004: its primary metric (whole runs with search in every fight) and its decision types stay; the target band, the order of work and the rollout fighter change.
+Date: 2026-11-21 · Status: **accepted** (the Player, 2026-11-21: go ahead as proposed, plan it and keep working; written after the review `docs/reviews/2026-11-21-training-review.md`, which the Player asked for when run benchmark 8 found no win in 30 whole new runs at A0). Amends decision 0004: its primary metric (whole runs with search in every fight) and its decision types stay; the target band, the order of work and the rollout fighter change.
 
 ## Context
 - At A0 the Agent wins 0 of 30 simulated runs; bosses end 21 of them. At A10 it reaches the act 1 boss in 83% of runs and beats it in 3%.
@@ -18,7 +18,7 @@ Date: 2026-11-21 · Status: **proposed** (awaiting the Player; written after the
 6. **Real game.** At G1, five real A0 runs on profile 2 with the same stack, the Player present, compared with the simulator's prediction. The scored ladder of decision 0004 item 5 keeps its bars.
 
 ## Consequences
-- Run benchmark 10 (shop purchases) moves from A10 to A0 before it starts; run benchmark 9 and boss replay 1 finish as registered.
+- Run benchmark 10 (shop purchases at A10) is withdrawn before its start; shops are tested at A0 inside run benchmarks 11 (potions, the smith rule and shop purchases together) and 12 (one removed at a time). Run benchmark 9 and boss replay 1 finish as registered.
 - New milestones: M19 simulated A0 win rate at least 50% (G1); M20 at least 63% (G2); M21 five real A0 runs with the automated stack. M17 and M18 (A5 above 25%, A10 above 8%) follow them.
 - More data is written per benchmark (fight situations, option values); nothing personal is in it.
 - A GPU becomes useful at step 4 (model training); the simulator stays on the local machine.

@@ -23,12 +23,20 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
   transform, enchant) by sampled rollouts (`tools/run_opts.py`), ties and failures to this policy's rule (run benchmark 9).
 - `rshop`: shop purchases (cards, relics, potions, card removal, leaving) by sampled rollouts, one purchase at a time,
   ties and failures to this policy's rule (run benchmark 10).
+- `pot`: potions may be used in fights (they never are without it): search judges every usable potion by simulation
+  in elite and boss fights and the planner's potion plans in hallways, a spent potion priced as lost HP by room
+  (`tools/sim.py POTION_PRICE`); the planner (search fallbacks, fights inside rollouts) uses its potion plans too.
+- `smith`: rest sites heal only below 35% HP (below 50% right before a boss) and otherwise smith; upgrades (at rest
+  sites and elsewhere) go by the upgrade priority list (Bash, then the draft tiers, Strikes and Defends last). With
+  `ropt`, rest sites and upgrade choices follow this rule instead of rollouts.
 - `bc`: the rollouts of `rdraft`, `rcard` and `rpath` credit progress against a boss (`tools/run_eval.py`
   `boss_credit`, weight `BOSS_CREDIT`): a rollout that dies in a boss fight gets that weight times the fraction of the
   boss fight's enemy HP it removed, and a won run counts as beating the act's boss (run benchmark 7).
 `rcard` and `rpath` rollouts are played by this policy with every rollout component replaced by its rule counterpart
 (`rpath` by `path`, `rdraft` by `draft`, `rcard`, `ropt` and `rshop` by the rules, `bc` dropped; `Policy.rule_policy`),
-so rollouts never nest. Each boss fight's starting situation is recorded as a fight spec (`spec` in the fight record).
+so rollouts never nest. Every fight's starting situation is recorded as a fight spec (`spec` in the fight record, with
+the potions left at its end), and every rollout decision with its options' values (`decisions` in the run record),
+as data for learned models.
 
 Combat is played by the rule planner by default (fast), or with `--combat mcwK` by wide search in a second host: the
 run host exports each fight's start state (the run saved at room entry, from the game's own recording), the search
@@ -117,6 +125,7 @@ class Policy:
         self.pending = None           # what a choice screen opened by our own action is for
         self.bought = set()
         self.stats = {}
+        self.log = []                 # rollout decisions: situation, options, values, choice (data for learned models)
         self.rule_mode = False        # True while run_opts asks what the rules alone would do
 
     def act(self, obs, acts, rng, sim=None):
@@ -131,6 +140,18 @@ class Policy:
             a = event_pick(obs, acts)
             if a:
                 return a
+        if scr == "combat" and "pot" in self.parts:
+            a = S.run_policy(pt, obs, acts, rng, potions=fight_room(obs))
+            if a.get("type") == "potion":
+                self.stats["potions_planner"] = self.stats.get("potions_planner", 0) + 1
+            return a
+        if scr == "rest" and "smith" in self.parts:
+            hp, mx = obs["player"]["hp"], obs["player"]["max_hp"]
+            want = "HEAL" if hp < (0.5 if obs.get("act_floor", 0) >= 15 else 0.35) * mx else "SMITH"
+            for w in (want, "SMITH", "HEAL"):
+                for x in acts:
+                    if str(x.get("option", "")).upper() == w:
+                        return x
         if scr == "map" and "rpath" in self.parts and sim is not None and not obs.get("at_boss"):
             a = self.route_rollout_pick(sim, obs, acts)
             if a:
@@ -159,7 +180,7 @@ class Policy:
                         a = next((x for x in acts if x.get("cards") == [i]), None)
                         if a:
                             return a
-        if scr == "choice" and ch.get("kind", "").startswith("FromDeckForUpgrade") and "rest" in self.parts:
+        if scr == "choice" and ch.get("kind", "").startswith("FromDeckForUpgrade") and self.parts & {"rest", "smith"}:
             a = self.upgrade_pick(obs, ch, acts)
             if a:
                 return a
@@ -217,6 +238,7 @@ class Policy:
             self.stats["rcard_failed"] = self.stats.get("rcard_failed", 0) + 1
             return None
         best = max(range(len(opts)), key=lambda i: (vals[i], i == 0))
+        self.note("card", obs, opts, vals, best, 0)
         self.stats["rcard_decisions"] = self.stats.get("rcard_decisions", 0) + 1
         self.stats["rcard_disagree"] = self.stats.get("rcard_disagree", 0) + (best != 0)
         self.stats["rcard_skips"] = self.stats.get("rcard_skips", 0) + (not opts[best].get("cards"))
@@ -230,6 +252,15 @@ class Policy:
 
     def boss_credit(self):
         return BOSS_CREDIT if "bc" in self.parts else 0.0
+
+    def note(self, kind, obs, opts, vals, best, rule):
+        """Keep a rollout decision: the visible situation, each option with its mean rollout value, the choice, the rule's choice."""
+        p = obs["player"]
+        self.log.append({"kind": kind, "act": obs.get("act"), "floor": obs.get("floor"), "screen": obs["screen"],
+                         "choice_kind": (obs.get("choice") or {}).get("kind"), "event": obs.get("event_id"),
+                         "hp": p["hp"], "max_hp": p["max_hp"], "gold": p.get("gold"), "deck": list(p.get("deck", [])),
+                         "relics": list(p.get("relics", [])), "potions": [x for x in p.get("potions", []) if x], "act_boss": obs.get("act_boss"),
+                         "options": opts, "values": [round(v, 3) for v in vals], "chosen": best, "rule": rule})
 
     def card_rollout_policy(self):
         return self.rule_policy()
@@ -252,6 +283,7 @@ class Policy:
             return None
         planner = self.route_pick(sim, obs, acts)
         best = max(range(len(moves)), key=lambda i: (vals[i], moves[i] is planner))
+        self.note("route", obs, moves, vals, best, next((i for i, m in enumerate(moves) if m is planner), None))
         self.stats["rpath_decisions"] = self.stats.get("rpath_decisions", 0) + 1
         self.stats["rpath_disagree"] = self.stats.get("rpath_disagree", 0) + (moves[best] is not planner)
         return moves[best]
@@ -337,6 +369,16 @@ def visible(o):
             [(x["power_id"], x["amount"]) for x in p.get("powers", [])], o.get("choice"))
 
 
+def fight_room(obs):
+    """Monster, Elite or Boss for the fight in an observation, from its encounter id (the potion price depends on it)."""
+    enc = str(obs.get("encounter") or "")
+    return "Boss" if enc.endswith("_BOSS") else "Elite" if enc.endswith("_ELITE") else "Monster"
+
+
+def a_potion(action):
+    return bool(action) and action.get("type") == "potion"
+
+
 class SearchCombat:
     """Fights inside a whole run played by search in a second host. At a fight's first decision the run host exports
     the fight recording, whose start state (the run saved at room entry, with its true random state) is kept; at every
@@ -350,6 +392,7 @@ class SearchCombat:
         m = __import__("re").fullmatch(r"mc(w?)(\d+)", spec)
         self.wide, self.k = bool(m.group(1)), int(m.group(2))
         self.host = SP.Host()
+        self.potions = False            # set per run by the worker: the policy's `pot` component
         self.stats = {"searched": 0, "fallback": 0, "mismatch": 0, "errors": 0, "search_seconds": 0.0}
         self.start_state, self.fight_key = None, None
 
@@ -379,7 +422,11 @@ class SearchCombat:
                     print(f"  mismatch {fight_key} decision {len(fight_actions)}: " + "; ".join(
                         f"{n}: search {x} / run {y}" for n, x, y in zip(names, visible(o), visible(obs)) if x != y)[:900], flush=True)
                 return None
-            cands, values, best = self.SP.scored_search(self.host.sim, o, "balanced", self.k, 2, d, {}, wide=self.wide)
+            room = fight_room(obs) if self.potions else None
+            cands, values, best = self.SP.scored_search(self.host.sim, o, "balanced", self.k, 2, d, {}, potions=room, wide=self.wide,
+                                                        all_potions=room in ("Elite", "Boss"))
+            if a_potion(cands[best if values[0] is not None else 0]):
+                self.stats["potions"] = self.stats.get("potions", 0) + 1
             self.stats["search_seconds"] += time.time() - t0
             a = cands[best if values[0] is not None else 0]
             if not any(all(x.get(k) == a.get(k) for k in ("type", "card", "target", "cards", "slot")) for x in acts):
@@ -417,14 +464,15 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
         in_fight = obs["screen"] == "combat" or (obs["screen"] == "choice" and bool(obs.get("combat")))
         if prev_fight and not in_fight and fights:
             fights[-1]["hp_end"] = obs["player"]["hp"]
+            fights[-1]["potions_end"] = len([x for x in obs["player"].get("potions", []) if x])
         if in_fight and not prev_fight:
             fight_actions, fight_no = [], fight_no + 1
             fights.append({"floor": obs.get("floor"), "room": obs.get("room"), "encounter": obs.get("encounter"), "hp_start": obs["player"]["hp"],
                            "max_hp": obs["player"]["max_hp"], "enemies": [e["enemy_id"] for e in (obs.get("combat") or {}).get("enemies", [])]})
-            if str(obs.get("encounter") or "").endswith("_BOSS"):
-                p = obs["player"]          # the boss fight's starting situation as a fight spec (tools/fight_specs.py format)
+            if obs.get("encounter"):
+                p = obs["player"]          # the fight's starting situation as a fight spec (tools/fight_specs.py format)
                 fights[-1]["spec"] = {"source": {"run": f"rb-{seed}", "floor": obs.get("floor"), "build": "simulated", "run_won": None},
-                                      "act": obs.get("act"), "room": "Boss", "encounter": obs["encounter"], "ascension": ascension,
+                                      "act": obs.get("act"), "room": fight_room(obs), "encounter": obs["encounter"], "ascension": ascension,
                                       "character": "IRONCLAD", "deck": list(p.get("deck", [])), "relics": list(p.get("relics", [])),
                                       "potions": [x for x in p.get("potions", []) if x], "hp": p["hp"], "max_hp": p["max_hp"], "valid": True}
         acts = sim.call(cmd="run_legal")["actions"]
@@ -451,9 +499,10 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
     won = obs["screen"] == "game_over" and obs["player"]["hp"] > 0
     if fights and "hp_end" not in fights[-1]:
         fights[-1]["hp_end"] = obs["player"]["hp"]
+        fights[-1]["potions_end"] = len([x for x in obs["player"].get("potions", []) if x])
     return {"floor": obs.get("floor"), "act": obs.get("act"), "bosses": bosses + (1 if won else 0), "won": won, "steps": steps,
             "deck": len(obs["player"]["deck"]), "gold": obs["player"].get("gold"), "final_deck": list(obs["player"]["deck"]), "fights": fights,
-            "policy_stats": dict(policy.stats), "host_error": host_error}
+            "policy_stats": dict(policy.stats), "decisions": list(policy.log), "host_error": host_error}
 
 
 def deadline_ts(text):
@@ -484,6 +533,7 @@ def worker(a):
                 t0 = time.time()
                 if combat:
                     combat.stats = {"searched": 0, "fallback": 0, "mismatch": 0, "errors": 0, "search_seconds": 0.0}
+                    combat.potions = "pot" in name.split("+")
                 try:
                     r = play_run(sim, seed, a.ascension, Policy(name), random.Random(k), combat=combat,
                                  deadline=deadline_ts(a.deadline) if a.deadline else None)

@@ -966,17 +966,22 @@ def cmd_sweep(a):
     return 0 if ok == len(rows) else 1
 
 
-def run_policy(pt, obs, acts, rng, mode="safe"):
+def run_policy(pt, obs, acts, rng, mode="safe", potions=None):
     """A simple whole-run policy for exercising the simulator (not a strong player): the rule planner in fights, the
     first card of each card reward, rest when below 60% HP, smith otherwise, the first move on the map, and the first
-    option elsewhere. Every decision uses only the observation (FP-1)."""
+    option elsewhere. Every decision uses only the observation (FP-1). With `potions` (the fight's room type) the
+    planner may drink potions at that room's price."""
     scr = obs["screen"]
     if scr == "combat":
-        a = planner_action(pt, obs, mode)
+        a = planner_action(pt, obs, mode, potions)
         if a in acts:
             return a
-        legal_play = [x for x in acts if x.get("type") == a.get("type") and x.get("card") == a.get("card")]
-        return legal_play[0] if legal_play else next(x for x in acts if x["type"] == "end_turn")
+        # the legal actions carry extra fields (card_id, potion_id): match the planner's action on what it decides,
+        # the target included (until 2026-11-21 the target was ignored here, so multi-enemy fights hit the first enemy)
+        key = "slot" if a.get("type") == "potion" else "card"
+        same = [x for x in acts if x.get("type") == a.get("type") and x.get(key) == a.get(key)]
+        exact = [x for x in same if x.get("target") == a.get("target")]
+        return (exact or same)[0] if same else next(x for x in acts if x["type"] == "end_turn")
     if scr == "choice":
         picks = [x for x in acts if x.get("cards")]
         cards = [x for x in picks if not str(x.get("card_id", "")).startswith("alt:")]

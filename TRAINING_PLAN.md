@@ -10,6 +10,8 @@ Written 2026-11-18. Update this file when a phase finishes or the plan changes.
 
 **Revision (2026-11-20, evening): whole runs first.** Deck building, map routes and option choices matter more than fight play, and none of our strategic rules has been validated by run outcomes. The primary metric is now whole-run results in the simulator with search playing every fight; every non-combat decision type (Neow and Ancients, card rewards, removal, upgrades and rest, shop, route, events, boss relics, potions) becomes a training target with its own baseline and evaluation; combat work narrows to speed and potions. Decision record `docs/decisions/0004-whole-run-first.md`.
 
+**Revision (2026-11-21): Ascension 0 first, every resource used.** The first win-rate measurement in the simulator found no win in 30 whole new runs at A0 (run benchmark 8). A review (`docs/reviews/2026-11-21-training-review.md`) found that the Agent reaches bosses with far less power than the Player (potions never used, upgrades on Strikes, gold unspent, three relics against five) while its fight search matches the Player on the same situations, and that rollouts are judged by a weaker fighter than the one that plays. Decision `docs/decisions/0005-a0-first-and-resource-use.md` (accepted by the Player): a ladder in the simulator starting at A0 (gates: 50% wins, then the Player's 63%), wins as the primary metric, one test per unused resource, a fight-outcome model inside rollouts, then the run-state value network.
+
 **Engine track (2026-11-19):** the Player asked for a fast final product and an AI that clears A10 with a high win rate. Phases 7–9 add a simulator built on the game's own engine, search over it, and learned models trained by self-play (decision record `docs/decisions/0003-engine-simulator-and-learning.md`; rules `docs/simulator-integrity.md`). The first Agent run won at A0 on 2026-11-19 (M3).
 
 **Where things stood (2026-11-19, after the overnight session):** Phases 1 and 2 are done offline; the Phase 4 toolchain (turn planner, path planner, draft scorer, deck check, fight simulator, one `advise.py` entry point, both mods) is written and tested offline only; Phase 0 waits on the player (security verdict, branch switch to v0.111.1, mod choice), then a 30-minute first session (`docs/runbooks/first-session.md`). Summary: `docs/overnight-report.md`.
@@ -233,6 +235,13 @@ Expert iteration for combat: a value network replaces the heuristic leaf evaluat
 | M12 | Combat autopilot plays every fight of 3 real runs without language-model calls; median decision 1 s or less | Decision logs, scoreboard |
 | M13 | Search beats the rule planner (pre-registered comparison) | `reports/phase8/` |
 | M14 | Learned combat models beat search with heuristic evaluation at equal time budget (pre-registered) | `reports/phase9/experiments.md` |
+| M15 | Run benchmark with search playing every fight of whole simulated runs (done 2026-11-21) | `reports/phase9/run-bench-2.md` |
+| M16 | Each strategic decision type has a policy validated on whole runs | `reports/phase9/run-bench-*.md` |
+| M19 | Simulated A0 win rate at least 50% on 60 new seeds (gate G1 of decision 0005) | Run benchmark report |
+| M20 | Simulated A0 win rate at least 63%, the Player's A0–4 rate (gate G2) | Run benchmark report |
+| M21 | Five real A0 runs with the automated stack, compared with the simulator's prediction | Scoreboard |
+| M17 | Simulated A5 win rate above 25% | Run benchmark report |
+| M18 | Simulated A10 win rate above 8% | Run benchmark report |
 
 ---
 
