@@ -28,6 +28,28 @@ Why: in run benchmarks 4 and 5 the rollout policies stop mostly at bosses (run b
 - What follows: if H1 holds, the boss credit becomes part of the rollout value, and the next step is a stronger boss signal (search instead of the planner for boss fights inside rollouts, or a learned fight-outcome model) to see how much more there is. If it does not, a graded boss signal from the planner is not enough, and boss readiness needs a better fighter or model inside the rollouts before more decisions move to rollouts.
 
 ## 5. Results
-Pending.
+Run 2026-11-21, 09:12–10:18 (`data/learn/runs/run-bench-7/manifest.json`; 3994 s wall, 6 workers, all exited cleanly; all 60 seeds finished before the deadline). Host: `sim/bin/Release2`, as registered. Code: the run started from `e723598` (recorded at the start; see section 6 for edits made during the run). Report: `python3 -I tools/run_bench.py --report data/learn/runs/run-bench-7 --baseline rcard+rpath`.
+
+| Policy | Runs | Mean floor | Median floor | Reached the act 1 boss | Beat it | Reached the act 2 boss | Won | Elites fought per run | Final deck (mean cards) | Seconds per run |
+|---|---|---|---|---|---|---|---|---|---|---|
+| rcard+rpath | 60 | 16.55 | 17 | 49 | 3 | 0 | 0 | 0.62 | 17.7 | 209 |
+| rcard+rpath+bc | 60 | 16.10 | 17 | 50 | 0 | 0 | 0 | 0.57 | 17.6 | 159 |
+
+| Pair (B − A), floors | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |
+|---|---|---|---|---|---|---|---|
+| rcard+rpath+bc − rcard+rpath (H1) | 60 | −0.45 | −1.38 to 0.38 | 7 | 8 | 45 | 0.70 |
+
+- **H1** (rollouts that credit progress against a boss reach more floors at A10): p = 0.70, mean −0.45 floors: **does not hold**.
+
+Act 1 bosses (fights won / fought): `rcard+rpath` Ceremonial Beast 2/8, The Kin 1/23, Vantom 0/18; `rcard+rpath+bc` Ceremonial Beast 0/10, The Kin 0/22, Vantom 0/18.
+
+Where runs die (room type of the fatal fight): `rcard+rpath` bosses 46, elites 10, hallways 4; `rcard+rpath+bc` bosses 50, elites 8, hallways 2. HP lost per won fight: hallways 5.9 / 6.4, elites 30.7 / 31.8, bosses 36.0 / none won.
+
+Rollout decisions: `rcard+rpath` 421 card rewards (252 different from the first card, 59 skips) and 343 map choices (131 different from the route planner); `rcard+rpath+bc` 401 (208, 47) and 315 (124). Search: 14,652 searched moves, 0 fallbacks, 0 mismatches.
+
+Act 1 elites fought by the runs that reached the act 1 boss: 0.45 (`rcard+rpath`) and 0.50 (`rcard+rpath+bc`) per run; 0.67 in run benchmark 6's rollout arm and 1.5 in its `path` arm. The Player's 19 A10 runs that reached the act 1 boss fought 0.68 act 1 elites (`data/runs.db`), so the rollout policies' elite avoidance is not what separates them from the Player at the boss.
+
+**Verdict: H1 does not hold; the act 1 boss at A10 is a wall that the rollout value does not move.** The boss credit leaves 45 of 60 seeds on the same floor. Together the two arms beat the act 1 boss in 3 of 99 fights (run benchmark 6: 5 of 48; the Player: 12 of 19), while reaching it in 83% of runs. A graded signal from the planner's boss fights is not enough. By section 4, boss readiness needs a better fighter or model inside the rollouts, or the deck and fight need to be examined directly, before more decisions are moved to rollouts. Boss replay 1 (registered at 10:09) does the direct examination; it is moved ahead of run benchmark 10 in the queue (section 6 of its registration).
 
 ## 6. Deviations and notes
+- 2026-11-21 10:20, after the run, a note on the code: `tools/run_bench.py` gained default-off components (`ropt`, `rshop`), boss fight specs in the fight records and dynamic seed claiming while this run was in progress (commits `1857f28`, `aa98be4`). Both arms use rollouts from the first map decision, so every worker had imported its modules within the first minutes, before those edits; the records of this run have no boss fight specs, which confirms it.

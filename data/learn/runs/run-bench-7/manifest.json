@@ -1,0 +1,117 @@
+{
+ "name": "run-bench-7",
+ "started": "2026-11-21 09:12",
+ "created": "2026-11-21 10:18",
+ "code_commit": "e723598",
+ "code_uncommitted_changes": false,
+ "host": "Release2",
+ "fight_rebuild": "save+run",
+ "policies": [
+  "rcard+rpath",
+  "rcard+rpath+bc"
+ ],
+ "seeds": 60,
+ "seed_base": 7,
+ "ascension": 10,
+ "combat": "mcw6",
+ "deadline": "2026-11-21 13:30",
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 3994,
+ "report": {
+  "runs": 60,
+  "policies": {
+   "rcard+rpath": {
+    "runs": 60,
+    "mean_floor": 16.55,
+    "act1_boss": 3,
+    "act2_boss": 0,
+    "won": 0,
+    "died_in": {
+     "Boss": 46,
+     "Elite": 10,
+     "Monster": 4
+    },
+    "fights": {
+     "Monster": 382,
+     "Boss": 49,
+     "Elite": 37
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 5.9,
+     "Elite": 30.7,
+     "Boss": 36.0
+    },
+    "search": {
+     "searched": 7465,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 6535.3
+    },
+    "policy": {
+     "rpath_decisions": 343,
+     "rpath_disagree": 131,
+     "rcard_decisions": 421,
+     "rcard_disagree": 252,
+     "rcard_skips": 59
+    },
+    "mean_seconds": 208.6
+   },
+   "rcard+rpath+bc": {
+    "runs": 60,
+    "mean_floor": 16.1,
+    "act1_boss": 0,
+    "act2_boss": 0,
+    "won": 0,
+    "died_in": {
+     "Boss": 50,
+     "Elite": 8,
+     "Monster": 2
+    },
+    "fights": {
+     "Monster": 364,
+     "Elite": 34,
+     "Boss": 50
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 6.4,
+     "Elite": 31.8
+    },
+    "search": {
+     "searched": 7187,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 5731.8
+    },
+    "policy": {
+     "rpath_decisions": 315,
+     "rpath_disagree": 124,
+     "rcard_decisions": 401,
+     "rcard_disagree": 208,
+     "rcard_skips": 47
+    },
+    "mean_seconds": 158.7,
+    "vs_rcard+rpath": {
+     "pairs": 60,
+     "mean_floor_diff": -0.45,
+     "better": 7,
+     "worse": 8,
+     "equal": 45,
+     "sign_p_one_sided": 0.696380615234375,
+     "boot95": [
+      -1.3833333333333333,
+      0.38333333333333336
+     ]
+    }
+   }
+  }
+ }
+}
