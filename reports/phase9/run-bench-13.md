@@ -25,6 +25,7 @@ Why: run benchmark 9 tested `ropt` at A10 and found +1.9 floors with act 1 boss 
 - What follows: `ropt` joins the stack if H1 or H2 holds. Run benchmark 14 measures gate G1 with the stack that results.
 
 ## 5. Results
-Pending.
+None: withdrawn before its start (section 6).
 
 ## 6. Deviations and notes
+- 2026-11-21, withdrawn before its start. Run benchmark 11's shop decisions showed that `rshop` buys nothing once more than 11 items are affordable, so the stack this benchmark would have tested events on has a known defect. Its question (H1 and H2 for `ropt` at A0) is one of the two factors of run benchmark 15, on new seeds (`RB015`), together with the repaired shop component. The `RB013` seeds were never used. The rule that fixes `S` (section 2) is kept.

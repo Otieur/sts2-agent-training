@@ -21,6 +21,7 @@ Written before the run (decision 0005 item 1, ML-10), 2026-11-21 at 12:10, after
 - What follows: if G1 is passed, gate G2 (63%) and the real-game check (five real A0 runs, decision 0005 item 6) are next. If not, where the runs die decides the next target, and the fight-outcome model for rollouts (decision 0005 item 4) is the main line.
 
 ## 5. Results
-Pending.
+Pending (deferred, section 6).
 
 ## 6. Deviations and notes
+- 2026-11-21, deferred before its start. In run benchmark 11 the full stack wins 1 of 30 runs at A0 (Wilson 95% 1–17%). Gate G1 needs 30 wins in 60, so this measurement cannot pass with that stack, and 60 runs (about two hours) would change no decision. The seeds (`RB014`, unused) and the design stay. It starts once a 30-seed benchmark shows at least 12 wins for a stack; that stack is then written here as the policy before the start. Until then the machine time goes to run benchmark 15 and the fight-outcome data.

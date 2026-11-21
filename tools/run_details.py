@@ -4,6 +4,7 @@
     python3 -I tools/run_details.py data/learn/runs/run-bench-11
     python3 -I tools/run_details.py data/learn/runs/run-bench-11 --wins-vs rcard+rpath
     python3 -I tools/run_details.py --pair data/learn/runs/run-bench-11:A data/learn/runs/run-bench-12:B   # A - B by seed
+    python3 -I tools/run_details.py data/learn/runs/run-bench-15 --factor --on C D --off A B                # a factor of a 2x2 run
 
 Per policy: floors, wins with a Wilson interval, act bosses reached and beaten (by boss), where runs die, the state at
 each act's boss fight (deck, upgrades, relics, potions, HP), potions used by room type, shop purchases, gold left,
@@ -125,6 +126,29 @@ def paired(a, b):
             "wins_sign_p_one_sided": run_bench.sign_p(wa, wb)}
 
 
+def factor(folder, on, off):
+    """One factor of a factorial run. Per seed that finished every named policy: the mean floor of the `on` policies
+    minus the mean floor of the `off` policies, and wins with minus wins without. Sign tests across seeds (`on` better)."""
+    d, w, won_on, won_off = [], [], 0, 0
+    for r in load(folder):
+        p = r["policies"]
+        if not all("floor" in p.get(n, {}) for n in on + off):
+            continue
+        d.append(statistics.mean(p[n]["floor"] for n in on) - statistics.mean(p[n]["floor"] for n in off))
+        a, b = sum(bool(p[n]["won"]) for n in on), sum(bool(p[n]["won"]) for n in off)
+        w.append(a - b)
+        won_on, won_off = won_on + a, won_off + b
+    better, worse = sum(x > 0 for x in d), sum(x < 0 for x in d)
+    rng = random.Random(0)
+    boots = sorted(sum(rng.choice(d) for _ in d) / len(d) for _ in range(4000)) if d else [0]
+    wa, wb = sum(x > 0 for x in w), sum(x < 0 for x in w)
+    return {"on": on, "off": off, "seeds": len(d), "mean_floor_diff": mean(d),
+            "boot95": [round(boots[int(0.025 * len(boots))], 2), round(boots[int(0.975 * len(boots)) - 1], 2)],
+            "better": better, "worse": worse, "equal": len(d) - better - worse, "sign_p_one_sided": run_bench.sign_p(better, worse),
+            "wins_on": won_on, "wins_off": won_off, "runs_per_level": len(d) * len(on), "seeds_more_wins_on": wa, "seeds_more_wins_off": wb,
+            "wins_sign_p_one_sided": run_bench.sign_p(wa, wb)}
+
+
 def by_seed(folder, policy):
     return {r["seed"]: r["policies"][policy] for r in load(folder) if policy in r["policies"] and "floor" in r["policies"][policy]}
 
@@ -134,7 +158,13 @@ def main(argv=None):
     ap.add_argument("folder", nargs="?")
     ap.add_argument("--wins-vs", help="baseline policy in the folder: paired floors and wins of every other policy against it")
     ap.add_argument("--pair", nargs=2, metavar="FOLDER:POLICY", help="paired comparison A - B across folders, by seed")
+    ap.add_argument("--factor", action="store_true", help="one factor of a factorial run in the folder: --on policies against --off policies, by seed")
+    ap.add_argument("--on", nargs="+", default=[])
+    ap.add_argument("--off", nargs="+", default=[])
     a = ap.parse_args(argv)
+    if a.factor:
+        print(json.dumps(factor(a.folder, a.on, a.off), indent=1))
+        return 0
     if a.pair:
         (fa, pa), (fb, pb) = (x.rsplit(":", 1) for x in a.pair)
         print(json.dumps({"a": a.pair[0], "b": a.pair[1]} | paired(by_seed(fa, pa), by_seed(fb, pb)), indent=1))
