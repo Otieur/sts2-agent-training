@@ -30,3 +30,4 @@ Why: the milestone that matters is Ascension 10 (M8: the Player won 8% of finish
 Pending.
 
 ## 6. Deviations and notes
+- 2026-11-21 08:20, during the run, a note on the code (no change to the run's behaviour): the run started at 08:07 from `bcd4372`. Between 08:12 and 08:17 `tools/run_eval.py` and `tools/run_bench.py` gained an optional boss credit for run benchmark 7 (component `bc`, off unless named; commit `e33474f`). The rollouts import both files from disk at a worker's first rollout decision, and every worker plays `path` before `rcard+rpath` on its first seed, so some workers may have loaded the new files. With `bc` off the rollout values are meant to be identical. Checked: on seed `RB905…` at A10, 4 decisions (2 card rewards, 2 map choices, 16 options, 3 sampled futures each, `path` rollouts) gave the same values to four decimals from the code of `bcd4372` and from `e33474f`.
