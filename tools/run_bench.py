@@ -15,6 +15,12 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
   boss, room models from the history; the whole act map is visible to the player).
 - `rest`: heal below 50% HP (below 70% before a boss), otherwise smith; the upgrade goes to the first card in an
   upgrade priority list (Bash, then the deck's highest-tier cards by the draft scorer's tiers, Strikes and Defends last).
+- `rdraft`: card rewards by sampled rollouts (`tools/run_eval.py`), rollouts played by `draft+shop+rest`, ties and
+  failures to the draft scorer (run benchmark 3).
+- `rcard`: card rewards by sampled rollouts played by this policy without `rcard` (first card), ties and failures to
+  the first card.
+- `rpath`: map moves by sampled rollouts played by this policy with `path` in place of `rpath`, ties and failures to
+  the route planner (run benchmark 4).
 
 Combat is played by the rule planner by default (fast), or with `--combat mcwK` by wide search in a second host: the
 run host exports each fight's start state (the run saved at room entry, from the game's own recording), the search
@@ -51,6 +57,7 @@ def is_curse(card_id):
 _EVENT_COUNTS = None
 _EVALUATOR = None
 _ROUTE_EVALUATOR = None
+_CARD_EVALUATOR = None
 ROLLOUTS_K = 6
 
 
@@ -116,6 +123,10 @@ class Policy:
             a = self.route_pick(sim, obs, acts)
             if a:
                 return a
+        if scr == "choice" and ch.get("kind") == "CardReward" and "rcard" in self.parts and sim is not None:
+            a = self.card_rollout_pick(sim, obs, acts)
+            if a is not None:
+                return a
         if scr == "choice" and ch.get("kind") == "CardReward" and "rdraft" in self.parts and sim is not None:
             a = self.rollout_pick(sim, obs, acts)
             if a is not None:
@@ -171,6 +182,31 @@ class Policy:
         self.stats["rdraft_disagree"] = self.stats.get("rdraft_disagree", 0) + (opts[best] is not scorer)
         self.stats["rdraft_skips"] = self.stats.get("rdraft_skips", 0) + (not opts[best].get("cards"))
         return opts[best]
+
+    def card_rollout_pick(self, sim, obs, acts):
+        """Card rewards by sampled rollouts without the draft scorer: each card and skip is played forward over the same
+        re-sampled futures to the end of the act by this policy with the first card in place of rollouts (e.g. `path`
+        for `rcard+path`) and the rule planner fighting; the best mean rollout value is taken, exact ties going to the
+        first card. If any rollout fails, the first card is taken (the `base` rule)."""
+        global _CARD_EVALUATOR
+        import run_eval
+        opts = run_eval.card_reward_options(acts)
+        if len(opts) < 2:
+            return None
+        if _CARD_EVALUATOR is None:
+            _CARD_EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K, rollout_policy=self.card_rollout_policy(), seed_base=9_900_000)
+        vals = _CARD_EVALUATOR.evaluate(sim, obs, opts)
+        if any(v is None for v in vals):
+            self.stats["rcard_failed"] = self.stats.get("rcard_failed", 0) + 1
+            return None
+        best = max(range(len(opts)), key=lambda i: (vals[i], i == 0))
+        self.stats["rcard_decisions"] = self.stats.get("rcard_decisions", 0) + 1
+        self.stats["rcard_disagree"] = self.stats.get("rcard_disagree", 0) + (best != 0)
+        self.stats["rcard_skips"] = self.stats.get("rcard_skips", 0) + (not opts[best].get("cards"))
+        return opts[best]
+
+    def card_rollout_policy(self):
+        return "+".join(sorted(x for x in self.parts if x != "rcard")) or "base"
 
     def route_rollout_pick(self, sim, obs, acts):
         """Map moves by sampled rollouts (tools/run_eval.py): each next point is played forward over the same
@@ -429,6 +465,8 @@ def worker(a):
         _EVALUATOR.close()
     if _ROUTE_EVALUATOR is not None:
         _ROUTE_EVALUATOR.close()
+    if _CARD_EVALUATOR is not None:
+        _CARD_EVALUATOR.close()
     return 0
 
 
