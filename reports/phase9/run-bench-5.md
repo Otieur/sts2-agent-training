@@ -1,6 +1,6 @@
 # Comparison: card rewards by sampled rollouts against the first card (run benchmark 5)
 
-Written before the run (decision 0004 steps 3–4, ML-10), 2026-11-21 at 05:30, after run benchmark 3's results and before any result of run benchmark 4. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
+Written before the run (decision 0004 steps 3–4, ML-10), 2026-11-21 at 05:26, after run benchmark 3's results and before any result of run benchmark 4. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
 
 ## 1. Hypothesis
 - **H1:** choosing card rewards by sampled rollouts (`rcard+path`) reaches more floors than taking the first card of every reward (`path`) when search plays every fight.
