@@ -8,16 +8,23 @@ Used by `tools/run_bench.py` components:
   to that rule.
 - `rshop`: shop screens, one purchase at a time: leave, or buy one affordable item (card, relic, potion, card removal);
   after a purchase the shop is judged again, until leaving wins.
+- `rshop2`: the same with room for every item of a shop (`MAX_SHOP_OPTIONS`). With `rshop`, a shop where more than
+  `MAX_OPTIONS` - 1 items are affordable is left to the rules, which leave: in run benchmark 11 that is every shop
+  entered with more than about 180 gold (no decision with more than 176 gold, no relic ever among the options, 503
+  gold left at the end of a run). And when the rollouts cannot tell a shop's options apart (every option has the same
+  value, typically because every sampled future ends at the same boss fight), `rshop2` does not leave with its gold:
+  it buys the cheapest affordable relic, else the card removal, and leaves only when neither is for sale.
 
 Each option is played forward over the same sampled futures by `tools/run_eval.py` (the run rebuilt from its room-entry
 save with the unseen future re-sampled, the option taken, then the run's rule policy to the end of the act with the rule
 planner fighting), and the best mean value is taken. Exact ties and failures go to what the run's rules would do.
 Identical options (the same card id, the same item) are judged once. Screens with more than `MAX_OPTIONS` distinct
-options are left to the rules. Only what the player can see is used.
+options (`MAX_SHOP_OPTIONS` in shops with `rshop2`) are left to the rules. Only what the player can see is used.
 """
 import sys
 
 MAX_OPTIONS = 12
+MAX_SHOP_OPTIONS = 24       # a shop sells at most 7 cards, 3 relics, 3 potions and a card removal; leaving is one more
 DECK_KINDS = ("FromDeck", "FromChooseACardScreen", "FromSimpleGrid")
 _EVALUATOR = None
 
@@ -67,7 +74,10 @@ def options(parts, obs, acts):
         elif scr == "choice" and not obs.get("combat") and str(ch.get("kind", "")).startswith(DECK_KINDS) \
                 and ch.get("kind") not in ("CardReward",) and not (smith and str(ch.get("kind", "")).startswith("FromDeckForUpgrade")):
             opts = [x for x in acts if x.get("type") == "choose"]
-    if "rshop" in parts and scr == "shop":
+    cap = MAX_OPTIONS
+    if ("rshop" in parts or "rshop2" in parts) and scr == "shop":
+        if "rshop2" in parts:
+            cap = MAX_SHOP_OPTIONS
         gold = obs["player"].get("gold", 0)
         buys = [x for x in acts if x.get("type") == "buy" and x.get("cost", 1e9) <= gold]
         leave = [x for x in acts if x.get("type") == "leave"]
@@ -75,7 +85,16 @@ def options(parts, obs, acts):
                            else 2 if str(x.get("item", "")).startswith("card:") else 3)
         opts = leave[:1] + sorted(buys, key=order)
     opts = _distinct(opts)
-    return opts if 2 <= len(opts) <= MAX_OPTIONS else []
+    return opts if 2 <= len(opts) <= cap else []
+
+
+def blind_buy(opts):
+    """Index of the purchase `rshop2` makes when rollouts cannot tell a shop's options apart: the cheapest relic, else
+    the card removal; None when neither is among the options. Neither can weaken the deck, and gold buys nothing else."""
+    relics = [i for i, o in enumerate(opts) if o.get("type") == "buy" and str(o.get("item", "")).startswith("relic:")]
+    if relics:
+        return min(relics, key=lambda i: opts[i].get("cost", 0))
+    return next((i for i, o in enumerate(opts) if o.get("type") == "buy" and "remov" in str(o.get("item", "")).lower()), None)
 
 
 def rule_action(policy, obs, acts, rng, sim):
@@ -116,6 +135,11 @@ def pick(policy, obs, acts, rng, sim):
         return None
     rk = _key(rule) if rule else None
     best = max(range(len(opts)), key=lambda i: (vals[i], _key(opts[i]) == rk))
+    if name == "rshop" and "rshop2" in policy.parts and max(vals) - min(vals) < 1e-9:
+        blind = blind_buy(opts)
+        if blind is not None:
+            best = blind
+            st["rshop_blind_buys"] = st.get("rshop_blind_buys", 0) + 1
     policy.note("shop" if name == "rshop" else "opt", obs, opts, vals, best, next((i for i, o in enumerate(opts) if _key(o) == rk), None))
     st[name + "_decisions"] = st.get(name + "_decisions", 0) + 1
     st[name + "_disagree"] = st.get(name + "_disagree", 0) + (_key(opts[best]) != rk)

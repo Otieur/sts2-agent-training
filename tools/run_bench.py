@@ -22,7 +22,11 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
 - `ropt`: events (Neow and Ancients included), rest sites and card choices outside fights (upgrade, remove,
   transform, enchant) by sampled rollouts (`tools/run_opts.py`), ties and failures to this policy's rule (run benchmark 9).
 - `rshop`: shop purchases (cards, relics, potions, card removal, leaving) by sampled rollouts, one purchase at a time,
-  ties and failures to this policy's rule (run benchmark 10).
+  ties and failures to this policy's rule (run benchmark 10). Shops with more than 11 affordable items are left to
+  the rule (which leaves).
+- `rshop2`: `rshop` without that limit: every affordable item of a shop is judged, however many. When every option
+  has the same rollout value, it buys the cheapest relic, else the card removal, instead of leaving. The card to
+  remove follows the removal order (curses, Strikes, Defends) unless `ropt` judges it (run benchmark 15).
 - `pot`: potions may be used in fights (they never are without it): search judges every usable potion by simulation
   in elite and boss fights and the planner's potion plans in hallways, a spent potion priced as lost HP by room
   (`tools/sim.py POTION_PRICE`); the planner (search fallbacks, fights inside rollouts) uses its potion plans too.
@@ -33,7 +37,7 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
   `boss_credit`, weight `BOSS_CREDIT`): a rollout that dies in a boss fight gets that weight times the fraction of the
   boss fight's enemy HP it removed, and a won run counts as beating the act's boss (run benchmark 7).
 `rcard` and `rpath` rollouts are played by this policy with every rollout component replaced by its rule counterpart
-(`rpath` by `path`, `rdraft` by `draft`, `rcard`, `ropt` and `rshop` by the rules, `bc` dropped; `Policy.rule_policy`),
+(`rpath` by `path`, `rdraft` by `draft`, `rcard`, `ropt`, `rshop` and `rshop2` by the rules, `bc` dropped; `Policy.rule_policy`),
 so rollouts never nest. Every fight's starting situation is recorded as a fight spec (`spec` in the fight record, with
 the potions left at its end), and every rollout decision with its options' values (`decisions` in the run record),
 as data for learned models.
@@ -131,7 +135,7 @@ class Policy:
     def act(self, obs, acts, rng, sim=None):
         scr = obs["screen"]
         ch = obs.get("choice") or {}
-        if sim is not None and not self.rule_mode and self.parts & {"ropt", "rshop"}:
+        if sim is not None and not self.rule_mode and self.parts & {"ropt", "rshop", "rshop2"}:
             import run_opts
             a = run_opts.pick(self, obs, acts, rng, sim)
             if a is not None:
@@ -172,7 +176,7 @@ class Policy:
             a = draft_pick(obs, acts)
             if a is not None:
                 return a
-        if scr == "choice" and ch.get("kind") == "FromDeckForRemoval" and "shop" in self.parts:
+        if scr == "choice" and ch.get("kind") == "FromDeckForRemoval" and self.parts & {"shop", "rshop2"}:
             opts = ch.get("options") or []
             for want in REMOVE_ORDER:
                 for i, cid in enumerate(opts):
@@ -247,7 +251,7 @@ class Policy:
     def rule_policy(self):
         """This policy with every rollout component replaced by its rule counterpart (`rpath` by `path`, `rdraft` by
         `draft`, `rcard` by the first card, `bc` dropped), so that rollouts never start rollouts of their own."""
-        swap = {"rpath": "path", "rdraft": "draft", "rcard": None, "bc": None, "ropt": None, "rshop": None}
+        swap = {"rpath": "path", "rdraft": "draft", "rcard": None, "bc": None, "ropt": None, "rshop": None, "rshop2": None}
         return "+".join(sorted({swap.get(x, x) for x in self.parts} - {None})) or "base"
 
     def boss_credit(self):
