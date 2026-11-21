@@ -22,7 +22,28 @@ Why: in `potions-wide.md` the search could drink only the potions proposed by th
 - What follows: if H1 holds, every-potion candidates join the default search and the teacher; if not, potion pricing (P8.E4) is the next question before potions are tried again.
 
 ## 5. Results
-Pending.
+Run 2026-11-20, 22:30–23:32 (`tools/learn/bench.py --report data/learn/bench/potions-all-1 --markdown --alpha 0.05`; manifest `data/learn/bench/potions-all-1/manifest.json`).
+
+Run `potions-all-1`: 120 jobs, 6 workers, 4150 s wall, code `2e829d0`, game v0.111.1 (cc1f9462).
+
+| Arm | Won | Mean priced value | Mean value | Potions used (Monster / Elite / Boss) | Search s per decision |
+|---|---|---|---|---|---|
+| mcw6 | 99 | -7.70 | -7.67 | 0 / 0 / 2 | 3.386 |
+| mcw6pa | 97 | -12.22 | -7.33 | 11 / 45 / 21 | 5.601 |
+
+| Pair (B − A), priced value | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |
+|---|---|---|---|---|---|---|---|
+| mcw6pa − mcw6 | 120 | -4.53 | -12.04 to 2.98 | 24 | 37 | 59 | 0.9639 |
+
+- **H1** (`mcw6pa` better on priced value, sign test p < 0.05): p = 0.9639, mean difference -4.53: **does not hold**.
+- Boss fights only (20 pairs): `mcw6pa` − `mcw6` 6.35 priced value (interval -9.90 to 24.10), wins 7 against 7.
+
+Errors: 0.
+
+At Ascension 8 and above: `mcw6pa` wins 65 of 84 fights (hallways 40/42, elites 18/22, bosses 7/20) against 67 for `mcw6` (41, 19, 7).
+
+**Verdict: H1 does not hold; the difference leans the other way.** With every potion on offer, search drinks far more (77 potions in 120 fights, 45 of them in elites) and ends 4.5 priced value points lower (interval −12.0 to 3.0; 24 better, 37 worse); boss fights are unchanged (7 wins each). At the planner's prices (elite 6 HP, boss 2 HP per potion) the fight value rewards spending potions that a run would rather keep. By the rule in section 4, potions stay out of the default search; when to drink and when to keep is a run-level question (potion slots and prices, decision 0004), not a fight-level one.
+
 
 ## 6. Deviations and notes
 None yet.
