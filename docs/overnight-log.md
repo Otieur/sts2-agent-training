@@ -25,5 +25,9 @@ Work alone for about ten hours with no help; branch and push in time. Standing p
 ## Log
 - 00:50: Set up: caffeinate for 11 hours, branch `overnight/2026-11-21-whole-runs` pushed, this log. Running: q-v5 training then `vsearch-5b` (comparison 5 rerun); the save-based rebuild test (3 seeds).
 
+- 01:10–01:50, stage 1 (save-based rebuild): three host faults found and fixed. (1) Setting up a saved run called the game's reload counter, which writes save bookkeeping: skipped like the other save writers (SA-1). (2) The rebuild entered the room before the act map existed: it now launches the run and generates the map first, as the game's own load does. (3) Restores during search failed after a few turns: the game's load keeps references into the recording's serializable run and changes them during play, so the recording is now read from its bytes on every rebuild and restore. The run driver also treated a card choice during a fight (Armaments) as the end of the fight; such choices now count as fight actions. Result: 28 of 28 direct rebuilds equal the run host's visible state (0.03 s each); two whole smoke runs with `mcw2` searched 247 decisions with 0 mismatches, 0 errors, 0 fallbacks (A0, `base` policy: floors 12 and 17).
+- 01:29, stage 2: `vsearch-5b` finished (2534 s). Neither hypothesis holds: `mcwq6` − `mcw6` −10.3 (interval −18.5 to −3.4; time ratio 0.70), losses mostly in elites; `qpolicy` − planner +2.2 (p 0.46). Section 5 of `reports/phase9/value-search-comparison-5.md`; README findings and benchmark table refreshed.
+- 01:55, stage 3: Release host rebuilt with tonight's host changes. Checks: clone 12/12, fair play 8/8, sandbox 3/3, fidelity 11/11, and the new `sim.py clone --from-save` (snapshot and restore on fights rebuilt from simulated runs) 11/11 exact, median restore 6.6 ms.
+
 ## Resume here
-Stage 1 is running (`fight_from_save` test). Stage 2 waits for `vsearch-5b` (`data/learn/bench/vsearch-5b/manifest.json`).
+Stages 1–3 done. Next: stage 5 (pre-register the whole-run comparison with search combat, then run it on the Release host). Stage 4's smoke test is covered by the stage 1 smoke runs.

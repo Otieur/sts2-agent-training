@@ -284,17 +284,53 @@ def cmd_fairplay(a):
     return 0 if all(results) else 1
 
 
+def _fight_from_run(run, sim, k, rng):
+    """For `clone --from-save`: play a whole run in `run` (simple run policy) to a decision some way into its first,
+    second or third fight, export that fight and rebuild it in `sim` from the saved run state (`fight_from_save`).
+    Returns the encounter label, or None when the run ended first."""
+    if str(PROJECT / "tools") not in sys.path:
+        sys.path.insert(0, str(PROJECT / "tools"))
+    import plan_turn as pt
+    obs = run.call(cmd="new_run", spec={"seed": f"CLONESAVE{k:05d}", "character": "IRONCLAD", "ascension": 0, "record_fights": True}, timeout=120)["obs"]
+    want_fight, want_decision = 1 + k % 3, rng.randint(0, 12)
+    nf, prev, actions = 0, False, []
+    for _ in range(4000):
+        if obs["screen"] == "game_over":
+            return None
+        in_fight = obs["screen"] == "combat" or (obs["screen"] == "choice" and bool(obs.get("combat")))
+        if in_fight and not prev:
+            nf, actions = nf + 1, []
+        acts = run.call(cmd="run_legal")["actions"]
+        if in_fight and nf == want_fight and len(actions) >= want_decision:
+            data = run.call(cmd="export_fight")["replay_b64"]
+            got = sim.call(cmd="fight_from_save", data=data, actions=actions, sample_seed=k + 1, timeout=120)["obs"]
+            return "/".join(e["enemy_id"] for e in (got.get("combat") or {}).get("enemies", []))[:36] or "?"
+        action = run_policy(pt, obs, acts, rng)
+        if in_fight:
+            actions.append(action)
+        prev = in_fight
+        obs = run.call(cmd="run_step", action=action, timeout=120)["obs"]
+    return None
+
+
 def cmd_clone(a):
     """State cloning (P7.E4.S4): snapshot a decision-mode fight, play on, restore, and check the restored state equals
-    the snapshot (observation, draw order, every generator) and that the same actions then lead to the same result."""
+    the snapshot (observation, draw order, every generator) and that the same actions then lead to the same result.
+    `--from-save`: the fights are rebuilt from the saved state of fights inside simulated runs (`fight_from_save`)."""
+    import contextlib
     import random
     ok, times = 0, []
-    with Sim() as sim:
+    with Sim() as sim, (Sim() if a.from_save else contextlib.nullcontext()) as run:
         encs = [e["id"] for e in sim.encounters() if e["room_type"] in ("Monster", "Elite", "Boss")]
         rng = random.Random(7)
         for k in range(a.fights):
-            enc = encs[(k * 7) % len(encs)]
-            sim.new_fight(enc, seed=f"CLONE{k:07d}", sample_seed=k + 1)
+            if a.from_save:
+                enc = _fight_from_run(run, sim, k, rng)
+                if enc is None:
+                    continue
+            else:
+                enc = encs[(k * 7) % len(encs)]
+                sim.new_fight(enc, seed=f"CLONE{k:07d}", sample_seed=k + 1)
             for _ in range(rng.randint(2, 8)):          # play into the fight a little
                 acts = sim.legal()
                 if not acts or sim.observe()["status"] != "in_progress":
@@ -1181,6 +1217,7 @@ def main(argv=None):
     cl = sub.add_parser("clone")
     cl.set_defaults(fn=cmd_clone)
     cl.add_argument("--fights", type=int, default=12)
+    cl.add_argument("--from-save", action="store_true", help="rebuild the fights from fights inside simulated runs (fight_from_save)")
     for name, fn in (("smoke", cmd_smoke), ("fairplay", cmd_fairplay), ("planner", cmd_planner), ("fidelity", cmd_fidelity)):
         p = sub.add_parser(name)
         p.set_defaults(fn=fn)
