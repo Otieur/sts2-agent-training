@@ -156,7 +156,7 @@ Update this file whenever a story changes status. Story-level status lives in ea
 | M12 | Combat autopilot: every fight of 3 real runs, no language-model calls, median decision 1 s or less | — | | |
 | M13 | Search beats the rule planner (pre-registered) | — | | |
 | M14 | Learned combat models beat search with heuristic evaluation (pre-registered) | — | | |
-| M15 | Run benchmark with search playing every fight (decision 0004) | — | | |
+| M15 | Run benchmark with search playing every fight (decision 0004) | Done | 2026-11-21 | reports/phase9/run-bench-2.md (180 runs at A5, wide search in every fight, 0.6% planner fallbacks) |
 | M16 | Every strategic decision type has a policy validated on the run benchmark | — | | |
 | M17 | Simulated A5 win rate above 25% on the run benchmark | — | | |
 | M18 | Simulated A10 win rate above 8% on the run benchmark | — | | |

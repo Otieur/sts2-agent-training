@@ -28,7 +28,30 @@ Why: the first run benchmark (`run-bench-1.md`, rule planner fighting) found sco
 - What follows: if H1 holds, rule deck building becomes the default run policy for run benchmarks and simulated-run fight specs; if not, the scorer's act 1 behaviour (skip rate, support cards) is tested next with decision-time run evaluation (decision 0004, steps 3–4). If H2 holds, the route planner becomes the default; if not, its room models are recalibrated against simulated outcomes before routes are tested again.
 
 ## 5. Results
-Pending.
+Run 2026-11-21, 01:47–03:31 (`data/learn/runs/run-bench-2/manifest.json`; 6324 s wall, 6 workers, all exited cleanly, code `1b723ca`; all 60 seeds finished before the deadline). Reports: `python3 -I tools/run_bench.py --report data/learn/runs/run-bench-2` (H1) and `--baseline draft+shop+rest` (H2).
+
+| Policy | Runs | Mean floor | Median floor | Reached the act 1 boss | Beat it | Act 2 boss | Won | Final deck (mean cards) |
+|---|---|---|---|---|---|---|---|---|
+| base | 60 | 16.37 | 17 | 36 | 10 | 0 | 0 | 20.4 |
+| draft+shop+rest | 60 | 13.98 | 13 | 17 | 8 | 0 | 0 | 16.8 |
+| draft+shop+rest+path | 60 | 16.65 | 17 | 34 | 14 | 0 | 0 | 16.7 |
+
+| Pair (B − A), floors | Pairs | Mean difference | Bootstrap 95% | B better | B worse | Equal | Sign test p (one-sided) |
+|---|---|---|---|---|---|---|---|
+| draft+shop+rest − base (H1) | 60 | -2.38 | -4.32 to -0.52 | 9 | 36 | 15 | 1.000 |
+| draft+shop+rest+path − draft+shop+rest (H2) | 60 | +2.67 | 0.55 to 4.85 | 37 | 15 | 8 | 0.0016 |
+| draft+shop+rest+path − base (not tested) | 60 | +0.28 | -2.05 to 2.57 | 24 | 23 | 13 | 0.50 |
+
+- **H1** (`draft+shop+rest` reaches more floors than `base`): p = 1.000, mean −2.38: **does not hold; the difference goes the other way** (36 runs worse, 9 better, interval entirely below zero).
+- **H2** (adding the route planner reaches more floors than `draft+shop+rest`): p = 0.0016, mean +2.67: **holds**.
+
+Where runs die (room type of the fatal fight): `base` elites 23, bosses 29, hallways 8; `draft+shop+rest` elites 34, bosses 10, hallways 14, outside a fight 2; `draft+shop+rest+path` elites 25, bosses 23, hallways 12. HP lost per won fight: hallways 3.0 / 4.3 / 3.3, elites 24.0 / 30.5 / 32.3, bosses 47.0 / 35.5 / 37.1 (same order).
+
+Search in the fights: 26,747 searched moves; 0 fallbacks in `base`, 89 in `draft+shop+rest` (87 rebuild errors, 2 mismatches) and 67 in `draft+shop+rest+path` (66 and 1), about 0.6% overall; the errors come from fights started by events (the fight's save re-enters the event), which the planner then plays. No run was stopped by a host error.
+
+**Verdict: H1 does not hold (it reverses); H2 holds.** With search playing every fight, the rule deck building (scorer drafting, shop removals and purchases, rest rules) still ends runs earlier than taking the first card of every reward: −2.4 floors, and only 17 of 60 runs reach the act 1 boss against 36. The rule decks are smaller (16.8 cards against 20.4) and die in elites (34 of 60). So the run benchmark 1 result was not only a weak-fighter effect: at A5 the scorer's act 1 choices (skipping, cards that need support) cost more than they give. The route planner recovers the loss (+2.7 floors over the same deck rules, 34 runs reach the boss), ending level with `base`. No policy beats the act 2 boss; at A5 the act 1 boss is the wall (beaten in 10, 8 and 14 runs).
+
+By the rule in section 4: the route planner becomes the default route policy in run benchmarks and simulated-run fight specs; the deck-building rules do not, and the scorer's act 1 behaviour is tested next with decision-time evaluation (run benchmark 3, card rewards by sampled rollouts, pre-registered before these results were known).
 
 ## 6. Deviations and notes
 - 2026-11-21 01:45, before the run: the timing pilot showed that the first-option rule wrecks runs in some events. In the Tablet of Truth it chooses Decipher again and again, and max HP falls from 80 to 1 by floor 3, after which every arm dies by floor 7 or 8 whatever it drafts. The shared event rule in section 3 was changed from first option to the Player's most frequent choice (`event_pick` in `tools/run_bench.py`); a sweep of 30 other seeds with planner combat then showed no run with max HP below 60. The hypotheses, arms, seeds and test are unchanged; the pilot's outcomes are not used.
