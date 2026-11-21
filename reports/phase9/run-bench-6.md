@@ -1,6 +1,6 @@
 # Comparison: rollout decisions at Ascension 10 (run benchmark 6)
 
-Written before the run (decision 0004 steps 3–4, ML-10), 2026-11-21 at 06:35, after the results of run benchmarks 3 and 4 and before any result of run benchmark 5. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
+Written before the run (decision 0004 steps 3–4, ML-10), 2026-11-21 at 06:34, after the results of run benchmarks 3 and 4 and before any result of run benchmark 5. Sections 1–4 are not edited after the run starts; corrections go in section 6 with the reason.
 
 ## 1. Hypothesis
 - **H1:** at Ascension 10, choosing card rewards and map moves by sampled rollouts (`rcard+rpath`) reaches more floors than the best rule policy so far (`path`: first card, route planner) when search plays every fight.
