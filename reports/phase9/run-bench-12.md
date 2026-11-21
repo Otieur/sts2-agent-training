@@ -28,3 +28,5 @@ Why: run benchmark 11 turns three components on at once; this run tells which of
 Pending.
 
 ## 6. Deviations and notes
+- 2026-11-21 13:37, pause: the first start (13:34) was stopped after two minutes, before any seed finished, because the machine was about to sleep (the Player closing the lid). The run starts again from seed 0 with the same arguments and a deadline of its new start + 6 h (`data/learn/queue/queue5b.sh`). Before the restart the host call timeout in `tools/sim.py` was moved to the monotonic clock, which stands still while the machine sleeps: on the wall clock, every call under way during a sleep longer than its timeout would have failed on waking. Nothing else in the run code (`run_bench.py`, `run_eval.py`, `run_opts.py`, `sim.py`) differs from run benchmark 11's.
+- Rule for sleeps, fixed before any seed of this run finished: time asleep does not count towards the deadline. If the deadline cuts the run short after a sleep, the run is resumed with `--resume` and a deadline moved by the time asleep. `seconds` of a seed under way during a sleep includes the time asleep and is not used in any comparison.

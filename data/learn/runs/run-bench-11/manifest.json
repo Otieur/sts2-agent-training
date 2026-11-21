@@ -1,0 +1,128 @@
+{
+ "name": "run-bench-11",
+ "started": "2026-11-21 12:12",
+ "created": "2026-11-21 13:34",
+ "code_commit": "00d7251",
+ "code_uncommitted_changes": false,
+ "host": "Release2",
+ "fight_rebuild": "save+run",
+ "workers": 7,
+ "seed_order": "dynamic",
+ "resumed": false,
+ "policies": [
+  "rcard+rpath",
+  "rcard+rpath+pot+smith+rshop"
+ ],
+ "seeds": 30,
+ "seed_base": 11,
+ "ascension": 0,
+ "combat": "mcw6",
+ "deadline": "2026-11-21 17:12",
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 4894,
+ "report": {
+  "runs": 30,
+  "policies": {
+   "rcard+rpath": {
+    "runs": 30,
+    "mean_floor": 23.87,
+    "act1_boss": 16,
+    "act2_boss": 1,
+    "won": 0,
+    "died_in": {
+     "Monster": 6,
+     "Boss": 21,
+     "Elite": 3
+    },
+    "fights": {
+     "Monster": 298,
+     "Elite": 34,
+     "Boss": 38
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 6.5,
+     "Elite": 19.4,
+     "Boss": 43.3
+    },
+    "search": {
+     "searched": 6194,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 5564.7,
+     "via_run": 59
+    },
+    "policy": {
+     "rpath_decisions": 210,
+     "rpath_disagree": 96,
+     "rcard_decisions": 359,
+     "rcard_disagree": 223,
+     "rcard_skips": 61
+    },
+    "mean_seconds": 335.5
+   },
+   "rcard+rpath+pot+smith+rshop": {
+    "runs": 30,
+    "mean_floor": 30.9,
+    "act1_boss": 25,
+    "act2_boss": 6,
+    "won": 1,
+    "died_in": {
+     "Monster": 8,
+     "Boss": 16,
+     "Elite": 5
+    },
+    "fights": {
+     "Monster": 369,
+     "Elite": 38,
+     "Boss": 48
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 6.7,
+     "Elite": 9.4,
+     "Boss": 31.2
+    },
+    "search": {
+     "searched": 8177,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 12426.0,
+     "potions": 169,
+     "via_run": 48
+    },
+    "policy": {
+     "rpath_decisions": 282,
+     "rpath_disagree": 98,
+     "rcard_decisions": 449,
+     "rcard_disagree": 286,
+     "rcard_skips": 81,
+     "rshop_decisions": 46,
+     "rshop_disagree": 38,
+     "rshop_buys": 38
+    },
+    "mean_seconds": 620.1,
+    "vs_rcard+rpath": {
+     "pairs": 30,
+     "mean_floor_diff": 7.03,
+     "better": 21,
+     "worse": 4,
+     "equal": 5,
+     "sign_p_one_sided": 0.0004552602767944336,
+     "boot95": [
+      3.0,
+      11.0
+     ]
+    }
+   }
+  }
+ }
+}

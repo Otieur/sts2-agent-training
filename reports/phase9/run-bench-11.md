@@ -34,6 +34,26 @@ Why: the review of 2026-11-21 (`docs/reviews/2026-11-21-training-review.md`, F1)
 - What follows: if H1 holds, the three components join the run policy subject to run benchmark 12 (one removed at a time), and gate G1 of decision 0005 (at least 50% wins on 60 new A0 seeds) is measured with the resulting stack. If H1 does not hold, run benchmark 12 shows which component hurts, and the fight-outcome model for rollouts (decision 0005 item 4) moves first.
 
 ## 5. Results
-Pending.
+Run 2026-11-21 12:12–13:34 (30 of 30 seeds, 4,894 s, 7 workers, code `00d7251`; no search errors, fallbacks or mismatches in either arm).
+
+| | `rcard+rpath` | `rcard+rpath+pot+smith+rshop` |
+|---|---|---|
+| Mean floor (median) | 23.87 (21.5) | 30.90 (32) |
+| Wins | 0 of 30 (Wilson 95% 0–11%) | 1 of 30 (1–17%) |
+| Act 1 boss beaten | 16 of 29 | 25 of 30 |
+| Act 2 boss beaten | 1 of 8 | 6 of 15 |
+| Act 3 boss beaten | 0 of 1 | 1 of 3 |
+| Potions used per run (hallways / elites / bosses) | 0 | 5.73 (1.10 / 1.77 / 2.87) |
+| Upgrades at the act 1 boss (of them on Strikes and Defends) | 2.07 (1.93) | 3.07 (0.17) |
+| Upgrades at the act 2 boss (of them on Strikes and Defends) | 4.62 (2.50) | 7.33 (0.60) |
+| Shop purchases per run | 0 | 1.07 cards, 0.17 potions, 0.03 removals, no relics |
+| Gold left at the end | 482 | 503 |
+| Seconds per run | 336 | 620 |
+
+- **H1 holds.** Treatment − baseline: +7.03 floors (21 better, 4 worse, 5 equal; one-sided sign test p = 0.00046; bootstrap 95% 3.0 to 11.0).
+- **H2 is not shown.** Wins 1 against 0 (one discordant seed, p = 0.5).
+- Where runs end. Treatment: act 2 boss 9, act 1 boss 5, act 2 elites 5, act 2 hallways 5, act 3 hallways 3, act 3 boss 2. Baseline: act 1 boss 13, act 2 boss 7, act 2 hallways 6, act 2 elites 2, act 1 elite 1, act 3 boss 1.
+- Gold is still unspent. Shop rollouts buy about one card per run and almost never a removal or a relic, and 503 gold is left at the end: the shop component as built barely acts. Run benchmark 12 shows whether it adds anything; the unspent gold stays an open gap against the Player (about 180 gold spent before the act 1 boss).
+- Verdict: potions, the smith rule and shops together move the agent from dying at the act 1 boss to dying in act 2. That is a large gain and still far from gate G1 (50% wins). As registered, the three components join the run policy subject to run benchmark 12.
 
 ## 6. Deviations and notes

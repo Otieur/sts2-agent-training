@@ -43,10 +43,12 @@ class Sim:
             raise SimError(f"host did not start: {self.info}")
 
     def _read(self, timeout):
-        end = time.time() + timeout
+        # monotonic clock: it stands still while the machine sleeps, so a call that is under way when the lid closes
+        # does not time out on waking (the host is frozen for the same time)
+        end = time.monotonic() + timeout
         buf = b""
-        while time.time() < end:
-            ready, _, _ = select.select([self.proc.stdout], [], [], max(0.0, min(1.0, end - time.time())))
+        while time.monotonic() < end:
+            ready, _, _ = select.select([self.proc.stdout], [], [], max(0.0, min(1.0, end - time.monotonic())))
             if not ready:
                 if self.proc.poll() is not None:
                     raise SimError(f"host exited with code {self.proc.returncode}; last output: {self.noise[-3:]}")
