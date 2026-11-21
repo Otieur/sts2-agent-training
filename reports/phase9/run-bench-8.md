@@ -28,7 +28,20 @@ The measurement covers this whole stack, rules included.
 - With 30 runs the interval is wide (about ±17 points at a 50% rate). What follows: if the win rate is at or above 63%, the next measurement moves up within the band (A4); if it is well below, where the runs die decides which decision is improved next (fights, the remaining rule decisions, or the rollout value).
 
 ## 5. Results
-Pending.
+Run 2026-11-21, 10:19–10:54 (`data/learn/runs/run-bench-8/manifest.json`; 2131 s wall, 7 workers with dynamic seed claiming, all exited cleanly; all 30 runs finished before the deadline). Policy: `rcard+rpath` (run benchmark 7's H1 did not hold). Host: `sim/bin/Release2`. Code: the run started from `4a9aee5`. Report: `python3 -I tools/run_bench.py --report data/learn/runs/run-bench-8 --baseline rcard+rpath`.
+
+| | Runs | Won | Win rate (Wilson 95%) | Mean floor | Median floor | Act 1 boss reached / beaten | Act 2 boss reached / beaten | Act 3 boss reached / beaten |
+|---|---|---|---|---|---|---|---|---|
+| `rcard+rpath`, A0 | 30 | 0 | 0% (0–11%) | 26.5 | 27.5 | 30 / 18 | 10 / 3 | 2 / 0 |
+| *Reference: the Player, A0–4, v0.107.1* | 8 | 5 | 63% | 38.4 | | | | |
+
+Bosses (fights won / fought): act 1 Ceremonial Beast 3/7, The Kin 6/8, Vantom 9/15; act 2 The Insatiable 3/6, Kaiser Crab 0/3, Knowledge Demon 0/1; act 3 Queen 0/2.
+
+Where runs die: act 1 boss 12; act 2 hallways 4, elites 4, boss 7; act 3 hallway 1, boss 2. Bosses end 21 of the 30 runs. Mean HP fraction at the start of the act 1 boss fight: 0.85 in the fights won, 0.70 in those lost. HP lost per won fight: hallways 5.7, elites 19.3, bosses 50.8. Elites fought per run 1.1. Final decks average 22.6 cards, and the runs end with 462 gold on average, unspent because shops are left. Most common added cards: Setup Strike 21, Twin Strike 18, Anger 17, Thunderclap 16, Sword Boomerang 14.
+
+Rollout decisions: 395 card rewards (242 different from the first card, 60 skips) and 265 map choices (104 different from the route planner). Search: 6,413 searched moves, 0 fallbacks. 426 seconds per run.
+
+**Verdict: no wins in 30 runs at A0; the interval (0–11%) lies far below the Player's 63% at A0–4.** Every run reaches the act 1 boss and 60% beat it, but bosses end 21 of the 30 runs, in all three acts: 3 of 10 act 2 boss fights and 0 of 2 act 3 boss fights are won. By section 4, where the runs die decides the next target: the boss fights, as at A5 and A10. Two parts of the stack the queue already tests bear on them directly: unspent gold (462 per run; shops, run benchmark 10) and the rule decisions before each boss (rest sites, smithing, Neow and the Ancients; run benchmark 9). Boss replay 1 examines the fight play itself.
 
 ## 6. Deviations and notes
 - 2026-11-21 10:14, before the run (stopping rule, not outcomes): 7 workers instead of 6, and the seeds are claimed in index order by whichever worker is free (`--dynamic`) instead of fixed seeds per worker. Reason: the Player asked for full use of the CPU and stopped the other project's processes, which frees memory; with fixed seeds the workers that finish early sit idle at the end of each benchmark (32% of the CPU idle in run benchmark 7's tail). Each seed is played the same whichever worker plays it (the same random generator per seed, search by fixed counts of sampled worlds), so the change affects only the wall time and, if the deadline stops the run, which seeds are cut, and neither depends on outcomes.
