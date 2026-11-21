@@ -1,0 +1,112 @@
+{
+ "name": "run-bench-6",
+ "started": "2026-11-21 08:07",
+ "created": "2026-11-21 09:11",
+ "code_commit": "bcd4372",
+ "code_uncommitted_changes": false,
+ "host": "Release2",
+ "fight_rebuild": "save+run",
+ "policies": [
+  "path",
+  "rcard+rpath"
+ ],
+ "seeds": 60,
+ "seed_base": 6,
+ "ascension": 10,
+ "combat": "mcw6",
+ "deadline": "2026-11-21 10:30",
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 3840,
+ "report": {
+  "runs": 60,
+  "policies": {
+   "path": {
+    "runs": 60,
+    "mean_floor": 13.97,
+    "act1_boss": 4,
+    "act2_boss": 0,
+    "won": 0,
+    "died_in": {
+     "Elite": 33,
+     "Boss": 22,
+     "Monster": 5
+    },
+    "fights": {
+     "Monster": 287,
+     "Elite": 85,
+     "Boss": 26
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 5.0,
+     "Elite": 34.7,
+     "Boss": 57.8
+    },
+    "search": {
+     "searched": 6827,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 6552.7
+    },
+    "policy": {},
+    "mean_seconds": 110.8
+   },
+   "rcard+rpath": {
+    "runs": 60,
+    "mean_floor": 16.78,
+    "act1_boss": 5,
+    "act2_boss": 0,
+    "won": 0,
+    "died_in": {
+     "Elite": 14,
+     "Boss": 43,
+     "Monster": 3
+    },
+    "fights": {
+     "Monster": 388,
+     "Elite": 51,
+     "Boss": 48
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 5.9,
+     "Elite": 29.6,
+     "Boss": 40.2
+    },
+    "search": {
+     "searched": 7855,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 7598.7
+    },
+    "policy": {
+     "rpath_decisions": 348,
+     "rpath_disagree": 113,
+     "rcard_decisions": 441,
+     "rcard_disagree": 259,
+     "rcard_skips": 47
+    },
+    "mean_seconds": 219.1,
+    "vs_path": {
+     "pairs": 60,
+     "mean_floor_diff": 2.82,
+     "better": 32,
+     "worse": 7,
+     "equal": 21,
+     "sign_p_one_sided": 3.5127392038702965e-05,
+     "boot95": [
+      1.0333333333333334,
+      4.55
+     ]
+    }
+   }
+  }
+ }
+}
