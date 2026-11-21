@@ -60,4 +60,8 @@ H1 (card rollouts beat the first card) holds: +5.50 floors (interval 3.12 to 8.1
 - FI-7d: reviving Osty (e.g. the card Afterlife) calls scene nodes that are inert in the simulator, so the step fails. It matters for the Necrobinder in co-op.
 
 ## Next
-To be completed with run benchmarks 3 and 4.
+- **Boss readiness inside rollouts.** The rule planner fights inside the rollouts and rarely beats a boss, so rollout values hardly tell a deck that nearly beats the boss from one that does not, and they cannot see what elites give for the boss fight. Run benchmark 7 (pre-registered, starts after run benchmark 6) adds credit for the fraction of the boss's HP removed. If that helps, try a stronger boss signal: search instead of the planner for boss fights inside rollouts, or a learned model of the fight's outcome at its start.
+- **More decisions by rollouts:** shops (buy, remove), rest sites (rest or smith, which card), Neow and Ancients, boss relics, events. Each gets its own pre-registered comparison.
+- **Cost:** rollouts double the seconds per run (279 against 140 in run benchmark 5). A run-state value network trained on the rollouts (decision 0004 step 5) could prune options or replace short rollouts.
+- **Gap to the Player:** our best mean floor at A5 is 22.0 (run benchmark 5), against the Player's 29.7 at A5–9 (20 finished runs, 5 wins) and 23.8 at A10 (25 runs, 2 wins). No simulated run has won yet; the act 2 boss is now reached in 1 run of 5 at A5.
+- **Housekeeping:** make the Release2 build the main host (it passed every check) once no benchmark uses the old one; FI-7d (reviving Osty) needs the Player present; rollout decisions in real runs on profile 2 also need the Player present.

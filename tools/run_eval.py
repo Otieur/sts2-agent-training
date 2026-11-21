@@ -8,7 +8,11 @@ to the end of the current act or death. The same sample seeds are used for every
 options are compared on the same sampled futures. The option with the best mean rollout value is chosen.
 
 Rollout value: floors climbed from the decision point, plus, if the act's boss is beaten, 5 and 5 times the HP fraction
-left. Only what the player can see is used: the rollouts play in worlds whose unseen parts are freshly sampled.
+left. With `boss_credit` w > 0 (run benchmark 7), a rollout that dies in a boss fight also gets w times the fraction of
+the boss fight's enemy HP it removed (dying with the boss nearly dead is worth nearly as much as beating it; the rule
+planner that fights in rollouts rarely beats bosses, so without this most rollouts that reach the boss score alike),
+and a won run counts as beating the act's boss (in act 3 the act never advances). Only what the player can see is
+used: the rollouts play in worlds whose unseen parts are freshly sampled.
 
     python3 -I tools/run_eval.py --demo --seed RB90000001 --ascension 5     # one run, card rewards by rollouts, timings
 """
@@ -22,19 +26,35 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sim as S  # noqa: E402
 
 
-def rollout_value(start, end, start_act):
+# enemies above this HP cannot be killed (for example a boss that turns the fight into surviving); not counted
+UNKILLABLE_HP = 10_000
+
+
+def rollout_value(start, end, start_act, boss=None, boss_credit=0.0):
+    """`boss`: (enemy HP at the start of the last boss fight, enemy HP left at its last observation), or None."""
     climbed = (end.get("floor") or 0) - (start.get("floor") or 0)
     alive = end["screen"] != "game_over" or end["player"]["hp"] > 0
-    beat_boss = alive and (end.get("act") or 1) > start_act
+    beat_boss = alive and ((end.get("act") or 1) > start_act or (boss_credit > 0 and end["screen"] == "game_over"))
     bonus = 5 + 5 * end["player"]["hp"] / max(1, end["player"]["max_hp"]) if beat_boss else 0
+    if boss_credit > 0 and not alive and boss and boss[0] > 0:
+        bonus += boss_credit * max(0.0, min(1.0, 1 - boss[1] / boss[0]))
     return climbed + bonus
+
+
+def boss_fight_hp(obs):
+    """Enemy HP in a boss fight observation (killable enemies only), or None outside boss fights."""
+    in_fight = obs["screen"] == "combat" or (obs["screen"] == "choice" and bool(obs.get("combat")))
+    if not in_fight or not str(obs.get("encounter") or "").endswith("_BOSS"):
+        return None
+    es = [e for e in (obs.get("combat") or {}).get("enemies", []) if e.get("max_hp", 0) <= UNKILLABLE_HP]
+    return sum(e.get("max_hp", 0) for e in es), sum(max(0, e.get("current_hp", 0)) for e in es if e.get("is_alive", True))
 
 
 class RolloutEvaluator:
     """Owns an evaluation host. `evaluate(run_sim, obs, options)` returns the mean rollout value of each option."""
 
-    def __init__(self, k=6, max_steps=3000, rollout_policy="draft+shop+rest", seed_base=7_700_000):
-        self.k, self.max_steps, self.seed_base = k, max_steps, seed_base
+    def __init__(self, k=6, max_steps=3000, rollout_policy="draft+shop+rest", seed_base=7_700_000, boss_credit=0.0):
+        self.k, self.max_steps, self.seed_base, self.boss_credit = k, max_steps, seed_base, boss_credit
         self.rollout_policy = rollout_policy
         self.host = None
         self.stats = {"decisions": 0, "rollouts": 0, "errors": 0, "seconds": 0.0}
@@ -67,14 +87,23 @@ class RolloutEvaluator:
                                sample_seed=seed, timeout=120)["obs"]
                     o = h.call(cmd="run_step", action=opt, timeout=120)["obs"]
                     pol, rng = RB.Policy(self.rollout_policy), random.Random(seed)
+                    boss, prev = None, None                 # (enemy HP at the boss fight's start, enemy HP left)
                     for _ in range(self.max_steps):
                         if o["screen"] == "game_over" or (o.get("act") or 1) > start_act:
                             break
+                        if self.boss_credit > 0:
+                            bh = boss_fight_hp(o)
+                            if bh is not None:
+                                boss = (bh[0] if prev is None else max(boss[0], bh[0]), bh[1])
+                            prev = bh
                         acts = h.call(cmd="run_legal")["actions"]
                         if not acts:
                             break
                         o = h.call(cmd="run_step", action=pol.act(o, acts, rng, h), timeout=120)["obs"]
-                    values[i].append(rollout_value(obs, o, start_act))
+                    values[i].append(rollout_value(obs, o, start_act, boss, self.boss_credit))
+                    if self.boss_credit > 0 and boss is not None and o["screen"] == "game_over" and o["player"]["hp"] <= 0:
+                        self.stats["boss_deaths"] = self.stats.get("boss_deaths", 0) + 1
+                        self.stats["boss_hp_removed"] = self.stats.get("boss_hp_removed", 0.0) + max(0.0, min(1.0, 1 - boss[1] / max(1, boss[0])))
                     self.stats["rollouts"] += 1
                 except S.SimError:
                     self.stats["errors"] += 1

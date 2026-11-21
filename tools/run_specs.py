@@ -4,7 +4,9 @@
 Whole runs are played in the simulator from new seeds with the run benchmark's `path` policy (`tools/run_bench.py`):
 the first card of each reward, the route planner on the map, the Player's most frequent choice in events, the simple
 run policy elsewhere. Run benchmark 2 (2026-11-21) made this the default: the scorer's drafting lost 2.4 floors to the
-first card, the route planner added 2.7 (`reports/phase9/run-bench-2.md`).
+first card, the route planner added 2.7 (`reports/phase9/run-bench-2.md`). `--policy` takes any run benchmark policy;
+rollout components (`rcard`, `rpath`; run benchmarks 3-5) need `--no-test-hp`, since with the test HP every option
+survives to the end of the act and the rollouts cannot tell options apart.
 At the start of every fight the situation is recorded as a fight spec in the format of `tools/fight_specs.py`:
 encounter, act, floor, room type, ascension, deck, relics, potions, HP and max HP.
 
@@ -35,14 +37,16 @@ BASE_MAX_HP = 80
 
 
 _POLICY = None
+_POLICY_NAME = "path"
+ROLLOUT_PARTS = {"rdraft", "rcard", "rpath"}
 
 
 def spec_policy(obs, acts, rng, sim):
-    """The run benchmark's `path` policy (see the module text)."""
+    """The run benchmark's policy named by `--policy` (default `path`; see the module text)."""
     global _POLICY
     import run_bench
     if _POLICY is None:
-        _POLICY = run_bench.Policy("path")
+        _POLICY = run_bench.Policy(_POLICY_NAME)
     return _POLICY.act(obs, acts, rng, sim)
 
 
@@ -96,6 +100,8 @@ def play_run(sim, seed, ascension, rng, room_types, test_hp, max_steps=4000):
 
 
 def worker(a):
+    global _POLICY_NAME
+    _POLICY_NAME = a.policy
     out = []
     rng = random.Random(a.seed * 1000 + a.worker)
     with S.Sim() as sim:
@@ -112,6 +118,11 @@ def worker(a):
             out.extend(specs)
             print(f"w{a.worker} {seed} A{asc}: {len(specs)} fights, ended act {end.get('act')} floor {end.get('floor')} ({time.time() - t0:.0f} s)", flush=True)
             Path(a.out + f".part{a.worker}").write_text(json.dumps(out))
+    import run_bench
+    for name in ("_EVALUATOR", "_ROUTE_EVALUATOR", "_CARD_EVALUATOR"):   # rollout hosts, if the policy started any
+        ev = getattr(run_bench, name, None)
+        if ev is not None:
+            ev.close()
     return 0
 
 
@@ -122,13 +133,17 @@ def main(argv=None):
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--out", default=str(PROJECT / "data" / "learn" / "specs" / "run-specs-ironclad.json"))
     ap.add_argument("--no-test-hp", dest="test_hp", action="store_false")
+    ap.add_argument("--policy", default="path", help="run benchmark policy (tools/run_bench.py), default path")
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     a = ap.parse_args(argv)
     if a.worker is not None:
         return worker(a)
+    if a.test_hp and ROLLOUT_PARTS & set(a.policy.split("+")):
+        ap.error("rollout components need --no-test-hp (with the test HP every option survives and rollouts tie)")
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--workers", str(a.workers), "--runs", str(a.runs),
-                               "--seed", str(a.seed), "--out", a.out] + ([] if a.test_hp else ["--no-test-hp"])) for w in range(a.workers)]
+                               "--seed", str(a.seed), "--out", a.out, "--policy", a.policy] + ([] if a.test_hp else ["--no-test-hp"]))
+             for w in range(a.workers)]
     codes = [p.wait() for p in procs]
     specs = []
     for w in range(a.workers):
@@ -137,7 +152,7 @@ def main(argv=None):
             specs.extend(json.loads(part.read_text()))
             part.unlink()
     about = {"source": "simulated whole runs (tools/run_specs.py)", "created": time.strftime("%Y-%m-%d %H:%M"), "runs": a.runs,
-             "seed": a.seed, "test_hp": a.test_hp, "policy": "tools/run_bench.py Policy('path'): first card, route planner, events by the Player's most frequent choice, tools/sim.py run_policy elsewhere",
+             "seed": a.seed, "test_hp": a.test_hp, "policy": (f"tools/run_bench.py Policy('{a.policy}')" + (": first card, route planner, events by the Player's most frequent choice, tools/sim.py run_policy elsewhere" if a.policy == "path" else "")),
              "hp": "45-100% of 80 plus relic gains" if a.test_hp else "as played", "fights": len(specs),
              "by_act": {act: sum(1 for s in specs if s["act"] == act) for act in (1, 2, 3)},
              "by_room": {r: sum(1 for s in specs if s["room"] == r) for r in ("Monster", "Elite", "Boss")}, "worker_exit_codes": codes}

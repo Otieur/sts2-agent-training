@@ -19,8 +19,12 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
   failures to the draft scorer (run benchmark 3).
 - `rcard`: card rewards by sampled rollouts, ties and failures to the first card.
 - `rpath`: map moves by sampled rollouts, ties and failures to the route planner (run benchmark 4).
+- `bc`: the rollouts of `rdraft`, `rcard` and `rpath` credit progress against a boss (`tools/run_eval.py`
+  `boss_credit`, weight `BOSS_CREDIT`): a rollout that dies in a boss fight gets that weight times the fraction of the
+  boss fight's enemy HP it removed, and a won run counts as beating the act's boss (run benchmark 7).
 `rcard` and `rpath` rollouts are played by this policy with every rollout component replaced by its rule counterpart
-(`rpath` by `path`, `rdraft` by `draft`, `rcard` by the first card; `Policy.rule_policy`), so rollouts never nest.
+(`rpath` by `path`, `rdraft` by `draft`, `rcard` by the first card, `bc` dropped; `Policy.rule_policy`), so rollouts
+never nest.
 
 Combat is played by the rule planner by default (fast), or with `--combat mcwK` by wide search in a second host: the
 run host exports each fight's start state (the run saved at room entry, from the game's own recording), the search
@@ -60,6 +64,7 @@ _EVALUATOR = None
 _ROUTE_EVALUATOR = None
 _CARD_EVALUATOR = None
 ROLLOUTS_K = 6
+BOSS_CREDIT = 5.0           # the `bc` weight: dying with the boss at 0 HP is worth as much as beating it with 0 HP left
 
 
 def event_pick(obs, acts):
@@ -168,7 +173,7 @@ class Policy:
         global _EVALUATOR
         import run_eval
         if _EVALUATOR is None:
-            _EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K)
+            _EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K, boss_credit=self.boss_credit())
         opts = run_eval.card_reward_options(acts)
         if len(opts) < 2:
             return None
@@ -195,7 +200,8 @@ class Policy:
         if len(opts) < 2:
             return None
         if _CARD_EVALUATOR is None:
-            _CARD_EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K, rollout_policy=self.card_rollout_policy(), seed_base=9_900_000)
+            _CARD_EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K, rollout_policy=self.card_rollout_policy(), seed_base=9_900_000,
+                                                        boss_credit=self.boss_credit())
         vals = _CARD_EVALUATOR.evaluate(sim, obs, opts)
         if any(v is None for v in vals):
             self.stats["rcard_failed"] = self.stats.get("rcard_failed", 0) + 1
@@ -208,9 +214,12 @@ class Policy:
 
     def rule_policy(self):
         """This policy with every rollout component replaced by its rule counterpart (`rpath` by `path`, `rdraft` by
-        `draft`, `rcard` by the first card), so that rollouts never start rollouts of their own."""
-        swap = {"rpath": "path", "rdraft": "draft", "rcard": None}
+        `draft`, `rcard` by the first card, `bc` dropped), so that rollouts never start rollouts of their own."""
+        swap = {"rpath": "path", "rdraft": "draft", "rcard": None, "bc": None}
         return "+".join(sorted({swap.get(x, x) for x in self.parts} - {None})) or "base"
+
+    def boss_credit(self):
+        return BOSS_CREDIT if "bc" in self.parts else 0.0
 
     def card_rollout_policy(self):
         return self.rule_policy()
@@ -225,7 +234,8 @@ class Policy:
         if len(moves) < 2:
             return None
         if _ROUTE_EVALUATOR is None:
-            _ROUTE_EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K, rollout_policy=self.route_rollout_policy(), seed_base=8_800_000)
+            _ROUTE_EVALUATOR = run_eval.RolloutEvaluator(k=ROLLOUTS_K, rollout_policy=self.route_rollout_policy(), seed_base=8_800_000,
+                                                         boss_credit=self.boss_credit())
         vals = _ROUTE_EVALUATOR.evaluate(sim, obs, moves)
         if any(v is None for v in vals):
             self.stats["rpath_failed"] = self.stats.get("rpath_failed", 0) + 1
