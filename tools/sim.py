@@ -471,6 +471,44 @@ def cmd_runclone(a):
             for name, ok in checks.items():
                 print(f"{'ok  ' if ok else 'FAIL'} sampler at floor {obs['floor']}: {name}")
                 fails += not ok
+        # no repeated encounters within an act in sampled futures (the game does not repeat while others remain)
+        def act_encounters(host, o, r, log):
+            act = o.get("act")
+            for _ in range(600):
+                if o["screen"] == "game_over" or o.get("act") != act:
+                    break
+                legal = host.call(cmd="run_legal")["actions"]
+                if not legal:
+                    break
+                o = host.call(cmd="run_step", action=run_policy(pt, o, legal, r), timeout=120)["obs"]
+                e = o.get("encounter")
+                if e and o["screen"] == "combat" and (not log or log[-1] != e):
+                    log.append(e)
+        rep = {"true": [0, 0], "sampled": [0, 0]}
+        for k in range(4):
+            rng = random.Random(200 + k)
+            obs = run.call(cmd="new_run", spec={"seed": f"RUNREPEAT{k:03d}", "character": "IRONCLAD", "ascension": 0, "test_max_hp": 999}, timeout=120)["obs"]
+            seen = []
+            while obs.get("floor", 0) < 5 or obs["screen"] != "map":
+                obs = run.call(cmd="run_step", action=run_policy(pt, obs, run.call(cmd="run_legal")["actions"], rng), timeout=120)["obs"]
+                e = obs.get("encounter")
+                if e and obs["screen"] == "combat" and (not seen or seen[-1] != e):
+                    seen.append(e)
+            ex = run.call(cmd="run_export")["export"]
+            futs = [("true", run, obs)] + [("sampled", cl, cl.call(cmd="run_from_save", data=ex["save_b64"], actions=ex["actions"],
+                                                                     test_hp=ex["test_hp"], sample_seed=sd, timeout=120)["obs"]) for sd in (1, 2)]
+            for name, host, o in futs:
+                log = []
+                act_encounters(host, o, random.Random(5), log)
+                met = set(seen)
+                for e in log:
+                    rep[name][0] += e in met and not e.endswith("_BOSS")
+                    met.add(e)
+                rep[name][1] += len(log)
+        rate = {k: v[0] / max(1, v[1]) for k, v in rep.items()}
+        ok = rate["sampled"] <= rate["true"] + 0.02
+        print(f"{'ok  ' if ok else 'FAIL'} repeated encounters within the act: true {rep['true'][0]}/{rep['true'][1]}, sampled {rep['sampled'][0]}/{rep['sampled'][1]}")
+        fails += not ok
         # leak canary: the next normal encounter after a decision point, true against sampled
         rng = random.Random(9)
         obs = run.call(cmd="new_run", spec={"seed": "RUNCANARY01", "character": "IRONCLAD", "ascension": 0, "test_max_hp": 999}, timeout=120)["obs"]

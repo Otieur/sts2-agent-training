@@ -29,4 +29,4 @@ Why: every deck-building rule so far is a hand-made score (`tools/draft.py`), ne
 Pending.
 
 ## 6. Deviations and notes
-None yet.
+- 2026-11-21 04:10, during the run, a note on the rollouts (no change to the run): the run sampler of the Release build used here can put an encounter already met in the act back into a sampled future (9% of future encounters in a check of eight runs; the real game repeats none). Rollout worlds are therefore slightly off, the same for every option and arm. Fixed afterwards in `sim/RunSampler.cs` (0% after the fix), not used by this run.

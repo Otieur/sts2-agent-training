@@ -94,14 +94,28 @@ public static class RunSampler
         };
     }
 
-    // Keeps the first `keep` entries of the live list and takes the rest from the freshly generated one.
+    // Keeps the first `keep` entries of the live list (what has been visited) and fills the rest from the freshly
+    // generated list, in its order, without anything already visited in the act: the game does not repeat an encounter
+    // or event within an act while others remain (measured 2026-11-21: 0 repeats in 43 true future encounters, 9% in
+    // sampled futures before this rule). Gaps left by removed entries are filled from the fresh list's own first part,
+    // weak encounters excluded (they only open an act); repeats are allowed only once every distinct entry is used.
+    static string IdOf(object x) => (x as AbstractModel)?.Id.Entry ?? x?.ToString() ?? "";
+
     static int Splice(IList live, IList neu, int keep)
     {
         keep = Math.Min(keep, live.Count);
+        var kept = new HashSet<string>();
+        for (var i = 0; i < keep; i++) kept.Add(IdOf(live[i]));
         while (live.Count > keep) live.RemoveAt(live.Count - 1);
-        var n = 0;
-        for (var i = keep; i < neu.Count; i++) { live.Add(neu[i]); n++; }
-        return n;
+        var need = Math.Max(0, neu.Count - keep);
+        var tail = new List<object>();
+        var used = new HashSet<string>(kept);
+        foreach (var x in neu.Cast<object>().Skip(keep)) if (tail.Count < need && used.Add(IdOf(x))) tail.Add(x);
+        foreach (var x in neu.Cast<object>().Take(keep))
+            if (tail.Count < need && !IdOf(x).EndsWith("_WEAK") && used.Add(IdOf(x))) tail.Add(x);
+        foreach (var x in neu.Cast<object>().Skip(keep)) if (tail.Count < need && !tail.Contains(x)) tail.Add(x);
+        foreach (var x in tail) live.Add(x);
+        return tail.Count;
     }
 
     static void Shuffle(IList list, ulong seed)
