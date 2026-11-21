@@ -17,10 +17,10 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
   upgrade priority list (Bash, then the deck's highest-tier cards by the draft scorer's tiers, Strikes and Defends last).
 - `rdraft`: card rewards by sampled rollouts (`tools/run_eval.py`), rollouts played by `draft+shop+rest`, ties and
   failures to the draft scorer (run benchmark 3).
-- `rcard`: card rewards by sampled rollouts played by this policy without `rcard` (first card), ties and failures to
-  the first card.
-- `rpath`: map moves by sampled rollouts played by this policy with `path` in place of `rpath`, ties and failures to
-  the route planner (run benchmark 4).
+- `rcard`: card rewards by sampled rollouts, ties and failures to the first card.
+- `rpath`: map moves by sampled rollouts, ties and failures to the route planner (run benchmark 4).
+`rcard` and `rpath` rollouts are played by this policy with every rollout component replaced by its rule counterpart
+(`rpath` by `path`, `rdraft` by `draft`, `rcard` by the first card; `Policy.rule_policy`), so rollouts never nest.
 
 Combat is played by the rule planner by default (fast), or with `--combat mcwK` by wide search in a second host: the
 run host exports each fight's start state (the run saved at room entry, from the game's own recording), the search
@@ -206,8 +206,14 @@ class Policy:
         self.stats["rcard_skips"] = self.stats.get("rcard_skips", 0) + (not opts[best].get("cards"))
         return opts[best]
 
+    def rule_policy(self):
+        """This policy with every rollout component replaced by its rule counterpart (`rpath` by `path`, `rdraft` by
+        `draft`, `rcard` by the first card), so that rollouts never start rollouts of their own."""
+        swap = {"rpath": "path", "rdraft": "draft", "rcard": None}
+        return "+".join(sorted({swap.get(x, x) for x in self.parts} - {None})) or "base"
+
     def card_rollout_policy(self):
-        return "+".join(sorted(x for x in self.parts if x != "rcard")) or "base"
+        return self.rule_policy()
 
     def route_rollout_pick(self, sim, obs, acts):
         """Map moves by sampled rollouts (tools/run_eval.py): each next point is played forward over the same
@@ -231,7 +237,7 @@ class Policy:
         return moves[best]
 
     def route_rollout_policy(self):
-        return "+".join(sorted("path" if x == "rpath" else x for x in self.parts)) or "base"
+        return self.rule_policy()
 
     def route_pick(self, sim, obs, acts):
         """Route by the path planner (`tools/path.py`: expected loot against fatal risk, room models from the history);
