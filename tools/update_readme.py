@@ -50,6 +50,9 @@ def label(arm):
     m = re.fullmatch(r"mc(\d+)", arm)
     if m:
         return ("Monte Carlo search", f"{m.group(1)} sampled futures per move")
+    m = re.fullmatch(r"mcwq(\d+)(?:k(\d+))?", arm)
+    if m:
+        return ("Search, wide with network filter", f"best {m.group(2) or 4} moves by the action-value network, {m.group(1)} futures each")
     m = re.fullmatch(r"mcw(\d+)", arm)
     if m:
         return ("Monte Carlo search, wide", f"all distinct moves, {m.group(1)} futures each")
@@ -142,7 +145,7 @@ def chart_arms(arms):
     pick = ["planner"]
     pick += [a for a in arms if a == "qpolicy"]
     pick += [a for a in arms if re.fullmatch(r"(vleaf\d+|vgreedy)", a) and arms[a][0]["won"] >= base]
-    pick += sorted((a for a in arms if re.fullmatch(r"mcw?\d+", a)), key=lambda a: (a.startswith("mcw"), int(re.sub(r"\D", "", a))))
+    pick += sorted((a for a in arms if re.fullmatch(r"mc(?:wq?)?\d+(?:k\d+)?", a)), key=lambda a: (a.startswith("mcw"), a.startswith("mcwq"), int(re.search(r"\d+", a).group())))
     return pick
 
 
@@ -189,7 +192,7 @@ def sections(f):
     s = {}
     fid = f["fidelity"]
     arms, _ = latest_arms(f["bench_runs"])
-    search = [a for a in arms if re.fullmatch(r"mcw?\d+", a)]
+    search = [a for a in arms if re.fullmatch(r"mc(?:wq?)?\d+(?:k\d+)?", a)]
     best = max(search, key=lambda a: arms[a][0]["mean_value"]) if search else None
     gain = (arms[best][0]["mean_value"] - arms["planner"][0]["mean_value"]) if best and "planner" in arms else None
     cards = [

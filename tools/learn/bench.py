@@ -18,6 +18,8 @@ Policies (arms):
 - `mcwK` (for example `mcw6`): flat Monte Carlo over a wider candidate set: the planner's candidates plus every other
   legal card play (one per distinct card and target), at most 8 candidates (`tools/sim.py search_candidates_wide`).
 - `vleafK` (for example `vleaf2`): `vleaf` with K worlds per candidate.
+- `mcwqK` / `mcwqKkN` (for example `mcwq6`, `mcwq6k5`): wide candidates filtered by the action-value network to at
+  most N (default 4; the planner's own candidates and ending the turn always kept), then flat Monte Carlo with K worlds.
 - `qpolicy`: the action-value network (`tools/learn/train_q.py`) scores the planner's candidates; no restore at all.
 - `vgreedy` / `vgreedyK`: one ply; each candidate played on K re-sampled worlds (default 1) and the position right after
   it scored by the network. The fast policy.
@@ -179,6 +181,33 @@ class QPolicy:
         return cands, values, max(range(len(cands)), key=lambda i: values[i])
 
 
+class QFilterSearch(QPolicy):
+    """Wide candidates cut down by the action-value network before flat Monte Carlo: the planner's own candidates and
+    ending the turn are always kept, the other wide candidates only while the total stays at `keep`, best Q first."""
+    def __init__(self, q_path, k=6, keep=4, top=2):
+        super().__init__(q_path, top)
+        self.k, self.keep = k, keep
+
+    def candidates(self, sim, obs):
+        base = S.search_candidates(sim, pt, obs, self.top)
+        wide = S.search_candidates_wide(sim, pt, obs, self.top)
+        if len(wide) <= self.keep or any(c["type"] == "choose" for c in wide):
+            return wide
+        extra = [c for c in wide if not any(S._same_action(c, b) for b in base)][:self.M.MAX_CANDS]
+        if not extra:
+            return base
+        with self.torch.no_grad():
+            q = self.model(self.M.collate([self.enc.encode(obs)]) | self.M.collate_actions([extra]))[0, :len(extra)].tolist()
+        ranked = [c for _, c in sorted(zip(q, range(len(extra))), reverse=True)]
+        room = max(0, self.keep - len(base))
+        kept = [extra[i] for i in ranked[:room]]
+        plays = [c for c in base if c["type"] != "end_turn"] + kept
+        return plays + [c for c in base if c["type"] == "end_turn"]
+
+    def __call__(self, sim, obs, d, done):
+        return SP.scored_search(sim, obs, "balanced", self.k, self.top, d, done, cand_fn=self.candidates)
+
+
 def make_arm(name, model_path, q_path=None, room=None):
     """Arms; a trailing `p` (plannerp, mc6p) lets the planner and its rollouts drink potions at the room's price."""
     if name in ("planner", "plannerp"):
@@ -192,6 +221,9 @@ def make_arm(name, model_path, q_path=None, room=None):
         return ValueLeaf(model_path, int(m.group(1) or 6))
     if name == "qpolicy":
         return QPolicy(q_path)
+    m = re.fullmatch(r"mcwq(\d*)(?:k(\d+))?", name)
+    if m:
+        return QFilterSearch(q_path, int(m.group(1) or 6), int(m.group(2) or 4))
     m = re.fullmatch(r"vgreedy(\d*)", name)
     if m:
         return ValueGreedy(model_path, int(m.group(1) or 1))
