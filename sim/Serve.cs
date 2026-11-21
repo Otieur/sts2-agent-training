@@ -180,10 +180,7 @@ public static class Serve
                         break;
                     case "fight_from_save":
                     {
-                        var reader = new MegaCrit.Sts2.Core.Multiplayer.Serialization.PacketReader();
-                        reader.Reset(Convert.FromBase64String((string)req["data"]!));
-                        var rec = reader.Read<MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay>();
-                        s.FightFromSave(rec, req["actions"]?.AsArray() ?? new JsonArray(), (ulong)(req["sample_seed"]?.GetValue<long>() ?? 1L));
+                        s.FightFromSave(Convert.FromBase64String((string)req["data"]!), req["actions"]?.AsArray() ?? new JsonArray(), (ulong)(req["sample_seed"]?.GetValue<long>() ?? 1L));
                         resets++;
                         reply["obs"] = s.Observe();
                         break;

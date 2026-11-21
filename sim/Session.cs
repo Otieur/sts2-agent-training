@@ -57,8 +57,13 @@ public sealed partial class Session
     // then sanitized with the sample seed. Unlike a replay set-up, choices are answered locally, so search works as on
     // a fight from nothing. Used to search fights inside simulated runs, and the route for live fights
     // (docs/proposals/live-search.md).
-    public void FightFromSave(MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay recording, JsonArray actions, ulong sampleSeed)
+    // The recording is read from its bytes on every call: the game's load keeps references into the serializable run and
+    // changes them during play, so a recording object that has been played once does not rebuild the same fight again.
+    public void FightFromSave(byte[] bytes, JsonArray actions, ulong sampleSeed)
     {
+        var reader = new MegaCrit.Sts2.Core.Multiplayer.Serialization.PacketReader();
+        reader.Reset(bytes);
+        var recording = reader.Read<MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay>();
         SynchronizationContext.SetSynchronizationContext(Ctx);
         if (Run != null) { Unwind(); Rm.CleanUp(true); Ctx.Drain(); }
         Replay = null;
@@ -91,7 +96,7 @@ public sealed partial class Session
         finally { _rebuilding = false; }
         Sanitizer.Apply(this, sampleSeed);
         Sanitized = true;
-        NoteOriginSave(recording, actions, sampleSeed);
+        NoteOriginSave(bytes, actions, sampleSeed);
     }
 
     public void LoadBytes(byte[] bytes)

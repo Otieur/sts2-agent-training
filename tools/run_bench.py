@@ -209,6 +209,10 @@ class SearchCombat:
                                    sample_seed=1_000_003 * (d + 1) + 17, timeout=120)["obs"]
             if visible(o) != visible(obs):
                 self.stats["mismatch"] += 1
+                if self.stats["mismatch"] <= 3:
+                    names = ("turn", "hp", "energy", "block", "hand", "draw", "discard", "exhaust", "enemies", "powers", "choice")
+                    print(f"  mismatch {fight_key} decision {len(fight_actions)}: " + "; ".join(
+                        f"{n}: search {x} / run {y}" for n, x, y in zip(names, visible(o), visible(obs)) if x != y)[:900], flush=True)
                 return None
             cands, values, best = self.SP.scored_search(self.host.sim, o, "balanced", self.k, 2, d, {}, wide=self.wide)
             self.stats["search_seconds"] += time.time() - t0
@@ -217,8 +221,10 @@ class SearchCombat:
                 return None
             self.stats["searched"] += 1
             return a
-        except (S.SimError, self.SP.Tainted):
+        except (S.SimError, self.SP.Tainted) as e:
             self.stats["errors"] += 1
+            if self.stats["errors"] <= 3:
+                print(f"  search error {fight_key} decision {len(fight_actions)}: {str(e)[:400]}", flush=True)
             self.host.restart()
             return None
 
@@ -232,25 +238,27 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None):
         spec["record_fights"] = True
     obs = sim.call(cmd="new_run", spec=spec, timeout=120)["obs"]
     bosses, steps, last_act, d = 0, 0, 1, 0
-    fight_actions, prev_screen, fight_no = [], None, 0
+    fight_actions, prev_fight, fight_no = [], False, 0
     for steps in range(max_steps):
         if obs["screen"] == "game_over":
             break
-        if obs["screen"] == "combat" and prev_screen != "combat":
+        # a choice opened by a card during a fight (e.g. Armaments) is part of the fight: the observation keeps its combat block
+        in_fight = obs["screen"] == "combat" or (obs["screen"] == "choice" and bool(obs.get("combat")))
+        if in_fight and not prev_fight:
             fight_actions, fight_no = [], fight_no + 1
         acts = sim.call(cmd="run_legal")["actions"]
         if not acts:
             break
         a = None
-        if combat is not None and obs["screen"] == "combat":
+        if combat is not None and in_fight:
             a = combat.act(sim, obs, acts, d, fight_actions, (seed, fight_no))
             d += 1
             if a is None:
                 combat.stats["fallback"] += 1
         action = a or policy.act(obs, acts, rng, sim)
-        if obs["screen"] == "combat":
+        if in_fight:
             fight_actions.append(action)
-        prev_screen = obs["screen"]
+        prev_fight = in_fight
         try:
             obs = sim.call(cmd="run_step", action=action, timeout=120)["obs"]
         except S.SimError:

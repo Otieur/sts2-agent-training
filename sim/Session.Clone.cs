@@ -10,7 +10,7 @@ using System.Text.Json.Nodes;
 
 public sealed partial class Session
 {
-    sealed record Origin(string Kind, JsonNode Spec, int Events, ulong Seed, MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay Recording);
+    sealed record Origin(string Kind, JsonNode Spec, int Events, ulong Seed, MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay Recording, byte[] Bytes = null);
     Origin _origin;
     readonly List<JsonNode> _ops = new();
     readonly List<(Origin Origin, JsonNode[] Ops)> _snapshots = new();
@@ -24,9 +24,9 @@ public sealed partial class Session
 
     void ForgetOrigin() { _origin = null; _ops.Clear(); }
 
-    void NoteOriginSave(MegaCrit.Sts2.Core.Multiplayer.Replay.CombatReplay recording, JsonArray actions, ulong seed)
+    void NoteOriginSave(byte[] bytes, JsonArray actions, ulong seed)
     {
-        _origin = new Origin("save", new JsonObject { ["actions"] = actions.DeepClone() }, 0, seed, recording);
+        _origin = new Origin("save", new JsonObject { ["actions"] = actions.DeepClone() }, 0, seed, null, bytes);
         _ops.Clear();
     }
 
@@ -47,7 +47,7 @@ public sealed partial class Session
         var sw = System.Diagnostics.Stopwatch.StartNew();
         var (o, ops) = _snapshots[id];
         if (o.Kind == "fight") NewFight(o.Spec, o.Seed);
-        else if (o.Kind == "save") FightFromSave(o.Recording, o.Spec["actions"]!.AsArray(), o.Seed);
+        else if (o.Kind == "save") FightFromSave(o.Bytes, o.Spec["actions"]!.AsArray(), o.Seed);
         else { Replay = o.Recording; Reset(o.Events, o.Seed); }
         var replay = System.Diagnostics.Stopwatch.StartNew();
         foreach (var op in ops)

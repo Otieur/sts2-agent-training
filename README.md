@@ -47,7 +47,7 @@
 <td align="center" width="25%"><h3>57</h3>human runs analysed<br><sub>deaths, damage per encounter, card picks</sub></td>
 <td align="center" width="25%"><h3>11 / 11</h3>recorded fights replayed exactly<br><sub>by the simulator, every state equal</sub></td>
 <td align="center" width="25%"><h3>+51</h3>value per fight from search<br><sub>best search (mcw6) over the rule planner, 120 games</sub></td>
-<td align="center" width="25%"><h3>64,534</h3>self-play decisions<br><sub>from 3,516 simulated fights</sub></td>
+<td align="center" width="25%"><h3>84,205</h3>self-play decisions<br><sub>from 4,435 simulated fights</sub></td>
 </tr>
 </table>
 <!-- auto:numbers:end -->
@@ -71,7 +71,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-dark.svg">
-    <img src="assets/benchmark-light.svg" alt="Benchmark wins out of 120: rule planner 75, action-value network 78, Monte Carlo search 86" width="88%">
+    <img src="assets/benchmark-light.svg" alt="Benchmark wins out of 120: rule planner 75, action-value network 74, Monte Carlo search 86 to 89, wide Monte Carlo search 99" width="88%">
   </picture>
 </p>
 
@@ -80,13 +80,14 @@
 <!-- auto:latest:start -->
 | Policy | Fights won | Mean value | Time per move | Model | Run |
 |---|---|---|---|---|---|
-| Monte Carlo search, wide (`mcw6`) | 99 of 120 | -7.7 | 1.9 s | – | [`potions-wide-1`](data/learn/bench/potions-wide-1/manifest.json) 2026-11-20 |
+| Monte Carlo search, wide (`mcw6`) | 99 of 120 | -7.7 | 2.6 s | – | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
+| Search, wide with network filter (`mcwq6`) | 94 of 120 | -17.9 | 1.8 s | – | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
 | Monte Carlo search (`mc24`) | 89 of 120 | -26.1 | 3.5 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
-| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 917 ms | – | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
+| Monte Carlo search (`mc6`) | 86 of 120 | -34.9 | 1.3 s | – | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
 | Monte Carlo search (`mc12`) | 85 of 120 | -32.6 | 1.8 s | – | [`budget-1`](data/learn/bench/budget-1/manifest.json) 2026-11-20 |
-| Action-value network (`qpolicy`) | 81 of 120 | -50.3 | 10 ms | `q-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
-| Rule planner (`planner`) | 75 of 120 | -59.1 | 3 ms | – | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
-| Search with value network (`vleaf2`) | 73 of 120 | -63.0 | 181 ms | `value-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
+| Rule planner (`planner`) | 75 of 120 | -59.1 | 4 ms | – | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
+| Action-value network (`qpolicy`) | 74 of 120 | -56.9 | 11 ms | `q-v5` | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
+| Search with value network (`vleaf2`) | 70 of 120 | -64.5 | 234 ms | `value-v5` | [`vsearch-5b`](data/learn/bench/vsearch-5b/manifest.json) 2026-11-21 |
 | Search with value network (`vleaf6`) | 68 of 120 | -67.0 | 469 ms | `value-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
 | Value network, one step (`vgreedy`) | 66 of 120 | -77.2 | 68 ms | `value-v4` | [`vsearch-4`](data/learn/bench/vsearch-4/manifest.json) 2026-11-20 |
 <!-- auto:latest:end -->
@@ -105,11 +106,11 @@
 | **Speed** | About 32 fights per second per core; restoring a snapshot takes 4 ms at the median (longer late in long fights, since the moves since the start are replayed). | [spike report](reports/phase7/spike.md) |
 | **Fair play** | 8 of 8 checks pass: the hidden draw order changes with the sample seed, the true next draws are guessed no better than chance, and decisions do not depend on hidden state. | [integrity rules](docs/simulator-integrity.md) |
 | **Search against rules** | Monte Carlo search over **every distinct legal move** wins **99 of 120** benchmark games against 75 for the rule planner (+51 value per fight, better in 90 games, worse in 20). Limited to the planner's own candidate moves, the same search wins 86 (+24). | [wide candidates](reports/phase8/wide-candidates.md) · [comparison](reports/phase9/value-search-comparison-2.md) |
-| **Fast learned policy** | The action-value network (`q-v4`) wins 81 of 120 against 75 for the planner (+9 value per fight, not yet significant) at 10 ms per move, with no simulation at all. | [comparison](reports/phase9/value-search-comparison-4.md) |
+| **Fast learned policy** | Not established. The action-value network wins 74 of 120 against 75 for the planner (`q-v5`, +2 value per fight; `q-v4` had 81) at 10 ms per move. Used as a filter that cuts wide search to 4 candidates, it saves 30% of search time but loses 10 value per fight, mostly in elites. | [comparison 4](reports/phase9/value-search-comparison-4.md) · [comparison 5](reports/phase9/value-search-comparison-5.md) |
 | **Learned evaluation** | Not there yet, but closing in. Four pre-registered tests of the value network inside search failed, each by less: search with network leaves went from −54 to −32 value per fight against rollout search. The first networks memorised their training runs; augmented situations and set dropout fixed most of that (held-out error 64 → 40, level with a linear model). | [test 1](reports/phase9/value-search-comparison.md) · [test 4](reports/phase9/value-search-comparison-4.md) |
 | **Search budget** | Which moves are searched matters far more than how many futures are sampled: widening the candidates added 27 value per fight at twice the time, while four times the futures added about 9. | [budget](reports/phase8/search-budget.md) |
 | **Boss fights** | On the ten boss fights of the benchmark (six seeds each), wide search wins 4.2 on average with 24 futures per move and 3.5 with 6; the project owner won 4 of the 10 in the real runs. Search wins two the human lost and loses two the human won with three potions in hand. | [boss study](reports/phase8/boss-budget.md) |
-| **Potions in search** | Not established: +7 value per fight with the planner's candidates and +3 with wide search, neither significant. Potions help in elite fights (95% won at A8+ against 86%) but not in boss fights. | [first test](reports/phase8/potions-in-search.md) · [wide search](reports/phase8/potions-wide.md) |
+| **Potions in search** | Not established: +7 value per fight with the planner's candidates and +3 with wide search, neither significant; offering every usable potion made search drink 77 potions in 120 fights and end 4.5 lower once potions are priced. When to drink is now treated as a run-level question. | [first test](reports/phase8/potions-in-search.md) · [wide search](reports/phase8/potions-wide.md) · [every potion](reports/phase8/potions-all.md) |
 
 *Value is the search's own score: HP left after a win, or −100 minus the enemies' HP left after a loss. Negative results are kept on purpose: they explain what changed next.*
 
@@ -195,5 +196,5 @@ Each decision-relevant comparison follows [a fixed template](templates/compariso
 A fan-made research project, not affiliated with or endorsed by Mega Crit. *Slay the Spire* is a trademark of Mega Crit Games. No game files, art, text dumps or decompiled data are distributed in this repository.
 
 <!-- auto:updated:start -->
-<sub>Generated sections last refreshed 2026-11-20 · game v0.111.1 · `python3 -I tools/update_readme.py`</sub>
+<sub>Generated sections last refreshed 2026-11-21 · game v0.111.1 · `python3 -I tools/update_readme.py`</sub>
 <!-- auto:updated:end -->
