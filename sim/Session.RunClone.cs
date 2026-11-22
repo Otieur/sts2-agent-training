@@ -89,7 +89,7 @@ public sealed partial class Session
         _failedRewards.Clear();
         Choices.Minigame = null; Choices.Current = null; Choices.Intercept = false;
         ForgetOrigin();
-        Applied = 0; PlayerIndex = 0; Victory = false; Net = null; TestHp = testHp;
+        Applied = 0; PlayerIndex = 0; Victory = false; Net = null; TestHp = testHp; Resampled = resample; ResolvedFights = 0;
         var reader = new PacketReader();
         reader.Reset(bytes);
         var save = reader.Read<MegaCrit.Sts2.Core.Saves.SerializableRun>();

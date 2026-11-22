@@ -33,6 +33,8 @@ public sealed partial class Session
     public int Floor => Run?.TotalFloor ?? 0;
     public bool Victory;
     public bool TestHp;                        // the run used the test-only max-HP switch: flow test, not play
+    public bool Resampled;                     // a rebuilt run whose unseen future was re-sampled: a rollout world, never the run being played
+    public int ResolvedFights;                 // fights of this rollout world ended by an outcome given from outside (resolve_fight)
     public string UnlockSource = "all";        // where the run's unlock state came from
     public InProcessHostService Net;           // co-op runs: the in-process network service (null for single-player)
 
@@ -62,7 +64,7 @@ public sealed partial class Session
         _failedRewards.Clear();
         Choices.Minigame = null; Choices.Current = null;
         ForgetOrigin();
-        Applied = 0; PlayerIndex = 0; Victory = false;
+        Applied = 0; PlayerIndex = 0; Victory = false; Resampled = false; ResolvedFights = 0;
         RunActions.Clear(); LastRunSave = null; LastRunSaveAt = 0; RunSaves = 0;
         var character = ById(ModelDb.AllCharacters, (string)spec["character"] ?? "IRONCLAD", "character");
         // Unlocks decide which cards, relics and potions can appear (FI-5). Default: everything. With "unlocks_from":
@@ -300,6 +302,9 @@ public sealed partial class Session
 
     public void RunStep(JsonNode action)
     {
+        // refused before it is logged: a played run never holds this action
+        if ((string)action["type"] == "resolve_fight" && !Resampled)
+            throw new InvalidOperationException("'resolve_fight' is only possible in a rebuilt run with a re-sampled future");
         // logged before it runs: a room-entry save made during this step already includes it (Session.RunClone.cs)
         if (RunMode && !_rebuildingRun) RunActions.Add(action.DeepClone());
         var errors = Stubs.ExceptionCount;
@@ -330,6 +335,51 @@ public sealed partial class Session
                 throw new ArgumentException("nothing hidden there");
             g.SetTool(tool);
             Track(g.CellClicked(cell));
+            return;
+        }
+        if (type == "resolve_fight")
+        {
+            // Rollout worlds only (docs/simulator-integrity.md FI-1d): the fight is not played; it ends with an outcome
+            // given from outside (a model of how search fights such a fight). Won: every enemy is killed with the game's
+            // own command until the fight is over, so the game runs its end-of-combat effects and rewards; then the
+            // player's HP is set to the given value and the named potion slots are emptied. Lost: the player is killed.
+            // Refused in a run that is being played (new_run, or a rebuild without a re-sampled future).
+            if (screen != "combat") throw new InvalidOperationException($"'resolve_fight' is not possible on the {screen} screen");
+            ResolvedFights++;
+            if (!((bool?)action["won"] ?? false))
+            {
+                Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.Kill(Me.Creature), "resolve_fight: lost");
+                Settle();
+                return;
+            }
+            for (var round = 0; round < 12 && CombatManager.Instance.IsInProgress; round++)
+            {
+                foreach (var e in Enemies.Where(e => e.IsAlive).ToList())
+                {
+                    if (!CombatManager.Instance.IsInProgress) break;
+                    Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.Kill(e), "resolve_fight: won");
+                }
+                // the game checks for a win after each action of its queue; this kill did not come through the queue
+                Ctx.RunUntil(CombatManager.Instance.CheckWinCondition(), "resolve_fight: win check");
+                Settle();
+                if (!CombatManager.Instance.IsInProgress || Me.Creature.IsDead) break;
+                // An enemy that comes back in its own turn (the Test Subject's phases) keeps the fight open with nobody
+                // alive to kill. The turn is passed, at full HP so that the passed turn cannot end the run, and the
+                // next round kills what came back. The HP given by the caller is set at the end.
+                if (Choices.Current is { } pending) { Choices.Answer(Enumerable.Range(0, pending.Min).ToList()); Ctx.Drain(); Settle(); }
+                Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.SetCurrentHp(Me.Creature, Me.Creature.MaxHp), "resolve_fight: pass a turn");
+                Step(new JsonObject { ["type"] = "end_turn" });
+                Settle();
+            }
+            if (CombatManager.Instance.IsInProgress) throw new InvalidOperationException("resolve_fight: the fight did not end");
+            foreach (var slot in action["potions_used"]?.AsArray().Select(x => (int)x).ToList() ?? new List<int>())
+                if (slot >= 0 && slot < Me.PotionSlots.Count && Me.PotionSlots[slot] != null)
+                {
+                    Enqueue(new MegaCrit.Sts2.Core.GameActions.DiscardPotionGameAction(Me, (uint)slot, false));
+                    Settle();
+                }
+            if (action["hp"] != null && !Me.Creature.IsDead)
+                Ctx.RunUntil(MegaCrit.Sts2.Core.Commands.CreatureCmd.SetCurrentHp(Me.Creature, Math.Clamp((int)action["hp"], 1, Me.Creature.MaxHp)), "resolve_fight: HP");
             return;
         }
         if (type is "play" or "end_turn" or "potion" or "choose")
@@ -450,6 +500,7 @@ public sealed partial class Session
             ["potions"] = new JsonArray(me.PotionSlots.Select(p => (JsonNode)(p?.Id.Entry)).ToArray()),
         };
         o["test_hp"] = TestHp;
+        if (ResolvedFights > 0) o["resolved_fights"] = ResolvedFights;
         o["unlocks"] = UnlockSource;
         o["player_index"] = PlayerIndex;
         o["players"] = Run.Players.Count;

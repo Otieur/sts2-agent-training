@@ -9,6 +9,7 @@ shows its calibration; the model replaces planner fights inside rollouts only af
 
     .venv-learn/bin/python -I tools/learn/train_fight.py --data data/learn/fights/fights-v1.jsonl --out models/fight-v1
     .venv-learn/bin/python -I tools/learn/train_fight.py --eval models/fight-v1 --data data/learn/fights/fights-v2.jsonl
+    .venv-learn/bin/python -I tools/learn/train_fight.py --export models/fight-v1 --data data/learn/fights/fights-v1.jsonl
 
 Only starting situations a player can see are read (FP-1). Weights are saved as a plain state dict and loaded with
 `weights_only=True`; vocabularies and settings are in `config.json` beside them.
@@ -262,17 +263,42 @@ class FightModel:
         return list(zip(p, hp))
 
 
+def export_weights(model, folder):
+    """The weights as plain numbers (`weights.json`), for the forward pass without the learning library
+    (`tools/learn/fight_predict.py`, used inside rollouts)."""
+    sd = {k: [[round(x, 6) for x in row] for row in v.tolist()] if v.dim() == 2 else
+             [[[round(x, 6) for x in row] for row in mat] for mat in v.tolist()] if v.dim() == 3 else [round(x, 6) for x in v.tolist()]
+          for k, v in model.state_dict().items()}
+    (Path(folder) / "weights.json").write_text(json.dumps(sd))
+
+
+def check_export(folder, rows, n=400):
+    """Largest difference between this model's predictions and those of the plain forward pass on `n` rows."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import fight_predict
+    fm, fp = FightModel.load(folder), fight_predict.FightPredictor(folder)
+    rows = rows[:: max(1, len(rows) // n)][:n]
+    a = fm.predict(rows)
+    b = [fp.predict(r) for r in rows]
+    return {"rows": len(rows), "max_abs_diff_win": max(abs(x[0] - y[0]) for x, y in zip(a, b)), "max_abs_diff_hp": max(abs(x[1] - y[1]) for x, y in zip(a, b))}
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data", default=str(PROJECT / "data" / "learn" / "fights" / "fights-v1.jsonl"))
     ap.add_argument("--out")
     ap.add_argument("--eval", help="a trained model folder: report it on --data (all rows) instead of training")
+    ap.add_argument("--export", help="a trained model folder: write its weights as plain numbers (weights.json) and check them against --data")
     ap.add_argument("--epochs", type=int, default=80)
     ap.add_argument("--lr", type=float, default=2e-3)
     ap.add_argument("--wd", type=float, default=1e-2)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args(argv)
     rows = load_rows(a.data)
+    if a.export:
+        export_weights(FightModel.load(a.export).model, a.export)
+        print(json.dumps(check_export(a.export, rows)))
+        return 0
     if a.eval:
         fm = FightModel.load(a.eval)
         p, hp = predict(fm.model, fm.enc, rows)
@@ -295,7 +321,9 @@ def main(argv=None):
            "encounters": sorted(enc.encounters), "seed": a.seed, "epochs": a.epochs, "lr": a.lr, "wd": a.wd,
            "train_seconds": round(time.time() - t0, 1), "report": rep}
     (out / "config.json").write_text(json.dumps(cfg, indent=1))
+    export_weights(model, out)
     print(json.dumps(rep, indent=1))
+    print(json.dumps({"export_check": check_export(out, parts["test"] or rows)}))
     return 0
 
 
