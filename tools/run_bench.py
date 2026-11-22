@@ -770,6 +770,7 @@ def main(argv=None):
     codes = [p.wait() for p in procs]
     man = {"name": out.name, "started": started, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": head,
            "code_uncommitted_changes": dirty, "host": os.environ.get("SIM_CONFIG", "Release"), "fight_rebuild": a.fight_rebuild,
+           "shared_eval_host": os.environ.get("SIM_SHARED_EVAL_HOST", "1") != "0",    # as tools/run_eval.py SHARED_EVAL_HOST
            "workers": a.workers, "seed_order": "dynamic" if a.dynamic else "static", "resumed": bool(a.resume),
            "policies": a.policies, "seeds": a.seeds,
            "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "deadline": a.deadline, "worker_exit_codes": codes,

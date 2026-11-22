@@ -25,6 +25,7 @@ difference in some fight. `horizon` "run" plays on past the act's boss to the en
     python3 -I tools/run_eval.py --demo --seed RB90000001 --ascension 5     # one run, card rewards by rollouts, timings
 """
 import argparse
+import os
 import random
 import sys
 import time
@@ -33,6 +34,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sim as S  # noqa: E402
 
+
+# One evaluation host per worker process, shared by all its evaluators (card rewards, map moves, events and shops).
+# Every rollout starts with `run_from_save`, which replaces the host's whole run, and a worker asks one evaluator at
+# a time, so a second and third host only hold memory (about 240 MB each). SIM_SHARED_EVAL_HOST=0 gives each
+# evaluator its own host again (the behaviour up to run benchmark 18).
+SHARED_EVAL_HOST = os.environ.get("SIM_SHARED_EVAL_HOST", "1") != "0"
+_SHARED = {"host": None}
 
 # a decision whose first rollouts all fail is given up after this many failures (see RolloutEvaluator.evaluate)
 GIVE_UP_AFTER = 3
@@ -77,7 +85,8 @@ def fight_predictor():
 
 
 class RolloutEvaluator:
-    """Owns an evaluation host. `evaluate(run_sim, obs, options)` returns the mean rollout value of each option."""
+    """Uses an evaluation host (the worker's shared one, or its own). `evaluate(run_sim, obs, options)` returns the mean
+    rollout value of each option."""
 
     def __init__(self, k=6, max_steps=3000, rollout_policy="draft+shop+rest", seed_base=7_700_000, boss_credit=0.0):
         self.k, self.max_steps, self.seed_base, self.boss_credit = k, max_steps, seed_base, boss_credit
@@ -89,12 +98,22 @@ class RolloutEvaluator:
         self._n = 0
 
     def _host(self):
+        if SHARED_EVAL_HOST:
+            if _SHARED["host"] is None:
+                _SHARED["host"] = S.Sim()
+                _SHARED["host"].__enter__()
+            return _SHARED["host"]
         if self.host is None:
             self.host = S.Sim()
             self.host.__enter__()
         return self.host
 
     def close(self):
+        if SHARED_EVAL_HOST:                                   # closes the shared host for every evaluator; the next
+            if _SHARED["host"] is not None:                     # `_host()` call of any of them starts a new one
+                _SHARED["host"].__exit__(None, None, None)
+                _SHARED["host"] = None
+            return
         if self.host is not None:
             self.host.__exit__(None, None, None)
             self.host = None
