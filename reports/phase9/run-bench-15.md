@@ -33,7 +33,51 @@ Why events: as registered for run benchmark 13. Run benchmark 9 found +1.9 floor
 - Gate G1 (run benchmark 14, deferred) is measured once a 30-seed benchmark shows at least 12 wins for a stack.
 
 ## 5. Results
-Pending.
+Run 2026-11-21 16:50–18:35 and 21:55 to 2026-11-22 01:02 (`data/learn/runs/run-bench-15/manifest.json`; 7 workers; 105 and 187 minutes of running time, inside the 7 hours). All 30 seeds were finished by all four policies: 120 runs, no host error, no rollout error. Seeds 00000–00008 ran on the code of `31bb9aa`, seeds 00009–00029 on that of `db6a04e` (section 6). Reports: `python3 -I tools/run_details.py data/learn/runs/run-bench-15`, the same with `--factor --on … --off …` for each factor, and with `--decisions`. `S` = `rcard+rpath+pot+smith+rshop`, `S2` = `rcard+rpath+pot+smith+rshop2`.
+
+| Policy | Mean floor | Median | Wins (Wilson 95%) | Act 1 boss beaten | Act 2 boss | Act 3 boss | Seconds per run |
+|---|---|---|---|---|---|---|---|
+| `S` | 30.03 | 33 | 0 of 30 (0–11%) | 23 of 30 | 4 of 17 | 0 of 2 | 572 |
+| `S+ropt` | 34.57 | 33 | 2 of 30 (2–21%) | 25 of 28 | 11 of 22 | 2 of 8 | 944 |
+| `S2` | 31.90 | 32 | 2 of 30 (2–21%) | 23 of 30 | 9 of 15 | 2 of 6 | 813 |
+| `S2+ropt` | 33.13 | 33 | 0 of 30 (0–11%) | 24 of 30 | 9 of 20 | 0 of 6 | 1070 |
+
+| Factor (the two arms with it minus the two without) | Seeds | Mean effect, floors | Bootstrap 95% | Better | Worse | Equal | Sign test p (one-sided) | Wins with / without (of 60) | Seeds with more wins with / without | Sign test p, wins |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Shops: `rshop2` against `rshop` (H1, H3) | 30 | +0.22 | −3.37 to 3.65 | 14 | 13 | 3 | 0.50 | 2 / 2 | 1 / 1 | 0.75 |
+| Events: `ropt` against the rules (H2, H4) | 30 | +2.88 | −0.20 to 6.12 | 17 | 7 | 6 | 0.032 | 2 / 2 | 1 / 1 | 0.75 |
+
+- **H1** (every affordable shop item judged by rollouts reaches more floors): p = 0.50, mean +0.22: **does not hold**.
+- **H2** (events and card choices outside fights by rollouts reach more floors): p = 0.032 by the registered sign test, 17 seeds better against 7: **holds**. The mean effect is +2.88 floors; its bootstrap interval reaches just below zero (−0.20).
+- **H3, H4** (wins): 2 wins against 2 for each factor: **do not hold**. The run has 4 wins in 120 runs (3.3%).
+- Interaction, reported and not tested: the shop effect is +1.87 floors without `ropt` and −1.44 with it (difference −3.3).
+- The two groups of seeds (section 6): seeds 00000–00008, shops −1.50 (3 better, 5 worse, 1 equal) and events +1.17 (5, 3, 1); seeds 00009–00029, shops +0.95 (11, 8, 2) and events +3.62 (12, 4, 5). The events effect has the same sign in both; the shop effect does not.
+
+**The stack that runs next** (section 4): both treatments enter, each with a positive mean effect and as many wins with it as without: `rcard+rpath+pot+smith+rshop2+ropt`. For `rshop2` that is the rule for what runs next and nothing more: +0.22 floors is no evidence that it helps, and the arm that is now the stack (`S2+ropt`) reached fewer floors than `S+ropt` (33.13 against 34.57) and won no run. Run benchmark 18 started on this stack at 01:02.
+
+**Shops.** The mechanism of H1 happened and the floors did not follow. With `rshop` a run has 0.8 shop visits with a decision, buys 0.8 cards and no relic and ends with about 455 gold. With `rshop2` it has 2.5, buys 2.3 cards, 0.6 relics, 0.9 potions and 0.9 card removals and ends with about 210 gold. `rshop2` decisions by gold held (both arms): under 100 gold 113 decisions (no relic, 51 cards, 23 potions, 5 removals, 34 left); 100–199 gold 127 (7 relics, 59 cards, 19 potions, 36 removals, 6 left); 200–399 gold 68 (20 relics, 24 cards, 8 potions, 11 removals, 5 left); 400 and more 23 (10 relics, 6 cards, 2 potions, 3 removals, 2 left). All options had the same value in 32 of 331 shop decisions; 19 of those became a purchase by the tie rule. Relics at the act 2 boss: 5.2 and 5.6 in the `rshop` arms, 6.8 and 6.1 in the `rshop2` arms.
+
+**Events.** `ropt` decided 8.8 times a run and differed from the rule in 261 of 529 decisions (49%; Neow in 44 of 67); all options had the same value in 54 (10%). It costs about two thirds more time per run with `rshop` (944 seconds against 572) and a third more with `rshop2` (1,070 against 813).
+
+**Where the runs end** (120 runs): act 2 boss 41, act 1 boss 23, act 3 boss 18, act 2 hallway 12, act 2 elite 9, act 3 hallway 7, act 3 elite 4, act 1 hallway 1, act 1 elite 1, won 4. Bosses end 82 of the 116 lost runs. Boss fights won of those reached: act 1 95 of 118 (Ceremonial Beast 34 of 36, The Kin 34 of 42, Vantom 27 of 40); act 2 33 of 74 (Kaiser Crab 13 of 35, Knowledge Demon 6 of 19, The Insatiable 14 of 20); act 3 4 of 22 (Aeonglass 2 of 8, Queen 0 of 4, Test Subject 2 of 10).
+
+**What the Agent brings to a boss, beside the Player** `[OBS]` for the Agent (this run, four arms together), `[PLAYER-DATA]` for the Player (`data/runs.db`, finished solo Ironclad runs on v0.107.1; relics counted from the final relic list by the floor they were added). The Player's runs are on another game version and mostly at higher ascensions, and the A0–4 group has 8 runs, so this is a description, not a test.
+
+| Boss of | Who | Fights | Won | HP at the start | Deck | Upgraded cards | Relics | Elites fought in the act |
+|---|---|---|---|---|---|---|---|---|
+| Act 1 | Agent, A0 | 118 | 81% | 77% | 18.3 | 3.2 | 3.4 | 0.76 |
+| | Player, all ascensions | 44 | 68% | 60% | 19.8 | 4.4 | 5.1 | 1.00 |
+| | Player, A0–4 | 8 | 75% | 56% | 19.9 | 5.1 | 5.2 | 1.62 |
+| Act 2 | Agent, A0 | 74 | 45% | 65% | 24.8 | 7.4 | 5.9 | 0.53 |
+| | Player, all ascensions | 24 | 67% | 68% | 26.6 | 10.1 | 9.9 | 1.08 |
+| | Player, A0–4 | 6 | 83% | 75% | 26.8 | 11.7 | 10.7 | 1.17 |
+| Act 3 | Agent, A0 | 22 | 18% | 62% | 31.5 | 13.1 | 8.8 | 0.27 |
+| | Player, all ascensions | 14 | 93% | 75% | 31.4 | 18.7 | 14.9 | 0.64 |
+| | Player, A0–4 | 5 | 100% | 82% | 28.2 | 17.6 | 15.0 | 0.40 |
+
+The Agent reaches the act 1 boss with more HP than the Player (77% against 60%) and less of everything else, and the gap grows: at the act 2 boss it holds 5.9 relics against the Player's 9.9 and 7.4 upgraded cards against 10.1, at the act 3 boss 8.8 against 14.9 and 13.1 against 18.7. It fights fewer elites (0.76 against 1.00 in act 1, 0.53 against 1.08 in act 2; the route rollouts took an elite at 32 of the 194 forks that offered one) and keeps the HP it would have paid for them. The Player's shops buy 0.6 to 1.4 relics an act in acts 2 and 3; `rshop2` buys 0.6 a run. This agrees with boss replay 1 (the decks, not the fight search, limit the boss fights) and names what is missing: relics and upgrades. It is the pattern run benchmark 18 tests a cause of: inside rollouts the rule planner fights, elites and bosses look worse than they are for search, and the routes keep away from them.
+
+**Checks.** Every decision recorded on seeds 00009–00029 names `path+pot+smith` as the policy that played its rollouts, with no boss credit, in all four arms (decisions on the first nine seeds were recorded before that field existed). Search: no mismatch; four search errors, each followed by the planner's action for that decision, in two runs of `S+ropt` (seeds 00004 and 00022, both reached floor 48 and lost); none in the other arms. Workers' exit codes all 0.
 
 ## 6. Deviations and notes
 - 2026-11-21 15:17, before the start: the definition of `rshop2` in section 2 gained two rules after its smoke test on two seeds outside every benchmark (`RB097`). There the agent stood in a shop two floors before the act 2 boss with 783 gold and three relics for sale, every option had the same rollout value (each sampled future ended at that boss with the rule planner fighting), and the tie went to the rule, which leaves. So when all options tie, `rshop2` buys the cheapest relic, else the card removal. In run benchmark 11 all options tie in 13% of card decisions and 4% of route decisions. The removal order is added because a purchased removal otherwise removes the first card offered. No result of run benchmark 12 or of this run was known.
