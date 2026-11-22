@@ -11,6 +11,7 @@ using System.Text.Json.Nodes;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Entities.TreasureRelicPicking;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rewards;
@@ -454,12 +455,10 @@ public sealed partial class Session
                 Track(((TreasureRoom)Run.CurrentRoom).DoNormalRewards());
                 break;
             case "pick_relic":
-                Rm.TreasureRoomRelicSynchronizer.PickRelicLocally((int)action["index"]);
-                Ctx.Drain(); Settle();
-                _doneRoom = Run.CurrentRoom;
+                ChestVote((int)action["index"]);
                 break;
             case "leave":
-                if (screen == "treasure") { Rm.TreasureRoomRelicSynchronizer.SkipRelicLocally(); Ctx.Drain(); }
+                if (screen == "treasure") ChestVote(null);
                 _doneRoom = Run.CurrentRoom;
                 Settle();
                 break;
@@ -477,6 +476,34 @@ public sealed partial class Session
                 break;
             default: throw new ArgumentException("unknown action type " + type);
         }
+    }
+
+    // The player's vote on a chest's relics (an index, or null to skip). The synchronizer only decides who gets which
+    // relic and announces it (RelicsAwarded); in the game the chest screen then hands the relics over
+    // (NTreasureRoomRelicCollection.AnimateRelicAwards: RelicCmd.Obtain for the player who gets one, unless the
+    // result is a skip, and the relic leaves the other players' pools). The host has no chest screen, so it does the
+    // same here; without it a relic picked from a chest never reached the player (docs/simulator-integrity.md FI-7f).
+    void ChestVote(int? index)
+    {
+        var sync = Rm.TreasureRoomRelicSynchronizer;
+        List<RelicPickingResult> awarded = null;
+        void Got(List<RelicPickingResult> results) => awarded = results;
+        sync.RelicsAwarded += Got;
+        try
+        {
+            if (index is { } i) sync.PickRelicLocally(i); else sync.SkipRelicLocally();
+            Ctx.Drain();
+        }
+        finally { sync.RelicsAwarded -= Got; }
+        _doneRoom = Run.CurrentRoom;
+        foreach (var result in awarded ?? new List<RelicPickingResult>())
+        {
+            if (result.type != RelicPickingResultType.Skipped)
+                Track(MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain(result.relic.ToMutable(), result.player, -1));
+            foreach (var other in Run.Players)
+                if (other != result.player) other.RelicGrabBag.MoveToFallback(result.relic);
+        }
+        Settle();
     }
 
     // After the last reward is taken or the set is skipped, the interface's proceed button calls this.

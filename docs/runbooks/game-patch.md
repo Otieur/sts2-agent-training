@@ -14,4 +14,4 @@
 6. **Mark stale:** every note or playbook rule that depends on a changed item gets `STALE (vX.Y.Z)` next to its label. Re-verify the high-impact ones first: boss plans, the elite table, card tiers.
 7. **Benchmarks** are per version. Start a new benchmark file once enough runs exist on the new version. Never edit the old one.
 8. Record the update in `docs/environment.md` and in the playbook changelog.
-9. Phases 7–9: the simulator refuses a build it has not been checked against; run its fidelity suite before any simulator result is used (`docs/simulator-integrity.md` FI-3, FI-4).
+9. Phases 7–9: the simulator refuses a build it has not been checked against; run its fidelity suite before any simulator result is used (`docs/simulator-integrity.md` FI-3, FI-4). Rebuild the call graph (`tools/asm/asm.cs calls`) and read `python3 -I tools/asm/ui_only.py` for logic that only screens call (FI-7e, FI-7f); `python3 -I tools/sim.py runcheck --test-max-hp 999` has to match on every line.

@@ -76,6 +76,8 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 `asm/asm.cs` (C#, .NET 10 file-based app, runtime libraries only): indexes `sts2.dll` (types, members, constant values), builds a call graph from IL, or prints the IL of matching methods. Outputs go to `data/asm/` (not in git). Findings and next steps: `docs/proposals/engine-simulation-spike.md`.
 `dotnet run tools/asm/asm.cs -- index|calls <dll> <out>` · `dotnet run tools/asm/asm.cs -- il <dll> "Cmd+<Wait>"`
 
+`asm/ui_only.py` (Python, reads the call graph): the game logic that only screen code calls, and the setters of logic properties that screen code calls (`--setters`). The simulator host has no screens, so each line is something the host has to do itself or do without; this is how the chest relic that never reached the player was found (`docs/simulator-integrity.md` FI-7e, FI-7f). Read the list after every game update.
+
 ## Fight situations from simulated runs
 | Tool | What it does | Typical call |
 |---|---|---|
