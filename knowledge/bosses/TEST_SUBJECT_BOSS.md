@@ -78,7 +78,13 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - Ironclad: 0 of 5 fatal (all characters: 8 of 29). `[PLAYER-DATA]`
 - Main risk is running out of HP over three phases. Carry an Act 3 scaling engine.
 
+### The Agent's fights here (2026-11-22)
+- **Record** `[OBS]` (run benchmark 16, A0, simulator on v0.111.1): 3 of 24 fights won, where the Player won all 5 as Ironclad. Many were lost from full or nearly full HP (`reports/phase9/run-bench-16.md` section 5).
+- **Why, in part: the fight search's value of a lost rollout pointed the wrong way across the forms** `[OBS]` (`reports/phase9/boss-replay-2.md` section 6). It counted the HP of the form alive only, so losing in the first form looked closer to a win than losing in the second, and the search kept away from killing the first form: in a traced fight it played 7 cards in 5 turns and died with the first form at 33 HP. With the forms to come counted (100, 200 and 300 HP; 111, 212 and 313 at A8+ `[GAME]`), the same fight reaches the third form. Whether the correction wins fights is what boss replay 2 measures.
+- **What guides advise** `[COMMUNITY]` (one guide read in full on 2026-11-22, early access, no patch named): the first form is a sprint (kill its 100 HP with attacks before its Strength builds; do not spend the first turns on block and draw); in the second form block every hit in full (each unblocked hit adds a Wound); in the third defend on the Intangible turns and spend damage on the others. A deck made of damage alone wins the first form and fails in the third; for the Ironclad a scaling power (Demon Form) and block that carries over (Barricade, Calipers) are named. Damage over time is cleared at each new form. This agrees with the checklist above and with the direction of the correction: the first form is to be killed fast, which is what the search avoided.
+
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db`, `reports/phase2/deck-features-by-encounter.md` `[PLAYER-DATA]`
 - Community guides via search (selphie1999gaming, neonlightsmedia, bossdown), early access; phase names differ between sources `[COMMUNITY]`
+- NeonLights Media, Test Subject guide (https://www.neonlightsmedia.com/blog/slay-the-spire-2-test-subject-boss-guide), read 2026-11-22; early access, patch not stated `[COMMUNITY]`

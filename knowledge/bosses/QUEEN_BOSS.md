@@ -83,7 +83,13 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - Ironclad: 2 of 7 fatal (all characters: 8 of 24). The biggest signal is low arrival HP (54% against 79%). `[PLAYER-DATA]`
 - Counter: arrive healthy, front-load damage, keep draw high.
 
+### The Agent's fights here (2026-11-22)
+- **Record** `[OBS]` (run benchmark 16, A0, simulator on v0.111.1): 0 of 9 fights won, where the Player won 5 of 7 as Ironclad.
+- **A traced fight** `[OBS]` (`reports/phase9/boss-replay-2.md` section 6): from 78 of 78 HP the search removed the Amalgam's 199 HP first and died on turn 8 with the Queen at 316 of 400; 283 damage in 8 turns under her Weak, Frail and Vulnerable. It played its cards; the deck did not have the damage. The search's value of a lost rollout counts the Amalgam's HP although a minion's death is not needed to win; an option that leaves it out is tested in boss replay 2.
+- **What guides advise** `[COMMUNITY]` (two guides read in full on 2026-11-22, early access, patch not stated; they disagree on when the debuffs land, and our own record above is the authority for the order): both say to kill the Amalgam first in most decks, and the Queen first only when she can die within about five turns; draw is what gets past the Bound cards (cards drawn during the turn are free); Weak on the Amalgam cuts most of the incoming damage; block should be standing before the Amalgam dies, because the Queen then attacks herself. This matches what the search did in the traced fight, so the kill order is not the likely fault there; the damage of the deck is.
+
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db`, `reports/phase2/deck-features-by-encounter.md` `[PLAYER-DATA]`
 - Community boss summaries via search (ggez.gg, selphie1999gaming), early access `[COMMUNITY]`
+- NeonLights Media, Queen guide (https://www.neonlightsmedia.com/blog/slay-the-spire-2-beat-queen-boss) and Selphie1999 Gaming, Queen guide (https://selphie1999gaming.com/game-guides/slay-the-spire-2/slay-the-spire-2-bound-defeating-the-queen-boss/, dated 2026-04-16), read 2026-11-22 `[COMMUNITY]`
