@@ -212,7 +212,8 @@ def play(host, spec, seed, search, stuck_log=None, max_restarts=3):
     outcome = {"status": obs["status"], "hp": obs["combat"]["player"]["current_hp"], "enemy_hp_left": S._enemy_hp_left(obs),
                "turns": obs.get("turn"), "decisions": d, "blocked": bool(obs.get("blocked")), "host_restarts": restarts,
                "stuck_rollouts": stuck, "search_seconds": round(t_search, 2),
-               "potions_used": max(0, held_at_start - S.potions_held(obs))}
+               "potions_used": max(0, held_at_start - S.potions_held(obs)),
+               "enemies": [[e.get("name"), e.get("current_hp"), e.get("max_hp")] for e in obs["combat"].get("enemies", [])]}
     return {"spec": spec, "seed": seed, "outcome": outcome, "decisions": decisions}
 
 

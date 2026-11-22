@@ -732,10 +732,49 @@ def _enemy_hp_left(obs):
                if 0 < e.get("current_hp", 0) <= UNKILLABLE_HP)
 
 
+# Two options for the value of a lost fight (boss replay 2, section 6), both off unless a search arm switches them on.
+# The HP left is meant as the distance to a win, and in two fights it is not that. (1) The Test Subject has three forms
+# in turn: when one dies the next comes with fresh HP, so counting only the form alive made a loss in the first form
+# look closer to a win than a loss in the second, and the search kept away from killing the first. (2) A minion leaves
+# when the others are dead, so its HP is not between the player and the win (the Queen's Torch Head Amalgam).
+# A player sees the power that revives an enemy and the Minion power; the forms' HP are the game's own values.
+LOSS_COUNTS_FORMS = False
+LOSS_SKIPS_MINIONS = False
+FORMS = {"TEST_SUBJECT": ((100, 200, 300), (111, 212, 313))}   # [GAME] v0.111.1: FirstFormHp, SecondFormHp, ThirdFormHp (base, A8+)
+
+
+def _forms_to_come(e):
+    """HP of the forms an enemy still has to come after the one alive (0 for every enemy without forms)."""
+    for forms in FORMS.get(str(e.get("enemy_id") or e.get("name") or "").upper(), ()):
+        if e.get("max_hp") in forms:
+            return sum(forms[forms.index(e["max_hp"]) + 1:])
+    return 0
+
+
+def _is_minion(e):
+    return any(str(x.get("power_id") or "").upper().startswith("MINION") for x in e.get("powers") or [] if isinstance(x, dict))
+
+
+def _loss_hp(obs):
+    """The enemies' HP between the player and a win, as a lost rollout is valued (see the two options above)."""
+    enemies = (obs.get("combat") or {}).get("enemies", [])
+    if not LOSS_COUNTS_FORMS and not LOSS_SKIPS_MINIONS:
+        return _enemy_hp_left(obs)
+    total = 0
+    for e in enemies:
+        hp = e.get("current_hp", 0)
+        if hp > UNKILLABLE_HP:
+            continue
+        if LOSS_SKIPS_MINIONS and _is_minion(e) and any(not _is_minion(x) for x in enemies):
+            continue
+        total += max(0, hp) + (_forms_to_come(e) if LOSS_COUNTS_FORMS else 0)
+    return total
+
+
 def _value(obs, spent=0, price=0.0):
     """HP left after a win; after a loss, -100 minus the enemies' HP left (losing closer to a win is better); minus
     `price` HP per potion spent when potions are in play."""
-    base = obs["combat"]["player"]["current_hp"] if obs["status"] == "won" else -100 - _enemy_hp_left(obs)
+    base = obs["combat"]["player"]["current_hp"] if obs["status"] == "won" else -100 - _loss_hp(obs)
     return base - price * spent
 
 

@@ -18,6 +18,9 @@ Policies (arms):
 - `mcwK` (for example `mcw6`): flat Monte Carlo over a wider candidate set: the planner's candidates plus every other
   legal card play (one per distinct card and target), at most 8 candidates (`tools/sim.py search_candidates_wide`).
 - `vleafK` (for example `vleaf2`): `vleaf` with K worlds per candidate.
+- a trailing `f` or `m` on an `mc` arm (for example `mcw6paf`, `mcw6pam`): the value of a lost rollout counts the forms a
+  reviving enemy still has to come (`f`: the Test Subject), or leaves minions' HP out (`m`: the Queen's Torch Head
+  Amalgam); see `tools/sim.py` `LOSS_COUNTS_FORMS`, `LOSS_SKIPS_MINIONS` (boss replay 2).
 - `mcwKpa` (for example `mcw6pa`): wide search with potions, where every usable potion is a candidate (judged by
   simulation, priced by room) instead of only the potions the planner's model proposes.
 - `mcwqK` / `mcwqKkN` (for example `mcwq6`, `mcwq6k5`): wide candidates filtered by the action-value network to at
@@ -215,9 +218,22 @@ def make_arm(name, model_path, q_path=None, room=None):
     if name in ("planner", "plannerp"):
         pots = room if name.endswith("p") else None
         return lambda sim, obs, d, done: planner_search(sim, obs, d, done, pots)
-    m = re.fullmatch(r"mc(w?)(\d*)(p?)(a?)", name)
+    m = re.fullmatch(r"mc(w?)(\d*)(p?)(a?)(f?)(m?)", name)
     if m:
-        return mc_search(int(m.group(2) or 6), potions=room if m.group(3) else None, wide=bool(m.group(1)), all_potions=bool(m.group(4)))
+        search = mc_search(int(m.group(2) or 6), potions=room if m.group(3) else None, wide=bool(m.group(1)), all_potions=bool(m.group(4)))
+        if not (m.group(5) or m.group(6)):
+            return search
+        forms, minions = bool(m.group(5)), bool(m.group(6))
+
+        def with_loss_value(sim, obs, d, done):
+            # a trailing `f` counts the forms a reviving enemy has to come in the value of a lost rollout, a trailing
+            # `m` leaves minions' HP out of it (tools/sim.py LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS)
+            S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS = forms, minions
+            try:
+                return search(sim, obs, d, done)
+            finally:
+                S.LOSS_COUNTS_FORMS = S.LOSS_SKIPS_MINIONS = False
+        return with_loss_value
     m = re.fullmatch(r"vleaf(\d*)", name)
     if m:
         return ValueLeaf(model_path, int(m.group(1) or 6))
@@ -246,7 +262,7 @@ def worker(a):
         for line in f.open():
             r = json.loads(line)
             done_jobs.add((r["fight"], r["sample"]))
-    needs_room = lambda n: n != "planner" and bool(re.search(r"pa?$", n)) and n.startswith(("mc", "planner"))
+    needs_room = lambda n: n != "planner" and bool(re.search(r"pa?f?m?$", n)) and n.startswith(("mc", "planner"))
     arms = {name: make_arm(name, a.model, a.q_model) for name in a.arms if not needs_room(name)}
     host = SP.Host()
     try:
@@ -266,6 +282,7 @@ def worker(a):
                     rec["arms"][name] = {"status": o["status"], "hp": o["hp"], "enemy_hp_left": o["enemy_hp_left"], "value": value_of(o),
                                          "potions_used": used, "value_priced": value_of(o) - S.POTION_PRICE[spec["room"]] * used,
                                          "decisions": o["decisions"], "turns": o["turns"], "seconds": round(time.time() - t0, 2),
+                                         "enemies": o.get("enemies"),
                                          "search_seconds": o["search_seconds"], "restarts": o["host_restarts"], "blocked": o["blocked"]}
                 except S.SimError as e:
                     rec["arms"][name] = {"error": str(e)[:300], "seconds": round(time.time() - t0, 2)}
