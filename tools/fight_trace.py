@@ -14,10 +14,12 @@ The fight is one of the encounter's fights recorded in a run benchmark folder (s
 printed with `--list`) or in a fight set (`--specs`). It is started fresh from its spec, so the hidden state differs
 from the original fight. Search as in a boss room of a run benchmark: every distinct legal move, `--k` sampled worlds
 each, rollouts to the end of the fight by the rule planner, every usable potion a candidate. `--loss-value` switches on
-the options of `tools/sim.py` for the value of a lost rollout (`f`: forms to come, `m`: minions left out).
+or off the options of `tools/sim.py` for the value of a lost rollout (`f`: forms to come, `m`: minions left out,
+`none`: neither); without it the fight is searched as the runs search it.
 
-Prints, per turn: the player's HP, block and energy, each enemy's HP, intent and powers; per decision: the action
-chosen, the best and worst candidate value, and `ALL LOST` when every candidate's rollouts ended in a loss."""
+Prints, per turn: the player's HP, block and energy, each enemy's HP, intent and powers, and the hand; per decision:
+the action chosen by name (the card, the potion, the options taken at a choice), the best and worst candidate value,
+and `ALL LOST` when every candidate's rollouts ended in a loss."""
 import argparse
 import glob
 import json
@@ -47,6 +49,30 @@ def fights_of(folder, specs, encounter):
     return sorted(out, key=lambda x: (x[0], x[1]))
 
 
+def card_name(h):
+    return str(h.get("card_id")) + ("+" if h.get("upgraded") else "")
+
+
+def named(act, obs):
+    """An action with the names a reader needs: the card played, the potion drunk, the options of a choice."""
+    c = obs.get("combat") or {}
+    hand = c.get("hand") or []
+    target = f" -> {act['target']}" if act.get("target") is not None else ""
+    if act.get("type") == "play" and isinstance(act.get("card"), int) and act["card"] < len(hand):
+        return f"play {card_name(hand[act['card']])}{target}"
+    if act.get("type") == "potion":
+        pots = (obs.get("run") or {}).get("potions") or []
+        slot = act.get("slot")
+        name = pots[slot].get("potion_id") or pots[slot].get("id") or pots[slot].get("name") if isinstance(slot, int) and slot < len(pots) else slot
+        return f"potion {name}{target}"
+    if act.get("type") == "choose":
+        ch = obs.get("choice") or {}
+        opts = ch.get("options") or []
+        picks = [str(opts[i].get("card_id") if isinstance(opts[i], dict) else opts[i]) if i < len(opts) else str(i) for i in act.get("cards") or []]
+        return f"choose ({ch.get('kind')}) {', '.join(picks) if picks else 'nothing'}"
+    return str(act.get("type"))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("folder", nargs="?", help="run benchmark folder (or use --specs)")
@@ -57,7 +83,7 @@ def main(argv=None):
     ap.add_argument("--seed", type=int, default=1, help="sample seed")
     ap.add_argument("--k", type=int, default=6, help="sampled worlds per candidate")
     ap.add_argument("--room", default="Boss", choices=["Monster", "Elite", "Boss"], help="room type for the potions' price")
-    ap.add_argument("--loss-value", default="", help="'f', 'm' or 'fm' (tools/sim.py LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS)")
+    ap.add_argument("--loss-value", help="'f', 'm', 'fm' or 'none' (tools/sim.py LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS); default: as the runs play")
     ap.add_argument("--out", help="write the decisions (turn, HP, enemies, chosen action, values) as JSON")
     a = ap.parse_args(argv)
     if a.specs and a.folder and a.encounter.isdigit():      # `--specs file ENCOUNTER index`: the positional folder is the encounter
@@ -75,7 +101,8 @@ def main(argv=None):
     print(f"{a.encounter} #{a.index} of {len(fights)}: {seed_id} {pol}; HP {spec.get('hp')}/{spec.get('max_hp')}" + (f", in the run it ended at {ft['hp_end']}" if "hp_end" in ft else ""))
     print("deck", len(spec["deck"]), sorted(spec["deck"]))
     print("relics", spec["relics"], "potions", spec.get("potions"))
-    S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS = "f" in a.loss_value, "m" in a.loss_value
+    if a.loss_value is not None:
+        S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS = "f" in a.loss_value.replace("none", ""), "m" in a.loss_value.replace("none", "")
     print("value of a lost rollout: forms to come counted", S.LOSS_COUNTS_FORMS, "| minions left out", S.LOSS_SKIPS_MINIONS, flush=True)
     host = SP.Host()
     try:
@@ -93,15 +120,23 @@ def main(argv=None):
             en = "; ".join(f"{e.get('name')} {e.get('current_hp')}/{e.get('max_hp')} block {e.get('block', 0)} intent {json.dumps(e.get('intent') or e.get('intents'))[:70]} "
                            f"powers {json.dumps(e.get('powers'))[:160]}" for e in c["enemies"])
             print(f"turn {turn}: HP {c['player']['current_hp']} block {c['player'].get('block', 0)} energy {c['player'].get('energy')} | {en}")
+            print("  hand " + " ".join(card_name(h) for h in c.get("hand") or []))
         act = dec["candidates"][dec["chosen"]]
         vals = [v for v in dec["values"] if v is not None]
         tag = f" values best {max(vals):.0f} worst {min(vals):.0f} of {len(vals)}" + (" ALL LOST" if max(vals) < -100 else "") if vals else ""
-        print(f"    {act.get('type')} {act.get('card', act.get('slot', ''))} -> {act.get('target', '')}{tag}")
+        print(f"    {named(act, o)}{tag}")
     print("outcome", json.dumps(rec["outcome"]))
     if a.out:
         json.dump({"source": [seed_id, pol], "encounter": a.encounter, "loss_value": a.loss_value, "outcome": rec["outcome"],
                    "decisions": [{"turn": d["obs"].get("turn"), "hp": d["obs"]["combat"]["player"]["current_hp"],
                                   "enemies": [[e.get("name"), e.get("current_hp"), e.get("max_hp")] for e in d["obs"]["combat"]["enemies"]],
+                                  "energy": d["obs"]["combat"]["player"].get("energy"), "block": d["obs"]["combat"]["player"].get("block", 0),
+                                  "hand": [card_name(h) for h in d["obs"]["combat"].get("hand") or []],
+                                  "hand_cost": [h.get("energy_cost") for h in d["obs"]["combat"].get("hand") or []],
+                                  "hand_playable": [bool(h.get("playable")) for h in d["obs"]["combat"].get("hand") or []],
+                                  "enemy_powers": [[str(x.get("power_id")) for x in e.get("powers") or []] for e in d["obs"]["combat"]["enemies"]],
+                                  "incoming": sum(i.get("total_damage") or 0 for e in d["obs"]["combat"]["enemies"] for i in e.get("intents") or [] if isinstance(i, dict)),
+                                  "chosen_named": named(d["candidates"][d["chosen"]], d["obs"]),
                                   "chosen": d["candidates"][d["chosen"]], "candidates": d["candidates"], "values": d["values"]} for d in rec["decisions"]]}, open(a.out, "w"))
     return 0
 
