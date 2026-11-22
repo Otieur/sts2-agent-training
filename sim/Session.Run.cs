@@ -431,7 +431,22 @@ public sealed partial class Session
             case "buy":
             {
                 var inv = ((MerchantRoom)Run.CurrentRoom).GetLocalInventory();
-                Track(inv.AllEntries.ToList()[(int)action["index"]].OnTryPurchaseWrapper(inv, false));
+                var entry = inv.AllEntries.ToList()[(int)action["index"]];
+                // The game marks the card removal as used from its shop screen (the entry's purchase calls
+                // NMerchantInventory.OnCardRemovalUsed, whose slot calls SetUsed). The host has no shop screen, so
+                // until 2026-11-22 the removal stayed in stock and could be bought again and again in one shop at
+                // its first price (docs/simulator-integrity.md FI-7e). Once a shop, as in the game.
+                if (entry is MerchantCardRemovalEntry removal)
+                {
+                    Action<PurchaseStatus, MerchantEntry> done = null;
+                    done = (status, _) =>
+                    {
+                        removal.PurchaseCompleted -= done;
+                        if (status == PurchaseStatus.Success) removal.SetUsed();
+                    };
+                    removal.PurchaseCompleted += done;
+                }
+                Track(entry.OnTryPurchaseWrapper(inv, false));
                 break;
             }
             case "open_chest":
