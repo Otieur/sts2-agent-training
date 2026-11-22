@@ -78,7 +78,9 @@ def policy_details(rs):
             sp = f.get("spec")
             if sp and "potions_end" in f:
                 pots[room] += max(0, len(sp["potions"]) - f["potions_end"])
-        if not x["won"] and fights and fights[-1].get("hp_end", 1) <= 0:
+        if x.get("stalled_fight") and fights:
+            died[f"act {act_of(fights[-1])} {run_bench.room_type(fights[-1])}, given up in a fight that did not end"] += 1
+        elif not x["won"] and fights and fights[-1].get("hp_end", 1) <= 0:
             died[f"act {act_of(fights[-1])} {run_bench.room_type(fights[-1])}"] += 1
     out["boss_reached"], out["boss_beaten"] = dict(sorted(reach.items())), dict(sorted(beat.items()))
     out["by_boss"] = {k: f"{w}/{n}" for k, (w, n) in sorted(by_boss.items())}

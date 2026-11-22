@@ -89,6 +89,7 @@ ELITE_HP = 0.7        # the `el` rule keeps an elite on the route at this HP fra
 ELITE_DOOR_HP = 0.6   # and enters an elite that is a next point at this HP fraction or more
 ELITE_ACTS = 2        # in acts 1 to this one
 BOSS_REST_HP = 0.8    # the `br` rule heals at the rest site before a boss below this HP fraction
+FIGHT_TURN_CAP = 100  # a fight past this turn is one neither side can end: the run is given up there (lost at that floor)
 
 
 def is_curse(card_id):
@@ -124,8 +125,13 @@ def evaluate(policy, ev, rollout_policy, sim, obs, opts):
     rollout; the rollout is left out) are counted in the policy's stats, so that a run's record shows them."""
     set_evaluator(ev, rollout_policy, policy.boss_credit())
     ev.fight_model, ev.horizon = policy.fight_model(), "run" if "hz" in policy.parts else "act"
+    # The futures a decision samples are numbered by the decision's place in this run. Until 2026-11-22 they were
+    # numbered by the evaluator's count over the worker's whole life, so a run depended on what its worker had played
+    # before it (found by replaying a seed of run benchmark 18 alone: a different run from the one in the benchmark).
+    ev._n = policy.rollout_n.get(ev.seed_base, 0)
     before = ev.stats.get("errors", 0)
     vals = ev.evaluate(sim, obs, opts)
+    policy.rollout_n[ev.seed_base] = ev._n
     if ev.stats.get("errors", 0) > before:
         policy.stats["rollout_errors"] = policy.stats.get("rollout_errors", 0) + ev.stats["errors"] - before
     return vals
@@ -182,6 +188,7 @@ class Policy:
         self.stats = {}
         self.log = []                 # rollout decisions: situation, options, values, choice (data for learned models)
         self.rule_mode = False        # True while run_opts asks what the rules alone would do
+        self.rollout_n = {}           # rollout decisions made in this run, per evaluator (they number the sampled futures)
 
     def act(self, obs, acts, rng, sim=None):
         scr = obs["screen"]
@@ -588,7 +595,7 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
         spec["record_fights"] = True
     obs = sim.call(cmd="new_run", spec=spec, timeout=120)["obs"]
     bosses, steps, last_act, d = 0, 0, 1, 0
-    fight_actions, prev_fight, fight_no, fights, host_error = [], False, 0, [], None
+    fight_actions, prev_fight, fight_no, fights, host_error, stalled = [], False, 0, [], None, None
     for steps in range(max_steps):
         if obs["screen"] == "game_over":
             break
@@ -609,6 +616,11 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
                                       "act": obs.get("act"), "room": fight_room(obs), "encounter": obs["encounter"], "ascension": ascension,
                                       "character": "IRONCLAD", "deck": list(p.get("deck", [])), "relics": list(p.get("relics", [])),
                                       "potions": [x for x in p.get("potions", []) if x], "hp": p["hp"], "max_hp": p["max_hp"], "valid": True}
+        if in_fight and (obs.get("turn") or 0) > FIGHT_TURN_CAP:
+            # Seen in run benchmark 18: a deck left without a single attack blocked an enemy at full HP for 578 turns
+            # and three hours, until the worker was ended. A player in that fight can only give the run up.
+            stalled = {"floor": obs.get("floor"), "encounter": obs.get("encounter"), "turn": obs.get("turn"), "hp": obs["player"]["hp"]}
+            break
         acts = sim.call(cmd="run_legal")["actions"]
         if not acts:
             break
@@ -636,7 +648,7 @@ def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, dea
         fights[-1]["potions_end"] = len([x for x in obs["player"].get("potions", []) if x])
     return {"floor": obs.get("floor"), "act": obs.get("act"), "bosses": bosses + (1 if won else 0), "won": won, "steps": steps,
             "deck": len(obs["player"]["deck"]), "gold": obs["player"].get("gold"), "final_deck": list(obs["player"]["deck"]), "fights": fights,
-            "policy_stats": dict(policy.stats), "decisions": list(policy.log), "host_error": host_error}
+            "policy_stats": dict(policy.stats), "decisions": list(policy.log), "host_error": host_error, "stalled_fight": stalled}
 
 
 def deadline_ts(text):
@@ -779,6 +791,8 @@ def details(rs):
                 lost[t].append(f["hp_start"] - f["hp_end"])
         if x.get("host_error"):
             died["stopped by a host error"] += 1
+        elif x.get("stalled_fight"):
+            died["given up in a fight that did not end"] += 1
         elif not x["won"]:
             died[room_type(fs[-1]) if fs and fs[-1].get("hp_end", 1) == 0 else "outside a fight"] += 1
         for k, v in (x.get("combat_stats") or {}).items():
