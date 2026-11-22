@@ -41,6 +41,31 @@ class TestSimBridge(unittest.TestCase):
         self.assertTrue(sim._same_action({"type": "play", "card": 1, "target": 0}, {"type": "play", "card": 1, "target": 0, "card_id": "X"}))
         self.assertFalse(sim._same_action({"type": "play", "card": 1, "target": 0}, {"type": "play", "card": 1, "target": 1}))
 
+    def test_loss_value_counts_the_forms_to_come_and_can_leave_minions_out(self):
+        def lost(*enemies):
+            return {"status": "lost", "combat": {"player": {"current_hp": 0}, "enemies": list(enemies)}}
+        ts = lambda hp, mx: {"enemy_id": "TEST_SUBJECT", "current_hp": hp, "max_hp": mx}
+        was = sim.LOSS_COUNTS_FORMS, sim.LOSS_SKIPS_MINIONS
+        try:
+            sim.LOSS_COUNTS_FORMS, sim.LOSS_SKIPS_MINIONS = True, False
+            # dying later is never valued below dying earlier, across the three forms (100, 200, 300 HP)
+            values = [sim._value(lost(ts(hp, mx))) for hp, mx in ((100, 100), (30, 100), (0, 100), (200, 200), (10, 200), (300, 300), (5, 300))]
+            self.assertEqual(values, [-700, -630, -600, -600, -410, -400, -105])
+            self.assertEqual(values, sorted(values))
+            self.assertEqual(sim._value(lost(ts(50, 111))), -100 - 50 - 212 - 313)        # the forms at Ascension 8 and above
+            self.assertEqual(sim._value(lost({"enemy_id": "QUEEN", "current_hp": 300, "max_hp": 400})), -400)     # no forms: unchanged
+            self.assertEqual(sim._value(lost({"current_hp": 12}, {"current_hp": 0})), -112)
+            sim.LOSS_COUNTS_FORMS = False
+            self.assertEqual(sim._value(lost(ts(30, 100))), -130)                         # the form alive only
+            minion = {"enemy_id": "TORCH_HEAD_AMALGAM", "current_hp": 150, "max_hp": 199, "powers": [{"power_id": "MINION_POWER", "amount": 1}]}
+            queen = {"enemy_id": "QUEEN", "current_hp": 300, "max_hp": 400, "powers": []}
+            self.assertEqual(sim._value(lost(queen, minion)), -550)
+            sim.LOSS_SKIPS_MINIONS = True
+            self.assertEqual(sim._value(lost(queen, minion)), -400)                       # the minion is not between the player and the win
+            self.assertEqual(sim._value(lost(minion)), -250)                              # alone it counts
+        finally:
+            sim.LOSS_COUNTS_FORMS, sim.LOSS_SKIPS_MINIONS = was
+
     def test_greedy_baseline_maps_targets_by_combat_index(self):
         class FakeSim:
             def legal(self):

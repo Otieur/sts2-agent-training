@@ -20,7 +20,9 @@ Policies (arms):
 - `vleafK` (for example `vleaf2`): `vleaf` with K worlds per candidate.
 - a trailing `f` or `m` on an `mc` arm (for example `mcw6paf`, `mcw6pam`): the value of a lost rollout counts the forms a
   reviving enemy still has to come (`f`: the Test Subject), or leaves minions' HP out (`m`: the Queen's Torch Head
-  Amalgam); see `tools/sim.py` `LOSS_COUNTS_FORMS`, `LOSS_SKIPS_MINIONS` (boss replay 2).
+  Amalgam); see `tools/sim.py` `LOSS_COUNTS_FORMS`, `LOSS_SKIPS_MINIONS` (boss replay 2). An `mc` arm's name states
+  its loss value whatever those defaults are: without `f` the forms are not counted. The whole runs' search follows
+  the defaults, so since 2026-11-22 it is the `f` arm (`mcw6paf` in a boss or elite room).
 - `mcwKpa` (for example `mcw6pa`): wide search with potions, where every usable potion is a candidate (judged by
   simulation, priced by room) instead of only the potions the planner's model proposes.
 - `mcwqK` / `mcwqKkN` (for example `mcwq6`, `mcwq6k5`): wide candidates filtered by the action-value network to at
@@ -221,18 +223,18 @@ def make_arm(name, model_path, q_path=None, room=None):
     m = re.fullmatch(r"mc(w?)(\d*)(p?)(a?)(f?)(m?)", name)
     if m:
         search = mc_search(int(m.group(2) or 6), potions=room if m.group(3) else None, wide=bool(m.group(1)), all_potions=bool(m.group(4)))
-        if not (m.group(5) or m.group(6)):
-            return search
         forms, minions = bool(m.group(5)), bool(m.group(6))
 
         def with_loss_value(sim, obs, d, done):
-            # a trailing `f` counts the forms a reviving enemy has to come in the value of a lost rollout, a trailing
-            # `m` leaves minions' HP out of it (tools/sim.py LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS)
+            # An arm's name states how a lost rollout is valued, whatever the defaults of tools/sim.py are: a trailing
+            # `f` counts the forms a reviving enemy has to come, a trailing `m` leaves minions' HP out, and an arm
+            # without them counts the HP of the enemies alive (LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS).
+            was = S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS
             S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS = forms, minions
             try:
                 return search(sim, obs, d, done)
             finally:
-                S.LOSS_COUNTS_FORMS = S.LOSS_SKIPS_MINIONS = False
+                S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS = was
         return with_loss_value
     m = re.fullmatch(r"vleaf(\d*)", name)
     if m:

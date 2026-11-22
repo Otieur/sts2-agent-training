@@ -738,7 +738,12 @@ def _enemy_hp_left(obs):
 # look closer to a win than a loss in the second, and the search kept away from killing the first. (2) A minion leaves
 # when the others are dead, so its HP is not between the player and the win (the Queen's Torch Head Amalgam).
 # A player sees the power that revives an enemy and the Minion power; the forms' HP are the game's own values.
-LOSS_COUNTS_FORMS = False
+# The forms are counted since 2026-11-22 (boss replay 2, `reports/phase9/boss-replay-2.md` section 6: on the Test
+# Subject situations the search removed about twice the share of the three forms' HP and won as many fights); leaving
+# minions out stays off until its own test says otherwise.
+# `SIM_LOSS_FORMS=0` in the environment keeps the earlier value, for a run benchmark that was started with it and is
+# finished in a second sitting (run benchmark 19).
+LOSS_COUNTS_FORMS = os.environ.get("SIM_LOSS_FORMS", "1") != "0"
 LOSS_SKIPS_MINIONS = False
 FORMS = {"TEST_SUBJECT": ((100, 200, 300), (111, 212, 313))}   # [GAME] v0.111.1: FirstFormHp, SecondFormHp, ThirdFormHp (base, A8+)
 
