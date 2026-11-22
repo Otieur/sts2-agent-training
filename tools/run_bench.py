@@ -38,6 +38,12 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
 - `smith`: rest sites heal only below 35% HP (below 50% right before a boss) and otherwise smith; upgrades (at rest
   sites and elsewhere) go by the upgrade priority list (Bash, then the draft tiers, Strikes and Defends last). With
   `ropt`, rest sites and upgrade choices follow this rule instead of rollouts.
+- `ctb`, `cth`: with `rcard`, card tiers as a prior in card rewards (run benchmark 20; the consensus scores of
+  `knowledge/community/ironclad-tiers.md`, `[COMMUNITY]`; a card is of the lowest tier only where its sources agree and
+  the Player does not pick it either). `ctb` (tie-break): among the options whose rollout value is
+  within `CARD_TIER_MARGIN` of the best, the one with the highest tier score is taken (skipping counts as the boundary
+  between the two lowest tiers, an unrated card as a middling one). `cth` (hard): from act 2 on, cards of the lowest
+  tier are not candidates at all; if only skipping is left, the reward is skipped. Neither acts inside rollouts.
 - `br`: with `smith`, the rest site right before a boss heals below 80% HP (`BOSS_REST_HP`) instead of below 50%
   (run benchmark 19).
 - `el`: elites are fought while healthy, in acts 1 and 2 (`ELITE_ACTS`). At a map move where a next point is an
@@ -89,6 +95,46 @@ ELITE_HP = 0.7        # the `el` rule keeps an elite on the route at this HP fra
 ELITE_DOOR_HP = 0.6   # and enters an elite that is a next point at this HP fraction or more
 ELITE_ACTS = 2        # in acts 1 to this one
 BOSS_REST_HP = 0.8    # the `br` rule heals at the rest site before a boss below this HP fraction
+CARD_TIER_MARGIN = 1.0      # `ctb`: rollout values this close to the best count as tied (a value is floors climbed plus 5 to 10 for a boss beaten)
+CARD_TIER_SKIP = 2.0        # `ctb`: the tier score of skipping (the boundary between tiers C and D)
+CARD_TIER_UNRATED = 2.4     # `ctb`: the tier score of a card the table does not rate (inside tier C)
+CARD_TIER_LOWEST = 2.0      # `cth`: cards scored below this (tier D) are not candidates from act 2 on
+_CARD_TIERS = None
+
+
+def card_tier_scores():
+    """Tier scores by card id from knowledge/community/ironclad-tiers.md: the community consensus score ([COMMUNITY];
+    S about 4.25 and more, D below 2.0). A card counts as lowest tier only where the views agree: a card the
+    consensus puts in tier D is scored as an unrated one (CARD_TIER_UNRATED) when its sources are two or more tiers
+    apart, or when the Player's own picking of it is in tier C or better ([PLAYER-DATA], the table's habit column: the
+    Player wins with Evil Eye, Fight Me and Tremble, which the consensus rates lowest). Names are matched by their
+    letters (BLOOD_WALL and Blood Wall)."""
+    global _CARD_TIERS
+    if _CARD_TIERS is None:
+        _CARD_TIERS = {}
+        path = Path(__file__).resolve().parents[1] / "knowledge" / "community" / "ironclad-tiers.md"
+        for line in path.read_text().splitlines():
+            c = [x.strip() for x in line.strip().strip("|").split("|")]
+            if len(c) >= 4 and re.fullmatch(r"[SABCDF]", c[2].strip("*")):
+                try:
+                    score = float(c[3])
+                except ValueError:
+                    continue
+                spread = int(c[7]) if len(c) > 7 and c[7].isdigit() else 0
+                habit = c[8].strip("*") if len(c) > 8 else "-"
+                if score < CARD_TIER_LOWEST and (spread >= 2 or habit in ("S", "A", "B", "C")):
+                    score = CARD_TIER_UNRATED
+                _CARD_TIERS[re.sub(r"[^A-Z]", "", c[0].upper())] = score
+    return _CARD_TIERS
+
+
+def card_tier_score(option):
+    """The tier score of a card-reward option: the card's consensus score, CARD_TIER_UNRATED for a card without one,
+    CARD_TIER_SKIP for skipping."""
+    if not option.get("cards"):
+        return CARD_TIER_SKIP
+    key = re.sub(r"[^A-Z]", "", str(option.get("card_id", "")).split(".")[-1].rstrip("+").upper())
+    return card_tier_scores().get(key, CARD_TIER_UNRATED)
 FIGHT_TURN_CAP = 100  # a fight past this turn is one neither side can end: the run is given up there (lost at that floor)
 
 
@@ -303,6 +349,14 @@ class Policy:
         global _CARD_EVALUATOR
         import run_eval
         opts = run_eval.card_reward_options(acts)
+        if "cth" in self.parts and (obs.get("act") or 1) >= 2:
+            kept = [o for o in opts if not o.get("cards") or card_tier_score(o) >= CARD_TIER_LOWEST]
+            if len(kept) < len(opts):
+                self.stats["cth_dropped"] = self.stats.get("cth_dropped", 0) + len(opts) - len(kept)
+                opts = kept
+                if len(opts) == 1 and not opts[0].get("cards"):      # every card was of the lowest tier: skip the reward
+                    self.stats["cth_skips"] = self.stats.get("cth_skips", 0) + 1
+                    return opts[0]
         if len(opts) < 2:
             return None
         if _CARD_EVALUATOR is None:
@@ -313,6 +367,12 @@ class Policy:
             self.stats["rcard_failed"] = self.stats.get("rcard_failed", 0) + 1
             return None
         best = max(range(len(opts)), key=lambda i: (vals[i], i == 0))
+        if "ctb" in self.parts:
+            near = [i for i in range(len(opts)) if vals[i] >= vals[best] - CARD_TIER_MARGIN]
+            pick = max(near, key=lambda i: (card_tier_score(opts[i]), vals[i], i == 0))
+            self.stats["ctb_ties"] = self.stats.get("ctb_ties", 0) + (len(near) > 1)
+            self.stats["ctb_changed"] = self.stats.get("ctb_changed", 0) + (pick != best)
+            best = pick
         self.note("card", obs, opts, vals, best, 0, _CARD_EVALUATOR)
         self.stats["rcard_decisions"] = self.stats.get("rcard_decisions", 0) + 1
         self.stats["rcard_disagree"] = self.stats.get("rcard_disagree", 0) + (best != 0)
@@ -323,7 +383,7 @@ class Policy:
         """This policy with every rollout component replaced by its rule counterpart (`rpath` by `path`, `rdraft` by
         `draft`, `rcard` by the first card, `bc` dropped), so that rollouts never start rollouts of their own."""
         swap = {"rpath": "path", "rdraft": "draft", "rcard": None, "bc": None, "ropt": None, "rshop": None, "rshop2": None,
-                "rfm": None, "hz": None}
+                "rfm": None, "hz": None, "ctb": None, "cth": None}
         return "+".join(sorted({swap.get(x, x) for x in self.parts} - {None})) or "base"
 
     def boss_credit(self):

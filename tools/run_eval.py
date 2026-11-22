@@ -71,7 +71,10 @@ def boss_fight_hp(obs):
     if not in_fight or not str(obs.get("encounter") or "").endswith("_BOSS"):
         return None
     es = [e for e in (obs.get("combat") or {}).get("enemies", []) if e.get("max_hp", 0) <= UNKILLABLE_HP]
-    return sum(e.get("max_hp", 0) for e in es), sum(max(0, e.get("current_hp", 0)) for e in es if e.get("is_alive", True))
+    come = sum(S._forms_to_come(e) for e in es)     # the forms a reviving boss still has to come (the Test Subject):
+    # without them a rollout that died in the second form was credited less than one that died in the first
+    return (sum(e.get("max_hp", 0) for e in es) + come,
+            sum(max(0, e.get("current_hp", 0)) for e in es if e.get("is_alive", True)) + come)
 
 
 def fight_predictor():
