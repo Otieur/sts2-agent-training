@@ -38,6 +38,14 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
 - `smith`: rest sites heal only below 35% HP (below 50% right before a boss) and otherwise smith; upgrades (at rest
   sites and elsewhere) go by the upgrade priority list (Bash, then the draft tiers, Strikes and Defends last). With
   `ropt`, rest sites and upgrade choices follow this rule instead of rollouts.
+- `br`: with `smith`, the rest site right before a boss heals below 80% HP (`BOSS_REST_HP`) instead of below 50%
+  (run benchmark 19).
+- `el`: elites are fought while healthy, in acts 1 and 2 (`ELITE_ACTS`). At a map move where a next point is an
+  elite and HP is at 60% of the maximum or more (`ELITE_DOOR_HP`), only the elite points are considered. Otherwise,
+  with HP at 70% or more (`ELITE_HP`), next points from which no elite of this act can be reached any more are left
+  out when another next point still reaches one. The policy's route choice (rollouts or the planner) decides among
+  the points left, and alone in every other case. A rule component, so it also acts inside every rollout (run
+  benchmark 19).
 - `rfm`: the rollouts do not play fights: each fight is ended by the fight-outcome model (`FIGHT_MODEL`, how search
   fights such a fight), and a rollout's value is the expected floors climbed and bosses beaten (`tools/run_eval.py`).
   The run's own fights are played by search as before. Needs a host build with `resolve_fight`.
@@ -77,6 +85,10 @@ import sim as S  # noqa: E402
 
 REMOVE_ORDER = ["CURSE", "STRIKE_IRONCLAD", "DEFEND_IRONCLAD"]
 PLAIN_SHOP_BUYS = 6         # the `bshop` rule buys at most this many items in one shop (3 relics and a removal are for sale)
+ELITE_HP = 0.7        # the `el` rule keeps an elite on the route at this HP fraction or more
+ELITE_DOOR_HP = 0.6   # and enters an elite that is a next point at this HP fraction or more
+ELITE_ACTS = 2        # in acts 1 to this one
+BOSS_REST_HP = 0.8    # the `br` rule heals at the rest site before a boss below this HP fraction
 
 
 def is_curse(card_id):
@@ -190,11 +202,20 @@ class Policy:
             return a
         if scr == "rest" and "smith" in self.parts:
             hp, mx = obs["player"]["hp"], obs["player"]["max_hp"]
-            want = "HEAL" if hp < (0.5 if obs.get("act_floor", 0) >= 15 else 0.35) * mx else "SMITH"
+            before_boss = BOSS_REST_HP if "br" in self.parts else 0.5
+            want = "HEAL" if hp < (before_boss if obs.get("act_floor", 0) >= 15 else 0.35) * mx else "SMITH"
+            if obs.get("act_floor", 0) >= 15 and 0.5 * mx <= hp < before_boss * mx:
+                self.stats["br_heals"] = self.stats.get("br_heals", 0) + 1
             for w in (want, "SMITH", "HEAL"):
                 for x in acts:
                     if str(x.get("option", "")).upper() == w:
                         return x
+        if scr == "map" and "el" in self.parts and sim is not None and not obs.get("at_boss"):
+            keep = self.elite_moves(sim, obs, acts)
+            if keep is not None:
+                if len(keep) == 1:
+                    return keep[0]
+                acts = [x for x in acts if x.get("type") != "move" or any(x is k for k in keep)]
         if scr == "map" and "rpath" in self.parts and sim is not None and not obs.get("at_boss"):
             a = self.route_rollout_pick(sim, obs, acts)
             if a:
@@ -344,6 +365,42 @@ class Policy:
 
     def route_rollout_policy(self):
         return self.rule_policy()
+
+    def elite_moves(self, sim, obs, acts):
+        """The `el` rule, acts 1 to ELITE_ACTS: the map moves left for the route choice. With an elite among the next
+        points and HP at ELITE_DOOR_HP of the maximum or more, the elite points; otherwise, with HP at ELITE_HP or more,
+        the moves from which an elite of this act can still be reached. None when the rule does not narrow the choice.
+        The whole act map is visible to the player."""
+        moves = [x for x in acts if x.get("type") == "move"]
+        hp, mx = obs["player"]["hp"], obs["player"]["max_hp"]
+        if len(moves) < 2 or (obs.get("act") or 1) > ELITE_ACTS or hp < ELITE_DOOR_HP * mx:
+            return None
+        door = [x for x in moves if str(x.get("point")) == "Elite"]
+        if door:
+            self.stats["el_doors"] = self.stats.get("el_doors", 0) + 1
+            if len(door) == len(moves):
+                return None
+            self.stats["el_entered"] = self.stats.get("el_entered", 0) + 1
+            return door
+        if hp < ELITE_HP * mx:
+            return None
+        pts = {(p["row"], p["col"]): p for p in sim.call(cmd="map")["map"]["points"]}
+        most = {}
+
+        def reach(rc):                          # is an elite on some way on from this point (the map has no cycles)
+            if rc not in most:
+                most[rc] = False
+                p = pts.get(rc)
+                if p is not None:
+                    most[rc] = str(p.get("type")) == "Elite" or any(reach((c[1], c[0])) for c in p.get("children") or [])
+            return most[rc]
+
+        n = [reach((x.get("row"), x.get("col"))) for x in moves]
+        self.stats["el_forks"] = self.stats.get("el_forks", 0) + 1
+        if all(n) or not any(n):
+            return None
+        self.stats["el_narrowed"] = self.stats.get("el_narrowed", 0) + 1
+        return [x for x, k in zip(moves, n) if k]
 
     def route_pick(self, sim, obs, acts):
         """Route by the path planner (`tools/path.py`: expected loot against fatal risk, room models from the history);
@@ -586,6 +643,32 @@ def deadline_ts(text):
     return time.mktime(time.strptime(text, "%Y-%m-%d %H:%M"))
 
 
+DEADLINE_GRACE = 600   # seconds after --deadline at which the main process ends the workers that are still running
+
+
+def wait_workers(procs, deadline=None, grace=DEADLINE_GRACE):
+    """The workers' exit codes, and the workers the main process had to end. A worker stops itself at the deadline, but
+    only between two steps of a run; one whose step does not return (run benchmark 18: a fight search that went on for
+    hours in a fight the rollouts could not finish) would hold the manifest back for good. Such a worker is ended here
+    `grace` seconds after the deadline, with its hosts; the seed it was playing is left out, as the stopping rule says."""
+    ended = []
+    while any(p.poll() is None for p in procs):
+        if deadline is not None and time.time() > deadline + grace:
+            for w, p in enumerate(procs):
+                if p.poll() is None and w not in ended:
+                    hosts = subprocess.run(["pgrep", "-P", str(p.pid)], capture_output=True, text=True).stdout.split()
+                    print(f"w{w}: still running {grace} s after the deadline; ended by the main process, its seed is left out", flush=True)
+                    p.kill()
+                    for h in hosts:
+                        try:
+                            os.kill(int(h), 9)
+                        except (ProcessLookupError, PermissionError):
+                            pass
+                    ended.append(w)
+        time.sleep(2)
+    return [p.returncode for p in procs], ended
+
+
 def worker(a):
     out = Path(a.out)
     combat = SearchCombat(a.combat, a.fight_rebuild) if a.combat != "planner" else None
@@ -767,13 +850,14 @@ def main(argv=None):
                                *(["--resume"] if a.resume else []),
                                "--fight-rebuild", a.fight_rebuild, "--policies", *a.policies])
              for w in range(a.workers)]
-    codes = [p.wait() for p in procs]
+    codes, ended = wait_workers(procs, deadline_ts(a.deadline) if a.deadline else None)
     man = {"name": out.name, "started": started, "created": time.strftime("%Y-%m-%d %H:%M"), "code_commit": head,
            "code_uncommitted_changes": dirty, "host": os.environ.get("SIM_CONFIG", "Release"), "fight_rebuild": a.fight_rebuild,
            "shared_eval_host": os.environ.get("SIM_SHARED_EVAL_HOST", "1") != "0",    # as tools/run_eval.py SHARED_EVAL_HOST
            "workers": a.workers, "seed_order": "dynamic" if a.dynamic else "static", "resumed": bool(a.resume),
            "policies": a.policies, "seeds": a.seeds,
            "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "deadline": a.deadline, "worker_exit_codes": codes,
+           "workers_ended_after_deadline": ended,
            "wall_seconds": round(time.time() - t0), "report": report(out, a.baseline)}
     (out / "manifest.json").write_text(json.dumps(man, indent=1))
     print(json.dumps(man["report"], indent=1))
