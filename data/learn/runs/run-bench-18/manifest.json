@@ -1,0 +1,197 @@
+{
+ "name": "run-bench-18",
+ "started": "2026-11-22 01:02",
+ "created": "2026-11-22 04:45",
+ "code_commit": "ceeb64a",
+ "code_uncommitted_changes": false,
+ "host": "Release3",
+ "fight_rebuild": "save+run",
+ "workers": 7,
+ "seed_order": "dynamic",
+ "resumed": false,
+ "policies": [
+  "rcard+rpath+pot+smith+rshop2+ropt",
+  "rcard+rpath+pot+smith+rshop2+ropt+rfm",
+  "rcard+rpath+pot+smith+rshop2+ropt+rfm+hz"
+ ],
+ "seeds": 30,
+ "seed_base": 18,
+ "ascension": 0,
+ "combat": "mcw6",
+ "deadline": "2026-11-22 06:02",
+ "worker_exit_codes": [
+  0,
+  -6,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 13386,
+ "report": {
+  "runs": 29,
+  "policies": {
+   "rcard+rpath+pot+smith+rshop2+ropt": {
+    "runs": 29,
+    "mean_floor": 36.03,
+    "act1_boss": 28,
+    "act2_boss": 10,
+    "won": 1,
+    "died_in": {
+     "Boss": 19,
+     "Elite": 4,
+     "Monster": 4,
+     "stopped by a host error": 1
+    },
+    "fights": {
+     "Monster": 406,
+     "Elite": 35,
+     "Boss": 58
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 5.3,
+     "Elite": 4.5,
+     "Boss": 30.1
+    },
+    "search": {
+     "searched": 8909,
+     "fallback": 7,
+     "mismatch": 0,
+     "errors": 7,
+     "search_seconds": 25252.4,
+     "potions": 214,
+     "via_run": 297
+    },
+    "policy": {
+     "ropt_decisions": 268,
+     "ropt_disagree": 144,
+     "rcard_decisions": 507,
+     "rcard_disagree": 308,
+     "rcard_skips": 92,
+     "rpath_decisions": 322,
+     "rpath_disagree": 135,
+     "rshop_decisions": 177,
+     "rshop_disagree": 154,
+     "rshop_buys": 154,
+     "rshop_blind_buys": 4,
+     "rollout_errors": 12
+    },
+    "mean_seconds": 1831.7
+   },
+   "rcard+rpath+pot+smith+rshop2+ropt+rfm": {
+    "runs": 29,
+    "mean_floor": 26.38,
+    "act1_boss": 21,
+    "act2_boss": 4,
+    "won": 0,
+    "died_in": {
+     "Boss": 10,
+     "Monster": 14,
+     "Elite": 5
+    },
+    "fights": {
+     "Monster": 314,
+     "Boss": 35,
+     "Elite": 23
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 7.5,
+     "Boss": 25.8,
+     "Elite": 17.1
+    },
+    "search": {
+     "searched": 7184,
+     "fallback": 8,
+     "mismatch": 0,
+     "errors": 8,
+     "search_seconds": 11140.0,
+     "potions": 147,
+     "via_run": 203
+    },
+    "policy": {
+     "ropt_decisions": 218,
+     "ropt_disagree": 107,
+     "rpath_decisions": 229,
+     "rpath_disagree": 103,
+     "rcard_decisions": 353,
+     "rcard_disagree": 237,
+     "rcard_skips": 91,
+     "rshop_decisions": 133,
+     "rshop_disagree": 108,
+     "rshop_buys": 108
+    },
+    "mean_seconds": 519.0,
+    "vs_rcard+rpath+pot+smith+rshop2+ropt": {
+     "pairs": 29,
+     "mean_floor_diff": -9.66,
+     "better": 6,
+     "worse": 21,
+     "equal": 2,
+     "sign_p_one_sided": 0.9992431402206421,
+     "boot95": [
+      -14.172413793103448,
+      -5.0
+     ]
+    }
+   },
+   "rcard+rpath+pot+smith+rshop2+ropt+rfm+hz": {
+    "runs": 29,
+    "mean_floor": 21.48,
+    "act1_boss": 16,
+    "act2_boss": 1,
+    "won": 0,
+    "died_in": {
+     "Boss": 11,
+     "Monster": 12,
+     "Elite": 6
+    },
+    "fights": {
+     "Monster": 268,
+     "Elite": 27,
+     "Boss": 28
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 8.1,
+     "Elite": 9.6,
+     "Boss": 32.4
+    },
+    "search": {
+     "searched": 6363,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 12342.6,
+     "potions": 137,
+     "via_run": 56
+    },
+    "policy": {
+     "ropt_decisions": 161,
+     "ropt_disagree": 90,
+     "rpath_decisions": 185,
+     "rpath_disagree": 96,
+     "rcard_decisions": 316,
+     "rcard_disagree": 232,
+     "rcard_skips": 91,
+     "rshop_decisions": 87,
+     "rshop_disagree": 75,
+     "rshop_buys": 75,
+     "rollout_errors": 23
+    },
+    "mean_seconds": 711.8,
+    "vs_rcard+rpath+pot+smith+rshop2+ropt": {
+     "pairs": 29,
+     "mean_floor_diff": -14.55,
+     "better": 3,
+     "worse": 24,
+     "equal": 2,
+     "sign_p_one_sided": 0.9999971762299538,
+     "boot95": [
+      -18.862068965517242,
+      -10.10344827586207
+     ]
+    }
+   }
+  }
+ }
+}
