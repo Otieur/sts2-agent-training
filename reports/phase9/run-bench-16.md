@@ -32,7 +32,54 @@ Why the shop rule: every rollout (for cards, routes, shops and events) is played
 - What follows, the stack that runs next: `rpath` stays if its mean effect in floors is positive and its two arms together do not win fewer runs than the two `path` arms; otherwise `path` replaces it (it is also the cheaper of the two). `bshop` enters by the same rule. A claim either way needs its test.
 
 ## 5. Results
-Pending.
+Run 2026-11-22 07:42–14:43 on the Release5 host, the second start (section 6, 07:40; `data/learn/runs/run-bench-16/manifest.json`; 9 workers; 25,298 seconds, ended by the stopping rule). 26 of the 30 seeds were finished by all four policies and are the analysis: 104 runs. Seeds 00020, 00024, 00025 and 00028 were still played at the deadline and are left out, as registered; a seed that takes long is one whose runs go far, so the 26 are not a random 26 of the 30. No host error, no run given up in a fight, workers' exit codes all 0. Reports: `python3 -I tools/run_details.py data/learn/runs/run-bench-16`, the same with `--factor --on … --off …` for each factor, and with `--decisions`. `S` = `rcard+rpath+pot+smith+rshop2+ropt`, `P` = the same with `path` in place of `rpath`.
+
+| Policy | Mean floor | Median | Wins (Wilson 95%) | Act 1 boss beaten | Act 2 boss | Act 3 boss | Elites per run | Seconds per run |
+|---|---|---|---|---|---|---|---|---|
+| `S` | 35.65 | 33 | 1 of 26 (1–19%) | 23 of 26 | 11 of 16 | 1 of 7 | 1.23 | 1,236 |
+| `P` | 38.81 | 46 | 2 of 26 (2–24%) | 22 of 26 | 16 of 20 | 2 of 12 | 2.42 | 1,450 |
+| `S+bshop` | 41.23 | 48 | 4 of 26 (6–34%) | 25 of 26 | 17 of 22 | 4 of 14 | 1.69 | 1,905 |
+| `P+bshop` | 36.19 | 33 | 1 of 26 (1–19%) | 23 of 25 | 12 of 19 | 1 of 9 | 2.50 | 1,527 |
+
+| Factor (the two arms with it minus the two without) | Seeds | Mean effect, floors | Bootstrap 95% | Better | Worse | Equal | Sign test p (one-sided) | Wins with / without (of 52) | Seeds with more wins with / without | Sign test p, wins |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Routes: `rpath` against `path` (H1, H3) | 26 | +0.94 | −1.98 to 4.10 | 11 | 11 | 4 | 0.58 | 5 / 3 | 2 / 0 | 0.25 |
+| Shop rule: `bshop` against the rule that leaves (H2, H4) | 26 | +1.48 | −2.15 to 5.23 | 12 | 12 | 2 | 0.58 | 5 / 3 | 2 / 0 | 0.25 |
+
+- **H1** (map moves by rollouts reach more floors than the route planner): p = 0.58, mean +0.94, 11 seeds better and 11 worse: **does not hold**.
+- **H2** (the shop rule that buys reaches more floors): p = 0.58, mean +1.48, 12 seeds better and 12 worse: **does not hold**.
+- **H3, H4** (wins): 5 wins against 3 for each factor, p = 0.25: **do not hold**. The run has 8 wins in 104 runs (7.7%, Wilson 95% 3.9% to 14.4%). Seed 00015 was won by all four policies; the other wins are `S+bshop` on seeds 00002 and 00007 and `S+bshop` and `P` on seed 00029.
+- Interaction, reported and not tested: the route effect is −3.16 floors without `bshop` (`S` 35.65 against `P` 38.81) and +5.04 with it (41.23 against 36.19), a difference of 8.2 floors. Each factor's mean effect is the average of two cells that point in opposite directions, so neither says much alone; with 26 seeds a difference of this size between the cells is not established either.
+
+**The stack that runs next** (section 4): `rpath` stays and `bshop` enters, each with a positive mean effect and more wins with it than without (5 against 3): `rcard+rpath+pot+smith+rshop2+ropt+bshop`. That is the rule for what runs next and no claim: neither test supports its factor. Run benchmark 19 started on this stack at 14:43 (`data/learn/queue/queue.log`), and its first arm plays the same policy on 30 new seeds, which is the check on the best of these four cells that this run cannot give (the best of four is picked by its result).
+
+**The level on the corrected host.** This is the first run on a host where a chest's relic reaches the player and a shop sells one card removal (section 6, 07:40; `docs/simulator-integrity.md` FI-7e, FI-7f). Wins: 8 of 104 here against 4 of 120 in run benchmark 15 and 1 of 87 in run benchmark 18 (other seeds, other arms; the intervals overlap). The same policy `S` reached 36.0 floors with 1 win in 29 runs in run benchmark 18 on the earlier host and 35.65 floors with 1 win in 26 here: no change that different seeds would let one see. What did change is where the runs stand at the bosses and where they end (the two paragraphs below): the relics the Agent brings are now close to the Player's, act 2 bosses are beaten three times in four, and the act 3 boss ends more runs than anything else. Gate G1 (decision 0005) asks for 12 wins in 30 before its 60 seeds are spent; the best cell here has 4 in 26.
+
+**The first start beside this one** (a description, not a comparison; section 6, 07:40). Ten seeds were recorded by both starts (00000, 00001, 00003, 00006–00010, 00012, 00013). On the Release3 host their 40 runs reached 30.6 floors on average and won none; here the same seeds and policies reach 35.0 and win one (`S` 27.8 and 33.2, `P` 29.2 and 34.5, `S+bshop` 33.8 and 37.9, `P+bshop` 31.7 and 34.2). The ten are the seeds that ended first on the Release3 host, that is, the ones whose runs were short there, so the difference overstates what the two corrections are worth; and the two starts also differ in the benchmark tool (sampled futures numbered inside the run).
+
+**Where the runs end** (104 runs): act 3 boss 34, act 2 boss 21, act 2 hallway 12, act 1 boss 10, act 3 hallway 9, act 3 elite 5, act 2 elite 4, act 1 elite 1, won 8. Bosses end 65 of the 96 lost runs, and the act 3 boss more than a third of them (run benchmark 15: act 2 boss 41, act 1 boss 23, act 3 boss 18 of 116). Boss fights won of those reached: act 1 93 of 103 (Ceremonial Beast 23 of 24, The Kin 24 of 28, Vantom 46 of 51); act 2 56 of 77 (Kaiser Crab 9 of 12, Knowledge Demon 29 of 42, The Insatiable 18 of 23); act 3 8 of 42 (Aeonglass 5 of 9, Queen 0 of 9, Test Subject 3 of 24).
+
+**What the Agent brings to a boss, beside the Player** `[OBS]` for the Agent (this run, four arms together), `[PLAYER-DATA]` for the Player (the table of run benchmark 15, section 5: `data/runs.db`, finished solo Ironclad runs on v0.107.1, all ascensions). A description, not a test.
+
+| Boss of | Who | Fights | Won | HP at the start | Deck | Upgraded cards | Relics |
+|---|---|---|---|---|---|---|---|
+| Act 1 | Agent, A0, this run | 103 | 90% | 80% | 18.8 | 3.4 | 4.6 |
+| | Agent, A0, run benchmark 15 | 118 | 81% | 77% | 18.3 | 3.2 | 3.4 |
+| | Player | 44 | 68% | 60% | 19.8 | 4.4 | 5.1 |
+| Act 2 | Agent, A0, this run | 77 | 73% | 77% | 27.0 | 7.7 | 9.0 |
+| | Agent, A0, run benchmark 15 | 74 | 45% | 65% | 24.8 | 7.4 | 5.9 |
+| | Player | 24 | 67% | 68% | 26.6 | 10.1 | 9.9 |
+| Act 3 | Agent, A0, this run | 42 | 19% | 73% | 33.1 | 13.2 | 13.8 |
+| | Agent, A0, run benchmark 15 | 22 | 18% | 62% | 31.5 | 13.1 | 8.8 |
+| | Player | 14 | 93% | 75% | 31.4 | 18.7 | 14.9 |
+
+With the chest relics the Agent holds 9.0 relics at the act 2 boss against the Player's 9.9 (5.9 in run benchmark 15) and 13.8 at the act 3 boss against 14.9 (8.8): most of the relic gap that run benchmark 15 reported was the simulator's defect and not the Agent's play. The act 2 boss is now beaten in 73% of the fights (45%). The act 3 boss is not: 19% with 13.8 relics, as 18% with 8.8, where the Player wins 13 of 14 with a deck of the same size, the same HP and one relic more. What still differs in this table is the upgraded cards (13.2 against 18.7; 7.7 against 10.1 at the act 2 boss); what it does not show is which cards the decks hold and how the act 3 boss fights are played and lost (Queen 0 of 9, Test Subject 3 of 24). That is the next thing to look at: the recorded act 3 boss fights of this run, and the simulator's Queen and Test Subject against the game's code, before any further rule is tried for it.
+
+**Routes.** The planner's arms fight about twice the elites of the rollout arms (2.42 and 2.50 a run against 1.23 and 1.69) and hold more relics at the act 3 boss (14.7 and 15.8 against 11.4 and 13.1). Route rollouts took an elite at 5 of the 51 forks that offered one without `bshop` and at 11 of 57 with it, a shop at 19 of 29 and at 33 of 46, a chest at every fork that offered one (15 of 15, 17 of 17). They differed from the planner's move in 104 of 282 and 100 of 318 decisions; all moves had the same value in 9 and 19.
+
+**Shops.** Shop visits with a decision per run: `S` 2.5, `P` 4.2, `S+bshop` 3.4, `P+bshop` 3.5. Purchases per run by rollout decisions (cards, relics, potions, removals): `S` 2.8, 0.5, 0.7, 0.7; `P` 3.7, 0.9, 1.3, 0.9; `S+bshop` 3.8, 1.4, 1.1, 0.5; `P+bshop` 4.4, 0.7, 1.5, 0.7. Gold left at the end: 212, 120, 125, 154. The rule itself bought where rollouts did not decide in 7, 10, 6 and 3 decisions of the run. All options of a shop decision had the same value in 10 of 148, 20 of 226, 14 of 216 and 8 of 216. No shop sold the card removal twice (17, 24, 14 and 17 shops with a removal bought).
+
+**Checks.** Every recorded decision names the rollout policy registered for its arm: `path+pot+smith` in `S` (1,127 decisions) and `P` (951), `bshop+path+pot+smith` in `S+bshop` (1,343) and `P+bshop` (903), with no boss credit and the act horizon. Rollouts that failed: 9, 1, 2 and 4. Search: no mismatch; 12 search errors in `S` and 4 in `P+bshop`, each followed by the planner's action for that decision, of 8,076 and 8,091 searched decisions; none in the other two arms. The interim look of 12:21 (section 6) read 1, 1, 3 and 1 wins on 21 seeds; the 26 seeds have 1, 2, 4 and 1.
 
 ## 6. Deviations and notes
 - 2026-11-21, written about 17:05 and committed at 18:08, before the start, with run benchmark 15 under way and none of its results read: the comparison becomes two factors. As registered at 14:48 it had two arms (`S*`, `P*`), hypotheses on routes only, a deadline of 5 hours and, for what follows, the paired difference of the two arms. Added: the factor `bshop` with its hypotheses (H2, H4), the two arms with it, the factor analysis of run benchmark 15 in place of the paired difference, and a deadline of 7 hours for twice the runs. Reason: the shop rule inside rollouts was the next comparison to run on the same stack; as a second factor on the same seeds each question gets 60 runs per level instead of 30 for the same machine time, and the interaction (do route rollouts choose better once a shop is worth something in them) is the question behind both. `bshop` was written and smoke-tested on seeds outside every benchmark (`RB093`–`RB095`) before this amendment. After the amendment's text was written and before it was committed, results of run benchmark 15 were seen twice in passing: the queue's stack script printed the factor effects of the one seed finished then, and the run's log showed the floors of its first two seeds. Nothing in this registration was changed after that.

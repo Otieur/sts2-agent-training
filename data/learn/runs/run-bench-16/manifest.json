@@ -1,0 +1,257 @@
+{
+ "name": "run-bench-16",
+ "started": "2026-11-22 07:42",
+ "created": "2026-11-22 14:43",
+ "code_commit": "d3362d0",
+ "code_uncommitted_changes": false,
+ "host": "Release5",
+ "fight_rebuild": "save+run",
+ "shared_eval_host": true,
+ "workers": 9,
+ "seed_order": "dynamic",
+ "resumed": false,
+ "policies": [
+  "rcard+rpath+pot+smith+rshop2+ropt",
+  "rcard+path+pot+smith+rshop2+ropt",
+  "rcard+rpath+pot+smith+rshop2+ropt+bshop",
+  "rcard+path+pot+smith+rshop2+ropt+bshop"
+ ],
+ "seeds": 30,
+ "seed_base": 16,
+ "ascension": 0,
+ "combat": "mcw6",
+ "deadline": "2026-11-22 14:42",
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "workers_ended_after_deadline": [],
+ "wall_seconds": 25298,
+ "report": {
+  "runs": 26,
+  "policies": {
+   "rcard+rpath+pot+smith+rshop2+ropt": {
+    "runs": 26,
+    "mean_floor": 35.65,
+    "act1_boss": 23,
+    "act2_boss": 11,
+    "won": 1,
+    "died_in": {
+     "Elite": 2,
+     "Monster": 9,
+     "Boss": 14
+    },
+    "fights": {
+     "Monster": 362,
+     "Boss": 49,
+     "Elite": 32
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 6.2,
+     "Boss": 27.9,
+     "Elite": 11.3
+    },
+    "search": {
+     "searched": 8076,
+     "fallback": 12,
+     "mismatch": 0,
+     "errors": 12,
+     "search_seconds": 14244.8,
+     "potions": 181,
+     "via_run": 335
+    },
+    "policy": {
+     "ropt_decisions": 249,
+     "ropt_disagree": 143,
+     "rpath_decisions": 282,
+     "rpath_disagree": 104,
+     "rcard_decisions": 448,
+     "rcard_disagree": 270,
+     "rcard_skips": 84,
+     "rshop_decisions": 148,
+     "rshop_disagree": 122,
+     "rshop_buys": 122,
+     "rshop_blind_buys": 7,
+     "rollout_errors": 9
+    },
+    "mean_seconds": 1236.5
+   },
+   "rcard+path+pot+smith+rshop2+ropt": {
+    "runs": 26,
+    "mean_floor": 38.81,
+    "act1_boss": 22,
+    "act2_boss": 16,
+    "won": 2,
+    "died_in": {
+     "Boss": 18,
+     "Elite": 3,
+     "Monster": 3
+    },
+    "fights": {
+     "Monster": 344,
+     "Boss": 58,
+     "Elite": 63
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 4.7,
+     "Elite": 9.4,
+     "Boss": 23.5
+    },
+    "search": {
+     "searched": 8369,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 19840.6,
+     "potions": 242,
+     "via_run": 95
+    },
+    "policy": {
+     "ropt_decisions": 251,
+     "ropt_disagree": 141,
+     "rcard_decisions": 474,
+     "rcard_disagree": 280,
+     "rcard_skips": 88,
+     "rshop_decisions": 226,
+     "rshop_disagree": 178,
+     "rshop_buys": 178,
+     "rshop_blind_buys": 10,
+     "rollout_errors": 1
+    },
+    "mean_seconds": 1449.7,
+    "vs_rcard+rpath+pot+smith+rshop2+ropt": {
+     "pairs": 26,
+     "mean_floor_diff": 3.15,
+     "better": 13,
+     "worse": 8,
+     "equal": 5,
+     "sign_p_one_sided": 0.19165515899658203,
+     "boot95": [
+      -1.8846153846153846,
+      8.076923076923077
+     ]
+    }
+   },
+   "rcard+rpath+pot+smith+rshop2+ropt+bshop": {
+    "runs": 26,
+    "mean_floor": 41.23,
+    "act1_boss": 25,
+    "act2_boss": 17,
+    "won": 4,
+    "died_in": {
+     "Boss": 16,
+     "Monster": 6
+    },
+    "fights": {
+     "Monster": 408,
+     "Boss": 62,
+     "Elite": 44
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 5.3,
+     "Boss": 30.0,
+     "Elite": 11.6
+    },
+    "search": {
+     "searched": 9224,
+     "fallback": 0,
+     "mismatch": 0,
+     "errors": 0,
+     "search_seconds": 21493.2,
+     "potions": 239,
+     "via_run": 352
+    },
+    "policy": {
+     "ropt_decisions": 271,
+     "ropt_disagree": 129,
+     "rpath_decisions": 318,
+     "rpath_disagree": 100,
+     "rcard_decisions": 538,
+     "rcard_disagree": 289,
+     "rcard_skips": 89,
+     "rshop_decisions": 216,
+     "rshop_disagree": 160,
+     "rshop_buys": 177,
+     "rshop_blind_buys": 6,
+     "rollout_errors": 2
+    },
+    "mean_seconds": 1905.0,
+    "vs_rcard+rpath+pot+smith+rshop2+ropt": {
+     "pairs": 26,
+     "mean_floor_diff": 5.58,
+     "better": 14,
+     "worse": 7,
+     "equal": 5,
+     "sign_p_one_sided": 0.09462356567382812,
+     "boot95": [
+      0.5,
+      10.807692307692308
+     ]
+    }
+   },
+   "rcard+path+pot+smith+rshop2+ropt+bshop": {
+    "runs": 26,
+    "mean_floor": 36.19,
+    "act1_boss": 23,
+    "act2_boss": 12,
+    "won": 1,
+    "died_in": {
+     "Boss": 17,
+     "Elite": 5,
+     "Monster": 3
+    },
+    "fights": {
+     "Monster": 315,
+     "Boss": 53,
+     "Elite": 65
+    },
+    "mean_hp_lost_in_won_fights": {
+     "Monster": 5.2,
+     "Boss": 27.0,
+     "Elite": 10.6
+    },
+    "search": {
+     "searched": 8091,
+     "fallback": 4,
+     "mismatch": 0,
+     "errors": 4,
+     "search_seconds": 15792.1,
+     "potions": 218,
+     "via_run": 677
+    },
+    "policy": {
+     "ropt_decisions": 235,
+     "ropt_disagree": 127,
+     "rcard_decisions": 452,
+     "rcard_disagree": 288,
+     "rcard_skips": 96,
+     "rshop_decisions": 216,
+     "rshop_disagree": 170,
+     "rshop_buys": 188,
+     "rollout_errors": 4,
+     "rshop_blind_buys": 3
+    },
+    "mean_seconds": 1527.4,
+    "vs_rcard+rpath+pot+smith+rshop2+ropt": {
+     "pairs": 26,
+     "mean_floor_diff": 0.54,
+     "better": 10,
+     "worse": 12,
+     "equal": 4,
+     "sign_p_one_sided": 0.7382664680480957,
+     "boot95": [
+      -4.653846153846154,
+      5.923076923076923
+     ]
+    }
+   }
+  }
+ }
+}
