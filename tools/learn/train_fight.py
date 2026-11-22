@@ -288,6 +288,7 @@ def main(argv=None):
     ap.add_argument("--data", default=str(PROJECT / "data" / "learn" / "fights" / "fights-v1.jsonl"))
     ap.add_argument("--out")
     ap.add_argument("--eval", help="a trained model folder: report it on --data (all rows) instead of training")
+    ap.add_argument("--base", help="with --eval: the model's training data; the base rates of its training part are scored beside the model")
     ap.add_argument("--export", help="a trained model folder: write its weights as plain numbers (weights.json) and check them against --data")
     ap.add_argument("--epochs", type=int, default=80)
     ap.add_argument("--lr", type=float, default=2e-3)
@@ -302,8 +303,13 @@ def main(argv=None):
     if a.eval:
         fm = FightModel.load(a.eval)
         p, hp = predict(fm.model, fm.enc, rows)
-        print(json.dumps({"all": scores(p, hp, rows), "by_room": {room: scores([p[i] for i, r in enumerate(rows) if r["room"] == room], [hp[i] for i, r in enumerate(rows) if r["room"] == room], [r for r in rows if r["room"] == room]) for room in ROOMS},
-                          "calibration": calibration(p, rows)}, indent=1))
+        by_room = lambda p, hp: {room: scores([p[i] for i, r in enumerate(rows) if r["room"] == room], [hp[i] for i, r in enumerate(rows) if r["room"] == room],
+                                              [r for r in rows if r["room"] == room]) for room in ROOMS}
+        out = {"all": scores(p, hp, rows), "by_room": by_room(p, hp), "calibration": calibration(p, rows)}
+        if a.base:      # the per-encounter base rates of the model's training fights, scored on the same rows
+            bp, bh = base_rates([r for r in load_rows(a.base) if part_of(r["group"], fm.config.get("seed", 0)) == "train"])(rows)
+            out["base_rate"] = {"all": scores(bp, bh, rows), "by_room": by_room(bp, bh)}
+        print(json.dumps(out, indent=1))
         return 0
     parts = {"train": [], "val": [], "test": []}
     for r in rows:

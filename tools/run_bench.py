@@ -38,6 +38,10 @@ A policy is a `+`-joined list of components; anything not named keeps the simple
 - `smith`: rest sites heal only below 35% HP (below 50% right before a boss) and otherwise smith; upgrades (at rest
   sites and elsewhere) go by the upgrade priority list (Bash, then the draft tiers, Strikes and Defends last). With
   `ropt`, rest sites and upgrade choices follow this rule instead of rollouts.
+- `rfm`: the rollouts do not play fights: each fight is ended by the fight-outcome model (`FIGHT_MODEL`, how search
+  fights such a fight), and a rollout's value is the expected floors climbed and bosses beaten (`tools/run_eval.py`).
+  The run's own fights are played by search as before. Needs a host build with `resolve_fight`.
+- `hz`: with `rfm`, rollouts play on to the end of the run instead of the end of the act.
 - `bc`: the rollouts of `rdraft`, `rcard` and `rpath` credit progress against a boss (`tools/run_eval.py`
   `boss_credit`, weight `BOSS_CREDIT`): a rollout that dies in a boss fight gets that weight times the fraction of the
   boss fight's enemy HP it removed, and a won run counts as beating the act's boss (run benchmark 7).
@@ -97,16 +101,24 @@ def set_evaluator(ev, rollout_policy, boss_credit):
     return ev
 
 
+def evaluator_settings(ev):
+    """What an evaluator was set to when it last ran (kept with every decision)."""
+    return {"rollouts_by": getattr(ev, "rollout_policy", None), "boss_credit": getattr(ev, "boss_credit", None),
+            "fight_model": Path(ev.fight_model).name if getattr(ev, "fight_model", None) else None, "horizon": getattr(ev, "horizon", None)}
+
+
 def evaluate(policy, ev, rollout_policy, sim, obs, opts):
     """Evaluate options with an evaluator set to this policy's settings; rollouts that failed (a host error inside the
     rollout; the rollout is left out) are counted in the policy's stats, so that a run's record shows them."""
     set_evaluator(ev, rollout_policy, policy.boss_credit())
+    ev.fight_model, ev.horizon = policy.fight_model(), "run" if "hz" in policy.parts else "act"
     before = ev.stats.get("errors", 0)
     vals = ev.evaluate(sim, obs, opts)
     if ev.stats.get("errors", 0) > before:
         policy.stats["rollout_errors"] = policy.stats.get("rollout_errors", 0) + ev.stats["errors"] - before
     return vals
 ROLLOUTS_K = 6
+FIGHT_MODEL = os.environ.get("SIM_FIGHT_MODEL", str(PROJECT / "models" / "fight-v2"))    # the `rfm` component's model folder
 BOSS_CREDIT = 5.0           # the `bc` weight: dying with the boss at 0 HP is worth as much as beating it with 0 HP left
 
 
@@ -282,11 +294,15 @@ class Policy:
     def rule_policy(self):
         """This policy with every rollout component replaced by its rule counterpart (`rpath` by `path`, `rdraft` by
         `draft`, `rcard` by the first card, `bc` dropped), so that rollouts never start rollouts of their own."""
-        swap = {"rpath": "path", "rdraft": "draft", "rcard": None, "bc": None, "ropt": None, "rshop": None, "rshop2": None}
+        swap = {"rpath": "path", "rdraft": "draft", "rcard": None, "bc": None, "ropt": None, "rshop": None, "rshop2": None,
+                "rfm": None, "hz": None}
         return "+".join(sorted({swap.get(x, x) for x in self.parts} - {None})) or "base"
 
     def boss_credit(self):
         return BOSS_CREDIT if "bc" in self.parts else 0.0
+
+    def fight_model(self):
+        return FIGHT_MODEL if "rfm" in self.parts else None
 
     def note(self, kind, obs, opts, vals, best, rule, ev=None):
         """Keep a rollout decision: the visible situation, each option with its mean rollout value, the choice, the rule's
@@ -298,7 +314,7 @@ class Policy:
                          "hp": p["hp"], "max_hp": p["max_hp"], "gold": p.get("gold"), "deck": list(p.get("deck", [])),
                          "relics": list(p.get("relics", [])), "potions": [x for x in p.get("potions", []) if x], "act_boss": obs.get("act_boss"),
                          "options": opts, "values": [round(v, 3) for v in vals], "chosen": best, "rule": rule,
-                         "rollouts_by": getattr(ev, "rollout_policy", None), "boss_credit": getattr(ev, "boss_credit", None)})
+                         **evaluator_settings(ev)})
 
     def card_rollout_policy(self):
         return self.rule_policy()

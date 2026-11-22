@@ -96,16 +96,21 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default=str(PROJECT / "data" / "learn" / "fights" / "fights-v1.jsonl"))
     ap.add_argument("--teachers", nargs="+", default=["mcw6"], help="keep fights played by these search settings")
+    ap.add_argument("--runs", nargs="+", help="only the fights of these run benchmark folders (to check a model on fights it has not seen)")
     a = ap.parse_args(argv)
     L = PROJECT / "data" / "learn"
     rows = []
-    for folder in sorted(L.glob("combat-*")):
-        rows += [r for r in from_selfplay(folder) if r]
-    for folder in sorted((L / "runs").glob("run-bench-*")):
-        rows += [r for r in from_runs(folder) if r]
-    for folder in sorted((L / "bench").iterdir()):
-        if folder.is_dir():
-            rows += [r for r in from_bench(folder) if r]
+    if a.runs:
+        for folder in a.runs:
+            rows += [r for r in from_runs(Path(folder)) if r]
+    else:
+        for folder in sorted(L.glob("combat-*")):
+            rows += [r for r in from_selfplay(folder) if r]
+        for folder in sorted((L / "runs").glob("run-bench-*")):
+            rows += [r for r in from_runs(folder) if r]
+        for folder in sorted((L / "bench").iterdir()):
+            if folder.is_dir():
+                rows += [r for r in from_bench(folder) if r]
     kept = [r for r in rows if r["teacher"] in a.teachers]
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)

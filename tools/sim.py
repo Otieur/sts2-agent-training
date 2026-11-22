@@ -1006,6 +1006,15 @@ def run_policy(pt, obs, acts, rng, mode="safe", potions=None):
     if scr == "choice":
         picks = [x for x in acts if x.get("cards")]
         cards = [x for x in picks if not str(x.get("card_id", "")).startswith("alt:")]
+        if str((obs.get("choice") or {}).get("kind", "")) in ("CardReward", "FromChooseACardScreen"):
+            # a card to add: not one the host cannot simulate while another is on offer. Such a card is never played by
+            # the planner, but effects that play cards by themselves (the Imbued enchantment, Whispering Earring,
+            # History Course and others) would play it at a fight's start and stop the run or rollout (FI-7d).
+            ok = [x for x in cards if str(x.get("card_id", "")).rstrip("+") not in UNSIMULATED]
+            skip = [x for x in acts if x.get("type") == "choose" and not x.get("cards")]
+            if cards and not ok and skip:
+                return skip[0]                      # nothing else on offer: take none
+            cards = ok or cards
         return (cards or picks or acts)[0]
     if scr == "rest":
         hp, mx = obs["player"]["hp"], obs["player"]["max_hp"]

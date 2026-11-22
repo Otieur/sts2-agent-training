@@ -30,3 +30,4 @@ Why: a rollout's value is the floors it climbs plus a bonus for beating the act'
 Pending.
 
 ## 6. Deviations and notes
+- 2026-11-21 22:46, before the start: this run moves behind run benchmarks 18 and 16, and it runs only if `rfm` (fights inside rollouts ended by the fight-outcome model) is not in the stack after them: the boss credit applies to rollouts that play the boss fight and die in it, and has no meaning in rollouts that do not play it. If `rfm` is in the stack, this registration is withdrawn unrun and the seeds `RB017` stay unused. Host: the Release3 build, as for run benchmark 16. Nothing of this run was known.

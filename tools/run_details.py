@@ -189,8 +189,8 @@ def decisions(folder):
                     sc = screens.setdefault(str(d.get("event") or d.get("choice_kind") or d.get("screen")), {"n": 0, "differ": 0})
                     sc["n"] += 1
                     sc["differ"] += d["chosen"] != d["rule"]
-        used = collections.Counter((d.get("rollouts_by"), d.get("boss_credit")) for _, p in ps for d in p.get("decisions", []))
-        out[name] = {"runs": len(ps), "by_kind": kinds, "rollout_settings_used": [[rp, bc, n] for (rp, bc), n in used.most_common()],
+        used = collections.Counter((d.get("rollouts_by"), d.get("boss_credit"), d.get("fight_model"), d.get("horizon")) for _, p in ps for d in p.get("decisions", []))
+        out[name] = {"runs": len(ps), "by_kind": kinds, "rollout_settings_used": [[*k, n] for k, n in used.most_common()],
                      "shops_with_a_decision_per_run": round(len(shops) / max(1, len(ps)), 2),
                      "route_chosen_of_offered": {t: f"{points.get(t, 0)}/{n}" for t, n in sorted(offered.items())},
                      "shop_by_gold": {b: gold[b] for b in ("under 100", "100-199", "200-399", "400 and more") if b in gold},

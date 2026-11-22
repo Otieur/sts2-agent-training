@@ -14,6 +14,14 @@ planner that fights in rollouts rarely beats bosses, so without this most rollou
 and a won run counts as beating the act's boss (in act 3 the act never advances). Only what the player can see is
 used: the rollouts play in worlds whose unseen parts are freshly sampled.
 
+With a fight model (`fight_model`, decision 0005 item 4) the rollouts do not play fights. At each fight the model
+(`tools/learn/fight_predict.py`: how search fights such a fight) gives the probability of winning and the HP left
+after a win; the fight is ended as won with that HP (host command `resolve_fight`, rollout worlds only), and the
+probability multiplies the rollout's chance of still being alive. The value is the expectation of the same quantity as
+above: each floor climbed counts with the chance of being alive when it is reached, each act boss beaten with the
+chance of having survived it. No fight outcome is drawn, so two options differ in value exactly when the model sees a
+difference in some fight. `horizon` "run" plays on past the act's boss to the end of the run.
+
     python3 -I tools/run_eval.py --demo --seed RB90000001 --ascension 5     # one run, card rewards by rollouts, timings
 """
 import argparse
@@ -28,6 +36,11 @@ import sim as S  # noqa: E402
 
 # a decision whose first rollouts all fail is given up after this many failures (see RolloutEvaluator.evaluate)
 GIVE_UP_AFTER = 3
+
+# with a fight model: potions a won fight is taken to have used, by room (run benchmark 11: 1.1 a run in hallways, about
+# 1.4 an elite fight, about 1.8 a boss fight), and the most HP a fight can leave above the HP it started with
+MODEL_POTIONS_USED = {"Monster": 0, "Elite": 1, "Boss": 2}
+MODEL_HP_GAIN_CAP = 6
 
 # enemies above this HP cannot be killed (for example a boss that turns the fight into surviving); not counted
 UNKILLABLE_HP = 10_000
@@ -53,12 +66,24 @@ def boss_fight_hp(obs):
     return sum(e.get("max_hp", 0) for e in es), sum(max(0, e.get("current_hp", 0)) for e in es if e.get("is_alive", True))
 
 
+def fight_predictor():
+    """The module `tools/learn/fight_predict.py` (the learning tools are not on the path of the run tools)."""
+    if "fight_predict" not in sys.modules:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("fight_predict", Path(__file__).resolve().parent / "learn" / "fight_predict.py")
+        sys.modules["fight_predict"] = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sys.modules["fight_predict"])
+    return sys.modules["fight_predict"]
+
+
 class RolloutEvaluator:
     """Owns an evaluation host. `evaluate(run_sim, obs, options)` returns the mean rollout value of each option."""
 
     def __init__(self, k=6, max_steps=3000, rollout_policy="draft+shop+rest", seed_base=7_700_000, boss_credit=0.0):
         self.k, self.max_steps, self.seed_base, self.boss_credit = k, max_steps, seed_base, boss_credit
         self.rollout_policy = rollout_policy
+        self.fight_model, self.horizon = None, "act"      # a model folder: fights are ended by the model, not played
+        self._models = {}
         self.host = None
         self.stats = {"decisions": 0, "rollouts": 0, "errors": 0, "seconds": 0.0}
         self._n = 0
@@ -73,6 +98,52 @@ class RolloutEvaluator:
         if self.host is not None:
             self.host.__exit__(None, None, None)
             self.host = None
+
+    def model(self):
+        if self.fight_model not in self._models:
+            self._models[self.fight_model] = fight_predictor().FightPredictor(self.fight_model)
+        return self._models[self.fight_model]
+
+    def model_rollout(self, h, o, obs, start_act, pol, rng):
+        """One rollout with fights ended by the fight model: the expected rollout value (see the module text)."""
+        fight_predict, fm = fight_predictor(), self.model()
+        pots_allowed = "pot" in self.rollout_policy.split("+")
+        alive, value, floor, act = 1.0, 0.0, obs.get("floor") or 0, start_act
+        for _ in range(self.max_steps):
+            p = o["player"]
+            f = o.get("floor") or 0
+            if f > floor:
+                value += alive * (f - floor)
+                floor = f
+            if (o.get("act") or 1) > act:                       # an act's boss was beaten
+                value += alive * (5 + 5 * p["hp"] / max(1, p["max_hp"]))
+                act = o.get("act") or 1
+                if self.horizon != "run":
+                    break
+            if o["screen"] == "game_over":
+                if p["hp"] > 0:                                 # the run is won: the last boss was beaten
+                    value += alive * (5 + 5 * p["hp"] / max(1, p["max_hp"]))
+                break
+            if alive < 1e-4:
+                break
+            if o["screen"] == "combat":
+                spec = fight_predict.spec_from_obs(o, obs.get("ascension") or 0, pots_allowed)
+                pw, hpf = fm.predict(spec)
+                alive *= pw
+                held = [i for i, x in enumerate(p.get("potions", [])) if x]
+                used = held[:MODEL_POTIONS_USED[spec["room"]]] if pots_allowed else []
+                hp = max(1, min(round(hpf * p["max_hp"]), p["hp"] + MODEL_HP_GAIN_CAP))
+                self._last = ("resolve_fight", o.get("encounter"), o.get("floor"))
+                o = h.call(cmd="run_step", action={"type": "resolve_fight", "won": True, "hp": hp, "potions_used": used}, timeout=120)["obs"]
+                self.stats["resolved"] = self.stats.get("resolved", 0) + 1
+                continue
+            acts = h.call(cmd="run_legal")["actions"]
+            if not acts:
+                break
+            a = pol.act(o, acts, rng, h)
+            self._last = (a.get("type"), o["screen"], o.get("floor"))
+            o = h.call(cmd="run_step", action=a, timeout=120)["obs"]
+        return value
 
     def evaluate(self, run_sim, obs, options):
         import run_bench as RB
@@ -91,8 +162,14 @@ class RolloutEvaluator:
                 try:
                     o = h.call(cmd="run_from_save", data=ex["save_b64"], actions=ex["actions"], test_hp=ex["test_hp"],
                                sample_seed=seed, timeout=120)["obs"]
+                    self._last = ("the option", opt.get("type"))
                     o = h.call(cmd="run_step", action=opt, timeout=120)["obs"]
                     pol, rng = RB.Policy(self.rollout_policy), random.Random(seed)
+                    if self.fight_model:
+                        values[i].append(self.model_rollout(h, o, obs, start_act, pol, rng))
+                        self.stats["rollouts"] += 1
+                        done += 1
+                        continue
                     boss, prev = None, None                 # (enemy HP at the boss fight's start, enemy HP left)
                     for _ in range(self.max_steps):
                         if o["screen"] == "game_over" or (o.get("act") or 1) > start_act:
@@ -105,7 +182,9 @@ class RolloutEvaluator:
                         acts = h.call(cmd="run_legal")["actions"]
                         if not acts:
                             break
-                        o = h.call(cmd="run_step", action=pol.act(o, acts, rng, h), timeout=120)["obs"]
+                        a = pol.act(o, acts, rng, h)
+                        self._last = (a.get("type"), a.get("card_id"), o["screen"], o.get("floor"))
+                        o = h.call(cmd="run_step", action=a, timeout=120)["obs"]
                     values[i].append(rollout_value(obs, o, start_act, boss, self.boss_credit))
                     if self.boss_credit > 0 and boss is not None and o["screen"] == "game_over" and o["player"]["hp"] <= 0:
                         self.stats["boss_deaths"] = self.stats.get("boss_deaths", 0) + 1
@@ -117,7 +196,7 @@ class RolloutEvaluator:
                     failed += 1
                     if self.stats["errors"] <= 5 or self.stats["errors"] % 50 == 0:      # failures are counted and sampled (EN-5)
                         print(f"  rollout error {self.stats['errors']} (decision {self._n}, option {i}, sample {j}, floor {obs.get('floor')}, "
-                              f"{obs.get('screen')}): {str(e)[:300]}", flush=True)
+                              f"{obs.get('screen')}; last step sent {getattr(self, '_last', None)}): {str(e)[:300]}", flush=True)
                     self.close()
                     h = self._host()
                     if done == 0 and failed >= GIVE_UP_AFTER:
