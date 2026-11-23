@@ -27,7 +27,26 @@ The situations come from `C*` = `rcard+rpath+pot+smith+rshop2+ropt+bshop`, `C*+c
 - **What follows.** If H1 holds: the component whose situations win the larger share of their fights goes into the next run benchmark against `C*`, registered with **runs won** as its measure and the act 2 boss as a reported guard. It does not enter the stack on this comparison alone, because this says nothing about what the tiers cost before the last boss. If H1 does not hold: the seven wins of run benchmark 20 are read as the luck of single fights, the tiers stay out, and they are not tested again without a new reason.
 
 ## 5. Results
-Pending.
+Read 2026-11-23 12:31. Played 11:14–12:29 (four workers at the lowest priority beside run benchmark 19's second sitting; `data/learn/bench/boss-replay-5`; `python3 -I tools/origin_compare.py data/learn/bench/boss-replay-5 --specs data/sim/boss-replay-5.json --control rcard+rpath+pot+smith+rshop2+ropt+bshop`). 235 fights, 233 counted (two ended in a host error, section 6); 76 seconds a fight.
+
+| Situations reached by | `C*` | `C*+ctb` (tie-break) | `C*+cth` (hard filter) |
+|---|---|---|---|
+| Situations | 16 | 16 | 15 |
+| Won in run benchmark 20's own fights | 0 | 3 | 4 |
+| **Replays won** | **6 of 80 (7.5%)** | **14 of 80 (17.5%)** | **11 of 73 (15%)** |
+| Aeonglass | 3 of 30 | 8 of 30 | 7 of 25 |
+| Queen | 2 of 25 | 3 of 30 | 2 of 25 |
+| Test Subject | 1 of 25 | 3 of 20 | 2 of 23 |
+| Situations with at least one replay won | 4 | 8 | 5 |
+| Replays won per situation, highest first | 3, 1, 1, 1, then 0 twelve times | 4, 3, 2, 1, 1, 1, 1, 1, then 0 eight times | 4, 3, 2, 1, 1, then 0 ten times |
+
+- **H1 does not hold.** On the 15 seeds where `C*` and at least one arm with the tiers reached the last boss, the arms with the tiers win a share of 0.198 of their replays against 0.080: a larger share on 6 seeds, a smaller one on 3, the same on 6 (on all six nobody won a replay); one-sided sign test p = 0.254.
+- Each arm against `C*` alone, the same test: `C*+ctb` on 11 seeds, more on 4 and fewer on 2 (p = 0.34); `C*+cth` on 13 seeds, more on 2 and fewer on 1 (p = 0.50).
+- **The replays beside the runs.** All 47 situations: 31 of 233 replays won (13%), where the runs won 7 of 47 (15%). `C*` won none of its 16 fights in the runs and wins 6 of 80 replays, so its level here is about one fight in thirteen and not zero. The seven situations won in the runs win 17 of their 33 replays; the 24 situations of the two arms with the tiers that were lost in the runs win 8 of 120 (7%), as `C*`'s 16 do (6 of 80). So the wins of run benchmark 20 were not flukes of single fights in themselves: they came from situations that win about every second fight. What the replays do not show at the registered level is that the tiers lead to such situations more often than `C*` does (situations that win more than half of their replays: five of 31 with the tiers, one of 16 without).
+- Not registered, for the size of it: over situations, the mean share of replays won is 0.170 with the tiers and 0.075 without (a difference of 0.095; a permutation test over the 47 situations gives p = 0.12 one-sided).
+
+**What follows (section 4).** H1 does not hold, so the tiers stay out of the stack and are not tested again without a new reason. The direction is the one run benchmark 20 showed and about a doubling, on 16 situations against 31; a difference of that size cannot be told from none with this many situations, in fights or in runs: a run benchmark of 30 seeds reaches the last boss about 16 times an arm, which at these shares is one run won without the tiers and three with them. That limit is noted for the next registration: an effect on the last boss needs either many more situations or a larger effect than a doubling of a rare win.
 
 ## 6. Deviations and notes
 - 2026-11-23 09:01, before the run: the reader's arithmetic is checked on made-up records (`tools/tests/test_origin_compare.py`). No fight of the set has been played outside run benchmark 20's runs.
+- 2026-11-23 12:31, after the run. **Two fights ended in a host error and are left out** (situation 31, the Test Subject of `C*+cth` on seed index 7, sample indexes 3 and 4: `no choice is pending` when a choose action was answered, once in a step and once in a restore); that situation has three replays, two won. **One fight ended blocked and is counted as not won** (situation 30, the Test Subject of `C*` on the same seed, sample index 1: the fight could not be continued after its host restarts); with it left out `C*` wins 6 of 79 and H1's count is unchanged (6 seeds against 3, p = 0.254). Four more fights of those two situations were finished after one or two restarts of the host and are counted as played. All seven are the Test Subject on seed index 7; the host errors are noted for the simulator's fidelity list.
