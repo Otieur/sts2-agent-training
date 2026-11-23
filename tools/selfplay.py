@@ -186,7 +186,7 @@ def scored_search(sim, obs, mode, k, top, decision, done=None, potions=None, wid
                 raise Tainted("restore did not give back the decision state")
             sim.call(cmd="resample", sample_seed=1_000_003 * (decision + 1) + j)
             try:
-                o = sim.step(a)
+                o = sim.step(S.choice_in(sim.observe(), obs, a) if a.get("type") == "choose" else a)
             except S.SimError:
                 done[(ci, j)] = -1000.0
                 continue

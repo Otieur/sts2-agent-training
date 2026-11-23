@@ -33,6 +33,42 @@ class TestSimBridge(unittest.TestCase):
         o = obs([("STRIKE_IRONCLAD", 1, {"Damage": 6})], [dict(ENEMY)], choice={"kind": "FromCombatPile", "min": 1, "max": 1, "options": ["BASH", "DEFEND_IRONCLAD"]})
         self.assertEqual(sim.planner_action(pt, o, "safe"), {"type": "choose", "cards": [0]})
 
+    def test_card_choices_as_search_candidates(self):
+        class Fake:
+            def __init__(self, legal):
+                self._legal = legal
+
+            def legal(self):
+                return self._legal
+        curse = obs([], [dict(ENEMY)], choice={"kind": "FromChooseACardScreen", "min": 0, "max": 1, "options": ["DISINTEGRATION", "MIND_ROT"]})
+        host = Fake([{"type": "choose", "cards": []}, {"type": "choose", "cards": [0], "card_id": "DISINTEGRATION"}, {"type": "choose", "cards": [1], "card_id": "MIND_ROT"}])
+        was = sim.SEARCH_CHOICES
+        try:
+            sim.SEARCH_CHOICES = False
+            self.assertEqual(sim.search_candidates(host, pt, curse, 2), [{"type": "choose", "cards": [0]}])          # as before: the first option
+            self.assertEqual(sim.search_candidates_wide(host, pt, curse, 2), [{"type": "choose", "cards": [0]}])
+            sim.SEARCH_CHOICES = True
+            both = [{"type": "choose", "cards": [0]}, {"type": "choose", "cards": [1]}]
+            self.assertEqual(sim.search_candidates(host, pt, curse, 2), both)      # the first option first; declining is never a candidate
+            self.assertEqual(sim.search_candidates_wide(host, pt, curse, 2, potions="Boss", all_potions=True), both)
+        finally:
+            sim.SEARCH_CHOICES = was
+        # one candidate per distinct card name, the first option kept first, capped
+        pile = obs([], [dict(ENEMY)], choice={"kind": "FromCombatPile", "min": 1, "max": 1, "options": ["DEFEND_IRONCLAD", "BASH", "DEFEND_IRONCLAD", "ANGER+", "ANGER"]})
+        legal = [{"type": "choose", "cards": [i]} for i in range(5)] + [{"type": "end_turn"}]
+        first = {"type": "choose", "cards": [0]}
+        self.assertEqual([c["cards"] for c in sim.choice_candidates(Fake(legal), pile, first)], [[0], [1], [3], [4]])
+        self.assertEqual([c["cards"] for c in sim.choice_candidates(Fake(legal), pile, first, cap=2)], [[0], [1]])
+        self.assertEqual(sim.choice_labels(pile, {"type": "choose", "cards": [3, 1]}), ("ANGER+", "BASH"))
+        # the same answer in a world that lists the options in another order
+        other = obs([], [dict(ENEMY)], choice={"kind": "FromCombatPile", "min": 1, "max": 1, "options": ["ANGER", "DEFEND_IRONCLAD", "ANGER+", "DEFEND_IRONCLAD", "BASH"]})
+        self.assertEqual(sim.choice_in(other, pile, {"type": "choose", "cards": [1]}), {"type": "choose", "cards": [4]})
+        self.assertEqual(sim.choice_in(other, pile, {"type": "choose", "cards": [0, 2]}), {"type": "choose", "cards": [1, 3]})
+        self.assertEqual(sim.choice_in(pile, pile, {"type": "choose", "cards": [2]}), {"type": "choose", "cards": [2]})
+        gone = obs([], [dict(ENEMY)], choice={"kind": "FromCombatPile", "min": 1, "max": 1, "options": ["ANGER"]})
+        self.assertEqual(sim.choice_in(gone, pile, {"type": "choose", "cards": [1]}), {"type": "choose", "cards": [1]})     # a name is missing: unchanged
+        self.assertEqual(sim.choice_in(other, pile, {"type": "end_turn"}), {"type": "end_turn"})
+
     def test_search_value_and_action_matching(self):
         won = {"status": "won", "combat": {"player": {"current_hp": 40}, "enemies": []}}
         lost = {"status": "lost", "combat": {"player": {"current_hp": 0}, "enemies": [{"current_hp": 12}, {"current_hp": 0}]}}

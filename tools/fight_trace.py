@@ -140,6 +140,8 @@ def main(argv=None):
     ap.add_argument("--loss-value", help="'f', 'm', 'fm' or 'none' (tools/sim.py LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS); default: as the runs play")
     ap.add_argument("--end-turn-z", type=float, help="check the end of a turn against the planner at this many standard errors "
                     "(tools/selfplay.py END_TURN_Z); default: as the runs play; 0 switches it off")
+    ap.add_argument("--choices", choices=["on", "off"], help="search the answers to a card choice inside the fight, or take the first option "
+                    "(tools/sim.py SEARCH_CHOICES); default: as the runs play")
     ap.add_argument("--out", help="write the decisions (turn, HP, enemies, chosen action, values, the planner's view) as JSON")
     ap.add_argument("--obs", action="store_true", help="keep every decision's full observation in the --out file")
     a = ap.parse_args(argv)
@@ -162,8 +164,11 @@ def main(argv=None):
         S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS = "f" in a.loss_value.replace("none", ""), "m" in a.loss_value.replace("none", "")
     if a.end_turn_z is not None:
         SP.END_TURN_Z = a.end_turn_z or None
+    if a.choices is not None:
+        S.SEARCH_CHOICES = a.choices == "on"
     print("value of a lost rollout: forms to come counted", S.LOSS_COUNTS_FORMS, "| minions left out", S.LOSS_SKIPS_MINIONS,
-          "| end of a turn checked against the planner at", SP.END_TURN_Z, "standard errors" if SP.END_TURN_Z else "(off)", flush=True)
+          "| end of a turn checked against the planner at", SP.END_TURN_Z, "standard errors" if SP.END_TURN_Z else "(off)",
+          "| card choices searched", S.SEARCH_CHOICES, flush=True)
     host = SP.Host()
     try:
         rec = SP.play(host, spec, a.seed, lambda sim, obs, d, done: SP.scored_search(sim, obs, "balanced", a.k, 2, d, done, potions=a.room, wide=True,
@@ -193,7 +198,7 @@ def main(argv=None):
                   + (f"; ending: {plan_line(pv['end'])}" if pv["end"] else ""))
     print("outcome", json.dumps(rec["outcome"]))
     if a.out:
-        json.dump({"source": [seed_id, pol], "encounter": a.encounter, "loss_value": a.loss_value, "end_turn_z": SP.END_TURN_Z, "end_checks": dict(SP.END_CHECKS), "outcome": rec["outcome"],
+        json.dump({"source": [seed_id, pol], "encounter": a.encounter, "loss_value": a.loss_value, "end_turn_z": SP.END_TURN_Z, "search_choices": S.SEARCH_CHOICES, "end_checks": dict(SP.END_CHECKS), "outcome": rec["outcome"],
                    "decisions": [{"turn": d["obs"].get("turn"), "hp": d["obs"]["combat"]["player"]["current_hp"],
                                   "enemies": [[e.get("name"), e.get("current_hp"), e.get("max_hp")] for e in d["obs"]["combat"]["enemies"]],
                                   "energy": d["obs"]["combat"]["player"].get("energy"), "block": d["obs"]["combat"]["player"].get("block", 0),

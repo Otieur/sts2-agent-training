@@ -936,7 +936,7 @@ def main(argv=None):
            "shared_eval_host": os.environ.get("SIM_SHARED_EVAL_HOST", "1") != "0",    # as tools/run_eval.py SHARED_EVAL_HOST
            "workers": a.workers, "seed_order": "dynamic" if a.dynamic else "static", "resumed": bool(a.resume),
            "policies": a.policies, "seeds": a.seeds,
-           "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "loss_value": {"forms": S.LOSS_COUNTS_FORMS, "minions": S.LOSS_SKIPS_MINIONS}, "end_turn_z": end_turn_z(), "deadline": a.deadline, "worker_exit_codes": codes,
+           "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "loss_value": {"forms": S.LOSS_COUNTS_FORMS, "minions": S.LOSS_SKIPS_MINIONS}, "end_turn_z": end_turn_z(), "search_choices": S.SEARCH_CHOICES, "deadline": a.deadline, "worker_exit_codes": codes,
            "workers_ended_after_deadline": ended,
            "wall_seconds": round(time.time() - t0), "report": report(out, a.baseline)}
     (out / "manifest.json").write_text(json.dumps(man, indent=1))

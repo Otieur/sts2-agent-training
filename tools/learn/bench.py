@@ -224,23 +224,26 @@ def make_arm(name, model_path, q_path=None, room=None):
     if name in ("planner", "plannerp"):
         pots = room if name.endswith("p") else None
         return lambda sim, obs, d, done: planner_search(sim, obs, d, done, pots)
-    m = re.fullmatch(r"mc(w?)(\d*)(p?)(a?)(f?)(m?)(e?)", name)
+    m = re.fullmatch(r"mc(w?)(\d*)(p?)(a?)(f?)(m?)(e?)(c?)", name)
     if m:
         search = mc_search(int(m.group(2) or 6), potions=room if m.group(3) else None, wide=bool(m.group(1)), all_potions=bool(m.group(4)))
         forms, minions = bool(m.group(5)), bool(m.group(6))
         end_z = END_TURN_Z_ARM if m.group(7) else None
+        choices = bool(m.group(8))
 
         def with_loss_value(sim, obs, d, done):
             # An arm's name states how a lost rollout is valued, whatever the defaults of tools/sim.py are: a trailing
             # `f` counts the forms a reviving enemy has to come, a trailing `m` leaves minions' HP out, and an arm
             # without them counts the HP of the enemies alive (LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS). A trailing `e`
             # checks the end of a turn against the planner (tools/selfplay.py END_TURN_Z); an arm without it does not.
-            was = S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS, SP.END_TURN_Z
-            S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS, SP.END_TURN_Z = forms, minions, end_z
+            # A trailing `c` searches the answers to a card choice inside a fight (tools/sim.py SEARCH_CHOICES); an arm
+            # without it takes the first option.
+            was = S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS, SP.END_TURN_Z, S.SEARCH_CHOICES
+            S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS, SP.END_TURN_Z, S.SEARCH_CHOICES = forms, minions, end_z, choices
             try:
                 return search(sim, obs, d, done)
             finally:
-                S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS, SP.END_TURN_Z = was
+                S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS, SP.END_TURN_Z, S.SEARCH_CHOICES = was
         return with_loss_value
     m = re.fullmatch(r"vleaf(\d*)", name)
     if m:

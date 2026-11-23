@@ -643,11 +643,67 @@ def _rank(pt, results, mode, potions):
     return pt.rank(results, mode, potion_cost=POTION_PRICE[potions]) if potions else pt.rank(results, mode)
 
 
+# Card choices inside a fight (the card Headbutt puts back, the card True Grit+ or Burning Pact exhausts, the card a
+# potion offers, the Knowledge Demon's curse). Until 2026-11-23 the search took the first option at every such choice
+# and never compared the others: the planner has no view on card choices, and its one answer was the search's only
+# candidate (trace sweep 2, `reports/phase9/boss-replay-3.md` section 6: 143 choices in 68 boss fights, each with more
+# than one distinct option; the Knowledge Demon's curse answered with Disintegration at every offer). With
+# SEARCH_CHOICES on, the answers the host lists are candidates like any other action and are scored by rollouts. The
+# first option stays the first candidate, so a tie is resolved as before. Declining is never a candidate: the host
+# lists it wherever the game's selector is given a minimum of 0, and at a choose-a-card screen that is so even where
+# the game does not let the player skip (KnowledgeDemon.ChooseCurse passes canSkip false). Answers of several cards
+# are taken as the host lists them, up to the cap. Off unless a search arm or the environment switches it on
+# (`SIM_SEARCH_CHOICES=1`).
+SEARCH_CHOICES = os.environ.get("SIM_SEARCH_CHOICES", "0") == "1"
+CHOICE_CAP = 10
+
+
+def choice_labels(obs, action):
+    """The names of the options a choose action takes, sorted: two answers with the same names are the same answer."""
+    opts = (obs.get("choice") or {}).get("options") or []
+    return tuple(sorted(str(opts[i]) if 0 <= i < len(opts) else f"#{i}" for i in action.get("cards") or []))
+
+
+def choice_candidates(sim, obs, first, cap=CHOICE_CAP):
+    """The answers to a card choice as search candidates: `first` (the answer taken without a search), then every
+    other answer the host lists that takes at least one card, one per distinct set of card names, up to `cap`."""
+    out, seen = [first], {choice_labels(obs, first)}
+    for l in sim.legal():
+        if l.get("type") != "choose" or not l.get("cards"):
+            continue
+        a = {"type": "choose", "cards": list(l["cards"])}
+        key = choice_labels(obs, a)
+        if key in seen:
+            continue
+        if len(out) >= cap:
+            break
+        seen.add(key)
+        out.append(a)
+    return out
+
+
+def choice_in(now, then, action):
+    """`action`, a choose action for the observation `then`, as the action that takes the same card names in `now`
+    (the same decision in a sampled world, where a pile's cards may be listed in another order). Unchanged when the
+    options are the same or a name is missing."""
+    a, b = (then.get("choice") or {}).get("options") or [], (now.get("choice") or {}).get("options") or []
+    if a == b or action.get("type") != "choose":
+        return action
+    picked = []
+    for i in action.get("cards") or []:
+        j = next((j for j, name in enumerate(b) if i < len(a) and name == a[i] and j not in picked), None)
+        if j is None:
+            return action
+        picked.append(j)
+    return {"type": "choose", "cards": picked}
+
+
 def search_candidates(sim, pt, obs, top, potions=None):
     """First actions of the rule planner's top plans in both modes, plus ending the turn; only legal ones. With
     `potions` (the room type), the plans may drink potions at that room's price."""
     if obs.get("choice"):
-        return [planner_action(pt, obs, "safe")]
+        first = planner_action(pt, obs, "safe")
+        return choice_candidates(sim, obs, first) if SEARCH_CHOICES else [first]
     hand, player, enemies = _hand_for(pt, obs, potions)
     cands = []
     if enemies and hand:
