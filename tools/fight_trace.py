@@ -19,7 +19,14 @@ or off the options of `tools/sim.py` for the value of a lost rollout (`f`: forms
 
 Prints, per turn: the player's HP, block and energy, each enemy's HP, intent and powers, and the hand; per decision:
 the action chosen by name (the card, the potion, the options taken at a choice), the best and worst candidate value,
-and `ALL LOST` when every candidate's rollouts ended in a loss."""
+and `ALL LOST` when every candidate's rollouts ended in a loss.
+
+Beside each decision the trace keeps what the rule planner makes of the same state (`planner_view`): the planner
+plays every rollout to its end, so where the search follows it the fight is played by the planner's judgement. Its
+next action is printed where it differs from the search's, and where both end a turn its best plan with a card is
+printed beside its plan that plays none. `--obs` keeps every decision's full observation in the `--out` file, so that
+a later question about the planner can be answered from the file without playing the fight again
+(`tools/trace_read.py` reads a folder of these files)."""
 import argparse
 import glob
 import json
@@ -27,8 +34,13 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import plan_turn as pt  # noqa: E402
 import selfplay as SP  # noqa: E402
 import sim as S  # noqa: E402
+
+# What a plan of the rule planner says of the turn it plans (tools/plan_turn.py `plans`); the terms its ranking uses.
+PLAN_FIELDS = ("plays", "dealt", "block", "incoming", "hp_lost", "dies", "powers", "kills", "all_dead", "energy_left", "draws", "potions",
+               "doom_dealt", "stun_bonus", "sandpit_bonus", "hex_loss", "hive_cards", "slippery_stripped")
 
 
 def fights_of(folder, specs, encounter):
@@ -73,6 +85,48 @@ def named(act, obs):
     return str(act.get("type"))
 
 
+def plan_summary(plan):
+    return None if plan is None else {k: plan[k] for k in PLAN_FIELDS if k in plan}
+
+
+def planner_view(obs, mode="balanced", room=None):
+    """What the rule planner makes of a decision state, as the rollouts of a `room` fight ask it (`mode`, potions at the
+    room's price): its next action; its top plan; its best plan that plays at least one card and its plan that plays
+    none, with the place of the latter in the ranking (0 = ending the turn is its first choice); the hand as it reads
+    it (hand index or potion slot, card, cost, playable, potion) and the cards it leaves out as not simulated. None at a card choice, where
+    the planner has no view."""
+    if obs.get("choice") or not obs.get("combat"):
+        return None
+    hand, player, enemies = S._hand_for(pt, obs, room)
+    view = {"action": S.planner_action(pt, obs, mode, room), "plans": 0, "top": None, "best_play": None, "end": None, "end_rank": None,
+            "cards": [[c.index, c.card_id, c.cost, bool(c.playable), bool(c.potion)] for c in hand],
+            "unsimulated": [card_name(h) for h in obs["combat"].get("hand") or [] if str(h.get("card_id")).rstrip("+") in S.UNSIMULATED]}
+    if not enemies or not hand:
+        return view
+    ranked = S._rank(pt, pt.plans(hand, player, enemies), mode, room)
+    end_rank = next((i for i, p in enumerate(ranked) if not p.get("seq")), None)
+    view.update(plans=len(ranked), top=plan_summary(ranked[0]) if ranked else None, best_play=plan_summary(next((p for p in ranked if p.get("seq")), None)),
+                end=plan_summary(ranked[end_rank]) if end_rank is not None else None, end_rank=end_rank)
+    return view
+
+
+def same_action(a, b, hand):
+    """The search's action and the planner's are the same move: both end the turn, the same card play (or a second
+    copy of the card at the same target), or the same potion at the same target."""
+    if a.get("type") != b.get("type"):
+        return False
+    if a.get("type") == "play":
+        return SP._same_play(a, b, hand)
+    if a.get("type") == "potion":
+        return a.get("slot") == b.get("slot") and a.get("target") == b.get("target")
+    return a.get("type") == "end_turn"
+
+
+def plan_line(p):
+    return (f"{', '.join(p['plays']) or 'no card'}: dealt {p.get('dealt')}, HP lost {p.get('hp_lost')}" + (", dies" if p.get("dies") else "")
+            + (f", powers {p['powers']}" if p.get("powers") else "") + (f", potions {p['potions']}" if p.get("potions") else ""))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("folder", nargs="?", help="run benchmark folder (or use --specs)")
@@ -86,7 +140,8 @@ def main(argv=None):
     ap.add_argument("--loss-value", help="'f', 'm', 'fm' or 'none' (tools/sim.py LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS); default: as the runs play")
     ap.add_argument("--end-turn-z", type=float, help="check the end of a turn against the planner at this many standard errors "
                     "(tools/selfplay.py END_TURN_Z); default: as the runs play; 0 switches it off")
-    ap.add_argument("--out", help="write the decisions (turn, HP, enemies, chosen action, values) as JSON")
+    ap.add_argument("--out", help="write the decisions (turn, HP, enemies, chosen action, values, the planner's view) as JSON")
+    ap.add_argument("--obs", action="store_true", help="keep every decision's full observation in the --out file")
     a = ap.parse_args(argv)
     if a.specs and a.folder and a.encounter.isdigit():      # `--specs file ENCOUNTER index`: the positional folder is the encounter
         a.folder, a.encounter, a.index = None, a.folder, int(a.encounter)
@@ -129,7 +184,13 @@ def main(argv=None):
         act = dec["candidates"][dec["chosen"]]
         vals = [v for v in dec["values"] if v is not None]
         tag = f" values best {max(vals):.0f} worst {min(vals):.0f} of {len(vals)}" + (" ALL LOST" if max(vals) < -100 else "") if vals else ""
+        pv = dec["planner"] = planner_view(o, "balanced", a.room)
+        if pv and not same_action(act, pv["action"], c.get("hand") or []):
+            tag += f" | planner: {named(pv['action'], o)}"
         print(f"    {named(act, o)}{tag}")
+        if pv and act.get("type") == "end_turn" and pv["action"].get("type") == "end_turn" and pv["best_play"]:
+            print(f"      the planner ends the turn too (rank of ending {pv['end_rank']} of {pv['plans']} plans); its best plan with a card: {plan_line(pv['best_play'])}"
+                  + (f"; ending: {plan_line(pv['end'])}" if pv["end"] else ""))
     print("outcome", json.dumps(rec["outcome"]))
     if a.out:
         json.dump({"source": [seed_id, pol], "encounter": a.encounter, "loss_value": a.loss_value, "end_turn_z": SP.END_TURN_Z, "end_checks": dict(SP.END_CHECKS), "outcome": rec["outcome"],
@@ -142,7 +203,10 @@ def main(argv=None):
                                   "enemy_powers": [[str(x.get("power_id")) for x in e.get("powers") or []] for e in d["obs"]["combat"]["enemies"]],
                                   "incoming": sum(i.get("total_damage") or 0 for e in d["obs"]["combat"]["enemies"] for i in e.get("intents") or [] if isinstance(i, dict)),
                                   "chosen_named": named(d["candidates"][d["chosen"]], d["obs"]),
-                                  "chosen": d["candidates"][d["chosen"]], "candidates": d["candidates"], "values": d["values"]} for d in rec["decisions"]]}, open(a.out, "w"))
+                                  "chosen": d["candidates"][d["chosen"]], "candidates": d["candidates"], "values": d["values"],
+                                  "planner": d.get("planner") and dict(d["planner"], named=named(d["planner"]["action"], d["obs"]),
+                                                                       same=same_action(d["candidates"][d["chosen"]], d["planner"]["action"], d["obs"]["combat"].get("hand") or [])),
+                                  **({"obs": d["obs"]} if a.obs else {})} for d in rec["decisions"]]}, open(a.out, "w"))
     return 0
 
 
