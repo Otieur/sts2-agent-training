@@ -1,0 +1,52 @@
+{
+ "name": "boss-replay-4-b-eb",
+ "created": "2026-11-23 10:59",
+ "benchmark": "data/sim/benchmark-v1.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "c024ddc",
+ "arms": [
+  "mcw6paf",
+  "mcw6pafc"
+ ],
+ "model": null,
+ "q_model": null,
+ "seeds": 1,
+ "sample_from": 3,
+ "rooms": [
+  "Elite",
+  "Boss"
+ ],
+ "seed_base": 7000000,
+ "workers": 4,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 1905,
+ "jobs": 30,
+ "summary": {
+  "mcw6paf": {
+   "games": 30,
+   "errors": 0,
+   "won": 23,
+   "mean_value": -27.366666666666667,
+   "mean_hp_if_won": 37.73913043478261,
+   "seconds": 2659.6,
+   "search_seconds_per_decision": 3.386,
+   "restarts": 0
+  },
+  "mcw6pafc": {
+   "games": 30,
+   "errors": 0,
+   "won": 21,
+   "mean_value": -43.7,
+   "mean_hp_if_won": 34.857142857142854,
+   "seconds": 2348.3,
+   "search_seconds_per_decision": 3.12,
+   "restarts": 0
+  }
+ }
+}

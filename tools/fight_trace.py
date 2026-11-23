@@ -140,8 +140,8 @@ def main(argv=None):
     ap.add_argument("--loss-value", help="'f', 'm', 'fm' or 'none' (tools/sim.py LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS); default: as the runs play")
     ap.add_argument("--end-turn-z", type=float, help="check the end of a turn against the planner at this many standard errors "
                     "(tools/selfplay.py END_TURN_Z); default: as the runs play; 0 switches it off")
-    ap.add_argument("--choices", choices=["on", "off"], help="search the answers to a card choice inside the fight, or take the first option "
-                    "(tools/sim.py SEARCH_CHOICES); default: as the runs play")
+    ap.add_argument("--choices", choices=["on", "off", "curse"], help="search the answers to a card choice inside the fight, take the first "
+                    "option, or search the Knowledge Demon's curse alone (tools/sim.py SEARCH_CHOICES); default: as the runs play")
     ap.add_argument("--out", help="write the decisions (turn, HP, enemies, chosen action, values, the planner's view) as JSON")
     ap.add_argument("--obs", action="store_true", help="keep every decision's full observation in the --out file")
     a = ap.parse_args(argv)
@@ -165,7 +165,7 @@ def main(argv=None):
     if a.end_turn_z is not None:
         SP.END_TURN_Z = a.end_turn_z or None
     if a.choices is not None:
-        S.SEARCH_CHOICES = a.choices == "on"
+        S.SEARCH_CHOICES = S.choices_mode({"on": "1", "off": "0"}.get(a.choices, a.choices))
     print("value of a lost rollout: forms to come counted", S.LOSS_COUNTS_FORMS, "| minions left out", S.LOSS_SKIPS_MINIONS,
           "| end of a turn checked against the planner at", SP.END_TURN_Z, "standard errors" if SP.END_TURN_Z else "(off)",
           "| card choices searched", S.SEARCH_CHOICES, flush=True)

@@ -42,6 +42,19 @@ class TestChoicesCompare(unittest.TestCase):
         m, lo, hi = cc.bootstrap([2.0, 2.0, 2.0])
         self.assertEqual((m, lo, hi), (2.0, 2.0, 2.0))
 
+    def test_folders_pooled_as_one_set(self):
+        import json
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            for name, sample, won in (("a", 0, True), ("b", 1, False)):
+                (Path(d) / name).mkdir()
+                (Path(d) / name / "shard-00.jsonl").write_text(json.dumps(rec(0, sample, False, won)) + "\n")
+            recs = cc.pooled([Path(d) / "a", Path(d) / "b"])
+            ok, _ = cc.pairs(recs, "x", "y")
+            self.assertEqual(cc.by_situation(ok, "x", "y"), {0: (0.0, 0.5)})        # one situation, two sample seeds
+            with self.assertRaises(ValueError):
+                cc.pooled([Path(d) / "a", Path(d) / "a"])                        # the same fights twice
+
 
 if __name__ == "__main__":
     unittest.main()

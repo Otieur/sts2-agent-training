@@ -51,8 +51,21 @@ class TestSimBridge(unittest.TestCase):
             both = [{"type": "choose", "cards": [0]}, {"type": "choose", "cards": [1]}]
             self.assertEqual(sim.search_candidates(host, pt, curse, 2), both)      # the first option first; declining is never a candidate
             self.assertEqual(sim.search_candidates_wide(host, pt, curse, 2, potions="Boss", all_potions=True), both)
+            # the curse alone: the Curse of Knowledge is searched, any other choice takes the first option
+            sim.SEARCH_CHOICES = "curse"
+            self.assertEqual(sim.search_candidates(host, pt, curse, 2), both)
+            headbutt = obs([], [dict(ENEMY)], choice={"kind": "FromCombatPile", "min": 1, "max": 1, "options": ["BASH", "DEFEND_IRONCLAD"]})
+            pick = Fake([{"type": "choose", "cards": [0]}, {"type": "choose", "cards": [1]}])
+            self.assertEqual(sim.search_candidates(pick, pt, headbutt, 2), [{"type": "choose", "cards": [0]}])
+            self.assertEqual(sim.search_candidates_wide(pick, pt, headbutt, 2, potions="Boss", all_potions=True), [{"type": "choose", "cards": [0]}])
+            self.assertTrue(sim.is_curse_offer(curse) and not sim.is_curse_offer(headbutt))
+            for offer in ("SLOTH", "WASTE_AWAY"):
+                self.assertTrue(sim.is_curse_offer(obs([], [dict(ENEMY)], choice={"kind": "FromChooseACardScreen", "options": ["DISINTEGRATION", offer]})))
+            self.assertFalse(sim.is_curse_offer(obs([], [dict(ENEMY)], choice={"kind": "FromChooseACardScreen", "options": ["DISINTEGRATION", "BASH"]})))
+            self.assertFalse(sim.is_curse_offer(obs([], [dict(ENEMY)])))
         finally:
             sim.SEARCH_CHOICES = was
+        self.assertEqual([sim.choices_mode(x) for x in ("1", "curse", "CURSE", "0", "", "on")], [True, "curse", "curse", False, False, False])
         # one candidate per distinct card name, the first option kept first, capped
         pile = obs([], [dict(ENEMY)], choice={"kind": "FromCombatPile", "min": 1, "max": 1, "options": ["DEFEND_IRONCLAD", "BASH", "DEFEND_IRONCLAD", "ANGER+", "ANGER"]})
         legal = [{"type": "choose", "cards": [i]} for i in range(5)] + [{"type": "end_turn"}]

@@ -653,9 +653,29 @@ def _rank(pt, results, mode, potions):
 # lists it wherever the game's selector is given a minimum of 0, and at a choose-a-card screen that is so even where
 # the game does not let the player skip (KnowledgeDemon.ChooseCurse passes canSkip false). Answers of several cards
 # are taken as the host lists them, up to the cap. Off unless a search arm or the environment switches it on
-# (`SIM_SEARCH_CHOICES=1`).
-SEARCH_CHOICES = os.environ.get("SIM_SEARCH_CHOICES", "0") == "1"
+# (`SIM_SEARCH_CHOICES=1`). The value "curse" (`SIM_SEARCH_CHOICES=curse`) searches the Knowledge Demon's Curse of
+# Knowledge alone and takes the first option at every other choice: boss replay 4 kept the option off in general (the
+# benchmark fights lost two fights more with every choice searched) and asked for this version on its own
+# (`reports/phase9/boss-replay-4.md` section 5, `reports/phase9/boss-replay-6.md`).
+def choices_mode(text):
+    """SEARCH_CHOICES from its text: True for "1", "curse" for "curse", False for anything else."""
+    return {"1": True, "curse": "curse"}.get(str(text).strip().lower(), False)
+
+
+SEARCH_CHOICES = choices_mode(os.environ.get("SIM_SEARCH_CHOICES", "0"))
 CHOICE_CAP = 10
+CURSE_OFFERS = ("MIND_ROT", "SLOTH", "WASTE_AWAY")      # the card offered beside Disintegration at the three Curses of Knowledge
+
+
+def is_curse_offer(obs):
+    """The Knowledge Demon's Curse of Knowledge: Disintegration offered beside Mind Rot, Sloth or Waste Away."""
+    opts = (obs.get("choice") or {}).get("options") or []
+    return "DISINTEGRATION" in opts and any(o in CURSE_OFFERS for o in opts)
+
+
+def choices_searched(obs):
+    """Whether the answers to this observation's card choice are search candidates under SEARCH_CHOICES."""
+    return SEARCH_CHOICES is True or (SEARCH_CHOICES == "curse" and is_curse_offer(obs))
 
 
 def choice_labels(obs, action):
@@ -703,7 +723,7 @@ def search_candidates(sim, pt, obs, top, potions=None):
     `potions` (the room type), the plans may drink potions at that room's price."""
     if obs.get("choice"):
         first = planner_action(pt, obs, "safe")
-        return choice_candidates(sim, obs, first) if SEARCH_CHOICES else [first]
+        return choice_candidates(sim, obs, first) if choices_searched(obs) else [first]
     hand, player, enemies = _hand_for(pt, obs, potions)
     cands = []
     if enemies and hand:

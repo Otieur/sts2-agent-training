@@ -11,7 +11,8 @@ fights; seconds per fight. Then the choices per arm (`choices` in the fight reco
 many, how many were searched (more than one answer was a candidate), how many of those took another answer than the
 first option, by kind of screen, and at the Knowledge Demon's curse what was taken at each offer. A fight with an error
 in either arm is left out and listed. With `--specs` (the fight set played) the fights won are also split by the
-run benchmark a situation comes from."""
+run benchmark a situation comes from. With `--pool` the folders are read as one set: the same fight set played with
+other sample seeds, a situation's value the mean over all of them."""
 import argparse
 import json
 import random
@@ -82,8 +83,19 @@ def by_origin(ok, specs, a, b):
     return dict(out)
 
 
-def report(folder, a, b, specs=None):
-    recs = load(folder)
+def pooled(folders):
+    """The records of several folders that played the same fight set with other sample seeds, as one set. A fight and
+    sample seed recorded twice is an error of the caller."""
+    recs = [r for f in folders for r in load(f)]
+    keys = Counter((r["fight"], r["sample"]) for r in recs)
+    twice = sorted(k for k, n in keys.items() if n > 1)
+    if twice:
+        raise ValueError(f"recorded in more than one folder: {twice[:5]}")
+    return recs
+
+
+def report(folder, a, b, specs=None, recs=None):
+    recs = load(folder) if recs is None else recs
     ok, out = pairs(recs, a, b)
     print(f"{folder}: {len(recs)} fights recorded, {len(ok)} with both arms" + (f"; left out for an error: {[(r['fight'], r['sample']) for r in out]}" if out else ""))
     if not ok:
@@ -128,8 +140,11 @@ def main(argv=None):
     ap.add_argument("--a", default="mcw6paf", help="the arm compared with")
     ap.add_argument("--b", default="mcw6pafc", help="the arm tested")
     ap.add_argument("--specs", help="the fight set the folders played: also splits the fights won by the run benchmark a situation comes from")
+    ap.add_argument("--pool", action="store_true", help="read the folders as one set (the same fight set played with other sample seeds)")
     a = ap.parse_args(argv)
     specs = json.loads(Path(a.specs).read_text())["fights"] if a.specs else None
+    if a.pool:
+        return report(" + ".join(a.folders), a.a, a.b, specs, recs=pooled(a.folders))
     return max(report(f, a.a, a.b, specs) for f in a.folders)
 
 
