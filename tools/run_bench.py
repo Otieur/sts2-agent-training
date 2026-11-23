@@ -649,6 +649,12 @@ class Deadline(Exception):
     pass
 
 
+def end_turn_z():
+    """The fight search's end-of-turn check as this process would play it (tools/selfplay.py END_TURN_Z; None is off)."""
+    import selfplay as SP
+    return SP.END_TURN_Z
+
+
 def play_run(sim, seed, ascension, policy, rng, max_steps=6000, combat=None, deadline=None):
     spec = {"seed": seed, "character": "IRONCLAD", "ascension": ascension}
     if combat is not None:
@@ -930,7 +936,7 @@ def main(argv=None):
            "shared_eval_host": os.environ.get("SIM_SHARED_EVAL_HOST", "1") != "0",    # as tools/run_eval.py SHARED_EVAL_HOST
            "workers": a.workers, "seed_order": "dynamic" if a.dynamic else "static", "resumed": bool(a.resume),
            "policies": a.policies, "seeds": a.seeds,
-           "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "loss_value": {"forms": S.LOSS_COUNTS_FORMS, "minions": S.LOSS_SKIPS_MINIONS}, "deadline": a.deadline, "worker_exit_codes": codes,
+           "seed_base": a.seed_base, "ascension": a.ascension, "combat": a.combat, "loss_value": {"forms": S.LOSS_COUNTS_FORMS, "minions": S.LOSS_SKIPS_MINIONS}, "end_turn_z": end_turn_z(), "deadline": a.deadline, "worker_exit_codes": codes,
            "workers_ended_after_deadline": ended,
            "wall_seconds": round(time.time() - t0), "report": report(out, a.baseline)}
     (out / "manifest.json").write_text(json.dumps(man, indent=1))

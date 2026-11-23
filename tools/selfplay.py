@@ -110,6 +110,62 @@ def augment(spec, rng, pool):
     return s
 
 
+# The end of a turn checked against the rule planner (boss replay 3, `reports/phase9/boss-replay-3.md`). In a fight
+# whose rollouts are all lost a candidate's value is the enemies' HP left at death, and its mean over six sampled
+# worlds moves by tens of points, more than a card is worth: on the Agent's 22 traced Test Subject fights 62 of 199
+# turns were ended with a playable card in hand that the energy left pays for, by a median margin of 23 points. With the check on, ending
+# the turn is taken over the planner's next card only where the search is clear about it: the mean of the per-world
+# differences (the two candidates share their sample seeds) has to exceed END_TURN_Z of its standard errors. Inside
+# that noise the planner's card is played, and the next decision is searched as before. The check is asked only where
+# a sampled world of either candidate was lost: where every world of both is won the values are HP left, which six
+# worlds tell apart, and the search's choice stands as before. Off unless a search arm or the environment switches it
+# on (`SIM_END_TURN_Z=2`); `0` or unset is off.
+END_TURN_Z = float(os.environ.get("SIM_END_TURN_Z") or 0) or None
+END_CHECKS = {"asked": 0, "kept": 0, "played": 0, "absent": 0}     # since the caller last cleared them
+LOST_AT_MOST = -100.0      # tools/sim.py _value: a lost rollout is -100 minus the enemies' HP left, a won one the HP left
+
+
+def _same_play(a, b, hand):
+    """The same card play: the same hand index, or two copies of one card (id and upgrade), at the same target."""
+    if a.get("type") != "play" or b.get("type") != "play" or a.get("target") != b.get("target"):
+        return False
+    if a.get("card") == b.get("card"):
+        return True
+    ia, ib = a.get("card"), b.get("card")
+    if not (isinstance(ia, int) and isinstance(ib, int) and ia < len(hand) and ib < len(hand)):
+        return False
+    return (hand[ia].get("card_id"), hand[ia].get("upgraded")) == (hand[ib].get("card_id"), hand[ib].get("upgraded"))
+
+
+def end_turn_checked(cands, done, k, best, planned, hand, z, counts=None):
+    """The candidate to take when the search's best is ending the turn and the planner would play a card (`planned`,
+    its next action without potions): the planner's card, unless ending the turn beats it by more than `z` standard
+    errors of the per-world difference. Unchanged when the best is not ending the turn, when the planner would end it
+    too or its card is not a candidate, when every world of both was won, and when fewer than three worlds scored both."""
+    counts = END_CHECKS if counts is None else counts
+    if z is None or cands[best].get("type") != "end_turn" or not planned or planned.get("type") != "play":
+        return best
+    pi = next((i for i, c in enumerate(cands) if _same_play(c, planned, hand)), None)
+    scored = [done[(ci, j)] for ci in (best,) + (() if pi is None else (pi,)) for j in range(k) if done.get((ci, j)) is not None]
+    if not any(v <= LOST_AT_MOST for v in scored):
+        return best
+    counts["asked"] += 1
+    if pi is None:
+        counts["absent"] += 1
+        return best
+    diffs = [done[(best, j)] - done[(pi, j)] for j in range(k) if done.get((best, j)) is not None and done.get((pi, j)) is not None]
+    if len(diffs) < 3:
+        counts["kept"] += 1
+        return best
+    mean = sum(diffs) / len(diffs)
+    se = (sum((x - mean) ** 2 for x in diffs) / (len(diffs) - 1) / len(diffs)) ** 0.5
+    if mean > z * se:
+        counts["kept"] += 1
+        return best
+    counts["played"] += 1
+    return pi
+
+
 def scored_search(sim, obs, mode, k, top, decision, done=None, potions=None, wide=False, cand_fn=None, all_potions=False):
     """search_action with every candidate's mean value kept (the teacher's distribution). `done` maps (candidate,
     sample) to a value already computed, or None for a rollout that got stuck; it survives a host restart, so the search
@@ -145,7 +201,10 @@ def scored_search(sim, obs, mode, k, top, decision, done=None, potions=None, wid
     for ci in range(len(cands)):
         vals = [done[(ci, j)] for j in range(k) if done.get((ci, j)) is not None]
         values.append(sum(vals) / len(vals) if vals else -1000.0)
-    return cands, values, max(range(len(cands)), key=lambda i: values[i])
+    best = max(range(len(cands)), key=lambda i: values[i])
+    if END_TURN_Z is not None and cands[best].get("type") == "end_turn" and not obs.get("choice"):
+        best = end_turn_checked(cands, done, k, best, S.planner_action(pt, obs, mode), (obs.get("combat") or {}).get("hand") or [], END_TURN_Z)
+    return cands, values, best
 
 
 def start_fight(sim, spec, seed):

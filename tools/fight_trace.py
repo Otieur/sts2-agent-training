@@ -84,6 +84,8 @@ def main(argv=None):
     ap.add_argument("--k", type=int, default=6, help="sampled worlds per candidate")
     ap.add_argument("--room", default="Boss", choices=["Monster", "Elite", "Boss"], help="room type for the potions' price")
     ap.add_argument("--loss-value", help="'f', 'm', 'fm' or 'none' (tools/sim.py LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS); default: as the runs play")
+    ap.add_argument("--end-turn-z", type=float, help="check the end of a turn against the planner at this many standard errors "
+                    "(tools/selfplay.py END_TURN_Z); default: as the runs play; 0 switches it off")
     ap.add_argument("--out", help="write the decisions (turn, HP, enemies, chosen action, values) as JSON")
     a = ap.parse_args(argv)
     if a.specs and a.folder and a.encounter.isdigit():      # `--specs file ENCOUNTER index`: the positional folder is the encounter
@@ -103,7 +105,10 @@ def main(argv=None):
     print("relics", spec["relics"], "potions", spec.get("potions"))
     if a.loss_value is not None:
         S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS = "f" in a.loss_value.replace("none", ""), "m" in a.loss_value.replace("none", "")
-    print("value of a lost rollout: forms to come counted", S.LOSS_COUNTS_FORMS, "| minions left out", S.LOSS_SKIPS_MINIONS, flush=True)
+    if a.end_turn_z is not None:
+        SP.END_TURN_Z = a.end_turn_z or None
+    print("value of a lost rollout: forms to come counted", S.LOSS_COUNTS_FORMS, "| minions left out", S.LOSS_SKIPS_MINIONS,
+          "| end of a turn checked against the planner at", SP.END_TURN_Z, "standard errors" if SP.END_TURN_Z else "(off)", flush=True)
     host = SP.Host()
     try:
         rec = SP.play(host, spec, a.seed, lambda sim, obs, d, done: SP.scored_search(sim, obs, "balanced", a.k, 2, d, done, potions=a.room, wide=True,
@@ -127,7 +132,7 @@ def main(argv=None):
         print(f"    {named(act, o)}{tag}")
     print("outcome", json.dumps(rec["outcome"]))
     if a.out:
-        json.dump({"source": [seed_id, pol], "encounter": a.encounter, "loss_value": a.loss_value, "outcome": rec["outcome"],
+        json.dump({"source": [seed_id, pol], "encounter": a.encounter, "loss_value": a.loss_value, "end_turn_z": SP.END_TURN_Z, "end_checks": dict(SP.END_CHECKS), "outcome": rec["outcome"],
                    "decisions": [{"turn": d["obs"].get("turn"), "hp": d["obs"]["combat"]["player"]["current_hp"],
                                   "enemies": [[e.get("name"), e.get("current_hp"), e.get("max_hp")] for e in d["obs"]["combat"]["enemies"]],
                                   "energy": d["obs"]["combat"]["player"].get("energy"), "block": d["obs"]["combat"]["player"].get("block", 0),

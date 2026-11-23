@@ -86,5 +86,79 @@ class TestBenchmark(unittest.TestCase):
         self.assertEqual(picked, fs.benchmark(specs))          # fixed seed: the same set every time
 
 
+
+class TestEndOfTurnCheck(unittest.TestCase):
+    """tools/selfplay.py end_turn_checked: ending the turn against the planner's next card (no host needed)."""
+    HAND = [{"card_id": "STRIKE_IRONCLAD", "upgraded": False}, {"card_id": "DEFEND_IRONCLAD", "upgraded": False},
+            {"card_id": "STRIKE_IRONCLAD", "upgraded": False}, {"card_id": "STRIKE_IRONCLAD", "upgraded": True}]
+    CANDS = [{"type": "play", "card": 0, "target": 0}, {"type": "play", "card": 1}, {"type": "end_turn"}]
+
+    def done(self, strike, defend, end):
+        return {(ci, j): v for ci, vals in enumerate((strike, defend, end)) for j, v in enumerate(vals)}
+
+    def check(self, done, planned, best=2, z=2.0, k=6):
+        counts = {"asked": 0, "kept": 0, "played": 0, "absent": 0}
+        return sp.end_turn_checked(self.CANDS, done, k, best, planned, self.HAND, z, counts), counts
+
+    def test_inside_the_noise_the_planners_card_is_played(self):
+        end = [-300, -180, -420, -250, -310, -200]                 # mean about -277
+        strike = [-250, -330, -300, -380, -200, -320]              # mean about -297: 20 points behind, differences spread widely
+        pick, counts = self.check(self.done(strike, [-900] * 6, end), {"type": "play", "card": 0, "target": 0})
+        self.assertEqual(pick, 0)
+        self.assertEqual(counts, {"asked": 1, "kept": 0, "played": 1, "absent": 0})
+
+    def test_a_clear_end_of_turn_is_kept(self):
+        end = [-200, -210, -190, -205, -195, -200]
+        strike = [-400, -390, -410, -395, -405, -400]              # 200 points behind in every world
+        pick, counts = self.check(self.done(strike, [-900] * 6, end), {"type": "play", "card": 0, "target": 0})
+        self.assertEqual(pick, 2)
+        self.assertEqual(counts["kept"], 1)
+
+    def test_where_every_world_is_won_the_search_stands(self):
+        end = [60, 40, 58, 71, 47, 59]                             # a fight being won: HP left
+        strike = [57, 62, 35, 58, 64, 56]                          # 0.5 HP behind on average, inside the noise
+        pick, counts = self.check(self.done(strike, [0] * 6, end), {"type": "play", "card": 0, "target": 0})
+        self.assertEqual((pick, counts["asked"]), (2, 0))
+
+    def test_one_lost_world_is_enough_for_the_check(self):
+        end = [60, 40, 58, 71, 47, 59]
+        strike = [57, 62, 35, 58, -260, 56]                        # one world lost: ending is clearly ahead on average, by one world
+        pick, counts = self.check(self.done(strike, [0] * 6, end), {"type": "play", "card": 0, "target": 0})
+        self.assertEqual((pick, counts["asked"], counts["played"]), (0, 1, 1))
+        end = [60, 40, 58, -300, 47, 59]                           # the lost world on the side of ending the turn
+        strike = [50, 30, 48, -330, 37, 49]                        # 10 or 30 behind in every world: a steady edge is kept
+        pick, counts = self.check(self.done(strike, [0] * 6, end), {"type": "play", "card": 0, "target": 0})
+        self.assertEqual((pick, counts["kept"]), (2, 1))
+
+    def test_unchanged_when_the_best_is_a_card_or_the_planner_ends_the_turn_or_the_check_is_off(self):
+        d = self.done([-250] * 6, [-900] * 6, [-300, -180, -420, -250, -310, -200])
+        planned = {"type": "play", "card": 0, "target": 0}
+        self.assertEqual(self.check(d, planned, best=0)[0], 0)
+        self.assertEqual(self.check(d, {"type": "end_turn"})[0], 2)
+        self.assertEqual(self.check(d, {"type": "potion", "slot": 0})[0], 2)
+        self.assertEqual(self.check(d, planned, z=None)[0], 2)
+        self.assertEqual(self.check(d, planned, z=None)[1]["asked"], 0)
+
+    def test_a_copy_of_the_planners_card_counts_and_another_card_or_target_does_not(self):
+        d = self.done([-290, -330, -300, -380, -200, -320], [-900] * 6, [-300, -180, -420, -250, -310, -200])
+        self.assertEqual(self.check(d, {"type": "play", "card": 2, "target": 0})[0], 0)        # the second plain Strike
+        pick, counts = self.check(d, {"type": "play", "card": 3, "target": 0})                 # the upgraded one is another card
+        self.assertEqual((pick, counts["absent"]), (2, 1))
+        self.assertEqual(self.check(d, {"type": "play", "card": 0, "target": 1})[0], 2)        # another target
+
+    def test_rollouts_that_did_not_finish_are_left_out_and_three_worlds_are_needed(self):
+        end = [-300, None, -420, None, -310, None]
+        strike = [-250, -330, None, -380, -200, None]
+        d = self.done(strike, [-900] * 6, end)                     # two worlds scored both
+        pick, counts = self.check(d, {"type": "play", "card": 0, "target": 0})
+        self.assertEqual((pick, counts["kept"]), (2, 1))
+        d = self.done([-250, -330, -300, None, -200, -320], [-900] * 6, [-300, -180, -420, -250, None, -200])   # four
+        self.assertEqual(self.check(d, {"type": "play", "card": 0, "target": 0})[0], 0)
+
+    def test_a_card_whose_step_failed_is_not_played(self):
+        d = self.done([-1000.0] * 6, [-900] * 6, [-300, -180, -420, -250, -310, -200])
+        self.assertEqual(self.check(d, {"type": "play", "card": 0, "target": 0})[0], 2)
+
+
 if __name__ == "__main__":
     unittest.main()

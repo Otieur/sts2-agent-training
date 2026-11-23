@@ -23,6 +23,9 @@ Policies (arms):
   Amalgam); see `tools/sim.py` `LOSS_COUNTS_FORMS`, `LOSS_SKIPS_MINIONS` (boss replay 2). An `mc` arm's name states
   its loss value whatever those defaults are: without `f` the forms are not counted. The whole runs' search follows
   the defaults, so since 2026-11-22 it is the `f` arm (`mcw6paf` in a boss or elite room).
+- a trailing `e` on an `mc` arm (for example `mcw6pafe`): the end of a turn is checked against the rule planner
+  (`tools/selfplay.py` `END_TURN_Z`, here 2 standard errors; boss replay 3). An arm without it does not check, whatever
+  the default is. `--sample-from N` starts the sample seeds at index N, for seeds no earlier folder played.
 - `mcwKpa` (for example `mcw6pa`): wide search with potions, where every usable potion is a candidate (judged by
   simulation, priced by room) instead of only the potions the planner's model proposes.
 - `mcwqK` / `mcwqKkN` (for example `mcwq6`, `mcwq6k5`): wide candidates filtered by the action-value network to at
@@ -59,6 +62,7 @@ import sim as S  # noqa: E402
 
 BENCH = PROJECT / "data" / "sim" / "benchmark-v1.json"
 SEED_BASE = 7_000_000
+END_TURN_Z_ARM = 2.0      # an arm's trailing `e`: tools/selfplay.py END_TURN_Z for that arm (boss replay 3)
 
 
 def planner_search(sim, obs, d, done, potions=None):
@@ -220,21 +224,23 @@ def make_arm(name, model_path, q_path=None, room=None):
     if name in ("planner", "plannerp"):
         pots = room if name.endswith("p") else None
         return lambda sim, obs, d, done: planner_search(sim, obs, d, done, pots)
-    m = re.fullmatch(r"mc(w?)(\d*)(p?)(a?)(f?)(m?)", name)
+    m = re.fullmatch(r"mc(w?)(\d*)(p?)(a?)(f?)(m?)(e?)", name)
     if m:
         search = mc_search(int(m.group(2) or 6), potions=room if m.group(3) else None, wide=bool(m.group(1)), all_potions=bool(m.group(4)))
         forms, minions = bool(m.group(5)), bool(m.group(6))
+        end_z = END_TURN_Z_ARM if m.group(7) else None
 
         def with_loss_value(sim, obs, d, done):
             # An arm's name states how a lost rollout is valued, whatever the defaults of tools/sim.py are: a trailing
             # `f` counts the forms a reviving enemy has to come, a trailing `m` leaves minions' HP out, and an arm
-            # without them counts the HP of the enemies alive (LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS).
-            was = S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS
-            S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS = forms, minions
+            # without them counts the HP of the enemies alive (LOSS_COUNTS_FORMS, LOSS_SKIPS_MINIONS). A trailing `e`
+            # checks the end of a turn against the planner (tools/selfplay.py END_TURN_Z); an arm without it does not.
+            was = S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS, SP.END_TURN_Z
+            S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS, SP.END_TURN_Z = forms, minions, end_z
             try:
                 return search(sim, obs, d, done)
             finally:
-                S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS = was
+                S.LOSS_COUNTS_FORMS, S.LOSS_SKIPS_MINIONS, SP.END_TURN_Z = was
         return with_loss_value
     m = re.fullmatch(r"vleaf(\d*)", name)
     if m:
@@ -258,13 +264,13 @@ def worker(a):
     out = Path(a.out)
     shard = out / f"shard-{a.worker:02d}.jsonl"
     fights = json.loads(Path(a.benchmark).read_text())["fights"]
-    jobs = [(i, s) for s in range(a.seeds) for i in range(len(fights)) if not a.rooms or fights[i]["room"] in a.rooms][:a.limit or None]
+    jobs = [(i, s) for s in range(a.sample_from, a.sample_from + a.seeds) for i in range(len(fights)) if not a.rooms or fights[i]["room"] in a.rooms][:a.limit or None]
     done_jobs = set()
     for f in out.glob("shard-*.jsonl"):
         for line in f.open():
             r = json.loads(line)
             done_jobs.add((r["fight"], r["sample"]))
-    needs_room = lambda n: n != "planner" and bool(re.search(r"pa?f?m?$", n)) and n.startswith(("mc", "planner"))
+    needs_room = lambda n: n != "planner" and bool(re.search(r"pa?f?m?e?$", n)) and n.startswith(("mc", "planner"))
     arms = {name: make_arm(name, a.model, a.q_model) for name in a.arms if not needs_room(name)}
     host = SP.Host()
     try:
@@ -277,6 +283,8 @@ def worker(a):
             job_arms = {n: (arms[n] if n in arms else make_arm(n, a.model, a.q_model, spec["room"])) for n in a.arms}
             for name, search in job_arms.items():
                 t0 = time.time()
+                for key in SP.END_CHECKS:
+                    SP.END_CHECKS[key] = 0
                 try:
                     r = SP.play(host, spec, seed, search)
                     o = r["outcome"]
@@ -284,7 +292,7 @@ def worker(a):
                     rec["arms"][name] = {"status": o["status"], "hp": o["hp"], "enemy_hp_left": o["enemy_hp_left"], "value": value_of(o),
                                          "potions_used": used, "value_priced": value_of(o) - S.POTION_PRICE[spec["room"]] * used,
                                          "decisions": o["decisions"], "turns": o["turns"], "seconds": round(time.time() - t0, 2),
-                                         "enemies": o.get("enemies"),
+                                         "enemies": o.get("enemies"), "end_checks": dict(SP.END_CHECKS),
                                          "search_seconds": o["search_seconds"], "restarts": o["host_restarts"], "blocked": o["blocked"]}
                 except S.SimError as e:
                     rec["arms"][name] = {"error": str(e)[:300], "seconds": round(time.time() - t0, 2)}
@@ -462,6 +470,7 @@ def main(argv=None):
     ap.add_argument("--model")
     ap.add_argument("--q-model", help="action-value network for the qpolicy arm")
     ap.add_argument("--seeds", type=int, default=2)
+    ap.add_argument("--sample-from", type=int, default=0, help="first sample index (the seeds are the indexes from here on), for seeds no earlier folder played")
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--worker", type=int, help=argparse.SUPPRESS)
     ap.add_argument("--limit", type=int, help="only the first N jobs (testing)")
@@ -497,7 +506,7 @@ def main(argv=None):
     (out / "claims").mkdir()
     head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT, capture_output=True, text=True).stdout.strip()
     t0 = time.time()
-    procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--out", str(out), "--seeds", str(a.seeds), "--arms", *a.arms,
+    procs = [subprocess.Popen([sys.executable, "-I", __file__, "--worker", str(w), "--out", str(out), "--seeds", str(a.seeds), "--sample-from", str(a.sample_from), "--arms", *a.arms,
                                "--benchmark", a.benchmark, "--workers", str(a.workers)]
                               + (["--limit", str(a.limit)] if a.limit else []) + (["--rooms", *a.rooms] if a.rooms else [])
                               + (["--model", a.model] if a.model else []) + (["--q-model", a.q_model] if a.q_model else [])) for w in range(a.workers)]
@@ -509,7 +518,7 @@ def main(argv=None):
     manifest = {"name": out.name, "created": time.strftime("%Y-%m-%d %H:%M"),
                 "benchmark": str(bench.relative_to(PROJECT)) if bench.is_relative_to(PROJECT) else bench.name,
                 "game_version": build.get("version"), "game_commit": build.get("commit"), "code_commit": head, "arms": a.arms,
-                "model": a.model, "q_model": a.q_model, "seeds": a.seeds, "rooms": a.rooms, "seed_base": SEED_BASE, "workers": a.workers, "worker_exit_codes": codes,
+                "model": a.model, "q_model": a.q_model, "seeds": a.seeds, "sample_from": a.sample_from, "rooms": a.rooms, "seed_base": SEED_BASE, "workers": a.workers, "worker_exit_codes": codes,
                 "wall_seconds": round(time.time() - t0), "jobs": len(recs), "summary": summarize(recs, a.arms)}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1))
     print(json.dumps(manifest["summary"], indent=1))
