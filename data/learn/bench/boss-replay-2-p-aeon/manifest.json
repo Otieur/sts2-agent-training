@@ -1,0 +1,38 @@
+{
+ "name": "boss-replay-2-p-aeon",
+ "created": "2026-11-23 00:32",
+ "benchmark": "data/sim/boss-replay-2-p-aeon.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "8b5a3ef",
+ "arms": [
+  "mcw6pa"
+ ],
+ "model": null,
+ "q_model": null,
+ "seeds": 3,
+ "sample_from": 0,
+ "rooms": null,
+ "seed_base": 7000000,
+ "workers": 4,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 442,
+ "jobs": 15,
+ "summary": {
+  "mcw6pa": {
+   "games": 15,
+   "errors": 0,
+   "won": 9,
+   "mean_value": -74.73333333333333,
+   "mean_hp_if_won": 29.22222222222222,
+   "seconds": 1610.9,
+   "search_seconds_per_decision": 2.847,
+   "restarts": 0
+  }
+ }
+}

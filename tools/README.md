@@ -88,6 +88,7 @@ Live tools are **untested against the live game** until Phase 0 (`docs/runbooks/
 | `run_opts.py` | Rollout decisions for events, rest sites, card choices outside fights (`ropt`) and shop purchases (`rshop`, `rshop2`) | used by `run_bench.py` |
 | `run_details.py` | Details of a run benchmark folder for its report: per policy the state at each boss, purchases, where runs die; paired and factor comparisons; rollout decisions with the settings their evaluator used (`--decisions`) | section 5 of the run benchmark reports |
 | `boss_specs.py` | Collects the boss fights reached in run benchmarks as a fight set for `learn/bench.py --benchmark` | `boss_specs.py data/learn/runs/run-bench-9 --out data/sim/boss-fights.json` |
+| `boss_replay_read.py` | Reads boss replay 2: fights won per set, boss and arm, H1 (Fisher exact, bootstrap), Set G beside the runs, H3 (sign test), the Player's situations one by one | `boss_replay_read.py` |
 | `forms_compare.py` | Two fight-benchmark arms compared on Test Subject files by situation: share of the three forms' HP removed, fights won, the form a lost fight ended in, sign tests (boss replays 2 and 3) | `forms_compare.py --a mcw6paf --b mcw6pafe data/learn/bench/boss-replay-3-t1` |
 
 ## Repository front page

@@ -1,0 +1,49 @@
+{
+ "name": "boss-replay-2-p0-queen",
+ "created": "2026-11-22 23:23",
+ "benchmark": "data/sim/boss-replay-2-p0-queen.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "6c88f88",
+ "arms": [
+  "mcw6pa",
+  "mcw6pam"
+ ],
+ "model": null,
+ "q_model": null,
+ "seeds": 3,
+ "sample_from": 0,
+ "rooms": null,
+ "seed_base": 7000000,
+ "workers": 4,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 3412,
+ "jobs": 18,
+ "summary": {
+  "mcw6pa": {
+   "games": 18,
+   "errors": 0,
+   "won": 10,
+   "mean_value": -157.83333333333334,
+   "mean_hp_if_won": 22.7,
+   "seconds": 5802.3,
+   "search_seconds_per_decision": 8.288,
+   "restarts": 0
+  },
+  "mcw6pam": {
+   "games": 18,
+   "errors": 0,
+   "won": 9,
+   "mean_value": -198.27777777777777,
+   "mean_hp_if_won": 24.444444444444443,
+   "seconds": 5001.0,
+   "search_seconds_per_decision": 7.371,
+   "restarts": 0
+  }
+ }
+}

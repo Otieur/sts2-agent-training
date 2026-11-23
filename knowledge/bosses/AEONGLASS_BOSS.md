@@ -60,6 +60,10 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - Ironclad: 0 of 5 fatal (all characters: 10 of 28 fatal, the most for any Act 3 boss). `[PLAYER-DATA]`
 - Counter: arrive healthy, play efficient big turns, exhaust Withers.
 
+### The Agent's fights here (2026-11-23)
+- **Record** `[OBS]` (run benchmark 16, A0, simulator on v0.111.1): 5 of 9 fights won in the runs; replayed from their specs with the runs' search, 3 of 8 (`reports/phase9/boss-replay-2.md` section 5).
+- **With the Player's decks** `[OBS]` (the same report): the search wins 10 of 15 fights at A0 and 9 of 15 at the ascensions he played (A1 to A10), where he won 5 of 5. The gap to the Agent's decks is smaller here than at the Queen.
+
 ## Sources
 - Fight records: `data/runs.db`, `reports/phase2/deck-features-by-encounter.md` `[PLAYER-DATA]`
 - whisperofthehouse.com Aeonglass page (updated 2026-11-16) `[COMMUNITY]`

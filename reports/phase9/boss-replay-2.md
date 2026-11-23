@@ -47,7 +47,79 @@ What is known before the run, from recorded data only (no fight played): the dec
 - **What follows.** If the search wins at least 70% of P0 and H1 holds: the decks are the main cause, and the next registered runs are about card choice for long fights (what a card rollout is played to and judged by, the number of upgrades), not the fight search. If it wins at most 40% of P0: the fight play on act 3 bosses is a main cause, and the search comes first (the value of a lost rollout across the Test Subject's bodies, the rollout policy under the Queen's debuffs), tried on these three sets as a fight benchmark before any whole run. Between the two: both, the search first because a fight benchmark is cheaper than a run benchmark.
 
 ## 5. Results
-Pending.
+Played in parts between 2026-11-22 15:06 and 2026-11-23 00:55 (section 6 gives the order and the reasons): 132 fights from nine files, each by `mcw6pa` and the Test Subject and Queen files by a second arm as well (`data/learn/bench/boss-replay-2-{p0,p,g}-{ts,queen,aeon}`; read with `python3 -I tools/boss_replay_read.py`). Two fights of Set G ended in a host error and are left out where they would be paired (the Test Subject situation 6 in the `mcw6paf` arm; the Aeonglass situation 0, a rollout stuck through three host restarts; both of the known class, `docs/simulator-integrity.md` FI-8). H2 and H2' were read on 2026-11-22 at 18:50 (section 6) and are not repeated here.
+
+**H1 holds.** With the Player's decks the same search wins more of these fights than with the Agent's.
+
+| Fights won, `mcw6pa` | |
+|---|---|
+| The Agent's situations in their runs (run benchmark 16) | 8 of 42 (19%) |
+| Set P0, first sample seeds | 8 of 15 (53%) |
+| One-sided Fisher exact test | p = 0.016 |
+| Set P0, all three sample seeds | 20 of 45 (44%), bootstrap 95% interval over situations 24% to 67% |
+
+By boss (fights won; `mcw6pa` unless the row names another arm):
+
+| | The Agent in its runs | Set G, replayed | Set P0: the Player's decks at A0 | Set P: at his ascension | The Player |
+|---|---|---|---|---|---|
+| Test Subject | 3 of 24 | 2 of 24 | 0 of 12 | 0 of 12 | 4 of 4 |
+| Queen | 0 of 9 | 0 of 9 | 10 of 18 | 6 of 18 | 4 of 6 |
+| Aeonglass | 5 of 9 | 3 of 8 | 10 of 15 | 9 of 15 | 5 of 5 |
+| All three | 8 of 42 | 5 of 41 | 20 of 45 | 15 of 45 | 13 of 15 |
+| Test Subject, forms counted (`mcw6paf`) | | 2 of 23 | 4 of 12 | 3 of 12 | |
+| Queen, minions left out (`mcw6pam`) | | 0 of 9 | 9 of 18 | 8 of 18 | |
+| All three as the runs play since 18:50 (forms counted) | | 5 of 40 | 24 of 45 (53%) | 18 of 45 (40%) | |
+
+- **The registered consequence.** The search wins 44% of Set P0 (53% of its first seeds), between the two thresholds of section 4: both causes are real, and the search comes first because a fight benchmark is cheaper than a run benchmark. That is the order decision 0006 already follows: the first correction of the search is on (the forms), the second was tried and not adopted (`reports/phase9/boss-replay-3.md`), and the deck half is what run benchmark 20 tests next.
+- **The decks, by boss.** Against the Queen the search wins none of the Agent's nine situations and 10 of 18 fights with the Player's decks at the same ascension; against the Aeonglass 3 of 8 and 10 of 15. At these two bosses nothing in the search was changed between the two columns, so the decks are the larger part of the gap there. Against the Test Subject the earlier search won 2 of 24 and none of 12, and with the forms counted it wins 2 of 23 and 4 of 12.
+- **The fight play.** With the Player's decks at the ascensions he played, the search wins 15 of 45 fights (18 of 45 with the forms counted) where he won 13 of 15. The limits of section 2 apply (no enchantments, some relics missing, another game version, a fresh hidden state, and he played each fight once), so the size of this gap is rough; its direction is not in doubt: of the 13 fights he won, the search wins all three seeds of two, and none of three seeds of four (of two with the forms counted).
+- **The ascension, on the same decks.** 20 of 45 at A0 and 15 of 45 at A1 to A10; the Queen accounts for most of it (10 of 18 and 6 of 18).
+
+**H3 does not hold.** Leaving the minion's HP out of the value of a lost rollout wins 9 of the 27 Queen fights of Sets G and P0 against 10; more in 1 situation, fewer in 2, equal in 12 (one-sided sign test p = 0.88). The option stays off (`tools/sim.py LOSS_SKIPS_MINIONS`). It does what it was written for, and that does not help: with it the search goes for the Queen (in lost fights she is left with 202 of 400 HP against 248 in Set G and 199 against 261 in Set P0, and the Amalgam is alive at the end of 14 of 18 lost fights against 7 of 17) and dies sooner (5.0 turns against 7.0 in Set G), because the Amalgam's damage stays. On Set P, which is not part of H3, it wins 8 of 18 against 6. So which of the two is attacked first is not what loses these fights; with the Agent's decks every one of the nine is lost either way.
+
+**Set G beside the runs** (the check that a fight started from its spec is won about as often as it was in its run): 5 of 41 fights played to an end against 8 of 42 in the runs. 39 of the 41 ended as in the run (5 won in both, 34 lost in both); two were won in the run and lost here (one Test Subject, one Aeonglass); none the other way. A fresh hidden state and one sample seed; the specs reproduce the fights' difficulty.
+
+**Set P by situation** (wins of three sample seeds; the second question of section 1, described and not tested):
+
+| Boss | Ascension | The Player | `mcw6pa` | Second arm |
+|---|---|---|---|---|
+| Test Subject | 2 | won | 0 | 0 (`mcw6paf`) |
+| Test Subject | 7 | won | 0 | 1 |
+| Test Subject | 10 | won | 0 | 0 |
+| Test Subject | 10 | won | 0 | 2 |
+| Queen | 5 | won | 1 | 1 (`mcw6pam`) |
+| Queen | 8 | lost | 0 | 2 |
+| Queen | 8 | won | 1 | 1 |
+| Queen | 10 | lost | 0 | 0 |
+| Queen | 10 | won | 2 | 2 |
+| Queen | 10 | won | 2 | 2 |
+| Aeonglass | 1 | won | 1 | |
+| Aeonglass | 4 | won | 3 | |
+| Aeonglass | 6 | won | 1 | |
+| Aeonglass | 9 | won | 1 | |
+| Aeonglass | 10 | won | 3 | |
+
+**Secondary measures** (fights played to an end; the enemies' HP left after a loss is that of the bodies then alive, so it is not comparable between the Test Subject's two arms; the seconds are not comparable between files, which were played with one or four workers beside different runs):
+
+| Set, boss, arm | Won | Turns | HP left after a win | Enemies' HP left after a loss | Potions used | Seconds a decision |
+|---|---|---|---|---|---|---|
+| P0 Test Subject `mcw6pa` | 0 of 12 | 3.9 | | 25.5 | 1.83 | 4.64 |
+| P0 Test Subject `mcw6paf` | 4 of 12 | 8.1 | 48.8 | 73.4 | 2.00 | 3.99 |
+| P0 Queen `mcw6pa` | 10 of 18 | 7.7 | 22.7 | 283.5 | 2.33 | 8.29 |
+| P0 Queen `mcw6pam` | 9 of 18 | 7.2 | 24.4 | 321.0 | 2.44 | 7.37 |
+| P0 Aeonglass `mcw6pa` | 10 of 15 | 7.5 | 27.7 | 164.6 | 1.73 | 4.04 |
+| P Test Subject `mcw6pa` | 0 of 12 | 3.8 | | 23.0 | 1.58 | 3.75 |
+| P Test Subject `mcw6paf` | 3 of 12 | 8.7 | 34.7 | 132.0 | 1.75 | 3.22 |
+| P Queen `mcw6pa` | 6 of 18 | 7.6 | 31.2 | 239.1 | 1.78 | 4.95 |
+| P Queen `mcw6pam` | 8 of 18 | 6.0 | 23.0 | 388.6 | 1.78 | 5.05 |
+| P Aeonglass `mcw6pa` | 9 of 15 | 7.1 | 29.2 | 130.7 | 1.80 | 2.85 |
+| G Test Subject `mcw6pa` | 2 of 24 | 5.8 | 49.5 | 49.2 | 1.50 | 6.21 |
+| G Test Subject `mcw6paf` | 2 of 23 | 9.0 | 35.0 | 165.5 | 1.57 | 5.83 |
+| G Queen `mcw6pa` | 0 of 9 | 7.0 | | 262.0 | 1.67 | 5.15 |
+| G Queen `mcw6pam` | 0 of 9 | 5.0 | | 317.4 | 1.67 | 4.92 |
+| G Aeonglass `mcw6pa` | 3 of 8 | 8.4 | 50.3 | 197.4 | 2.12 | 1.90 |
+
+**What it changes.** (1) The deck is confirmed as a cause on its own, on fights and not on a table of card counts: the search that wins 5 of 40 with the Agent's decks wins 24 of 45 with the Player's. Run benchmark 20 (the community tiers as a prior in card rewards) is the first test of a way to close it; the comparison of what the two sets of decks hold (section 1, and the note of 15:10) is where the next ones come from. (2) Wins by the search with the Player's decks give a second yardstick for any change to the fight search, beside the Agent's own situations where nearly every fight is lost whatever is played: Set P0 has room in both directions (24 of 45). (3) The minion option is closed. (4) The Player's own level on these fights, 13 of 15 at higher ascensions, stays far above the search with his decks, so the fight play is not finished either; the next step there is the description the note of boss replay 3 names (the planner's own choices traced), not a rule.
 
 ## 6. Deviations and notes
 
@@ -99,3 +171,4 @@ Pending.
   - **What follows.** A correction is registered as its own comparison before any fight of it is played: `reports/phase9/boss-replay-3.md` (the end of a turn checked against the rule planner, on fresh sample seeds of these situations, the Player's four and `benchmark-v1`).
 - 2026-11-22 20:35, **the remaining files are played after boss replay 3.** Set P0's Queen and Aeonglass files, Set P's three and Set G's Queen and Aeonglass files (section 2 and the note of 15:00) keep their arms, seeds and workers; only their start moves, from the end of run benchmark 19 to the end of boss replay 3's sets. Reason: that comparison's result bears on every fight of run benchmark 20, which starts at about 02:50, and its sets are short. Fight batch b0 stays paused until both are done.
 - 2026-11-22 22:26: the remaining files started (Set P0's Queen file first, four workers, beside run benchmark 17), after boss replay 3's Test Subject sets and without its Set B, which was stopped (`reports/phase9/boss-replay-3.md` sections 5 and 6: its check of the end of a turn did not hold and is not adopted).
+- 2026-11-23 00:57, **the remaining files played and section 5 written.** 22:26–00:55 with four workers at low priority beside run benchmark 17, in the order Set P0's Queen (57 minutes) and Aeonglass (10), Set P's Test Subject (13), Queen (39) and Aeonglass (7), Set G's Queen (19) and Aeonglass (4). Nothing of them was read before all were done. Set G's Aeonglass situation 0 ended in a host error (a rollout stuck, three host restarts) and is left out. `tools/boss_replay_read.py` is the reading of section 5. The Player's result in a fight is taken from his run record: a lost run's last act 3 boss fight is the lost one (two Queen fights, at A8 and at A10 as the second boss).
