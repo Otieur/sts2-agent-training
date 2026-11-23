@@ -16,14 +16,22 @@ hand, unplayable, or dearer than the energy) and those it can play and ranks beh
 plan with a card would deal and cost in HP beside ending. The reverse case is counted as well: the search plays on
 where the planner would end the turn.
 
+Where the traces keep the observations (`fight_trace.py --obs`), also: the turns ended with a paid-for card while no
+enemy could be hit (a boss between two forms: nothing to attack, so no early end at all); and the card choices answered
+inside the fights (Headbutt, True Grit+, a potion's cards, the Knowledge Demon's curse): how many, how many had more
+than one distinct option, how many were searched and took another answer than the first option, what asked for them,
+and the curse taken at each Knowledge Demon offer. For every folder: the share of a fight's decisions with every
+candidate lost, for won and for lost fights, and the lost fights in which that was so from the first turn on.
+
 A description of recorded fights, not a test: it says where to look before a rule is written (decision 0006)."""
 import argparse
 import glob
 import json
 import statistics as st
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
 
+OFFER = {"MIND_ROT": 1, "SLOTH": 2, "WASTE_AWAY": 3}      # the card offered beside Disintegration at each Curse of Knowledge
 DEAD = ("WOUND", "BURN", "DAZED", "SLIMED", "VOID", "REGRET", "SHAME", "DOUBT", "INJURY", "CLUMSY", "DECAY", "NORMALITY", "PAIN", "PARASITE", "WRITHE", "CURSE")
 
 
@@ -44,20 +52,49 @@ def planner_can(x, index):
     return any(c[0] == index and not c[4] and c[3] and isinstance(c[2], int) and c[2] <= e for c in x["planner"].get("cards") or [])
 
 
+def can_hit(x):
+    """An enemy can be hit at this decision; None where the trace keeps no observation."""
+    c = (x.get("obs") or {}).get("combat")
+    return None if not c else any(e.get("is_alive") and e.get("is_hittable") for e in c.get("enemies") or [])
+
+
+def choice_of(x, before):
+    """A card choice answered at this decision (from the kept observation), or None: its kind, what asked for it (the
+    action before), whether it had more than one distinct option, was searched, and took another answer than the first."""
+    ch = (x.get("obs") or {}).get("choice")
+    if not ch:
+        return None
+    opts = ch.get("options") or []
+    taken = [opts[i] for i in x["chosen"].get("cards") or [] if i < len(opts)]
+    offered = [o for o in opts if o in OFFER]
+    asked = (before or "?").replace("play ", "").split(" -> ")[0].rstrip("+")
+    return {"kind": ch.get("kind"), "asked": "end of turn" if asked == "end_turn" else asked, "real": len(set(opts)) > 1, "searched": len(x["candidates"]) > 1,
+            "other": x["chosen"].get("cards") != x["candidates"][0].get("cards"), "taken": taken,
+            "offer": OFFER[offered[0]] if "DISINTEGRATION" in opts and offered else None}
+
+
 def read_fight(path):
     d = json.load(open(path))
     ds = d["decisions"]
     r = {"path": path, "status": d["outcome"]["status"], "left": d["outcome"].get("enemies"), "turns": len({x["turn"] for x in ds}),
          "ends": 0, "early": [], "scored": 0, "lost_all": 0, "gaps": [], "into_intangible": 0,
-         "viewed": 0, "same": 0, "against": [], "with": [], "plays_on": 0, "plays_on_lost": 0}
+         "viewed": 0, "same": 0, "against": [], "with": [], "plays_on": 0, "plays_on_lost": 0, "choices": [], "first_turn_lost": None}
+    before, first_turn = None, None
     for x in ds:
         act = x["chosen"]
         vals = [v for v in x["values"] if v is not None]
+        ch = choice_of(x, before)
+        if ch:
+            r["choices"].append(ch)
+        before = x.get("chosen_named")
         if len(vals) > 1:
             r["scored"] += 1
             r["lost_all"] += max(vals) < -100
             top = sorted(vals, reverse=True)
             r["gaps"].append(top[0] - top[1])
+            first_turn = x["turn"] if first_turn is None else first_turn
+            if x["turn"] == first_turn:
+                r["first_turn_lost"] = max(vals) < -100 and r["first_turn_lost"] is not False
         if act["type"] == "play" and act.get("target") is not None and any("INTANGIBLE" in p for ps in x.get("enemy_powers") or [] for p in ps):
             r["into_intangible"] += 1
         pv = x.get("planner")
@@ -76,7 +113,8 @@ def read_fight(path):
         end_value = next((v for c, v in zip(x["candidates"], x["values"]) if c["type"] == "end_turn"), None)
         plays = [v for c, v in zip(x["candidates"], x["values"]) if c["type"] == "play" and v is not None]
         margin = end_value - max(plays) if plays and end_value is not None else None
-        e = {"turn": x["turn"], "energy": x.get("energy") or 0, "cards": [n for _, n in left], "margin": margin, "lost": bool(vals) and max(vals) < -100}
+        e = {"turn": x["turn"], "energy": x.get("energy") or 0, "cards": [n for _, n in left], "margin": margin, "lost": bool(vals) and max(vals) < -100,
+             "no_target": can_hit(x) is False}
         r["early"].append(e)
         if not pv:
             continue
@@ -116,13 +154,33 @@ def report(folder, per_fight):
     print(f"  decisions with every candidate lost: {sum(r['lost_all'] for r in rows)} of {sum(r['scored'] for r in rows)}; "
           f"gap best to second-best: median {med(gaps)}" + (f", quartiles {[round(q, 1) for q in st.quantiles(gaps, n=4)]}" if len(gaps) > 3 else ""))
     print(f"  attacks played into an Intangible enemy: {sum(r['into_intangible'] for r in rows)}")
+    for status in ("won", "lost"):
+        share = [r["lost_all"] / r["scored"] for r in rows if r["status"] == status and r["scored"]]
+        if share:
+            print(f"  share of a fight's decisions with every candidate lost, {status} fights ({len(share)}): median {st.median(share):.2f}, from {min(share):.2f} to {max(share):.2f}"
+                  f"; so at every decision of the first turn in {sum(bool(r['first_turn_lost']) for r in rows if r['status'] == status)}")
+    if any(e["no_target"] for e in early):
+        print(f"  of the turns ended with a paid-for card, with no enemy that could be hit: {sum(e['no_target'] for e in early)}")
+    choices = [c for r in rows for c in r["choices"]]
+    if choices:
+        print(f"  card choices inside the fights: {len(choices)} ({len(choices) / len(rows):.1f} a fight); with more than one distinct option {sum(c['real'] for c in choices)}; "
+              f"searched {sum(c['searched'] for c in choices)}; another answer than the first option {sum(c['other'] for c in choices)}")
+        print(f"    asked by: {Counter(c['asked'] for c in choices).most_common(10)}")
+        curse = defaultdict(Counter)
+        for c in choices:
+            if c["offer"]:
+                curse[c["offer"]]["+".join(c["taken"]) or "nothing"] += 1
+        for offer in sorted(curse):
+            print(f"    Curse of Knowledge, offer {offer}: {dict(curse[offer])}")
     viewed = sum(r["viewed"] for r in rows)
     if not viewed:
         print("  (these traces keep no planner view)")
         return 0
-    against, with_ = [e for r in rows for e in r["against"]], [e for r in rows for e in r["with"]]
+    against, with_ = [e for r in rows for e in r["against"]], [e for r in rows for e in r["with"] if not e["no_target"]]
+    dead = sum(e["no_target"] for r in rows for e in r["with"])
     print(f"  the search's action is the planner's at {sum(r['same'] for r in rows)} of {viewed} decisions ({sum(r['same'] for r in rows) / viewed:.0%})")
-    print(f"  turns ended with a paid-for card, by who ended them: the search against the planner {len(against)}, the planner too {len(with_)}")
+    print(f"  turns ended with a paid-for card, by who ended them: the search against the planner {len(against)}, the planner too {len(with_)}"
+          + (f" (and {dead} with no enemy that could be hit, where the planner has no plan)" if dead else ""))
     if against:
         m = [e["margin"] for e in against if e["margin"] is not None]
         print(f"    against the planner: margin median {med(m)}, under 30 points in {sum(x < 30 for x in m)} of {len(m)}; every candidate lost in {sum(e['lost'] for e in against)}; "

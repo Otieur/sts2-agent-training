@@ -86,6 +86,11 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### The Agent's fights here (2026-11-23)
 - **Record** `[OBS]` (A0, simulator on v0.111.1, the runs' fight search): 6 of 18 fights won (11 seeds, two arms; HP 72% at the start, 26.3 cards, 8.1 relics) in run benchmark 17 against 9 of 12 in run benchmark 16, with the same search and about the same state at the fight's start (`reports/phase9/run-bench-17.md` section 5). Other seeds, and a seed fixes its boss, so the two figures are a description and no test. No trace of a lost fight here has been read yet; one is owed before any rule (decision 0006: a trace before a rule).
 
+### The Agent's fights here, traced (2026-11-23)
+- **Turns are not ended early here; the fights are lost as races.** `[OBS]` run benchmark 17's 18 situations replayed with every decision kept (5 won; `reports/phase9/boss-replay-3.md` section 6): 1 turn of 105 was ended with a playable card the energy pays for. Fights won dealt 58 damage a turn (median) and lost 4.5 HP a turn over 7 turns; fights lost dealt 41 a turn and lost 9.9 HP a turn over 5 turns, with 194 of the two enemies' 408 HP left. HP on arrival was the same in both (72% of the maximum).
+- **A lost fight is lost from the first hand, as far as the search can see.** `[OBS]` in 12 of the 13 fights lost, every candidate's rollouts were lost at every decision of the first turn; of the 5 won, 1 began so. With no winning rollout the search steers by the enemies' HP left at death.
+- **Card choices were answered with the first option** `[OBS]`: 30 in the 18 fights (Headbutt 6, Brand 5, True Grit+ 4, potions and cards that offer a card 9). Under test in boss replay 4.
+
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db`, `reports/phase2/deck-features-by-encounter.md` `[PLAYER-DATA]`

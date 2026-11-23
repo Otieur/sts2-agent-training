@@ -76,6 +76,11 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 ### The Agent's fights here (2026-11-23)
 - **Record** `[OBS]` (A0, simulator on v0.111.1, the runs' fight search): 6 of 17 fights won (10 seeds, two arms; HP 70% at the start, 26.6 cards, 7.9 relics) in run benchmark 17 against 29 of 42 in run benchmark 16, with the same search and about the same state at the fight's start (`reports/phase9/run-bench-17.md` section 5). Other seeds, and a seed fixes its boss, so the two figures are a description and no test. The trace of a lost fight here is owed by decision 0006 and has not been read yet.
 
+### The Agent's fights here, traced (2026-11-23)
+- **The curse was never chosen: the fight search took the first option at every card choice, and the first option is Disintegration.** `[OBS]` 59 fights replayed from the situations of run benchmarks 16 and 17 with every decision kept (`reports/phase9/boss-replay-3.md` and `run-bench-17.md`, section 6): Disintegration at all 59 first offers, all 52 second offers and all 4 third offers. The plan above ranks it last at the first two offers; with two taken the player loses 13 HP at the end of every turn after the second offer. Lost fights ended on turn 6 in 16 of 29.
+- **The fights the Agent won were races that ended first.** `[OBS]` run benchmark 17's 17 situations: fights won dealt 63 damage a turn (median) and ended on turn 6 or 7 in 6 of 7; fights lost dealt 39 a turn. HP on arrival 75% of the maximum in the fights won, 60% in the fights lost.
+- **Whether choosing the curse wins more of these fights is under test** (boss replay 4, `reports/phase9/boss-replay-4.md`: the answers to a card choice searched like any other action). Until it is read, the choice rule above stays a hypothesis.
+
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db`, `reports/phase2/deck-features-by-encounter.md` `[PLAYER-DATA]`
