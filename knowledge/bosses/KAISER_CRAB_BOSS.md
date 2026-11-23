@@ -83,6 +83,9 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - Ironclad: 2 of 6 fatal, median 43.5 (all characters: 5 of 28 fatal). `[PLAYER-DATA]`
 - Counter: single-target focus on Rocket; full block on the Laser, ending the turn facing Rocket; kill Rocket with the last attack of a turn (Crab Rage). After Rocket dies, Crusher has +5 Strength: Bug Sting becomes 11×2, Thrash 17.
 
+### The Agent's fights here (2026-11-23)
+- **Record** `[OBS]` (A0, simulator on v0.111.1, the runs' fight search): 6 of 18 fights won (11 seeds, two arms; HP 72% at the start, 26.3 cards, 8.1 relics) in run benchmark 17 against 9 of 12 in run benchmark 16, with the same search and about the same state at the fight's start (`reports/phase9/run-bench-17.md` section 5). Other seeds, and a seed fixes its boss, so the two figures are a description and no test. No trace of a lost fight here has been read yet; one is owed before any rule (decision 0006: a trace before a rule).
+
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db`, `reports/phase2/deck-features-by-encounter.md` `[PLAYER-DATA]`

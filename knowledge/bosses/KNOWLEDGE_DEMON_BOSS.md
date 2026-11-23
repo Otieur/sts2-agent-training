@@ -73,6 +73,9 @@ Deck features on arrival, survived against fatal: see `reports/phase2/deck-featu
 - Ironclad: 4 of 12 fatal, median 45 damage (all characters: 13 of 40 fatal, median 38). Arrival HP was similar in fatal and survived fights (67% against 72%). The damage race was lost (fatal fights took a median 53 damage). `[PLAYER-DATA]`
 - Counter: arrive with a scaling engine. Act 2 drafting should prioritise powers and energy once the boss is known.
 
+### The Agent's fights here (2026-11-23)
+- **Record** `[OBS]` (A0, simulator on v0.111.1, the runs' fight search): 6 of 17 fights won (10 seeds, two arms; HP 70% at the start, 26.6 cards, 7.9 relics) in run benchmark 17 against 29 of 42 in run benchmark 16, with the same search and about the same state at the fight's start (`reports/phase9/run-bench-17.md` section 5). Other seeds, and a seed fixes its boss, so the two figures are a description and no test. The trace of a lost fight here is owed by decision 0006 and has not been read yet.
+
 ## Sources
 - Monster data: `knowledge/data/extract-2026-09-21/monsters.json` `[GAME-EXTRACT]`
 - Fight records: `data/runs.db`, `reports/phase2/deck-features-by-encounter.md` `[PLAYER-DATA]`

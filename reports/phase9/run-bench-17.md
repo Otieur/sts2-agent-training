@@ -27,7 +27,50 @@ Why: a rollout's value is the floors it climbs plus a bonus for beating the act'
 - What follows, the stack that runs next: `bc` enters if its mean paired difference in floors is positive and it does not win fewer runs. A claim that it helps needs its test.
 
 ## 5. Results
-Pending.
+Run 2026-11-22 21:45 to 2026-11-23 02:52 on the Release5 host (`data/learn/runs/run-bench-17/manifest.json`; code `bc7ff52`; 9 workers; 18,430 seconds, ended by the stopping rule). 26 of the 30 seeds were finished by both policies and are the analysis: 52 runs. Seeds 00019, 00022, 00024 and 00028 were still played at the deadline and are left out, as registered; a seed that takes long is one whose runs go far, so the 26 are not a random 26 of the 30. No host error, no run given up in a fight, no rollout that failed, workers' exit codes all 0. Reports: `python3 -I tools/run_details.py data/learn/runs/run-bench-17 --wins-vs rcard+rpath+pot+smith+rshop2+ropt+bshop`, and the same folder with `--decisions`. `T` = `rcard+rpath+pot+smith+rshop2+ropt+bshop`.
+
+| Policy | Mean floor | Median | Wins (Wilson 95%) | Act 1 boss beaten | Act 2 boss | Act 3 boss | Elites per run |
+|---|---|---|---|---|---|---|---|
+| `T` | 36.42 | 33 | 1 of 26 (1–19%) | 23 of 26 | 10 of 20 | 1 of 9 | 1.38 |
+| `T+bc` | 35.85 | 33 | 1 of 26 (1–19%) | 24 of 26 | 9 of 23 | 1 of 6 | 1.04 |
+
+| `T+bc` against `T`, by seed | Seeds | Mean difference, floors | Bootstrap 95% | Better | Worse | Equal | Sign test p (one-sided) | Wins | Seeds won by one arm only | Sign test p, wins |
+|---|---|---|---|---|---|---|---|---|---|---|
+| | 26 | −0.58 | −4.73 to 3.92 | 7 | 10 | 9 | 0.83 | 1 / 1 | 1 / 1 | 0.75 |
+
+- **H1** (the boss credit reaches more floors): mean −0.58, 7 seeds better and 10 worse, p = 0.83: **does not hold**.
+- **H2** (it wins more runs): one win an arm, on different seeds (`T` seed 00016, `T+bc` seed 00023), p = 0.75: **does not hold**.
+- **The stack that runs next** (section 4): the mean paired difference is not positive, so `bc` does not enter. The stack stays `rcard+rpath+pot+smith+rshop2+ropt+bshop`, and run benchmark 20 started on it at 02:52 (`data/learn/queue/queue.log`).
+
+**The treatment was applied and did what it was built to do, and the floors did not follow.** Every recorded decision names its arm's own settings (`rollout_settings_used`): rollouts by `bshop+path+pot+smith` in both arms, credit 0 in all 1,196 decisions of `T` and 5 in all 1,159 of `T+bc`. The decisions where every option has the same value fall from 105 of 1,196 (8.8%) to 42 of 1,159 (3.6%): card rewards 57 of 449 to 34 of 457, map moves 14 of 299 to 0 of 279, events and Ancients 24 of 256 to 5 of 257, shops 10 of 192 to 3 of 166. So the ties the hypothesis started from are mostly broken, and the choices move (they differ from the rule's in 48%, 39%, 62% and 76% of the decisions of the four kinds in `T`, and in 58%, 41%, 69% and 76% with the credit). What they move towards does not help: with the credit the runs take fewer elites (3 of the 39 forks that offered one against 8 of 49; 1.04 a run against 1.38), reach the act 2 boss more often (23 runs against 20) with less HP (63% against 76%), and beat it less often (9 against 10). The credit is progress against a boss by the rule planner's play, and a deck the planner gets further with is not shown here to be a deck the fight search wins with.
+
+**Where the runs end** (26 an arm): `T` act 2 boss 10, act 3 boss 8, act 1 boss 3, act 2 hallway 2, act 3 hallway 1, act 2 elite 1, won 1; `T+bc` act 2 boss 14, act 3 boss 5, act 1 boss 2, act 3 hallway 2, act 2 hallway 1, act 3 elite 1, won 1. Bosses end 42 of the 50 lost runs.
+
+| Boss fights won of those reached | `T` | `T+bc` | Both | Run benchmark 16 (four arms) |
+|---|---|---|---|---|
+| Act 1 | 23 of 26 | 24 of 26 | 47 of 52 | 93 of 103 |
+| Ceremonial Beast / The Kin / Vantom | 9 of 9 / 8 of 11 / 6 of 6 | 8 of 9 / 10 of 11 / 6 of 6 | 17 of 18 / 18 of 22 / 12 of 12 | 23 of 24 / 24 of 28 / 46 of 51 |
+| Act 2 | 10 of 20 | 9 of 23 | 19 of 43 | 56 of 77 |
+| Kaiser Crab / Knowledge Demon / The Insatiable | 3 of 8 / 4 of 8 / 3 of 4 | 3 of 10 / 2 of 9 / 4 of 4 | 6 of 18 / 6 of 17 / 7 of 8 | 9 of 12 / 29 of 42 / 18 of 23 |
+| Act 3 | 1 of 9 | 1 of 6 | 2 of 15 | 8 of 42 |
+| Aeonglass / Queen / Test Subject | 0 of 2 / 0 of 3 / 1 of 4 | 0 of 1 / 0 of 1 / 1 of 4 | 0 of 3 / 0 of 4 / 2 of 8 | 5 of 9 / 0 of 9 / 3 of 24 |
+
+| At the boss of | Policy | Fights | Won | HP at the start | Deck | Upgraded cards | Relics | Potions |
+|---|---|---|---|---|---|---|---|---|
+| Act 1 | `T` | 26 | 23 | 78% | 17.5 | 3.5 | 4.4 | 2.2 |
+| | `T+bc` | 26 | 24 | 80% | 18.5 | 3.6 | 4.2 | 2.4 |
+| Act 2 | `T` | 20 | 10 | 76% | 27.0 | 7.9 | 8.1 | 2.7 |
+| | `T+bc` | 23 | 9 | 63% | 26.2 | 7.8 | 8.0 | 2.5 |
+| Act 3 | `T` | 9 | 1 | 66% | 34.7 | 14.6 | 12.1 | 2.2 |
+| | `T+bc` | 6 | 1 | 79% | 32.3 | 14.2 | 12.2 | 3.0 |
+
+**The same policy on new seeds: the check run benchmark 16 could not give.** `T` is the cell that was best of four in run benchmark 16 (41.23 floors, 4 wins in 26 runs), which that report said was picked by its own result. On these 26 new seeds the same policy reaches 36.42 floors and wins 1 run, which is where the other three cells of run benchmark 16 stood (35.65, 38.81 and 36.19 floors; 1, 2 and 1 wins). Together it has 5 wins in 52 runs (Wilson 95% 4% to 21%). The level of the current stack at A0 is about one run in ten, and the four wins of that cell were in good part its seeds. Gate G1 (decision 0005) asks for 12 wins in 30.
+
+**The bosses beside run benchmark 16** (other seeds; a description, not a test; an act's boss is fixed by the seed, so both arms of a seed meet the same boss and the fights of one run benchmark are not independent).
+- Act 3: 2 of 15 here against 8 of 42. This is the first run benchmark with the forms to come counted in the value of a lost rollout (section 6, 18:50): the Test Subject is beaten in 2 of 8 fights against 3 of 24, the direction the fight replays gave and far too few fights to say more. The Queen stays at none (0 of 4, 0 of 13 with run benchmark 16).
+- Act 2: 19 of 43 here against 56 of 77, with the same fight search (the forms option changes nothing for these bosses) and the same state at the fight's start (HP 76% and 63%, 27 cards, 8 upgraded, 8 relics; run benchmark 16: 77%, 27.0, 7.7, 9.0). The Kaiser Crab is met on more seeds here (18 of the 43 fights, 12 of 77 there) and is beaten in 6 of 18 against 9 of 12; the Knowledge Demon in 6 of 17 against 29 of 42. With these seeds the act 2 boss ends more runs than the act 3 boss again (24 of 50 lost runs against 13). So the act 2 boss is not settled, and the Knowledge Demon trace already owed by decision 0006 gets a Kaiser Crab trace beside it before any rule.
+
+**Checks and conditions.** Search: no mismatch; one search error in `T` (followed by the planner's action for that decision) of 8,261 searched decisions and none in 7,836 of `T+bc`. Seconds per run are not comparable between the arms and are not reported as a result (3,036 and 1,976): a worker plays a seed's `T` run first, and the first hours were the slowest (memory pressure until about 22:20, then two to four low-priority workers of boss replays 3 and 2 beside this run until 00:55; measured at 00:57, such a side job takes about a third of this run's processor time, `docs/overnight-log.md`). Both arms of a seed are played by the same worker one after the other, and the clock enters a decision only through the time limit on a host's reply, which ends in a counted error (one search error and no failed rollout in the run), so the conditions cost seeds finished (26 of 30) and not the comparison. No result of this run was read before it ended; the number of seeds recorded was looked at twice for the pace (12 at 01:03).
 
 ## 6. Deviations and notes
 - 2026-11-21 22:46, before the start: this run moves behind run benchmarks 18 and 16, and it runs only if `rfm` (fights inside rollouts ended by the fight-outcome model) is not in the stack after them: the boss credit applies to rollouts that play the boss fight and die in it, and has no meaning in rollouts that do not play it. If `rfm` is in the stack, this registration is withdrawn unrun and the seeds `RB017` stay unused. Host: the Release3 build, as for run benchmark 16. Nothing of this run was known.
@@ -39,3 +82,4 @@ Pending.
 - 2026-11-22 18:15, before the start, nothing of this run known: `T` is the stack after run benchmark 19 only if that run has 15 finished seeds or more at its stopping rule; with fewer it is `G`, the stack after run benchmark 16 (`rcard+rpath+pot+smith+rshop2+ropt+bshop`). Run benchmark 19 is being played at half pace under memory pressure and is completed in a second sitting later (its section 6, 18:15, which also says what had been seen of it).
 - 2026-11-22 18:50, before the start, nothing of this run known: **the value of a lost rollout in the fight search counts the forms to come** (`tools/sim.py LOSS_COUNTS_FORMS`, on by default since 18:50; the same in both arms; recorded in the manifest as `loss_value`). The option passed its registered rule on the Test Subject situations of boss replay 2 (`reports/phase9/boss-replay-2.md` section 6, 18:50: 69.9% of the three forms' HP removed against 30.6%, 6 fights won against 2). This is the state the note of 16:25 left open.
 - 2026-11-22 21:45, **started** (deadline 02:45): run benchmark 19 ended its first sitting with 7 finished seeds, fewer than the 15 its stack rule needs (its section 6, 18:15 and 21:45), so `T` is the stack after run benchmark 16, `rcard+rpath+pot+smith+rshop2+ropt+bshop`, and the arms are `T` and `T+bc`. The fight search counts the forms to come in the value of a lost rollout and does not check the end of a turn against the planner (`tools/selfplay.py END_TURN_Z` off, registered as boss replay 3 at 20:32 and not decided), the same in both arms. Beside it: boss replay 3's fight files and then boss replay 2's remaining ones, two to four workers at low priority.
+- 2026-11-23 02:52, **ended** by the stopping rule (deadline 02:45; the workers ended their step and wrote the manifest by 02:52): 26 of 30 seeds finished by both arms. Section 5 was written from the tools named there, and the stack rule was applied by the queue script before anything of the run was read (`data/learn/queue/stack3.py after-bc`: 26 pairs, mean −0.58, one win an arm, so no `bc`). The side jobs beside this run and what they cost are in section 5's last paragraph: fight batch b0 was resumed by boss replay 2's script at 00:55 and paused again by hand at 00:58, and nothing ran beside this run from then to its end.
