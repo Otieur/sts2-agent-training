@@ -652,17 +652,21 @@ def _rank(pt, results, mode, potions):
 # first option stays the first candidate, so a tie is resolved as before. Declining is never a candidate: the host
 # lists it wherever the game's selector is given a minimum of 0, and at a choose-a-card screen that is so even where
 # the game does not let the player skip (KnowledgeDemon.ChooseCurse passes canSkip false). Answers of several cards
-# are taken as the host lists them, up to the cap. Off unless a search arm or the environment switches it on
-# (`SIM_SEARCH_CHOICES=1`). The value "curse" (`SIM_SEARCH_CHOICES=curse`) searches the Knowledge Demon's Curse of
-# Knowledge alone and takes the first option at every other choice: boss replay 4 kept the option off in general (the
-# benchmark fights lost two fights more with every choice searched) and asked for this version on its own
-# (`reports/phase9/boss-replay-4.md` section 5, `reports/phase9/boss-replay-6.md`).
+# are taken as the host lists them, up to the cap. On by default since 2026-11-23 (boss replay 6, section 5: on new
+# sample seeds every choice searched wins 116 Knowledge Demon fights against 103 of 176, 113 of the benchmark's elite
+# and boss fights against 110 of 150 and 60 of the other boss fights against 58 of 93; its four conditions hold).
+# `SIM_SEARCH_CHOICES=0` in the environment keeps the first option, for a run benchmark that was started with it (run
+# benchmark 19); a fight-benchmark arm states its own setting by its name. The value "curse"
+# (`SIM_SEARCH_CHOICES=curse`) searches the Knowledge Demon's Curse of Knowledge alone and takes the first option at
+# every other choice: boss replay 4 kept the option off in general (the benchmark fights lost two fights more on one
+# sample seed) and asked for this version on its own; boss replay 6 tested both and found nearly all of the Demon's
+# gain in the curse (`reports/phase9/boss-replay-4.md` section 5, `reports/phase9/boss-replay-6.md`).
 def choices_mode(text):
     """SEARCH_CHOICES from its text: True for "1", "curse" for "curse", False for anything else."""
     return {"1": True, "curse": "curse"}.get(str(text).strip().lower(), False)
 
 
-SEARCH_CHOICES = choices_mode(os.environ.get("SIM_SEARCH_CHOICES", "0"))
+SEARCH_CHOICES = choices_mode(os.environ.get("SIM_SEARCH_CHOICES", "1"))
 CHOICE_CAP = 10
 CURSE_OFFERS = ("MIND_ROT", "SLOTH", "WASTE_AWAY")      # the card offered beside Disintegration at the three Curses of Knowledge
 

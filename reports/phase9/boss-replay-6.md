@@ -45,8 +45,70 @@ Choices made before the run and not tuned on it: the curse is recognised by its 
   - A run benchmark begun before the default changes is finished with the setting it began with (run benchmark 19 keeps `SIM_SEARCH_CHOICES=0`). The next run benchmark registered after it carries the new default in every arm, so what the default is worth in runs won is read against the earlier benchmarks and not inside it.
 
 ## 5. Results
-Pending.
+### Set D, the Knowledge Demon on new sample seeds (read 2026-11-23 14:15)
+Played 12:29–13:52 (`data/learn/bench/boss-replay-6-d3`, `-d4`, `-d5`; four workers for the first two indexes, nine for the third; `python3 -I tools/choices_compare.py --pool --a mcw6paf --b mcw6pafk --specs data/sim/boss-replay-4-d.json` on the three folders, and the same with `--b mcw6pafc` and with `--a mcw6pafk --b mcw6pafc`). 177 fights an arm; two fights had host trouble (section 6).
+
+| | First option (`mcw6paf`) | The curse alone (`mcw6pafk`) | Every choice (`mcw6pafc`) |
+|---|---|---|---|
+| **Fights won** (the 175 fights all three arms finished) | **103 (59%)** | **114 (65%)** | **115 (66%)** |
+| on run benchmark 16's situations | 86 of 124 | 91 of 124 | 94 of 125 |
+| on run benchmark 17's situations | 17 of 51 | 23 of 51 | 22 of 51 |
+| Card choices a fight | 3.2 | 3.4 | 3.5 |
+| searched | 0 | 380 of 601 | 601 of 610 |
+| another answer than the first option | 0 | 213 | 322 |
+| First curse offer: Mind Rot, Disintegration | 0, 175 | 120, 55 | 113, 63 |
+| Second offer: Sloth, Disintegration | 0, 152 | 78, 87 | 70, 96 |
+| Third offer: Waste Away, Disintegration | 0, 6 | 15, 25 | 15, 30 |
+| Seconds a fight | 43 | 44 | 45 |
+
+- **H1 does not hold at the registered level.** The curse searched alone wins more of a situation's fights in 15 of the 59 situations and fewer in 7: one-sided sign test p = 0.067. It wins 114 fights against 103 on the 175 fights both arms finished, and keeps 4.1 HP more where both win (bootstrap 95% 1.4 to 7.0).
+- **G1 holds.** Every choice searched wins 116 fights against 103 on the 176 fights both arms finished (17 situations against 8; where both win 3.6 HP more, 0.6 to 6.5), and 115 against the curse-only arm's 114 (6 situations against 5; no difference in HP left).
+- **How the gain splits.** Nearly all of it is the curse: the other choices searched as well add one fight in 176 at this boss.
+- Beside boss replay 4's Set D (125 against 106 of 176): the same direction and about the same size on new seeds, 241 against 209 of 352 over both.
+
+### Set B, the benchmark's elite and boss fights on four more sample seeds (read 2026-11-23 14:26)
+Played 13:52–14:25 (`data/learn/bench/boss-replay-6-b-eb`, nine workers; no error, no restart). 120 fights an arm.
+
+| | First option (`mcw6paf`) | Every choice (`mcw6pafc`) |
+|---|---|---|
+| **Fights won, sample seeds 6 to 9** | **87 of 120** | **92 of 120** |
+| boss rooms | 17 of 40 | 22 of 40 |
+| elite rooms | 70 of 80 | 70 of 80 |
+| **With boss replay 4's seed 3 (G2)** | **110 of 150** | **113 of 150** |
+| boss rooms | 22 of 50 | 26 of 50 |
+| elite rooms | 88 of 100 | 87 of 100 |
+| Card choices on seeds 6 to 9 | 155 | 153 (149 searched, 75 another answer) |
+| Seconds a fight | 66 | 70 |
+
+- **G2 holds:** 113 against 110. On the four new seeds alone the arm with the choices searched wins more of a situation's fights in 3 situations and fewer in 1.
+- **G3 holds:** where both arms win (105 fights over the five seeds) its mean HP left is 0.3 higher (bootstrap 95% −0.8 to +1.4).
+- The two fights it lost on seed 3 by its answer to a draw-pile choice (the Test Subject, 1 against 0; Mecha Knight, 1 against 0) read on the new seeds: the Test Subject 4 of 4 against 1 of 4, Mecha Knight 6 of 8 each. Seed 3's deficit does not repeat.
+
+### Set O, the other bosses on one more sample seed (read 2026-11-23 14:58)
+Played 14:25–14:57 with a pause of four minutes (section 6; `data/learn/bench/boss-replay-6-o1`, nine workers; no error, no restart). 93 fights an arm.
+
+| | First option (`mcw6paf`) | Every choice (`mcw6pafc`) |
+|---|---|---|
+| **Fights won, sample seed 1** | **58 of 93** | **60 of 93** |
+| act 1: Ceremonial Beast, The Kin, Vantom | 17 of 18, 19 of 22, 10 of 12 | 17 of 18, 19 of 22, 11 of 12 |
+| act 2: Kaiser Crab, The Insatiable | 4 of 18, 6 of 8 | 5 of 18, 5 of 8 |
+| act 3: Test Subject, Queen, Aeonglass | 1 of 8, 0 of 4, 1 of 3 | 1 of 8, 1 of 4, 1 of 3 |
+| With boss replay 4's seed 0 | 117 of 186 | 125 of 186 |
+| Card choices on seed 1 | 124 | 119 (116 searched, 54 another answer) |
+| Seconds a fight | 82 | 91 |
+
+- **G4 holds:** 60 against 58 (56 at least was asked). More of a situation's fights in 4 situations, fewer in 2; where both win (56 fights) 4.8 HP more (bootstrap 95% 2.5 to 7.4).
+- Over both seeds of this set: 125 against 117 of 186, more in 8 situations and fewer in 2, 3.5 HP more where both win (2.0 to 5.1).
+
+### What follows (2026-11-23 14:58)
+G1, G2, G3 and G4 hold. By section 4 **every choice searched is the default of the fight search from now on**, in all room types: `tools/sim.py SEARCH_CHOICES` reads `SIM_SEARCH_CHOICES` with a default of 1 (changed at 14:58, in the commit that carries this reading). H1 for the curse searched alone did not hold at its level (p = 0.067) and is not needed: the general option replaces that version. Run benchmark 19, if it is played further, keeps `SIM_SEARCH_CHOICES=0`. A fight-benchmark arm states its own setting by its name, so earlier arms replay as they were.
+
+Over boss replays 4 and 6 together the arm with every choice searched wins 508 of 718 fights against 465: the Knowledge Demon 241 against 209 of 352, the other bosses 125 against 117 of 186, the benchmark's elite and boss fights 113 against 110 of 150, its hallway fights 29 each of 30. The gain is in boss rooms; elite and hallway rooms are level. The guard that failed on one sample seed of 60 fights did what it was there for and cost about four hours.
+
+What it is worth in runs won has not been measured and is not claimed: the search that plays the fights of a run now uses it, and the next whole runs show it.
 
 ## 6. Deviations and notes
 - 2026-11-23 11:34, before the run. **One fight of a Set D situation was played with the curse searched alone while the code was tested** (situation 20, fight seed 7600020, outside every set, `tools/fight_trace.py --choices curse`): the two curse offers were searched with two candidates each and Disintegration was taken at both (20 against −40 at the first, 54 against 39 at the second), the one other choice of the fight took the first option without a search; won on turn 7 with 43 HP. Not a result.
 - 2026-11-23 11:34, before the run. The sample seeds were checked against every folder of `data/learn/bench` that played the three sets: of the benchmark set, indexes 0 to 5 were played by an earlier comparison of search budgets (`boss-budget-1`, arms `mcw6` and `mcw24`, without potions), 0 and 1 by seven others, 3 by boss replay 4; 6 to 9 by none. Of Set D only boss replay 4's 0 to 2, of Set O only its 0. So boss replay 4's note that index 3 of the benchmark set had not been played was wrong for arms other than its own; its two arms had not played it, and nothing in its reading depends on the earlier arms.
+- 2026-11-23 14:32, Set D: two fights had host trouble, both in situations 1 and 2, the two that had it in boss replay 4. Situation 2, sample seed 4: the first-option arm's fight ended blocked (counted as not won where it is paired; with it left out every choice searched wins 115 against 103 of 175 and the count of situations is the same), and the curse-only arm's fight ended in `no choice is pending` at a restore (left out). Situation 1, sample seed 5: the first-option arm's fight ended in the game exception of boss replay 4's Set D (`NullReferenceException`; left out). Three more fights of those two situations were finished after one or two restarts and are counted. These errors come with the situations and not with an arm (FI-7h).
+- 2026-11-23 14:32, **the queue was paused at the Player's request from 14:27 to 14:31** (`kill -STOP` on the process group), two minutes into Set O's seed 1, and that set alone was resumed at the Player's word; what the queue held after it (boss replay 7, run benchmark 19's third sitting) stays paused. A fight in flight at the pause may show a host restart.

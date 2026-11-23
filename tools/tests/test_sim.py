@@ -1,5 +1,6 @@
 """Offline tests for the pure parts of tools/sim.py (the host itself needs the game and the .NET SDK: tools/sim.py
 smoke, fidelity and fairplay are its tests)."""
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -66,6 +67,8 @@ class TestSimBridge(unittest.TestCase):
         finally:
             sim.SEARCH_CHOICES = was
         self.assertEqual([sim.choices_mode(x) for x in ("1", "curse", "CURSE", "0", "", "on")], [True, "curse", "curse", False, False, False])
+        if "SIM_SEARCH_CHOICES" not in os.environ:
+            self.assertIs(sim.SEARCH_CHOICES, True)      # the default since boss replay 6
         # one candidate per distinct card name, the first option kept first, capped
         pile = obs([], [dict(ENEMY)], choice={"kind": "FromCombatPile", "min": 1, "max": 1, "options": ["DEFEND_IRONCLAD", "BASH", "DEFEND_IRONCLAD", "ANGER+", "ANGER"]})
         legal = [{"type": "choose", "cards": [i]} for i in range(5)] + [{"type": "end_turn"}]

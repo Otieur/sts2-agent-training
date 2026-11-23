@@ -1,0 +1,60 @@
+{
+ "name": "boss-replay-6-d3",
+ "created": "2026-11-23 13:06",
+ "benchmark": "data/sim/boss-replay-4-d.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "e3c5c78",
+ "arms": [
+  "mcw6paf",
+  "mcw6pafk",
+  "mcw6pafc"
+ ],
+ "model": null,
+ "q_model": null,
+ "seeds": 1,
+ "sample_from": 3,
+ "rooms": null,
+ "seed_base": 7000000,
+ "workers": 4,
+ "worker_exit_codes": [
+  0,
+  0,
+  0,
+  0
+ ],
+ "wall_seconds": 2242,
+ "jobs": 59,
+ "summary": {
+  "mcw6paf": {
+   "games": 59,
+   "errors": 0,
+   "won": 34,
+   "mean_value": -70.64406779661017,
+   "mean_hp_if_won": 31.352941176470587,
+   "seconds": 2777.3,
+   "search_seconds_per_decision": 1.362,
+   "restarts": 0
+  },
+  "mcw6pafk": {
+   "games": 59,
+   "errors": 0,
+   "won": 39,
+   "mean_value": -42.76271186440678,
+   "mean_hp_if_won": 35.743589743589745,
+   "seconds": 2895.3,
+   "search_seconds_per_decision": 1.282,
+   "restarts": 1
+  },
+  "mcw6pafc": {
+   "games": 59,
+   "errors": 0,
+   "won": 39,
+   "mean_value": -40.40677966101695,
+   "mean_hp_if_won": 34.8974358974359,
+   "seconds": 3082.1,
+   "search_seconds_per_decision": 1.345,
+   "restarts": 2
+  }
+ }
+}
