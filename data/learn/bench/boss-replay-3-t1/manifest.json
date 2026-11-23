@@ -1,0 +1,47 @@
+{
+ "name": "boss-replay-3-t1",
+ "created": "2026-11-22 21:21",
+ "benchmark": "data/sim/boss-replay-2-g-ts.json",
+ "game_version": "v0.111.1",
+ "game_commit": "cc1f9462",
+ "code_commit": "bc7ff52",
+ "arms": [
+  "mcw6paf",
+  "mcw6pafe"
+ ],
+ "model": null,
+ "q_model": null,
+ "seeds": 1,
+ "sample_from": 1,
+ "rooms": null,
+ "seed_base": 7000000,
+ "workers": 2,
+ "worker_exit_codes": [
+  0,
+  0
+ ],
+ "wall_seconds": 3025,
+ "jobs": 24,
+ "summary": {
+  "mcw6paf": {
+   "games": 24,
+   "errors": 1,
+   "won": 4,
+   "mean_value": -175.82608695652175,
+   "mean_hp_if_won": 31.75,
+   "seconds": 2812.9,
+   "search_seconds_per_decision": 2.877,
+   "restarts": 0
+  },
+  "mcw6pafe": {
+   "games": 24,
+   "errors": 0,
+   "won": 5,
+   "mean_value": -159.16666666666666,
+   "mean_hp_if_won": 34.8,
+   "seconds": 2814.7,
+   "search_seconds_per_decision": 2.687,
+   "restarts": 0
+  }
+ }
+}

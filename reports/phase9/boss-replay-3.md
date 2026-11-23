@@ -33,9 +33,31 @@ Choices made before the run and not tuned on it: 2 standard errors (about a one-
 - **What follows.** The check becomes the default of the fight search for everything started afterwards if all of these hold: H1 holds; the arm with the check wins at least as many Test Subject fights as the arm without; on Set B it wins at least as many fights as the arm without, less one at most; and on Set B's fights that both arms win its mean HP left is not lower by more than 1.0. Then the next free run-benchmark slot measures in whole runs what it is worth in wins, as for the forms option. If H1 does not hold, the check stays off and the noise is taken up by another registered route (more worlds for the candidates that are close). If H1 holds and Set B's conditions do not, the check stays off in general and a version limited to boss rooms is registered on its own.
 
 ## 5. Results
-Pending.
+Sets T1 and T2 played 2026-11-22 20:31–22:24 (two workers beside run benchmarks 19 and 17; code `bc7ff52`; `data/learn/bench/boss-replay-3-t1`, `-t2`; read with `tools/forms_compare.py --a mcw6paf --b mcw6pafe`). 36 fights an arm, 35 with both arms: Set T1's situation 6 is left out for a host error in the arm without the check (the situation that failed in boss replay 2 as well). Set B was not played (section 6).
+
+| | Without the check (`mcw6paf`) | With the check (`mcw6pafe`) |
+|---|---|---|
+| Fights won, all 35 | 9 | 11 |
+| Set T1 (23 situations, one seed) | 4 | 5 |
+| Set T2 (4 situations, three seeds) | 5 | 6 |
+| Share of the three forms' HP removed, 27 situations | 69.6% | 71.0% |
+| Set T1 | 68.3% | 69.9% |
+| Set T2 | 76.8% | 77.5% |
+| Fights ended in form 2 / form 3 / won | 9 / 17 / 9 | 10 / 14 / 11 |
+| Turns a fight | 8.5 | 7.9 |
+| Seconds a decision, T1 / T2 | 2.88 / 5.77 | 2.69 / 5.86 |
+| Host errors | 1 | 0 |
+
+- **H1 does not hold.** The share of the forms' HP removed is larger with the check in 6 situations, smaller in 9 and equal in 12 (one-sided sign test p 0.85).
+- **H2 does not hold.** The arm with the check wins more in 4 situations and fewer in 2 (p 0.34).
+- **The check itself:** asked 40 times in the 35 fights (26 in T1, 14 in T2), it played the planner's card 36 times and kept the end of the turn 4 times; the planner's card was never missing from the candidates. In 12 situations the two arms ended the same.
+- **What follows, as registered:** the check is not adopted and stays off (`tools/selfplay.py END_TURN_Z`); nothing that runs or is queued changes. The noise is taken up by another registered route.
+- **What the result says.** The check was asked about once a fight, where the trace sweep had counted about three turns a fight ended with a paid-for card in hand. So in most of those turns the rule planner would have ended the turn too, and the search was not overruling it. Those turns are either not losses (a card the planner is right to keep back) or they are lost by the planner's own judgement of what is worth playing, and the planner is also the policy that plays every rollout. The sweep kept no planner action and cannot tell the two apart. That is the next description to make before any rule (decision 0006): the traces with the planner's own action and plan score at each decision, and the cards left in hand when a turn ends.
+- **A measure of what six worlds and one seed can show:** the arm without the check won 9 of these 35 fights, and the same arm won 6 of the 35 fights of boss replay 2 on other sample seeds (T1's situations 4 against 2, T2's 5 against 4). A difference of two fights won between the arms here is inside that spread.
 
 ## 6. Deviations and notes
 - 2026-11-22 20:32, before the start: the tests named in section 2. Unit cases on made-up values (`tools/tests/test_selfplay.py`, eight): inside the noise the planner's card is played; a clear end of turn is kept, and so is a small edge that holds in every world when one world is lost; nothing changes where every world of both candidates is won, where the best is a card, where the planner ends the turn or names a potion, or with the check off; a second copy of the planner's card counts as that card and another card or target does not; unfinished rollouts are left out and three worlds are needed; a card whose step failed is not played. One fight outside every registered set (The Kin, an act 1 boss situation of run benchmark 9, `data/sim/boss-fights-rb9.json` index 3, seed 7900003, the check on, `tools/fight_trace.py --end-turn-z 2`): played to its end without a host error (won, 34 decisions); the check was asked once and played the planner's card once (an Anger that costs nothing, scored 15 points behind ending the turn). One fight says nothing about the check's worth and is not read as a result.
 - The check is off by default (`tools/selfplay.py END_TURN_Z`, `SIM_END_TURN_Z` in the environment), so run benchmark 17, which starts while this comparison runs, plays without it; a run benchmark's manifest records the setting from now on (`end_turn_z`). H1 and H2 are read with `tools/forms_compare.py --a mcw6paf --b mcw6pafe`.
-
+- 2026-11-22 20:33, during the run: the first record of Set T1 was opened to confirm the new fields (situation 0: both arms ended the same, the check not asked). Nothing else was read before both sets were done.
+- 2026-11-22 21:21: Set T2 was played with two workers, not four: run benchmark 19 had not ended when it started.
+- 2026-11-22 22:26, **Set B stopped by hand before a fight of it was recorded** (a deviation from section 2, which has every fight played). Its registered use was a condition for adopting the check, and with H1 not holding the check is not adopted whatever Set B shows. Its four workers go to boss replay 2's remaining files beside run benchmark 17, which the machine's memory had slowed all evening. Nothing of Set B was seen.
