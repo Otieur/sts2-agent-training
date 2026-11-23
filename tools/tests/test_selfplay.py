@@ -160,5 +160,29 @@ class TestEndOfTurnCheck(unittest.TestCase):
         self.assertEqual(self.check(d, {"type": "play", "card": 0, "target": 0})[0], 2)
 
 
+class TestChoiceNotes(unittest.TestCase):
+    def test_a_choice_is_noted_with_what_was_taken(self):
+        del sp.CHOICES[:]
+        o = {"choice": {"kind": "FromChooseACardScreen", "min": 0, "max": 1, "options": ["DISINTEGRATION", "MIND_ROT"]}}
+        both = [{"type": "choose", "cards": [0]}, {"type": "choose", "cards": [1]}]
+        sp.note_choice(o, both, 1)
+        sp.note_choice(o, both[:1], 0)
+        self.assertEqual(sp.CHOICES, [
+            {"kind": "FromChooseACardScreen", "options": ["DISINTEGRATION", "MIND_ROT"], "taken": ["MIND_ROT"], "candidates": 2, "first": False},
+            {"kind": "FromChooseACardScreen", "options": ["DISINTEGRATION", "MIND_ROT"], "taken": ["DISINTEGRATION"], "candidates": 1, "first": True}])
+        del sp.CHOICES[:]
+
+    def test_a_search_with_one_answer_notes_it_and_scores_nothing(self):
+        class OneAnswer:
+            def legal(self):
+                return [{"type": "choose", "cards": [0]}]
+        del sp.CHOICES[:]
+        o = {"choice": {"kind": "FromHand", "min": 1, "max": 1, "options": ["BASH"]}, "combat": {"hand": []}}
+        cands, values, best = sp.scored_search(OneAnswer(), o, "balanced", 6, 2, 0)
+        self.assertEqual((cands, values, best), ([{"type": "choose", "cards": [0]}], [None], 0))
+        self.assertEqual([(c["taken"], c["candidates"]) for c in sp.CHOICES], [(["BASH"], 1)])
+        del sp.CHOICES[:]
+
+
 if __name__ == "__main__":
     unittest.main()

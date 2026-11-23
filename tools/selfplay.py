@@ -125,6 +125,17 @@ END_CHECKS = {"asked": 0, "kept": 0, "played": 0, "absent": 0}     # since the c
 LOST_AT_MOST = -100.0      # tools/sim.py _value: a lost rollout is -100 minus the enemies' HP left, a won one the HP left
 
 
+# The card choices answered inside fights since the caller last cleared the list (tools/sim.py SEARCH_CHOICES): the
+# kind of screen, the options' names, the names taken, and how many answers were candidates (1: the first option was
+# taken without a search).
+CHOICES = []
+
+
+def note_choice(obs, cands, best):
+    ch = obs.get("choice") or {}
+    CHOICES.append({"kind": ch.get("kind"), "options": list(ch.get("options") or []), "taken": list(S.choice_labels(obs, cands[best])), "candidates": len(cands), "first": best == 0})
+
+
 def _same_play(a, b, hand):
     """The same card play: the same hand index, or two copies of one card (id and upgrade), at the same target."""
     if a.get("type") != "play" or b.get("type") != "play" or a.get("target") != b.get("target"):
@@ -174,6 +185,8 @@ def scored_search(sim, obs, mode, k, top, decision, done=None, potions=None, wid
     cands = (cand_fn(sim, obs) if cand_fn else
              S.search_candidates_wide(sim, pt, obs, top, potions=potions, all_potions=all_potions) if wide else S.search_candidates(sim, pt, obs, top, potions))
     if len(cands) == 1:
+        if obs.get("choice"):
+            note_choice(obs, cands, 0)
         return cands, [None], 0
     held = S.potions_held(obs)
     price = S.POTION_PRICE[potions] if potions else 0.0
@@ -204,6 +217,8 @@ def scored_search(sim, obs, mode, k, top, decision, done=None, potions=None, wid
     best = max(range(len(cands)), key=lambda i: values[i])
     if END_TURN_Z is not None and cands[best].get("type") == "end_turn" and not obs.get("choice"):
         best = end_turn_checked(cands, done, k, best, S.planner_action(pt, obs, mode), (obs.get("combat") or {}).get("hand") or [], END_TURN_Z)
+    if obs.get("choice"):
+        note_choice(obs, cands, best)
     return cands, values, best
 
 

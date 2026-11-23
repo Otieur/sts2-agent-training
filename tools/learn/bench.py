@@ -273,7 +273,7 @@ def worker(a):
         for line in f.open():
             r = json.loads(line)
             done_jobs.add((r["fight"], r["sample"]))
-    needs_room = lambda n: n != "planner" and bool(re.search(r"pa?f?m?e?$", n)) and n.startswith(("mc", "planner"))
+    needs_room = lambda n: n != "planner" and bool(re.search(r"pa?f?m?e?c?$", n)) and n.startswith(("mc", "planner"))
     arms = {name: make_arm(name, a.model, a.q_model) for name in a.arms if not needs_room(name)}
     host = SP.Host()
     try:
@@ -288,6 +288,7 @@ def worker(a):
                 t0 = time.time()
                 for key in SP.END_CHECKS:
                     SP.END_CHECKS[key] = 0
+                del SP.CHOICES[:]
                 try:
                     r = SP.play(host, spec, seed, search)
                     o = r["outcome"]
@@ -295,7 +296,7 @@ def worker(a):
                     rec["arms"][name] = {"status": o["status"], "hp": o["hp"], "enemy_hp_left": o["enemy_hp_left"], "value": value_of(o),
                                          "potions_used": used, "value_priced": value_of(o) - S.POTION_PRICE[spec["room"]] * used,
                                          "decisions": o["decisions"], "turns": o["turns"], "seconds": round(time.time() - t0, 2),
-                                         "enemies": o.get("enemies"), "end_checks": dict(SP.END_CHECKS),
+                                         "enemies": o.get("enemies"), "end_checks": dict(SP.END_CHECKS), "choices": list(SP.CHOICES),
                                          "search_seconds": o["search_seconds"], "restarts": o["host_restarts"], "blocked": o["blocked"]}
                 except S.SimError as e:
                     rec["arms"][name] = {"error": str(e)[:300], "seconds": round(time.time() - t0, 2)}
