@@ -32,6 +32,11 @@ class TestChoicesCompare(unittest.TestCase):
         self.assertEqual({k: dict(v) for k, v in c["curse"].items()}, {1: {"MIND_ROT": 1}, 2: {"DISINTEGRATION": 1}, 3: {"DISINTEGRATION": 1}})
         self.assertEqual(cc.choice_summary([rec(0, 0, False, True, ch)], "x")["choices"], 0)
 
+    def test_fights_won_by_the_benchmark_of_origin(self):
+        specs = [{"source": {"benchmark": "run-bench-16"}}, {"source": {"benchmark": "run-bench-17"}}, {}]
+        ok = [rec(0, 0, False, True), rec(0, 1, True, True), rec(1, 0, True, False), rec(2, 0, False, False)]
+        self.assertEqual(cc.by_origin(ok, specs, "x", "y"), {"run-bench-16": [2, 1, 2], "run-bench-17": [1, 1, 0], "?": [1, 0, 0]})
+
     def test_bootstrap_of_nothing(self):
         self.assertIsNone(cc.bootstrap([]))
         m, lo, hi = cc.bootstrap([2.0, 2.0, 2.0])

@@ -35,10 +35,31 @@ Choices made before the run and not tuned on it: ten candidates at most; declini
 - **What follows.** Searching the choices becomes the default of the fight search for everything started afterwards if all of these hold: H1 holds; on Set O the arm with the choices searched wins at least as many fights as the arm without, less two at most; on Set B it wins at least as many, less one at most; and on Set B's fights that both arms win its mean HP left is not lower by more than 1.0. A run benchmark begun before that is finished with the setting it began with (`SIM_SEARCH_CHOICES=0`, as run benchmark 19 keeps `SIM_LOSS_FORMS=0`). Then the next free run-benchmark slot measures in whole runs what it is worth in wins. If H1 holds and a condition of Set O or Set B does not, the option stays off in general and a version limited to the Knowledge Demon's curse is registered on its own. If H1 does not hold, the option stays off and the fights are traced for the reason (in a fight whose rollouts are all lost an answer is judged by the enemies' HP left at death, which may favour the curse that kills sooner but leaves the deck whole).
 
 ## 5. Results
-Pending.
+### Set D, the Knowledge Demon (read 2026-11-23 09:25; Sets O and B are still being played)
+Played 08:08–09:24 (four workers at the lowest priority; code `93c1b3c`; `data/learn/bench/boss-replay-4-d`; `python3 -I tools/choices_compare.py --a mcw6paf --b mcw6pafc --specs data/sim/boss-replay-4-d.json data/learn/bench/boss-replay-4-d`). 177 fights an arm; 176 with both arms (one fight of the arm with the choices searched ended in a game exception, section 6).
+
+| | First option (`mcw6paf`) | Choices searched (`mcw6pafc`) |
+|---|---|---|
+| **Fights won** | **106 of 176 (60%)** | **125 of 176 (71%)** |
+| on run benchmark 16's 42 situations | 88 of 125 | 103 of 125 |
+| on run benchmark 17's 17 situations | 18 of 51 | 22 of 51 |
+| Card choices a fight | 3.2 | 3.4 |
+| searched | 0 | 603 of 607 |
+| another answer than the first option | 0 | 297 |
+| Seconds a fight | 49 | 53 |
+
+- **H1 holds.** Of the 59 situations the arm with the choices searched wins more of its three fights in 15 and fewer in 5; one-sided sign test p = 0.021.
+- Where both arms win (100 fights) the arm with the choices searched keeps 5.1 HP more (bootstrap 95% 2.5 to 7.6). Priced value over all fights: +29.3 (17.4 to 42.1).
+- **The curse.** With the first option taken: Disintegration at all 176 first offers, all 153 second offers and all 7 third offers. With the choices searched: first offer Mind Rot 105 and Disintegration 71; second offer Sloth 72 and Disintegration 91; third offer Waste Away 8 and Disintegration 27. So the search takes the other card at the first offer in three fights of five and still stacks Disintegration in many: the answer is judged on six worlds played out by a planner that takes Disintegration at the later offers. Fights won by the number of Disintegrations taken: none 26 of 37, one 67 of 90, two 31 of 48.
+- **The other choices.** Of the 229 searched choices that are not the curse (the card Headbutt puts back, the card to exhaust or upgrade, a potion's cards) 112 took another answer than the first option.
+- Lost fights end on turn 6 or 7 in 47 of 70 with the first option and in 35 of 51 with the choices searched.
+
+Whether the option becomes the default is decided when Sets O and B are read (section 4).
 
 ## 6. Deviations and notes
 - 2026-11-23 08:07, before the run. **Declining a choice is never a candidate.** The host lists "take no card" as a legal answer wherever the game's card selector is given a minimum of 0, and at a choose-a-card screen it is given 0 even where the game does not let the player skip: `KnowledgeDemon.ChooseCurse` calls `CardSelectCmd.FromChooseACardScreen` with `canSkip` false (read from the game's code with `tools/asm`), and the host listed declining at all three curse offers and accepted it. A search that could decline would use a move the game does not have. Whether the other screens can be skipped in the game was not checked; none of them needs to be for this comparison. The host's list is noted as a fidelity gap of the simulator (`docs/simulator-integrity.md`); nothing played so far used it, because the first option was always taken.
 - 2026-11-23 08:07, before the run. **One fight of a Set D situation was played with the choices searched while the code was tested** (run benchmark 17's Knowledge Demon situation 6, fight seed 7200006, the seed of trace sweep 2, with `tools/fight_trace.py --choices on`): Mind Rot at the first offer (−316 against −341 for Disintegration, every rollout lost), Disintegration at the second with 5 HP left; lost on turn 6 with 172 of 379 HP left on the boss, where the first-option search lost on turn 6 with 184 left. That seed is not in the set. In the four fights outside every set the arms won 1 and 2; neither is a result.
 - 2026-11-23 08:12, a miscount in section 1, corrected here because the section is not edited after the start: of the ten Knowledge Demon fights lost in trace sweep 2, **seven** ended on turn 6 (two on turn 7, one on turn 3), not eight. Nothing registered depends on the figure.
 - 2026-11-23 08:08, **started** (`data/learn/queue/boss-replay-4.sh`, Set D first, four workers at the lowest priority; code `93c1b3c`).
+- 2026-11-23 09:25, Set D: one fight was left out of the paired figures (situation 2, sample index 2). In the arm with the choices searched a step ended in a game exception (`NullReferenceException` in `ActionQueueSynchronizer.GetHookActionForId`), the arm's only error in 177 fights; the first-option arm had none. One case does not say whether a searched answer led to it. It is looked for in Sets O and B, and the fight is traced if it shows again.
+- 2026-11-23 09:25, a by-product of Set D for `reports/phase9/run-bench-17.md` (its section 6, 08:11): the first-option arm is the runs' own search, and its three replays of each situation win 88 of 126 fights on run benchmark 16's situations (70%; the runs won 29 of 42, 69%) and 18 of 51 on run benchmark 17's (35%; the runs won 6 of 17, 35%). The replays reproduce the runs in both, so trace sweep 3's 23 of 42 was a low draw of single fights, and the distance between the two benchmarks at this boss lies in the situations they reached it with.

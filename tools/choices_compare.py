@@ -10,7 +10,8 @@ arms win, the mean difference in HP left with a bootstrap 95% interval; the mean
 fights; seconds per fight. Then the choices per arm (`choices` in the fight records, `tools/selfplay.py CHOICES`): how
 many, how many were searched (more than one answer was a candidate), how many of those took another answer than the
 first option, by kind of screen, and at the Knowledge Demon's curse what was taken at each offer. A fight with an error
-in either arm is left out and listed."""
+in either arm is left out and listed. With `--specs` (the fight set played) the fights won are also split by the
+run benchmark a situation comes from."""
 import argparse
 import json
 import random
@@ -70,7 +71,18 @@ def choice_summary(ok, arm):
     return c
 
 
-def report(folder, a, b):
+def by_origin(ok, specs, a, b):
+    """Fights and fights won per arm, by the run benchmark a situation comes from (`source.benchmark` in the fight set)."""
+    out = defaultdict(lambda: [0, 0, 0])
+    for r in ok:
+        e = out[(specs[r["fight"]].get("source") or {}).get("benchmark") or "?"]
+        e[0] += 1
+        e[1] += r["arms"][a]["status"] == "won"
+        e[2] += r["arms"][b]["status"] == "won"
+    return dict(out)
+
+
+def report(folder, a, b, specs=None):
     recs = load(folder)
     ok, out = pairs(recs, a, b)
     print(f"{folder}: {len(recs)} fights recorded, {len(ok)} with both arms" + (f"; left out for an error: {[(r['fight'], r['sample']) for r in out]}" if out else ""))
@@ -86,6 +98,9 @@ def report(folder, a, b):
         e[2] += r["arms"][b]["status"] == "won"
     for name, (n, x, y) in sorted(enc.items()):
         print(f"    {name}: {x} and {y} of {n}")
+    if specs:
+        for name, (n, x, y) in sorted(by_origin(ok, specs, a, b).items()):
+            print(f"    situations of {name}: {x} and {y} of {n}")
     sit = by_situation(ok, a, b)
     better, worse = sum(y > x for x, y in sit.values()), sum(y < x for x, y in sit.values())
     print(f"  situations: {len(sit)}; {b} wins more of its fights in {better}, fewer in {worse}; one-sided sign test p = {sign_test(better, worse):.3f}")
@@ -112,8 +127,10 @@ def main(argv=None):
     ap.add_argument("folders", nargs="+")
     ap.add_argument("--a", default="mcw6paf", help="the arm compared with")
     ap.add_argument("--b", default="mcw6pafc", help="the arm tested")
+    ap.add_argument("--specs", help="the fight set the folders played: also splits the fights won by the run benchmark a situation comes from")
     a = ap.parse_args(argv)
-    return max(report(f, a.a, a.b) for f in a.folders)
+    specs = json.loads(Path(a.specs).read_text())["fights"] if a.specs else None
+    return max(report(f, a.a, a.b, specs) for f in a.folders)
 
 
 if __name__ == "__main__":
